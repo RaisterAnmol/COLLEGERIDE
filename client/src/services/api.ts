@@ -25,22 +25,70 @@ function getLocalDemoFallback<T>(endpoint: string, options: RequestInit): T | un
     const url = new URL(endpoint, "http://localhost");
     const path = url.pathname;
 
-    if (path === "/api/auth/login" || path === "/api/auth/register") {
-      let email = "aditya.kumar@college.edu";
+    if (path === "/api/auth/register") {
+      let parsed: any = {};
+      try {
+        if (options.body) parsed = JSON.parse(options.body as string);
+      } catch {}
+      const email = parsed.email || "student@university.edu";
+      const customUser = {
+        _id: "user_" + Date.now(),
+        name: parsed.name || "Student User",
+        email,
+        college: parsed.college || "University",
+        department: parsed.department || "General",
+        course: parsed.course || "Degree",
+        year: Number(parsed.year) || 1,
+        semester: Number(parsed.semester) || 1,
+        phone: parsed.phone || "",
+        gender: parsed.gender || "other",
+        role: parsed.accountType === "DRIVER" ? "driver" : parsed.accountType === "ADMIN" ? "campus_admin" : "student",
+        accountType: parsed.accountType || "PASSENGER",
+        avatarURL: parsed.avatarURL || parsed.facePhoto || "",
+        verificationStatus: "pending",
+        rating: 5.0,
+        totalRides: 0,
+      };
+      localStorage.setItem("campusride_user_email", email);
+      localStorage.setItem("campusride_custom_user", JSON.stringify(customUser));
+      return { token: "token_" + customUser._id, user: customUser } as T;
+    }
+
+    if (path === "/api/auth/login") {
+      let email = "";
       try {
         if (options.body) {
           const parsed = JSON.parse(options.body as string);
-          if (parsed.email) email = parsed.email;
+          email = parsed.email || "";
         }
       } catch {}
-      const user = DEMO_FALLBACK_USERS[email] || DEMO_FALLBACK_USERS["aditya.kumar@college.edu"];
-      localStorage.setItem("campusride_user_email", email);
+      const customUserStr = localStorage.getItem("campusride_custom_user");
+      if (customUserStr) {
+        try {
+          const customUser = JSON.parse(customUserStr);
+          if (email && customUser.email?.toLowerCase() === email.toLowerCase()) {
+            localStorage.setItem("campusride_user_email", email);
+            return { token: "token_" + customUser._id, user: customUser } as T;
+          }
+        } catch {}
+      }
+      const user = (email && DEMO_FALLBACK_USERS[email]) || DEMO_FALLBACK_USERS["aditya.kumar@college.edu"];
+      localStorage.setItem("campusride_user_email", user.email);
       return { token: "demo_jwt_token_" + user._id, user } as T;
     }
 
     if (path === "/api/auth/me") {
-      const savedEmail = localStorage.getItem("campusride_user_email") || "aditya.kumar@college.edu";
-      const user = DEMO_FALLBACK_USERS[savedEmail] || DEMO_FALLBACK_USERS["aditya.kumar@college.edu"];
+      const savedEmail = localStorage.getItem("campusride_user_email") || "";
+      const customUserStr = localStorage.getItem("campusride_custom_user");
+      if (customUserStr) {
+        try {
+          const customUser = JSON.parse(customUserStr);
+          if (!savedEmail || customUser.email?.toLowerCase() === savedEmail.toLowerCase()) {
+            return { user: customUser, vehicle: null } as T;
+          }
+        } catch {}
+      }
+      const user = (savedEmail && DEMO_FALLBACK_USERS[savedEmail]) || DEMO_FALLBACK_USERS["aditya.kumar@college.edu"];
       return { user, vehicle: { model: "Honda City", plateLast4: "4821" } } as T;
     }
 
@@ -451,22 +499,31 @@ class ApiService {
         if (response.status === 401) {
           localStorage.removeItem("campusride_token");
         }
-        const fallback = getLocalDemoFallback<T>(endpoint, options);
-        if (fallback !== undefined) return fallback;
 
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(
+        const errorMessage =
+          errorData.message ||
           errorData.error ||
-            errorData.message ||
-            `Request failed with status ${response.status}`,
-        );
+          (Array.isArray(errorData.issues)
+            ? errorData.issues.map((i: any) => i.message).join(", ")
+            : "") ||
+          `Request failed with status ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       return response.json();
     } catch (err: any) {
-      const fallback = getLocalDemoFallback<T>(endpoint, options);
-      if (fallback !== undefined) {
-        return fallback;
+      // If this is a real error response thrown from above, never swallow it with fallback
+      if (err instanceof Error && err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
+        throw err;
+      }
+
+      // If network is completely unreachable (or on Vercel preview without API)
+      if (isStandaloneVercel || !API_BASE) {
+        const fallback = getLocalDemoFallback<T>(endpoint, options);
+        if (fallback !== undefined) {
+          return fallback;
+        }
       }
       throw err;
     }

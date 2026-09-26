@@ -132,6 +132,17 @@ export const AuthPage: React.FC = () => {
 
     try {
       if (isRegister) {
+        if (password.length < 8) {
+          setError("Password must be at least 8 characters long.");
+          setLoading(false);
+          return;
+        }
+        if (!/[A-Za-z]/.test(password) || !/[0-9]/.test(password)) {
+          setError("Password must contain at least one letter and at least one number.");
+          setLoading(false);
+          return;
+        }
+
         const formattedPhone = phone.trim()
           ? phone.startsWith("+91")
             ? phone.trim()
@@ -151,15 +162,17 @@ export const AuthPage: React.FC = () => {
           accountType,
         };
 
-        if (selfieResult?.previewUrl) {
-          payload.avatarURL = selfieResult.previewUrl;
-          payload.facePhoto = selfieResult.previewUrl;
-          localStorage.setItem("campusride_user_avatar_" + email.toLowerCase().trim(), selfieResult.previewUrl);
-          localStorage.setItem("campusride_user_selfie", selfieResult.previewUrl);
-          if (selfieResult.embedding) {
-            payload.faceDescriptor = selfieResult.embedding;
-            localStorage.setItem("campusride_face_embedding_" + email.toLowerCase().trim(), JSON.stringify(selfieResult.embedding));
-          }
+        const finalAvatar = selfieResult?.previewUrl || idCardPreview || "";
+        if (finalAvatar) {
+          payload.avatarURL = finalAvatar;
+          payload.facePhoto = finalAvatar;
+          localStorage.setItem("campusride_user_avatar_" + email.toLowerCase().trim(), finalAvatar);
+          localStorage.setItem("campusride_user_selfie", finalAvatar);
+        }
+
+        if (selfieResult?.embedding) {
+          payload.faceDescriptor = selfieResult.embedding;
+          localStorage.setItem("campusride_face_embedding_" + email.toLowerCase().trim(), JSON.stringify(selfieResult.embedding));
         }
 
         if (accountType === "DRIVER") {
@@ -678,12 +691,18 @@ export const AuthPage: React.FC = () => {
                 <input
                   type="password"
                   required
+                  minLength={isRegister ? 8 : 1}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
+              {isRegister && (
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Min. 8 characters (must include letters and numbers)
+                </p>
+              )}
             </div>
           </div>
 
