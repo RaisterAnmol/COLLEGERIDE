@@ -823,14 +823,17 @@ export const SearchRidesPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   {/* Driver Information */}
                   <div className="flex items-center gap-3.5">
-                    <img
-                      src={
-                        ride.creator?.avatarURL ||
-                        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
-                      }
-                      alt={ride.creator?.name}
-                      className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20 shadow-sm"
-                    />
+                    {ride.creator?.avatarURL ? (
+                      <img
+                        src={ride.creator.avatarURL}
+                        alt={ride.creator?.name}
+                        className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20 shadow-sm"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#143D32] to-[#10b981] text-white font-black text-lg flex items-center justify-center uppercase ring-2 ring-emerald-500/20 shadow-sm select-none">
+                        {ride.creator?.name ? ride.creator.name.trim().charAt(0) : 'D'}
+                      </div>
+                    )}
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-900 text-base">{ride.creator?.name}</span>

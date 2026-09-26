@@ -189,6 +189,7 @@ export const AuthPage: React.FC = () => {
 
         if (accountType === "ADMIN") {
           payload.adminToken = adminToken;
+          payload.adminInvitationToken = adminToken;
         }
 
         await register(payload);

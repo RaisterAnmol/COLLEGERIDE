@@ -62,6 +62,7 @@ const registerSchema = z.object({
   facePhoto: z.string().optional(),
   faceDescriptor: z.array(z.number()).optional(),
   adminInvitationToken: z.string().trim().optional(),
+  adminToken: z.string().trim().optional(),
   vehicle: z
     .object({
       type: z.enum(["car", "motorcycle", "scooter", "ev", "bike"]).default("car"),
@@ -108,6 +109,7 @@ router.post("/register", async (req, res): Promise<void> => {
       facePhoto,
       faceDescriptor,
       adminInvitationToken,
+      adminToken,
       vehicle,
     } = parseResult.data;
 
@@ -129,7 +131,8 @@ router.post("/register", async (req, res): Promise<void> => {
         process.env.ADMIN_INVITATION_CODE ||
         process.env.ADMIN_SECRET ||
         "CAMPUS_ADMIN_INVITE_2025";
-      if (!adminInvitationToken || adminInvitationToken !== validAdminKey) {
+      const providedKey = (adminInvitationToken || adminToken || "").trim();
+      if (!providedKey || providedKey !== validAdminKey) {
         res.status(403).json({
           code: "ADMIN_INVITATION_REQUIRED",
           message:

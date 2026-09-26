@@ -222,17 +222,20 @@ export const SelfieCapture: React.FC<SelfieCaptureProps> = ({
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
-    const previewUrl = URL.createObjectURL(file);
-
-    const result: SelfieCaptureResult = {
-      file,
-      previewUrl,
-      embedding: Array(512).fill(0.05),
-      qualityScore: 90,
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const result: SelfieCaptureResult = {
+        file,
+        previewUrl: dataUrl,
+        embedding: Array(512).fill(0.05),
+        qualityScore: 90,
+      };
+      setCapturedData(result);
+      onCapture(result);
+      stopCamera();
     };
-    setCapturedData(result);
-    onCapture(result);
-    stopCamera();
+    reader.readAsDataURL(file);
   };
 
   const handleRetake = (e?: React.MouseEvent) => {
