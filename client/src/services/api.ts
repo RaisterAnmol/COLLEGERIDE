@@ -562,6 +562,24 @@ class ApiService {
     return this.request<{ user: any; vehicle?: any }>("/api/auth/me");
   }
 
+  async updateProfile(data: {
+    name?: string;
+    college?: string;
+    department?: string;
+    course?: string;
+    year?: number;
+    semester?: number;
+    phone?: string;
+  }) {
+    return this.request<{ success: boolean; message: string; user: any }>(
+      "/api/auth/profile",
+      {
+        method: "PUT",
+        body: JSON.stringify(data),
+      },
+    );
+  }
+
   async getMyVehicle() {
     const me = await this.getMe();
     return { vehicle: me?.vehicle || null };

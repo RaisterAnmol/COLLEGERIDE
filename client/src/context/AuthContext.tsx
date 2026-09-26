@@ -13,6 +13,7 @@ interface AuthContextType {
   setActivePersona: (role: PersonaRole) => void;
   login: (email: string, password?: string) => Promise<void>;
   register: (userData: any) => Promise<void>;
+  updateProfile: (data: any) => Promise<void>;
   logout: () => void;
   switchDemoUser: (
     persona: "aditya" | "rahul" | "priya" | "ananya" | "rohan" | "kabir" | "meera" | "tanvi" | "admin" | "moderator",
@@ -139,6 +140,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const updateProfile = async (data: any) => {
+    setLoading(true);
+    try {
+      const res = await api.updateProfile(data);
+      if (res?.user) {
+        setUser(res.user);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem("campusride_token");
     localStorage.removeItem("campusride_persona");
@@ -167,6 +180,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         setActivePersona,
         login,
         register,
+        updateProfile,
         logout,
         switchDemoUser,
         refreshUser,

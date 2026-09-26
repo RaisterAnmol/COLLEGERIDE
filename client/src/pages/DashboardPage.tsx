@@ -348,7 +348,7 @@ export const DashboardPage: React.FC = () => {
                         <span>•</span>
                         <span>{ride.availableSeats} seats left</span>
                         <span>•</span>
-                        <span className="font-bold text-emerald-600">₹{ride.pricing?.costPerSeat ?? ride.pricePerSeat}</span>
+                        <span className="font-bold text-emerald-600">₹{(ride as any).pricing?.costPerSeat ?? (ride as any).pricePerSeat ?? 0}</span>
                       </div>
                     </div>
 
@@ -432,6 +432,7 @@ export const DashboardPage: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
       </div>
 
       {/* Edit Academic Profile Modal Dialog */}
