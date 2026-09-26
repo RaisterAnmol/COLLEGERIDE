@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 
 export const DashboardPage: React.FC = () => {
-  const { user, switchDemoUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [myOfferedRides, setMyOfferedRides] = useState<IRide[]>([]);
@@ -109,7 +109,7 @@ export const DashboardPage: React.FC = () => {
                       Pending Verification
                     </span>
                   )}
-                  {(user as any)?.role === 'driver' || user?.name?.toLowerCase().includes('aditya') || (user?.totalRides && user.totalRides > 5) ? (
+                  {(user as any)?.role === 'driver' || (user as any)?.accountType === 'DRIVER' ? (
                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-semibold border border-blue-200">
                       🚗 Campus Driver
                     </span>
@@ -120,16 +120,16 @@ export const DashboardPage: React.FC = () => {
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 text-slate-700 border border-slate-200/90 shadow-xs font-medium backdrop-blur-sm">
                     <School className="w-3.5 h-3.5 text-emerald-600" />
-                    {user?.college || 'Uttaranchal University'}
+                    {user?.college || 'Not specified'}
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 text-slate-700 border border-slate-200/90 shadow-xs font-medium backdrop-blur-sm">
                     <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
-                    {user?.course || 'B.Tech'} {user?.department ? `(${user.department})` : 'CSE'}
+                    {user?.course || 'Not specified'} {user?.department ? `(${user.department})` : ''}
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 text-slate-600 border border-slate-200/90 shadow-xs backdrop-blur-sm font-medium">
-                    <span>Year {user?.year || 3}</span>
+                    <span>Year {user?.year || '-'}</span>
                     <span className="text-slate-400">•</span>
-                    <span>Sem {user?.semester || 5}</span>
+                    <span>Sem {user?.semester || '-'}</span>
                   </span>
                 </div>
               </div>
@@ -163,7 +163,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-sm font-black text-slate-900 leading-tight">
-                  {user?.rating?.toFixed(1) || '5.0'} / 5.0
+                  {user?.rating?.toFixed(1) || '-'} / 5.0
                 </div>
                 <div className="text-[11px] text-slate-500 font-medium">Student Rating</div>
               </div>
@@ -176,7 +176,7 @@ export const DashboardPage: React.FC = () => {
               </div>
               <div>
                 <div className="text-sm font-black text-slate-900 leading-tight">
-                  {user?.totalRides || 16} Rides
+                  {user?.totalRides || 0} Rides
                 </div>
                 <div className="text-[11px] text-slate-500 font-medium">Shared Commutes</div>
               </div>
@@ -202,10 +202,10 @@ export const DashboardPage: React.FC = () => {
               </div>
               <div className="truncate">
                 <div className="text-sm font-black text-slate-900 leading-tight truncate">
-                  {user?.emergencyContact?.name || 'Ramesh Kumar'}
+                  {user?.emergencyContact?.name || 'Not set'}
                 </div>
                 <div className="text-[11px] text-slate-500 font-medium truncate">
-                  ICE: {user?.emergencyContact?.relation || 'Father'}
+                  ICE: {user?.emergencyContact?.relation || 'Not set'}
                 </div>
               </div>
             </div>

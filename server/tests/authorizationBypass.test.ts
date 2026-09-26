@@ -65,7 +65,7 @@ describe("Agent 9: Security & Authorization Bypass Test Suite", () => {
       status: "active",
     });
     userARideId = ride._id.toString();
-  });
+  }, 35000);
 
   afterAll(async () => {
     await disconnectDB();

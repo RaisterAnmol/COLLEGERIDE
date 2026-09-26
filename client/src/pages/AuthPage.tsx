@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
+import { SelfieCapture, SelfieCaptureResult } from "../components/verification/SelfieCapture";
 import {
   ShieldCheck,
   Mail,
@@ -22,7 +23,16 @@ import {
   X,
   Upload,
   Loader2,
+  Camera,
+  ScanFace,
+  BookOpen,
 } from "lucide-react";
+import { SearchableInput } from "../components/common/SearchableInput";
+import {
+  POPULAR_COLLEGES,
+  POPULAR_DEPARTMENTS,
+  POPULAR_BRANCHES_COURSES,
+} from "../data/academicData";
 
 type AccountTypeOption = "PASSENGER" | "WOMEN_PASSENGER" | "DRIVER" | "ADMIN";
 
@@ -53,25 +63,28 @@ export const AuthPage: React.FC = () => {
 
   // Shared credentials
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("CampusRide2025!");
+  const [password, setPassword] = useState("");
 
   // Registration fields
   const [name, setName] = useState("");
-  const [college, setCollege] = useState("Uttaranchal University");
-  const [department, setDepartment] = useState("Computer Science & Engineering");
-  const [course, setCourse] = useState("B.Tech CSE");
-  const [year, setYear] = useState(3);
+  const [college, setCollege] = useState("");
+  const [department, setDepartment] = useState("");
+  const [course, setCourse] = useState("");
+  const [year, setYear] = useState(1);
   const [gender, setGender] = useState<"male" | "female" | "other">("male");
-  const [phone, setPhone] = useState("+91 98765 43210");
+  const [phone, setPhone] = useState("");
 
   // Driver-specific fields
   const [driverIdentifier, setDriverIdentifier] = useState("");
   const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
-  const [vehicleModel, setVehicleModel] = useState("Honda City");
-  const [plateLast4, setPlateLast4] = useState("4821");
+  const [vehicleModel, setVehicleModel] = useState("");
+  const [plateLast4, setPlateLast4] = useState("");
   const [capacity, setCapacity] = useState(3);
   const [idCardFile, setIdCardFile] = useState<File | null>(null);
   const [idCardPreview, setIdCardPreview] = useState<string | null>(null);
+
+  // Face Verification Selfie
+  const [selfieResult, setSelfieResult] = useState<SelfieCaptureResult | null>(null);
 
   const handleIdCardFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -85,10 +98,6 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  const handleUseSampleIdCard = () => {
-    const sampleCard = "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80";
-    setIdCardPreview(sampleCard);
-  };
 
   // Admin-specific fields
   const [adminToken, setAdminToken] = useState("");
@@ -102,18 +111,17 @@ export const AuthPage: React.FC = () => {
   const [forgotMsg, setForgotMsg] = useState<{ text: string; isError: boolean } | null>(null);
   const [forgotLoading, setForgotLoading] = useState(false);
 
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { login, register, switchDemoUser } = useAuth();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
 
   const handleAccountTypeChange = (type: AccountTypeOption) => {
     setAccountType(type);
     if (type === "WOMEN_PASSENGER") {
       setGender("female");
-    } else if (type === "DRIVER" && gender === "female") {
-      // keep female if already female
     }
   };
 
@@ -124,6 +132,12 @@ export const AuthPage: React.FC = () => {
 
     try {
       if (isRegister) {
+        const formattedPhone = phone.trim()
+          ? phone.startsWith("+91")
+            ? phone.trim()
+            : `+91 ${phone.trim()}`
+          : "";
+
         const payload: any = {
           name,
           email,
@@ -133,13 +147,24 @@ export const AuthPage: React.FC = () => {
           course,
           year,
           gender: accountType === "WOMEN_PASSENGER" ? "female" : gender,
-          phone,
+          phone: formattedPhone,
           accountType,
         };
 
+        if (selfieResult?.previewUrl) {
+          payload.avatarURL = selfieResult.previewUrl;
+          payload.facePhoto = selfieResult.previewUrl;
+          localStorage.setItem("campusride_user_avatar_" + email.toLowerCase().trim(), selfieResult.previewUrl);
+          localStorage.setItem("campusride_user_selfie", selfieResult.previewUrl);
+          if (selfieResult.embedding) {
+            payload.faceDescriptor = selfieResult.embedding;
+            localStorage.setItem("campusride_face_embedding_" + email.toLowerCase().trim(), JSON.stringify(selfieResult.embedding));
+          }
+        }
+
         if (accountType === "DRIVER") {
           payload.driverIdentifier = driverIdentifier;
-          payload.enrolledIdCardUrl = idCardPreview || "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80";
+          payload.enrolledIdCardUrl = idCardPreview || "";
           payload.vehicle = {
             type: vehicleType,
             model: vehicleModel,
@@ -154,44 +179,32 @@ export const AuthPage: React.FC = () => {
         }
 
         await register(payload);
-        // After registration, redirect to /verification for immediate badge completion
-        navigate("/verification");
+        navigate("/dashboard");
       } else {
         await login(email, password);
         navigate("/dashboard");
       }
     } catch (err: any) {
-      setError(err.message || "Authentication failed. Please check credentials.");
+      setError(err?.message || "Authentication failed. Please check credentials.");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleDemoPersona = async (
-    persona: "aditya" | "rahul" | "priya" | "admin" | "moderator",
-  ) => {
-    setError("");
-    setLoading(true);
-    try {
-      await switchDemoUser(persona);
-      navigate("/dashboard");
-    } catch (err: any) {
-      setError(err.message || "Failed to switch demo persona");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSendResetLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setForgotMsg(null);
     setForgotLoading(true);
     try {
-      const res = await api.forgotPassword(forgotEmail);
-      setForgotMsg({ text: res.message || "Reset instructions generated.", isError: false });
+      const res: any = await api.forgotPassword(forgotEmail);
+      setForgotMsg({ text: res.message || "Reset token generated! Enter your code below.", isError: false });
+      if (res.demoToken) {
+        setResetToken(res.demoToken);
+      }
       setForgotStep("RESET");
     } catch (err: any) {
-      setForgotMsg({ text: err.message || "Failed to send reset email.", isError: true });
+      setForgotMsg({ text: err.message || "Could not find account with that email.", isError: true });
     } finally {
       setForgotLoading(false);
     }
@@ -216,43 +229,44 @@ export const AuthPage: React.FC = () => {
     }
   };
 
+
   return (
-    <div className="min-h-[90vh] flex items-center justify-center p-4 sm:p-6 bg-slate-900/10">
-      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+    <div className="min-h-[90vh] flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40">
+      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl shadow-emerald-950/5 border border-emerald-100/80 overflow-hidden">
         {/* Header Hero */}
-        <div className="bg-slate-900 text-white p-6 sm:p-8 relative overflow-hidden">
-          <div className="absolute -right-8 -top-8 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+        <div className="bg-gradient-to-br from-emerald-50 via-teal-50/70 to-emerald-100/50 p-6 sm:p-8 relative overflow-hidden border-b border-emerald-100">
+          <div className="absolute -right-8 -top-8 w-48 h-48 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
 
           <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase tracking-wider">
-              <ShieldCheck className="w-4 h-4" />
+            <div className="flex items-center gap-2 text-[#143D32] font-bold text-xs uppercase tracking-wider">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               Verified University Transit Network
             </div>
-            <span className="text-[11px] font-mono text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">
+            <span className="text-[11px] font-mono text-emerald-900 bg-white/80 px-2.5 py-1 rounded-full border border-emerald-200/80 shadow-sm">
               Dehradun Academic Hub
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-white mt-2">
+          <h1 className="text-2xl sm:text-3xl font-black text-[#143D32] mt-2">
             {isRegister ? "Create Your CampusRide Account" : "Sign In to CampusRide"}
           </h1>
-          <p className="text-xs sm:text-sm text-slate-300 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Safe, verified campus carpooling between colleges, hostels, and transit hubs.
           </p>
 
           {/* Switcher Tab */}
-          <div className="flex gap-2 mt-6 bg-slate-800/90 p-1.5 rounded-2xl border border-slate-700">
+          <div className="flex gap-2 mt-6 bg-emerald-900/5 p-1.5 rounded-2xl border border-emerald-200/60">
             <button
               type="button"
               onClick={() => {
                 setIsRegister(false);
                 setError("");
               }}
-              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={
                 !isRegister
-                  ? "bg-emerald-500 text-slate-950 shadow-md"
-                  : "text-slate-400 hover:text-white"
-              }`}
+                  ? "flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer bg-[#143D32] text-white shadow-md"
+                  : "flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              }
             >
               Sign In
             </button>
@@ -262,189 +276,90 @@ export const AuthPage: React.FC = () => {
                 setIsRegister(true);
                 setError("");
               }}
-              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+              className={
                 isRegister
-                  ? "bg-emerald-500 text-slate-950 shadow-md"
-                  : "text-slate-400 hover:text-white"
-              }`}
+                  ? "flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer bg-[#143D32] text-white shadow-md"
+                  : "flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              }
             >
               Create Account
             </button>
           </div>
         </div>
 
-        {/* Quick Testing Persona Cards */}
-        <div className="bg-slate-50 border-b border-slate-200 p-4 px-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-              1-Click Testing Profiles:
-            </span>
-            <span className="text-[10px] text-slate-400 font-mono">Live DB credentials</span>
-          </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-            <button
-              type="button"
-              onClick={() => handleDemoPersona("aditya")}
-              className="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-left transition-all shadow-sm group"
-            >
-              <span className="text-xs font-bold text-slate-800 block group-hover:text-emerald-600">
-                🚗 Aditya K.
-              </span>
-              <span className="text-[10px] text-slate-400 block truncate">Driver • Verified</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleDemoPersona("rahul")}
-              className="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-left transition-all shadow-sm group"
-            >
-              <span className="text-xs font-bold text-slate-800 block group-hover:text-emerald-600">
-                🎒 Rahul S.
-              </span>
-              <span className="text-[10px] text-slate-400 block truncate">Passenger • UU</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleDemoPersona("priya")}
-              className="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-left transition-all shadow-sm group"
-            >
-              <span className="text-xs font-bold text-slate-800 block group-hover:text-emerald-600">
-                🛡️ Priya S.
-              </span>
-              <span className="text-[10px] text-slate-400 block truncate">Women Network</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleDemoPersona("admin")}
-              className="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-left transition-all shadow-sm group"
-            >
-              <span className="text-xs font-bold text-slate-800 block group-hover:text-emerald-600">
-                🏛️ Admin
-              </span>
-              <span className="text-[10px] text-slate-400 block truncate">Campus SOC</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleDemoPersona("moderator")}
-              className="p-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-left transition-all shadow-sm group"
-            >
-              <span className="text-xs font-bold text-slate-800 block group-hover:text-emerald-600">
-                ⚖️ Moderator
-              </span>
-              <span className="text-[10px] text-slate-400 block truncate">Safety Review</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Form Body */}
+        {/* Main Form Body */}
         <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
           {error && (
-            <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-2xl flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 p-3 rounded-2xl">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
               <span>{error}</span>
             </div>
           )}
 
           {isRegister && (
             <>
-              {/* Account Type Card Selector */}
+              {/* Account Type Selector */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  Select Account Type
+                  Select Account Role
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <button
+                    type="button"
                     onClick={() => handleAccountTypeChange("PASSENGER")}
-                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                    className={
                       accountType === "PASSENGER"
-                        ? "border-emerald-500 bg-emerald-50/50 shadow-md shadow-emerald-500/10"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    }`}
+                        ? "p-3 rounded-2xl border text-left transition-all cursor-pointer border-[#143D32] bg-emerald-50/70 text-[#143D32] shadow-sm font-bold"
+                        : "p-3 rounded-2xl border text-left transition-all cursor-pointer border-slate-200 hover:border-slate-300 text-slate-600 bg-white"
+                    }
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-emerald-600" />
-                        <span className="text-xs font-bold text-slate-900">Student Passenger</span>
-                      </div>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-600">
-                        Default
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Book seats with verified campus batchmates and split travel costs.
-                    </p>
-                  </div>
+                    <Users className="w-4 h-4 mb-1 text-emerald-600" />
+                    <div className="text-xs font-bold">Passenger</div>
+                    <div className="text-[10px] text-slate-500">Find & book rides</div>
+                  </button>
 
-                  <div
+                  <button
+                    type="button"
                     onClick={() => handleAccountTypeChange("WOMEN_PASSENGER")}
-                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                    className={
                       accountType === "WOMEN_PASSENGER"
-                        ? "border-emerald-500 bg-emerald-50/50 shadow-md shadow-emerald-500/10"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    }`}
+                        ? "p-3 rounded-2xl border text-left transition-all cursor-pointer border-pink-500 bg-pink-50 text-pink-900 shadow-sm font-bold"
+                        : "p-3 rounded-2xl border text-left transition-all cursor-pointer border-slate-200 hover:border-slate-300 text-slate-600 bg-white"
+                    }
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                        <span className="text-xs font-bold text-slate-900">Women-Only Passenger</span>
-                      </div>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700">
-                        Safe Hub
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Exclusive access to women drivers and women-only carpools.
-                    </p>
-                  </div>
+                    <ShieldAlert className="w-4 h-4 mb-1 text-pink-600" />
+                    <div className="text-xs font-bold">Women Only</div>
+                    <div className="text-[10px] text-slate-500">Female-only network</div>
+                  </button>
 
-                  <div
+                  <button
+                    type="button"
                     onClick={() => handleAccountTypeChange("DRIVER")}
-                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                    className={
                       accountType === "DRIVER"
-                        ? "border-emerald-500 bg-emerald-50/50 shadow-md shadow-emerald-500/10"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    }`}
+                        ? "p-3 rounded-2xl border text-left transition-all cursor-pointer border-amber-500 bg-amber-50 text-amber-900 shadow-sm font-bold"
+                        : "p-3 rounded-2xl border text-left transition-all cursor-pointer border-slate-200 hover:border-slate-300 text-slate-600 bg-white"
+                    }
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Car className="w-4 h-4 text-emerald-600" />
-                        <span className="text-xs font-bold text-slate-900">Student Driver</span>
-                      </div>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                        DL Required
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Offer campus carpool seats, offset fuel expenses, and earn driver badges.
-                    </p>
-                  </div>
+                    <Car className="w-4 h-4 mb-1 text-amber-600" />
+                    <div className="text-xs font-bold">Driver / Host</div>
+                    <div className="text-[10px] text-slate-500">Offer commute seats</div>
+                  </button>
 
-                  <div
+                  <button
+                    type="button"
                     onClick={() => handleAccountTypeChange("ADMIN")}
-                    className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all ${
+                    className={
                       accountType === "ADMIN"
-                        ? "border-emerald-500 bg-emerald-50/50 shadow-md shadow-emerald-500/10"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    }`}
+                        ? "p-3 rounded-2xl border text-left transition-all cursor-pointer border-purple-500 bg-purple-50 text-purple-900 shadow-sm font-bold"
+                        : "p-3 rounded-2xl border text-left transition-all cursor-pointer border-slate-200 hover:border-slate-300 text-slate-600 bg-white"
+                    }
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <ShieldAlert className="w-4 h-4 text-emerald-600" />
-                        <span className="text-xs font-bold text-slate-900">Campus Admin</span>
-                      </div>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700">
-                        Invite Only
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 mt-1">
-                      Institutional verification review, SOC emergency queue, and route management.
-                    </p>
-                  </div>
+                    <KeyRound className="w-4 h-4 mb-1 text-purple-600" />
+                    <div className="text-xs font-bold">University Admin</div>
+                    <div className="text-[10px] text-slate-500">Campus staff verify</div>
+                  </button>
                 </div>
               </div>
 
@@ -461,29 +376,23 @@ export const AuthPage: React.FC = () => {
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. Aditya Kumar"
+                      placeholder="e.g. John Doe"
                       className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      College / University
-                    </label>
-                    <div className="relative">
-                      <Building2 className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-                      <input
-                        type="text"
-                        required
-                        value={college}
-                        onChange={(e) => setCollege(e.target.value)}
-                        placeholder="e.g. Uttaranchal University"
-                        className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
+                  <SearchableInput
+                    label="College / University"
+                    required
+                    value={college}
+                    onChange={setCollege}
+                    options={POPULAR_COLLEGES}
+                    placeholder="Search or type college (e.g. Uttaranchal, GEU, UPES, DTU)"
+                    icon={<Building2 className="w-4 h-4" />}
+                    helperText="Search presets or write your institution"
+                  />
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -507,30 +416,25 @@ export const AuthPage: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Department
-                    </label>
-                    <input
-                      type="text"
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                      placeholder="e.g. Computer Science & Engg"
-                      className="w-full text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Course / Degree
-                    </label>
-                    <input
-                      type="text"
-                      value={course}
-                      onChange={(e) => setCourse(e.target.value)}
-                      placeholder="e.g. B.Tech CSE"
-                      className="w-full text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                    />
-                  </div>
+                  <SearchableInput
+                    label="Department"
+                    value={department}
+                    onChange={setDepartment}
+                    options={POPULAR_DEPARTMENTS}
+                    placeholder="Search or type department (e.g. Computer Science, Mechanical)"
+                    icon={<BookOpen className="w-4 h-4" />}
+                    helperText="Search presets or enter custom"
+                  />
+
+                  <SearchableInput
+                    label="Course / Branch / Degree"
+                    value={course}
+                    onChange={setCourse}
+                    options={POPULAR_BRANCHES_COURSES}
+                    placeholder="Search or type branch (e.g. B.Tech CSE, BCA, MBA)"
+                    icon={<GraduationCap className="w-4 h-4" />}
+                    helperText="Search presets or enter custom"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -554,16 +458,26 @@ export const AuthPage: React.FC = () => {
                     <label className="block text-xs font-semibold text-slate-700 mb-1">
                       Mobile Number
                     </label>
-                    <div className="relative">
-                      <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                    <div className="flex rounded-xl border border-slate-300 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 overflow-hidden bg-white shadow-xs transition-all">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-2.5 bg-slate-100 border-r border-slate-300 text-slate-800 select-none text-xs font-bold shrink-0">
+                        <span className="text-sm leading-none" role="img" aria-label="India flag">🇮🇳</span>
+                        <span>+91</span>
+                      </div>
                       <input
-                        type="text"
+                        type="tel"
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        placeholder="+91..."
-                        className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                          setPhone(digits);
+                        }}
+                        placeholder="98765 43210"
+                        maxLength={10}
+                        className="w-full text-sm px-3 py-2.5 focus:outline-none bg-transparent font-medium text-slate-900 tracking-wide placeholder:text-slate-400 placeholder:font-normal"
                       />
                     </div>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Enter 10-digit mobile number (+91 included automatically)
+                    </p>
                   </div>
                 </div>
 
@@ -685,20 +599,17 @@ export const AuthPage: React.FC = () => {
                             />
                           </label>
 
-                          <button
-                            type="button"
-                            onClick={handleUseSampleIdCard}
-                            className="flex flex-col items-center justify-center p-3.5 border border-amber-300 hover:border-emerald-500 rounded-xl bg-amber-100/60 hover:bg-emerald-50 transition-all text-center cursor-pointer"
-                          >
-                            <Sparkles className="w-5 h-5 text-emerald-600 mb-1" />
-                            <span className="text-xs font-bold text-slate-800">Use Sample University ID</span>
-                            <span className="text-[10px] text-emerald-700">1-Click Official Student Card</span>
-                          </button>
+
                         </div>
                       )}
                     </div>
                   </div>
                 )}
+
+                {/* Live Face Verification Selfie Section for Registration */}
+                <div className="p-4 rounded-2xl bg-emerald-50/40 border border-emerald-100/80">
+                  <SelfieCapture onCapture={(res) => setSelfieResult(res)} />
+                </div>
 
                 {/* Admin Secret Section */}
                 {accountType === "ADMIN" && (
@@ -737,7 +648,7 @@ export const AuthPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. aditya.kumar@college.edu"
+                  placeholder="e.g. student@university.edu"
                   className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
                 />
               </div>
@@ -747,16 +658,19 @@ export const AuthPage: React.FC = () => {
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-slate-700">Password</label>
                 {!isRegister && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setForgotEmail(email);
-                      setIsForgotOpen(true);
-                    }}
-                    className="text-xs text-emerald-600 hover:text-emerald-700 font-semibold"
-                  >
-                    Forgot Password?
-                  </button>
+                  <div className="flex items-center gap-3">
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setForgotEmail(email);
+                        setIsForgotOpen(true);
+                      }}
+                      className="text-xs text-slate-500 hover:text-slate-800 font-medium cursor-pointer"
+                    >
+                      Forgot?
+                    </button>
+                  </div>
                 )}
               </div>
               <div className="relative">
@@ -776,7 +690,7 @@ export const AuthPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-2xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-bold text-sm shadow-lg shadow-emerald-950/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
@@ -792,13 +706,14 @@ export const AuthPage: React.FC = () => {
         </form>
       </div>
 
+
       {/* Forgot Password Modal */}
       {isForgotOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
           <div className="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
             <button
               onClick={() => setIsForgotOpen(false)}
-              className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+              className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 rounded-lg cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -815,11 +730,11 @@ export const AuthPage: React.FC = () => {
 
             {forgotMsg && (
               <div
-                className={`p-3 rounded-xl text-xs mb-4 ${
+                className={
                   forgotMsg.isError
-                    ? "bg-rose-50 text-rose-700 border border-rose-200"
-                    : "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                }`}
+                    ? "p-3 rounded-xl text-xs mb-4 bg-rose-50 text-rose-700 border border-rose-200"
+                    : "p-3 rounded-xl text-xs mb-4 bg-emerald-50 text-emerald-700 border border-emerald-200"
+                }
               >
                 {forgotMsg.text}
               </div>
@@ -844,7 +759,7 @@ export const AuthPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={forgotLoading}
-                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-2.5 bg-[#143D32] hover:bg-[#0f2e26] text-white font-bold text-xs rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Send Reset Code"}
                 </button>
@@ -882,7 +797,7 @@ export const AuthPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={forgotLoading}
-                  className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-2.5 bg-[#143D32] hover:bg-[#0f2e26] text-white font-bold text-xs rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {forgotLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Save New Password"}
                 </button>

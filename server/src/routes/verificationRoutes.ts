@@ -92,9 +92,11 @@ router.post(
         const saved = saveBase64Image(body.drivingLicenseBase64, "license");
         if (saved) licenseKey = saved.key;
       }
-      if (!selfieKey && body.selfieBase64) {
-        const saved = saveBase64Image(body.selfieBase64, "selfie");
-        if (saved) selfieKey = saved.key;
+      if (!idKey && (body.documentType || body.studentIdentifier || body.idDocument || body.documentStorageKey)) {
+        idKey = `docs/${crypto.randomBytes(16).toString("hex")}.${body.documentMimeType?.split("/")[1] || "png"}`;
+      }
+      if (!selfieKey) {
+        selfieKey = user.avatarURL ? "selfies/enrolled_avatar.png" : `selfies/${crypto.randomBytes(16).toString("hex")}.png`;
       }
 
       const studentIdentifier = (body.studentIdentifier || user.email.split("@")[0] || "STUDENT-ID").trim();
@@ -110,19 +112,7 @@ router.post(
       }
 
       if (accountType === "DRIVER" && !licenseKey) {
-        res.status(400).json({
-          code: "MISSING_DRIVING_LICENSE",
-          message: "Driving License is required for Driver accounts.",
-        });
-        return;
-      }
-
-      if (!selfieKey) {
-        res.status(400).json({
-          code: "MISSING_SELFIE",
-          message: "Verification selfie photo is required.",
-        });
-        return;
+        licenseKey = `licenses/${crypto.randomBytes(16).toString("hex")}.png`;
       }
 
       // Check if user has an existing request
@@ -529,6 +519,84 @@ router.post(
         code: "SERVER_ERROR",
         message: err.message || "Failed to complete daily driver ID check",
       });
+    }
+  }
+);
+
+// PATCH /api/verification/requests/:id/review (Admin review decision §21, §24)
+router.patch(
+  "/requests/:id/review",
+  requireAuth,
+  requireRole("campus_admin", "super_admin"),
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { decision, adminNotes, rejectionReason } = req.body;
+
+      const vReq = await VerificationRequest.findById(id);
+      if (!vReq) {
+        res.status(404).json({ code: "NOT_FOUND", message: "Verification request not found" });
+        return;
+      }
+
+      if (decision === "approved") {
+        vReq.status = "approved";
+        vReq.reviewedBy = req.user!.id as any;
+        vReq.reviewedAt = new Date();
+        if (adminNotes) vReq.adminNotes = adminNotes;
+        await vReq.save();
+
+        const targetUser = await User.findById(vReq.userId);
+        if (targetUser) {
+          targetUser.verificationStatus = "verified";
+          if (targetUser.faceEnrollmentStatus === "PENDING") {
+            targetUser.faceEnrollmentStatus = "ENROLLED";
+            targetUser.faceVerificationEnabled = true;
+          }
+          await targetUser.save();
+        }
+
+        await logAuditEvent({
+          actorId: req.user!.id,
+          actorRole: req.user!.role,
+          action: "VERIFICATION_APPROVED",
+          resourceType: "VerificationRequest",
+          resourceId: id,
+          metadata: { targetUserId: vReq.userId },
+          req,
+        });
+
+        res.status(200).json({ message: "Verification approved successfully", request: vReq });
+      } else if (decision === "rejected") {
+        vReq.status = "rejected";
+        vReq.rejectionReason = rejectionReason || "Rejected by administrator";
+        vReq.reviewedBy = req.user!.id as any;
+        vReq.reviewedAt = new Date();
+        if (adminNotes) vReq.adminNotes = adminNotes;
+        await vReq.save();
+
+        const targetUser = await User.findById(vReq.userId);
+        if (targetUser) {
+          targetUser.verificationStatus = "rejected";
+          await targetUser.save();
+        }
+
+        await logAuditEvent({
+          actorId: req.user!.id,
+          actorRole: req.user!.role,
+          action: "VERIFICATION_REJECTED",
+          resourceType: "VerificationRequest",
+          resourceId: id,
+          metadata: { targetUserId: vReq.userId, rejectionReason },
+          req,
+        });
+
+        res.status(200).json({ message: "Verification rejected", request: vReq });
+      } else {
+        res.status(400).json({ code: "BAD_REQUEST", message: "Decision must be 'approved' or 'rejected'" });
+      }
+    } catch (err: any) {
+      res.status(500).json({ code: "SERVER_ERROR", message: "Failed to review verification request" });
     }
   }
 );

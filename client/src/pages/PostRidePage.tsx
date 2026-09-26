@@ -36,7 +36,7 @@ const PRESET_LOCATIONS = [
 ];
 
 export const PostRidePage: React.FC = () => {
-  const { user, switchDemoUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Wizard state (Steps 1 to 5)
@@ -54,8 +54,8 @@ export const PostRidePage: React.FC = () => {
   const [recurring, setRecurring] = useState(false);
   const [availableSeats, setAvailableSeats] = useState(3);
   const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
-  const [vehicleModel, setVehicleModel] = useState("Honda City");
-  const [plateLast4, setPlateLast4] = useState("4821");
+  const [vehicleModel, setVehicleModel] = useState("");
+  const [plateLast4, setPlateLast4] = useState("");
   const [pricePerSeat, setPricePerSeat] = useState<number>(20);
 
   // Preferences

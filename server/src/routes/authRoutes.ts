@@ -58,6 +58,9 @@ const registerSchema = z.object({
   studentIdentifier: z.string().trim().optional(),
   driverIdentifier: z.string().trim().optional(),
   enrolledIdCardUrl: z.string().optional(),
+  avatarURL: z.string().optional(),
+  facePhoto: z.string().optional(),
+  faceDescriptor: z.array(z.number()).optional(),
   adminInvitationToken: z.string().trim().optional(),
   vehicle: z
     .object({
@@ -101,6 +104,9 @@ router.post("/register", async (req, res): Promise<void> => {
       studentIdentifier,
       driverIdentifier,
       enrolledIdCardUrl,
+      avatarURL,
+      facePhoto,
+      faceDescriptor,
       adminInvitationToken,
       vehicle,
     } = parseResult.data;
@@ -137,6 +143,9 @@ router.post("/register", async (req, res): Promise<void> => {
     // Cost factor raised to 12 (§2.6)
     const passwordHash = await bcrypt.hash(password, 12);
 
+    const initialAvatar = avatarURL || facePhoto || "";
+    const hasFace = !!initialAvatar;
+
     // Initial state is pending verification for all new accounts (§4.1)
     const user = await User.create({
       name,
@@ -151,11 +160,13 @@ router.post("/register", async (req, res): Promise<void> => {
       gender,
       role: assignedRole,
       accountType,
+      avatarURL: initialAvatar,
       verificationStatus: "pending",
       enrolledIdCardUrl: enrolledIdCardUrl || "",
       lastDailyIdCheckDate: "",
-      faceEnrollmentStatus: "NOT_STARTED",
-      faceVerificationEnabled: false,
+      faceEnrollmentStatus: hasFace ? "ENROLLED" : "NOT_STARTED",
+      faceVerificationEnabled: hasFace,
+      faceEmbedding: faceDescriptor && faceDescriptor.length >= 64 ? faceDescriptor : undefined,
       rating: 5.0,
       totalRides: 0,
       tokenVersion: 0,
@@ -827,6 +838,108 @@ router.post("/email/verify", async (req, res): Promise<void> => {
       .json({ code: "SERVER_ERROR", message: "Failed to verify email token" });
   }
 });
+
+// PUT /api/auth/profile-photo - Updates user avatar and biometrics from camera or upload
+router.put(
+  "/profile-photo",
+  requireAuth,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.user!.id;
+      const { avatarURL, facePhoto, faceEmbedding } = req.body;
+
+      const photo = avatarURL || facePhoto;
+      if (!photo) {
+        res.status(400).json({
+          code: "VALIDATION_ERROR",
+          message: "Profile photo URL or base64 data is required.",
+        });
+        return;
+      }
+
+      const updateData: any = {
+        avatarURL: photo,
+      };
+
+      if (faceEmbedding && Array.isArray(faceEmbedding) && faceEmbedding.length >= 64) {
+        updateData.faceEmbedding = faceEmbedding;
+        updateData.faceEnrollmentStatus = "ENROLLED";
+        updateData.faceVerificationEnabled = true;
+      }
+
+      const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+      if (!user) {
+        res.status(404).json({ code: "NOT_FOUND", message: "User not found" });
+        return;
+      }
+
+      await logAuditEvent({
+        actorId: user._id.toString(),
+        actorRole: user.role,
+        action: "PROFILE_UPDATED",
+        resourceType: "User",
+        resourceId: user._id.toString(),
+        metadata: { updatedField: "avatarURL", faceEnrolled: !!faceEmbedding },
+        req,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Profile photo updated successfully",
+        user,
+      });
+    } catch (err: any) {
+      logger.error({ err }, "Update profile photo error");
+      res.status(500).json({ code: "SERVER_ERROR", message: "Failed to update profile photo" });
+    }
+  }
+);
+
+// PUT /api/auth/profile - Update user academic details, department, course, phone, name
+router.put(
+  "/profile",
+  requireAuth,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const userId = req.user!.id;
+      const { name, college, department, course, year, semester, phone } = req.body;
+
+      const updateData: any = {};
+      if (name && typeof name === "string") updateData.name = name.trim();
+      if (college && typeof college === "string") updateData.college = college.trim();
+      if (department !== undefined && typeof department === "string") updateData.department = department.trim();
+      if (course !== undefined && typeof course === "string") updateData.course = course.trim();
+      if (year !== undefined && !isNaN(Number(year))) updateData.year = Number(year);
+      if (semester !== undefined && !isNaN(Number(semester))) updateData.semester = Number(semester);
+      if (phone !== undefined && typeof phone === "string") updateData.phone = phone.trim();
+
+      const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+      if (!user) {
+        res.status(404).json({ code: "NOT_FOUND", message: "User not found" });
+        return;
+      }
+
+      await logAuditEvent({
+        actorId: user._id.toString(),
+        actorRole: user.role,
+        action: "PROFILE_UPDATED",
+        resourceType: "User",
+        resourceId: user._id.toString(),
+        metadata: { updatedFields: Object.keys(updateData) },
+        req,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Academic profile updated successfully",
+        user,
+      });
+    } catch (err: any) {
+      logger.error({ err }, "Update profile error");
+      res.status(500).json({ code: "SERVER_ERROR", message: "Failed to update profile" });
+    }
+  }
+);
 
 // DELETE /api/auth/me/account (Right to Erasure / Account Deletion §14.3)
 router.delete(

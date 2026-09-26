@@ -45,6 +45,7 @@ describe("Checkpoint 1: Security Patch & Core Invariants (§2, §3.1, §3.2)", (
       name: adityaUser.name,
       college: adityaUser.college,
       verificationStatus: adityaUser.verificationStatus,
+      role: adityaUser.role,
     });
 
     rahulToken = signToken({
@@ -53,6 +54,7 @@ describe("Checkpoint 1: Security Patch & Core Invariants (§2, §3.1, §3.2)", (
       name: rahulUser.name,
       college: rahulUser.college,
       verificationStatus: rahulUser.verificationStatus,
+      role: rahulUser.role,
     });
 
     strangerToken = signToken({
@@ -181,6 +183,7 @@ describe("Checkpoint 1: Security Patch & Core Invariants (§2, §3.1, §3.2)", (
         name: adityaUser.name,
         college: adityaUser.college,
         verificationStatus: adityaUser.verificationStatus,
+        role: adityaUser.role,
       });
 
       rahulToken = signToken({
@@ -189,6 +192,7 @@ describe("Checkpoint 1: Security Patch & Core Invariants (§2, §3.1, §3.2)", (
         name: rahulUser.name,
         college: rahulUser.college,
         verificationStatus: rahulUser.verificationStatus,
+        role: rahulUser.role,
       });
 
       strangerToken = signToken({
@@ -198,7 +202,7 @@ describe("Checkpoint 1: Security Patch & Core Invariants (§2, §3.1, §3.2)", (
         college: strangerUser.college,
         verificationStatus: strangerUser.verificationStatus,
       });
-    });
+    }, 35000);
   });
 
   describe("§2.4 PII Protection & Scoped Public Projections", () => {

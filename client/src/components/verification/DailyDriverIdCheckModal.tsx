@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   ShieldCheck,
   Camera,
@@ -30,7 +30,8 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
   rideId,
   onVerified,
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [cameraActive, setCameraActive] = useState(false);
@@ -50,6 +51,19 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
     localStorage.getItem('campusride_driver_id_card_' + (user?.email || '')) ||
     'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80';
 
+  const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
+    videoRef.current = node;
+    const currentStream = streamRef.current;
+    if (node && currentStream) {
+      if (node.srcObject !== currentStream) {
+        node.srcObject = currentStream;
+      }
+      node.play().catch((err) => {
+        console.warn('[DailyIdModal] Video play in callback ref:', err);
+      });
+    }
+  }, []);
+
   useEffect(() => {
     return () => {
       stopCamera();
@@ -59,14 +73,23 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
   const startCamera = async () => {
     setError(null);
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-      });
+      let mediaStream: MediaStream;
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+        });
+      } catch (e) {
+        console.warn('[DailyIdModal] environment camera failed, falling back to basic video:', e);
+        mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
+      }
+      streamRef.current = mediaStream;
       setStream(mediaStream);
       setCameraActive(true);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
-        videoRef.current.play();
+        videoRef.current.play().catch((err) => console.warn(err));
       }
     } catch (err: any) {
       console.warn('Camera access error:', err);
@@ -76,6 +99,10 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
   };
 
   const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
     if (stream) {
       stream.getTracks().forEach((track) => track.stop());
       setStream(null);
@@ -199,10 +226,14 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
             {cameraActive ? (
               <div className="relative w-full h-full bg-black">
                 <video
-                  ref={videoRef}
+                  ref={setVideoRef}
                   autoPlay
                   playsInline
                   muted
+                  onLoadedMetadata={(e) => {
+                    const v = e.currentTarget;
+                    v.play().catch((err) => console.warn('[DailyIdModal] onLoadedMetadata play:', err));
+                  }}
                   className="w-full h-full object-cover"
                 />
 

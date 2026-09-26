@@ -82,7 +82,7 @@ const YEARS = ['Any', '1', '2', '3', '4'];
 const SEMESTERS = ['Any', '1', '2', '3', '4', '5', '6', '7', '8'];
 
 export const SearchRidesPage: React.FC = () => {
-  const { user, switchDemoUser, activePersona } = useAuth();
+  const { user, activePersona } = useAuth();
   const navigate = useNavigate();
 
   // Basic Route State
@@ -172,14 +172,9 @@ export const SearchRidesPage: React.FC = () => {
     setRequestError(null);
 
     if (!user) {
-      try {
-        await switchDemoUser('rahul');
-        return;
-      } catch (err: any) {
-        setRequestError('Please select a verified student persona to search rides.');
-        setLoading(false);
-        return;
-      }
+      setRequestError('Please log in to search rides.');
+      setLoading(false);
+      return;
     }
 
     try {
@@ -221,14 +216,9 @@ export const SearchRidesPage: React.FC = () => {
     setRequestError(null);
 
     if (!user) {
-      try {
-        await switchDemoUser('rahul');
-        return;
-      } catch (err: any) {
-        setRequestError('Please select a verified student persona to browse rides.');
-        setLoading(false);
-        return;
-      }
+      setRequestError('Please log in to browse rides.');
+      setLoading(false);
+      return;
     }
 
     try {
@@ -353,19 +343,7 @@ export const SearchRidesPage: React.FC = () => {
             </p>
           </div>
 
-          {/* Quick Demo Context Badge */}
-          {user?.name.includes('Rahul') && (
-            <div className="p-3 bg-blue-50 border border-blue-200 rounded-2xl text-xs text-blue-900 max-w-xs">
-              <span className="font-bold block">💡 Demo Hint (Rahul Sharma):</span>
-              Searching Campus Gate 1 → City Metro Station matches Aditya's ride with a ~95% match score!
-            </div>
-          )}
-          {user?.name.includes('Priya') && (
-            <div className="p-3 bg-pink-50 border border-pink-200 rounded-2xl text-xs text-pink-900 max-w-xs">
-              <span className="font-bold block">🛡️ Demo Hint (Priya Singh):</span>
-              With "Women-only driver" enabled, male driver rides (like Aditya's) are strictly excluded.
-            </div>
-          )}
+
         </div>
 
         <form onSubmit={handleSearch} className="space-y-4">

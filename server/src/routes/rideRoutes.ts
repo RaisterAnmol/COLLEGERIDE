@@ -77,7 +77,6 @@ export function sanitizePublicUser(user: any) {
     avatarURL: userObj.avatarURL,
     verificationStatus: userObj.verificationStatus,
     preferences: userObj.preferences,
-    gender: userObj.gender,
   };
 }
 

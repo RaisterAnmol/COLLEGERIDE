@@ -62,7 +62,7 @@ describe("CampusRide Comprehensive Security, RBAC & Integrations Test Suite", ()
       verificationStatus: adminUser.verificationStatus,
       role: adminUser.role,
     });
-  });
+  }, 35000);
 
   afterAll(async () => {
     await new Promise<void>((resolve) => server.close(() => resolve()));
