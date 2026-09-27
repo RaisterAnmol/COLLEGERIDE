@@ -46,5 +46,12 @@ Thumbs.db
 DEMO_CREDENTIALS.md
 
 # Uploads
-server/uploads/verification/daily-*
-server/uploads/verification/temp-*
+server/uploads/verification/*
+!server/uploads/verification/.gitkeep
+client/public/test_uploads/*
+!client/public/test_uploads/.gitkeep
+CAMPUSRIDE_SYSTEM_INFO.txt
+
+# Temporary scratch
+scratch/
+

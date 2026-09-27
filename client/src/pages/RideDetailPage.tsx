@@ -354,17 +354,14 @@ export const RideDetailPage: React.FC = () => {
         {/* Driver Profile */}
         <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-3.5">
-            {ride.creator?.avatarURL ? (
-              <img
-                src={ride.creator.avatarURL}
-                alt={ride.creator?.name}
-                className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20"
-              />
-            ) : (
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#143D32] to-[#10b981] text-white font-black text-lg flex items-center justify-center uppercase ring-2 ring-emerald-500/20 select-none">
-                {ride.creator?.name ? ride.creator.name.trim().charAt(0) : 'D'}
-              </div>
-            )}
+            <img
+              src={
+                ride.creator?.avatarURL ||
+                "/test_uploads/profile_photo.jpg"
+              }
+              alt={ride.creator?.name}
+              className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20"
+            />
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-bold text-slate-900 text-sm">
@@ -501,7 +498,7 @@ export const RideDetailPage: React.FC = () => {
                     <img
                       src={
                         req.passengerId?.avatarURL ||
-                        "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=120&q=80"
+                        "/test_uploads/profile_photo.jpg"
                       }
                       alt={req.passengerId?.name}
                       className="w-10 h-10 rounded-xl object-cover ring-2 ring-blue-500/20"

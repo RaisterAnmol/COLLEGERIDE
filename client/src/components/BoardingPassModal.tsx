@@ -71,7 +71,7 @@ export const BoardingPassModal: React.FC<BoardingPassModalProps> = ({
             <img
               src={
                 user.avatarURL ||
-                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80'
+                '/test_uploads/profile_photo.jpg'
               }
               alt={user.name}
               className="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-sm"

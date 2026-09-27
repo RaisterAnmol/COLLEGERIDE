@@ -78,15 +78,6 @@ function getLocalDemoFallback<T>(endpoint: string, options: RequestInit): T | un
     }
 
     if (path === "/api/auth/me") {
-      const savedUserStr = localStorage.getItem("campusride_user");
-      if (savedUserStr) {
-        try {
-          const savedUser = JSON.parse(savedUserStr);
-          if (savedUser && savedUser.name) {
-            return { user: savedUser, vehicle: null } as T;
-          }
-        } catch {}
-      }
       const savedEmail = localStorage.getItem("campusride_user_email") || "";
       const customUserStr = localStorage.getItem("campusride_custom_user");
       if (customUserStr) {
@@ -308,15 +299,8 @@ function getLocalDemoFallback<T>(endpoint: string, options: RequestInit): T | un
     if (path === "/api/rides" && options.method === "POST") {
       try {
         const body = JSON.parse(options.body as string);
-        let currentUser: any = null;
-        try {
-          const storedUser = localStorage.getItem("campusride_user");
-          if (storedUser) currentUser = JSON.parse(storedUser);
-        } catch (_) {}
-        if (!currentUser) {
-          const savedEmail = localStorage.getItem("campusride_user_email") || "";
-          currentUser = (savedEmail && DEMO_FALLBACK_USERS[savedEmail]) || DEMO_FALLBACK_USERS["aditya.kumar@college.edu"];
-        }
+        const savedEmail = localStorage.getItem("campusride_user_email") || "aditya.kumar@college.edu";
+        const currentUser = DEMO_FALLBACK_USERS[savedEmail] || DEMO_FALLBACK_USERS["aditya.kumar@college.edu"];
 
         const origLat = body.origin?.lat ?? (body.origin?.coordinates ? body.origin.coordinates[1] : 30.3432);
         const origLng = body.origin?.lng ?? (body.origin?.coordinates ? body.origin.coordinates[0] : 77.9448);

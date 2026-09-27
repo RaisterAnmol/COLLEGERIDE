@@ -157,16 +157,19 @@ export const TrustVerificationFlow: React.FC = () => {
                 Prevents accidental or unauthorized pickups. Passenger enters this 4-digit code to initialize ride tracking and alert emergency circles.
               </p>
 
-              <div className="mt-6 p-5 bg-[#101515] text-white rounded-xl text-center font-mono">
-                <span className="text-[10px] text-[#98A2B3] uppercase tracking-widest block mb-1">
+              {/* Code Display Box */}
+              <div className="mt-6 p-6 bg-gradient-to-br from-emerald-50/90 via-teal-50/50 to-white text-slate-800 rounded-2xl text-center font-mono border-2 border-emerald-200/80 shadow-md shadow-emerald-500/10 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-400/15 rounded-full blur-xl pointer-events-none" />
+                <span className="text-[11px] text-emerald-800 uppercase tracking-widest block mb-2 font-bold">
                   SECURE TRIP TOKEN
                 </span>
-                <div className="text-3xl font-black tracking-widest text-[#18A66A]">
+                <div className="text-3xl sm:text-4xl font-black tracking-[0.35em] text-[#143D32] drop-shadow-xs py-1">
                   {otpSimulated ? '4 8 2 1' : '• • • •'}
                 </div>
-                <p className="text-[10px] text-[#98A2B3] mt-2">
-                  {otpSimulated ? '✓ Handshake Authenticated & Active' : 'Press button below to simulate departure token'}
-                </p>
+                <div className="text-xs text-emerald-700 mt-2 font-semibold flex items-center justify-center gap-1.5 bg-white/90 py-1.5 px-3 rounded-xl border border-emerald-200 max-w-fit mx-auto shadow-2xs">
+                  <span className={`w-2 h-2 rounded-full ${otpSimulated ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`} />
+                  <span>{otpSimulated ? '✓ Handshake Authenticated & Active' : 'Press button below to simulate departure token'}</span>
+                </div>
               </div>
             </div>
 
@@ -175,7 +178,7 @@ export const TrustVerificationFlow: React.FC = () => {
               className={`w-full py-3 rounded-xl text-xs font-mono font-bold transition-all ${
                 otpSimulated
                   ? 'bg-[#ECFDF5] text-[#18A66A] border border-[#D1FAE5]'
-                  : 'bg-[#1769FF] hover:bg-[#1D4ED8] text-white shadow-xs'
+                  : 'bg-[#143D32] hover:bg-[#0f2e26] text-white font-bold shadow-md shadow-emerald-950/20'
               }`}
             >
               {otpSimulated ? 'Reset OTP Simulation' : 'Simulate Driver OTP Handshake →'}

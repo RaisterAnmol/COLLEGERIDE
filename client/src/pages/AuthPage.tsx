@@ -3,6 +3,9 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 import { SelfieCapture, SelfieCaptureResult } from "../components/verification/SelfieCapture";
+import { StudentCharacter } from "../components/auth/StudentCharacter";
+import authStudentImg from "../assets/illustrations/auth-student.jpg";
+import safetyScrapbookImg from "../assets/illustrations/safety-scrapbook.png";
 import {
   ShieldCheck,
   Mail,
@@ -114,6 +117,8 @@ export const AuthPage: React.FC = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+  const [isEmailFocused, setIsEmailFocused] = useState(false);
 
   const { login, register } = useAuth();
   const navigate = useNavigate();
@@ -189,7 +194,6 @@ export const AuthPage: React.FC = () => {
 
         if (accountType === "ADMIN") {
           payload.adminToken = adminToken;
-          payload.adminInvitationToken = adminToken;
         }
 
         await register(payload);
@@ -244,32 +248,190 @@ export const AuthPage: React.FC = () => {
   };
 
 
+  // Dynamic mascot interaction speech bubble message
+  const mascotMessage = isPasswordFocused
+    ? "I promise I won't peek! Keep it secret 🙈"
+    : isEmailFocused
+    ? "Checking for university domain (.edu / .ac.in) 📬"
+    : selfieResult
+    ? "Looking sharp! Face photo captured ✅"
+    : idCardPreview
+    ? "Great! Student ID baseline uploaded 🪪"
+    : accountType === "DRIVER"
+    ? "Drivers split commute costs & save fuel! 🚗"
+    : accountType === "WOMEN_PASSENGER"
+    ? "Women-Only: travel safely with verified peers 🌸"
+    : name.trim()
+    ? `Welcome, ${name.trim().split(" ")[0]}! Let's get you set up ✨`
+    : isRegister
+    ? "Let's craft your official CampusRide pass!"
+    : "Welcome back! Ready for your campus ride today?";
+
   return (
-    <div className="min-h-[90vh] flex items-center justify-center p-4 sm:p-6 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40">
-      <div className="w-full max-w-2xl bg-white rounded-3xl shadow-xl shadow-emerald-950/5 border border-emerald-100/80 overflow-hidden">
-        {/* Header Hero */}
-        <div className="bg-gradient-to-br from-emerald-50 via-teal-50/70 to-emerald-100/50 p-6 sm:p-8 relative overflow-hidden border-b border-emerald-100">
-          <div className="absolute -right-8 -top-8 w-48 h-48 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
-
-          <div className="relative z-10 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#143D32] font-bold text-xs uppercase tracking-wider">
-              <ShieldCheck className="w-4 h-4 text-emerald-600" />
-              Verified University Transit Network
-            </div>
-            <span className="text-[11px] font-mono text-emerald-900 bg-white/80 px-2.5 py-1 rounded-full border border-emerald-200/80 shadow-sm">
-              Dehradun Academic Hub
-            </span>
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#F4F9F6] via-[#EDF6F1] to-[#E5F2EB] flex flex-col items-center justify-center">
+      {/* Top Playful Campus Brand Header */}
+      <div className="w-full max-w-5xl flex items-center justify-between pb-5 mb-6 border-b border-emerald-200/60">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="text-2xl sm:text-3xl font-black text-[#143D32] tracking-tight hover:opacity-90 transition-opacity">
+            CampusRide
+          </Link>
+          <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-emerald-800 bg-white/90 px-3 py-1 rounded-full border border-emerald-200 shadow-2xs">
+            <span>Same Campus</span>
+            <span className="text-emerald-400">✦</span>
+            <span>Same Dreams</span>
+            <span className="text-emerald-400">✦</span>
+            <span>Better Rides</span>
           </div>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-900 bg-white/90 px-3.5 py-1.5 rounded-full border border-emerald-200 shadow-2xs">
+          <span>More Friends, Less Worries</span>
+          <span>😊</span>
+        </div>
+      </div>
 
-          <h1 className="text-2xl sm:text-3xl font-black text-[#143D32] mt-2">
-            {isRegister ? "Create Your CampusRide Account" : "Sign In to CampusRide"}
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 mt-1">
-            Safe, verified campus carpooling between colleges, hostels, and transit hubs.
-          </p>
+      <div className="w-full max-w-5xl bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl shadow-emerald-950/10 border border-emerald-200/80 overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-start">
+        {/* Left Side: Dedicated Interactive Mascot & Live Story Column */}
+        <div className="lg:col-span-5 bg-gradient-to-b from-emerald-50/80 via-teal-50/50 to-emerald-100/60 p-5 sm:p-7 flex flex-col justify-start items-center space-y-4 border-b lg:border-b-0 lg:border-r border-emerald-100 relative overflow-hidden">
+          {/* Ambient Lighting Orbs */}
+          <div className="absolute -right-8 -top-8 w-44 h-44 bg-emerald-400/15 rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-teal-400/15 rounded-full blur-2xl pointer-events-none" />
 
+          {isRegister ? (
+            <>
+              {/* 1. Previous person seeing the campus artwork */}
+              <div className="w-full bg-white rounded-3xl overflow-hidden border border-[#DDE1DE] shadow-xs group">
+                <div className="relative w-full h-56 sm:h-64 overflow-hidden bg-slate-100">
+                  <img
+                    src={authStudentImg}
+                    alt="Student with backpack overlooking sunlit university campus"
+                    className="w-full h-full object-cover object-[center_30%] transform transition-transform duration-700 group-hover:scale-105 select-none"
+                    loading="eager"
+                  />
+                  <div className="absolute top-3 left-3 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-emerald-200/80 shadow-xs flex items-center gap-1.5 text-[11px] font-mono font-bold text-[#143D32]">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>DEHRADUN CAMPUS LIFE</span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-gradient-to-r from-emerald-50/80 via-teal-50/40 to-white border-t border-emerald-100 flex items-center justify-between">
+                  <span className="text-[11px] font-black uppercase tracking-wider text-[#143D32]">
+                    Join Your Campus Commute ↗
+                  </span>
+                  <span className="text-[10px] font-mono font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-full border border-emerald-200 shadow-2xs">
+                    Verified Hub
+                  </span>
+                </div>
+              </div>
+
+              {/* 2. Below the student pass / Digital Student Pass Hologram */}
+              <div className="relative z-10 w-full rounded-2xl bg-gradient-to-tr from-[#143D32] via-[#16503f] to-[#10b981] p-4 text-white shadow-lg border border-emerald-400/30 overflow-hidden animate-in fade-in duration-300">
+                <div className="absolute -right-10 -bottom-10 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none" />
+
+                <div className="flex items-center justify-between text-[10px] font-mono tracking-wider text-emerald-200 uppercase pb-2 border-b border-white/15">
+                  <span>CAMPUSRIDE DIGITAL PASS</span>
+                  <span className="flex items-center gap-1 text-emerald-300 font-bold">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    LIVE HOLOGRAM
+                  </span>
+                </div>
+
+                <div className="mt-2.5 flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-xl bg-white/15 border border-white/25 flex items-center justify-center overflow-hidden shrink-0">
+                    {selfieResult?.previewUrl || idCardPreview ? (
+                      <img
+                        src={selfieResult?.previewUrl || idCardPreview}
+                        alt="Student Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-lg font-black text-emerald-200">
+                        {name.trim() ? name.trim().charAt(0).toUpperCase() : "🎓"}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="font-bold text-sm text-white truncate">
+                      {name.trim() || "Your Student Name"}
+                    </div>
+                    <div className="text-[11px] text-emerald-100 truncate">
+                      {college || "Select Your College"}
+                    </div>
+                    <div className="text-[10px] text-emerald-200/80 truncate font-mono mt-0.5">
+                      {course || department || "Academic Course"} • Yr {year}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-2.5 pt-2 border-t border-white/15 flex items-center justify-between text-[10px] font-mono">
+                  <span className="px-2 py-0.5 rounded-full bg-white/20 text-white font-bold">
+                    {accountType === "DRIVER"
+                      ? "🚗 DRIVER PASS"
+                      : accountType === "WOMEN_PASSENGER"
+                      ? "🌸 WOMEN-ONLY"
+                      : "🎒 STUDENT PASS"}
+                  </span>
+                  <span className="text-emerald-200">ID: DEH-{new Date().getFullYear()}</span>
+                </div>
+              </div>
+
+              {/* 3. Your Safety Our Priority Scrapbook Card (Placed just above the Panda animation) */}
+              <div className="w-full rounded-3xl overflow-hidden border border-[#DDE1DE] shadow-xs bg-white group hover:shadow-md transition-shadow">
+                <img
+                  src={safetyScrapbookImg}
+                  alt="Your Safety Our Priority - CampusRide Trust Architecture"
+                  className="w-full h-auto object-cover select-none"
+                  loading="eager"
+                />
+              </div>
+
+              {/* 4. Below that and just to the left side of Email & Password: The Panda Mascot Animation */}
+              <div className="relative z-10 w-full flex flex-col items-center justify-center p-4 sm:p-5 rounded-3xl bg-white/95 backdrop-blur-xs border border-emerald-200/90 shadow-sm text-center">
+                {/* Dynamic Live Speech Bubble */}
+                <div className="mb-2 max-w-[210px] px-3.5 py-1.5 rounded-2xl bg-emerald-50 text-emerald-950 text-xs font-semibold border border-emerald-200 shadow-2xs relative text-center leading-snug">
+                  <span>{mascotMessage}</span>
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-emerald-50 border-b border-r border-emerald-200 rotate-45" />
+                </div>
+
+                {/* Bao Mascot facing right directly toward the Email & Password inputs */}
+                <div className="transform transition-transform hover:scale-105 duration-300">
+                  <StudentCharacter
+                    isPasswordFocused={isPasswordFocused}
+                    isTextFocused={isEmailFocused}
+                    textValue={email}
+                    passwordValue={password}
+                    size={155}
+                    lookDirection="right"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Sign In Page: ONLY the Panda mascot animation on the left side! (No other things) */
+            <div className="relative z-10 w-full flex flex-col items-center justify-center p-6 sm:p-8 rounded-3xl bg-white/95 backdrop-blur-xs border border-emerald-200/80 shadow-xs text-center my-auto">
+              <div className="mb-4 max-w-[220px] px-4 py-2 rounded-2xl bg-emerald-50 text-emerald-950 text-xs font-semibold border border-emerald-200 shadow-2xs relative text-center leading-snug">
+                <span>{mascotMessage}</span>
+                <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-emerald-50 border-b border-r border-emerald-200 rotate-45" />
+              </div>
+
+              <div className="transform transition-transform hover:scale-105 duration-300">
+                <StudentCharacter
+                  isPasswordFocused={isPasswordFocused}
+                  isTextFocused={isEmailFocused}
+                  textValue={email}
+                  passwordValue={password}
+                  size={190}
+                  lookDirection="right"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Right Side: Form Body */}
+        <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-start">
           {/* Switcher Tab */}
-          <div className="flex gap-2 mt-6 bg-emerald-900/5 p-1.5 rounded-2xl border border-emerald-200/60">
+          <div className="flex gap-2 mb-6 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
             <button
               type="button"
               onClick={() => {
@@ -299,17 +461,9 @@ export const AuthPage: React.FC = () => {
               Create Account
             </button>
           </div>
-        </div>
 
-
-        {/* Main Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
-          {error && (
-            <div className="flex items-center gap-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 p-3 rounded-2xl">
-              <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
-              <span>{error}</span>
-            </div>
-          )}
+          <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-5">
+          
 
           {isRegister && (
             <>
@@ -649,11 +803,11 @@ export const AuthPage: React.FC = () => {
             </>
           )}
 
-          {/* Email & Password */}
-          <div className="space-y-3">
+          {/* Credentials Block */}
+          <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                College / Institutional Email
+              <label className="block text-xs font-bold text-slate-800 mb-1">
+                College / Institutional Email *
               </label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
@@ -662,29 +816,28 @@ export const AuthPage: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onFocus={() => setIsEmailFocused(true)}
+                  onBlur={() => setIsEmailFocused(false)}
                   placeholder="e.g. student@university.edu"
-                  className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-2xs font-medium"
                 />
               </div>
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-700">Password</label>
+                <label className="text-xs font-bold text-slate-800">Password *</label>
                 {!isRegister && (
-                  <div className="flex items-center gap-3">
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForgotEmail(email);
-                        setIsForgotOpen(true);
-                      }}
-                      className="text-xs text-slate-500 hover:text-slate-800 font-medium cursor-pointer"
-                    >
-                      Forgot?
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotEmail(email);
+                      setIsForgotOpen(true);
+                    }}
+                    className="text-xs text-slate-500 hover:text-slate-800 font-medium cursor-pointer"
+                  >
+                    Forgot?
+                  </button>
                 )}
               </div>
               <div className="relative">
@@ -695,16 +848,25 @@ export const AuthPage: React.FC = () => {
                   minLength={isRegister ? 8 : 1}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
                   placeholder="••••••••"
-                  className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none shadow-2xs font-medium"
                 />
               </div>
               {isRegister && (
-                <p className="text-[10px] text-slate-400 mt-1">
+                <p className="text-[10px] text-slate-500 mt-1">
                   Min. 8 characters (must include letters and numbers)
                 </p>
               )}
             </div>
+
+            {error && (
+              <div className="flex items-center gap-2 text-xs text-rose-700 bg-rose-50 border border-rose-200 p-3 rounded-xl mt-2 animate-in fade-in slide-in-from-top-1">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-500" />
+                <span>{error}</span>
+              </div>
+            )}
           </div>
 
           <button
@@ -724,6 +886,7 @@ export const AuthPage: React.FC = () => {
             )}
           </button>
         </form>
+        </div>
       </div>
 
 

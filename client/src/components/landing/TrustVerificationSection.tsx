@@ -19,47 +19,48 @@ interface VerifiedStudent {
 
 const PROFILES: VerifiedStudent[] = [
   {
-    id: 'aditya',
-    name: 'Aditya Kumar',
+    id: 'ichigo',
+    name: 'Ichigo Kurosaki',
     role: 'Verified Driver',
     college: 'Uttaranchal University (UIT)',
-    department: 'B.Tech Mechanical Engineering',
+    department: 'B.Tech Computer Science & Engineering',
     year: 'Class of 2025',
-    rating: 4.8,
-    totalTrips: 42,
-    safetyScore: 99,
-    vehicle: 'Honda City (UK 07 AK 4920) • Insured & Inspected',
-    avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80',
-    badges: ['UIT .edu Verified', 'Driver License Authenticated', 'Zero Detour Violations'],
+    rating: 4.95,
+    totalTrips: 24,
+    safetyScore: 100,
+    vehicle: 'Honda City (UK 07 AK 4821) • Insured & Inspected',
+    avatar: '/test_uploads/driver_male_ichigo.jpg',
+    badges: ['UIT .edu Verified', 'Driving License Authenticated', 'Zero Detour Violations'],
     otpSimulatorCode: '4 8 2 1',
   },
   {
-    id: 'ananya',
-    name: 'Ananya Verma',
-    role: 'Verified Driver (Women-Only Pref)',
-    college: 'Uttaranchal University (USCS)',
-    department: 'B.Tech Computer Science & AI',
+    id: 'makima',
+    name: 'Makima San',
+    role: 'Verified Driver (Women-Only Anchor)',
+    college: 'UPES University (Bidholi)',
+    department: 'B.Tech Artificial Intelligence & DS',
     year: 'Class of 2024',
-    rating: 4.9,
-    totalTrips: 56,
+    rating: 5.0,
+    totalTrips: 38,
     safetyScore: 100,
-    vehicle: 'Hyundai i20 (UK 07 AV 8112) • Clean EV/Petrol',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80',
-    badges: ['USCS .edu Verified', 'Women-Only Commute Anchor', 'Top Rated Peer'],
+    vehicle: 'Honda City i-VTEC (UK 07 UP 9901)',
+    avatar: '/test_uploads/driver_female_makima.jpg',
+    badges: ['UPES .edu Verified', 'Women-Only Commute Anchor', 'Top Rated Peer'],
     otpSimulatorCode: '9 3 0 4',
   },
   {
-    id: 'rahul',
-    name: 'Rahul Sharma',
-    role: 'Verified Passenger',
-    college: 'Uttaranchal University (UIT)',
-    department: 'B.Tech Computer Science & Engineering',
+    id: 'zoro',
+    name: 'Roronoa Zoro',
+    role: 'Verified Peer Driver',
+    college: 'Graphic Era University',
+    department: 'B.Tech Mechanical Engineering',
     year: 'Class of 2026',
-    rating: 4.9,
-    totalTrips: 18,
-    safetyScore: 98,
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80',
-    badges: ['UIT .edu Verified', '100% On-Time Pickup', 'Emergency Contact Linked'],
+    rating: 4.88,
+    totalTrips: 19,
+    safetyScore: 99,
+    vehicle: 'Royal Enfield Classic (UK 07 RZ 3321)',
+    avatar: '/test_uploads/driver_male_zoro.jpg',
+    badges: ['GEU .edu Verified', '100% On-Time Pickup', 'Emergency Contact Linked'],
     otpSimulatorCode: '7 1 6 5',
   },
 ];
@@ -241,16 +242,18 @@ export const TrustVerificationSection: React.FC = () => {
               </p>
 
               {/* Code Display Box */}
-              <div className="mt-6 p-5 bg-[#101828] text-white rounded-xl text-center font-mono">
-                <span className="text-[11px] text-[#98A2B3] uppercase tracking-widest block mb-1">
+              <div className="mt-6 p-6 bg-gradient-to-br from-emerald-50/90 via-teal-50/50 to-white text-slate-800 rounded-2xl text-center font-mono border-2 border-emerald-200/80 shadow-md shadow-emerald-500/10 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-400/15 rounded-full blur-xl pointer-events-none" />
+                <span className="text-[11px] text-emerald-800 uppercase tracking-widest block mb-2 font-bold">
                   SECURE TRIP TOKEN
                 </span>
-                <div className="text-3xl font-black tracking-widest text-[#12B76A]">
+                <div className="text-3xl sm:text-4xl font-black tracking-[0.35em] text-[#143D32] drop-shadow-xs py-1">
                   {otpSimulated ? selectedStudent.otpSimulatorCode : '• • • •'}
                 </div>
-                <p className="text-[10px] text-[#98A2B3] mt-2">
-                  {otpSimulated ? '✓ Handshake Verified & Active' : 'Waiting for driver arrival simulation...'}
-                </p>
+                <div className="text-xs text-emerald-700 mt-2 font-semibold flex items-center justify-center gap-1.5 bg-white/90 py-1.5 px-3 rounded-xl border border-emerald-200 max-w-fit mx-auto shadow-2xs">
+                  <span className={`w-2 h-2 rounded-full ${otpSimulated ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`} />
+                  <span>{otpSimulated ? '✓ Handshake Verified & Active' : 'Waiting for driver arrival simulation...'}</span>
+                </div>
               </div>
             </div>
 
@@ -260,7 +263,7 @@ export const TrustVerificationSection: React.FC = () => {
                 className={`w-full py-2.5 rounded-lg text-xs font-mono font-bold transition-all ${
                   otpSimulated
                     ? 'bg-[#ECFDF3] text-[#027A48] border border-[#D1FADF]'
-                    : 'bg-[#175CD3] hover:bg-[#1749C2] text-white shadow-sm'
+                    : 'bg-[#143D32] hover:bg-[#0f2e26] text-white font-bold shadow-md shadow-emerald-950/20'
                 }`}
               >
                 {otpSimulated ? 'Reset Handshake Simulator' : 'Simulate Driver OTP Reveal →'}

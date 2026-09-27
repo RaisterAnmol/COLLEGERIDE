@@ -16,6 +16,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PickupAndRouteNavigationMap } from "../components/map/PickupAndRouteNavigationMap";
+import { PageHeroBanner } from "../components/common/PageHeroBanner";
+import offerRideImg from "../assets/illustrations/offer-ride.jpg";
 
 const PRESET_LOCATIONS = [
   // Dehradun - Uttaranchal University Campus Buildings
@@ -240,18 +242,40 @@ export const PostRidePage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Wizard Header */}
-      <div className="text-center mb-8">
-        <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-2">
-          CAMPUSRIDE CARPOOL REGISTRATION
-        </span>
-        <h1 className="text-3xl sm:text-4xl font-black text-[#111111] uppercase tracking-tight">
-          Offer Empty Seats.
-        </h1>
-        <p className="text-sm text-[#646A67] mt-1">
-          Share your commute costs with verified classmates traveling your
-          corridor.
-        </p>
+      {/* Driver Hub Side-by-Side Header */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10 bg-white p-6 sm:p-8 rounded-3xl border border-[#DDE1DE] shadow-xs">
+        <div className="lg:col-span-7 space-y-3">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 inline-block">
+            CAMPUSRIDE DRIVER HUB
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-black text-[#111111] uppercase tracking-tight leading-[1.1]">
+            Offer Empty Seats.<br />
+            <span className="text-[#143D32]">Split Your Commute.</span>
+          </h1>
+          <p className="text-sm sm:text-base text-[#646A67] leading-relaxed">
+            Share your regular commute with verified classmates traveling your corridor. Save fuel costs with zero platform fee.
+          </p>
+          <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold text-slate-700">
+            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">✓ Zero Commission</span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ 4-Digit In-App OTP</span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ Verified Peers Only</span>
+          </div>
+        </div>
+
+        <div className="lg:col-span-5 w-full">
+          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+            <img
+              src={offerRideImg}
+              alt="Student driver checking ride requests on phone beside CampusRide car"
+              className="w-full h-52 sm:h-60 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+              OFFER A RIDE
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Progress Indicator */}

@@ -27,6 +27,8 @@ import {
   Map,
 } from 'lucide-react';
 import { PickupAndRouteNavigationMap } from '../components/map/PickupAndRouteNavigationMap';
+import { PageHeroBanner } from '../components/common/PageHeroBanner';
+import findRideImg from '../assets/illustrations/find-ride.jpg';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
 
 export interface PresetLocation {
@@ -287,6 +289,42 @@ export const SearchRidesPage: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Route Explorer Side-by-Side Header */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 sm:p-8 rounded-3xl border border-[#DDE1DE] shadow-xs mb-8">
+        <div className="lg:col-span-7 space-y-3">
+          <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 inline-block">
+            CAMPUSRIDE ROUTE EXPLORER
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-black text-[#111111] uppercase tracking-tight leading-[1.1]">
+            Find A Ride.<br />
+            <span className="text-[#143D32]">Travel With Peers.</span>
+          </h1>
+          <p className="text-sm sm:text-base text-[#646A67] leading-relaxed">
+            Search active student carpools across Uttarakhand campuses. Filter by corridor, gender preference, and departure timing.
+          </p>
+          <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold text-slate-700">
+            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">✓ Verified Student IDs</span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ Zero Cab Surges</span>
+            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ Real-time Route Match</span>
+          </div>
+        </div>
+
+        <div className="lg:col-span-5 w-full">
+          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+            <img
+              src={findRideImg}
+              alt="Student at campus pickup point with CampusRide car approaching"
+              className="w-full h-52 sm:h-60 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+              FIND A RIDE
+            </span>
+          </div>
+        </div>
+      </div>
+
       {/* Driver notice banner */}
       {isDriver && (
         <div className="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
@@ -823,17 +861,14 @@ export const SearchRidesPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   {/* Driver Information */}
                   <div className="flex items-center gap-3.5">
-                    {ride.creator?.avatarURL ? (
-                      <img
-                        src={ride.creator.avatarURL}
-                        alt={ride.creator?.name}
-                        className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20 shadow-sm"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#143D32] to-[#10b981] text-white font-black text-lg flex items-center justify-center uppercase ring-2 ring-emerald-500/20 shadow-sm select-none">
-                        {ride.creator?.name ? ride.creator.name.trim().charAt(0) : 'D'}
-                      </div>
-                    )}
+                    <img
+                      src={
+                        ride.creator?.avatarURL ||
+                        '/test_uploads/profile_photo.jpg'
+                      }
+                      alt={ride.creator?.name}
+                      className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20 shadow-sm"
+                    />
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-900 text-base">{ride.creator?.name}</span>

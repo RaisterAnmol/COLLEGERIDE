@@ -315,6 +315,8 @@ export async function seedDemoData() {
     passwordHash,
     role: "campus_admin",
     accountType: "ADMIN",
+    avatarURL: "/test_uploads/admin_nanami.jpg",
+    enrolledIdCardUrl: "/test_uploads/admin_nanami.jpg",
     college: "Uttaranchal University",
     year: 5,
     institutionId: uuInstitution._id,
@@ -334,6 +336,8 @@ export async function seedDemoData() {
     passwordHash,
     role: "moderator",
     accountType: "ADMIN",
+    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
     college: "Delhi Technological University",
     year: 4,
     institutionId: dtuInstitution._id,
@@ -365,8 +369,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 43210",
-    avatarURL:
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
+    enrolledIdCardUrl: "/test_uploads/id_card.jpg",
     verificationStatus: "verified",
     rating: 4.8,
     totalRides: 16,
@@ -397,8 +401,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 11223",
-    avatarURL:
-      "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 9,
@@ -429,8 +433,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 3,
     phone: "+91 98765 99887",
-    avatarURL:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
     verificationStatus: "verified",
     rating: 5.0,
     totalRides: 5,
@@ -462,8 +466,8 @@ export async function seedDemoData() {
     year: 1,
     semester: 1,
     phone: "+91 98765 66778",
-    avatarURL:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_makima.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 21,
@@ -495,8 +499,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 77889",
-    avatarURL:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_male_zoro.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
     verificationStatus: "verified",
     rating: 4.7,
     totalRides: 14,
@@ -527,8 +531,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 3,
     phone: "+91 98765 22334",
-    avatarURL:
-      "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 8,
@@ -560,8 +564,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 7,
     phone: "+91 98765 33445",
-    avatarURL:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
     verificationStatus: "verified",
     rating: 4.6,
     totalRides: 11,
@@ -592,8 +596,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 88990",
-    avatarURL:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_makima.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
     verificationStatus: "verified",
     rating: 5.0,
     totalRides: 6,
@@ -620,8 +624,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 8,
     phone: "+91 98123 45678",
-    avatarURL:
-      "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_male_zoro.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
     verificationStatus: "verified",
     rating: 4.95,
     totalRides: 28,
@@ -653,8 +657,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98234 56789",
-    avatarURL:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
     verificationStatus: "verified",
     rating: 4.88,
     totalRides: 15,
@@ -680,8 +684,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98345 67890",
-    avatarURL:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
+    enrolledIdCardUrl: "/test_uploads/id_card.jpg",
     verificationStatus: "pending",
     rating: 4.85,
     totalRides: 12,
@@ -707,8 +711,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 4,
     phone: "+91 98456 78901",
-    avatarURL:
-      "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_makima.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
     verificationStatus: "rejected",
     rating: 4.95,
     totalRides: 10,
@@ -735,7 +739,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 6,
     phone: "+91 98765 11001",
-    avatarURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 31,
@@ -762,7 +767,8 @@ export async function seedDemoData() {
     year: 1,
     semester: 2,
     phone: "+91 98765 11002",
-    avatarURL: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_makima.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
     verificationStatus: "verified",
     rating: 4.85,
     totalRides: 19,
@@ -789,7 +795,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 7,
     phone: "+91 98765 11003",
-    avatarURL: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_makima.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
     verificationStatus: "verified",
     rating: 4.95,
     totalRides: 27,
@@ -816,7 +823,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 4,
     phone: "+91 98765 11004",
-    avatarURL: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
     verificationStatus: "verified",
     rating: 4.8,
     totalRides: 16,
@@ -843,7 +851,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 7,
     phone: "+91 98765 11005",
-    avatarURL: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+    avatarURL: "/test_uploads/driver_male_zoro.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 22,
@@ -854,6 +863,172 @@ export async function seedDemoData() {
       smokingAllowed: false,
       petsAllowed: false,
     },
+  });
+
+
+  // ==========================================
+  // 1.1 CUSTOM BLEACH & DEMO DRIVERS & ADMINS
+  // ==========================================
+
+  // Ichigo Kurosaki (Male Driver 1 - Uttaranchal University)
+  const ichigo = await User.create({
+    name: "Ichigo Kurosaki",
+    email: "ichigo.driver@uu.edu",
+    passwordHash,
+    role: "driver",
+    accountType: "DRIVER",
+    driverIdentifier: "UK-07-2022-001524",
+    college: "Uttaranchal University",
+    department: "Computer Science & Engineering",
+    course: "B.Tech - Computer Science & Engineering",
+    year: 3,
+    semester: 5,
+    phone: "+91 98765 43211",
+    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
+    verificationStatus: "verified",
+    isEmailVerified: true,
+    isPhoneVerified: true,
+    rating: 4.95,
+    totalRides: 24,
+    gender: "male",
+    preferences: {
+      womenOnlyDriver: false,
+      musicAllowed: true,
+      smokingAllowed: false,
+      petsAllowed: false,
+    },
+    emergencyContact: {
+      name: "Isshin Kurosaki (Father)",
+      phone: "+91 98111 99001",
+      relation: "Father",
+    },
+  });
+
+  // Makima San (Female Driver 1 - UPES)
+  const makima = await User.create({
+    name: "Makima San",
+    email: "makima.driver@upes.edu",
+    passwordHash,
+    role: "driver",
+    accountType: "DRIVER",
+    driverIdentifier: "UK-07-2023-009901",
+    college: "University of Petroleum and Energy Studies (UPES)",
+    department: "School of Computer Science",
+    course: "B.Tech - Artificial Intelligence & Data Science",
+    year: 4,
+    semester: 7,
+    phone: "+91 98765 43222",
+    avatarURL: "/test_uploads/driver_female_makima.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
+    verificationStatus: "verified",
+    isEmailVerified: true,
+    isPhoneVerified: true,
+    rating: 5.0,
+    totalRides: 38,
+    gender: "female",
+    preferences: {
+      womenOnlyDriver: true,
+      musicAllowed: true,
+      smokingAllowed: false,
+      petsAllowed: false,
+    },
+    emergencyContact: {
+      name: "Public Safety Division HQ",
+      phone: "+91 98111 99002",
+      relation: "Guardian",
+    },
+  });
+
+  // Roronoa Zoro (Male Driver 2 - Graphic Era)
+  const zoro = await User.create({
+    name: "Roronoa Zoro",
+    email: "zoro.driver@geu.edu",
+    passwordHash,
+    role: "driver",
+    accountType: "DRIVER",
+    driverIdentifier: "UK-07-2021-003321",
+    college: "Graphic Era University",
+    department: "Mechanical Engineering",
+    course: "B.Tech - Mechanical Engineering",
+    year: 2,
+    semester: 3,
+    phone: "+91 98765 43233",
+    avatarURL: "/test_uploads/driver_male_zoro.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
+    verificationStatus: "verified",
+    isEmailVerified: true,
+    isPhoneVerified: true,
+    rating: 4.88,
+    totalRides: 19,
+    gender: "male",
+    preferences: {
+      womenOnlyDriver: false,
+      musicAllowed: true,
+      smokingAllowed: false,
+      petsAllowed: true,
+    },
+    emergencyContact: {
+      name: "Koushirou Sensei (Teacher)",
+      phone: "+91 98111 99003",
+      relation: "Teacher",
+    },
+  });
+
+  // Mitsuha Miyamizu (Female Driver 2 - DIT University)
+  const mitsuha = await User.create({
+    name: "Mitsuha Miyamizu",
+    email: "mitsuha.driver@dit.edu",
+    passwordHash,
+    role: "driver",
+    accountType: "DRIVER",
+    driverIdentifier: "UK-07-2023-008877",
+    college: "DIT University",
+    department: "Computer Applications",
+    course: "BCA - Information Technology",
+    year: 2,
+    semester: 4,
+    phone: "+91 98765 43244",
+    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
+    verificationStatus: "verified",
+    isEmailVerified: true,
+    isPhoneVerified: true,
+    rating: 4.92,
+    totalRides: 15,
+    gender: "female",
+    preferences: {
+      womenOnlyDriver: true,
+      musicAllowed: true,
+      smokingAllowed: false,
+      petsAllowed: false,
+    },
+    emergencyContact: {
+      name: "Toshiki Miyamizu (Father)",
+      phone: "+91 98111 99004",
+      relation: "Father",
+    },
+  });
+
+  // Dean Kento Nanami (Admin Profile)
+  const nanami = await User.create({
+    name: "Dean Kento Nanami",
+    email: "admin.nanami@uu.edu",
+    passwordHash,
+    role: "campus_admin",
+    accountType: "ADMIN",
+    college: "Uttaranchal University",
+    department: "Campus Safety & Student Welfare Division",
+    year: 5,
+    phone: "+91 98765 43200",
+    avatarURL: "/test_uploads/admin_nanami.jpg",
+    enrolledIdCardUrl: "/test_uploads/admin_nanami.jpg",
+    verificationStatus: "verified",
+    isEmailVerified: true,
+    isPhoneVerified: true,
+    rating: 5.0,
+    totalRides: 0,
+    reliabilityScore: 100,
   });
 
   // ==========================================
@@ -963,10 +1138,164 @@ export async function seedDemoData() {
     plateLast4: "9021",
   });
 
+
+  const ichigoVehicle = await Vehicle.create({
+    ownerUserId: ichigo._id,
+    type: "car",
+    model: "Hyundai Creta SX (Petrol)",
+    capacity: 4,
+    plateLast4: "1524",
+  });
+
+  const makimaVehicle = await Vehicle.create({
+    ownerUserId: makima._id,
+    type: "car",
+    model: "Tata Nexon EV Max",
+    capacity: 4,
+    plateLast4: "9901",
+  });
+
+  const zoroVehicle = await Vehicle.create({
+    ownerUserId: zoro._id,
+    type: "car",
+    model: "Tata Harrier Dark Edition",
+    capacity: 4,
+    plateLast4: "3321",
+  });
+
+  const mitsuhaVehicle = await Vehicle.create({
+    ownerUserId: mitsuha._id,
+    type: "car",
+    model: "Maruti Suzuki Swift ZXi",
+    capacity: 4,
+    plateLast4: "8877",
+  });
+
   // ==========================================
   // 3. ACTIVE COMMUTE RIDES
   // ==========================================
   const now = new Date();
+
+  // Ichigo's UU Campus Express (Clock Tower -> UIT Building)
+  await Ride.create({
+    creator: ichigo._id,
+    origin: {
+      text: "Clock Tower, Dehradun",
+      lat: 30.3256,
+      lng: 78.0437,
+    },
+    destination: {
+      text: "UIT Building (Uttaranchal Institute of Technology)",
+      lat: 30.3432,
+      lng: 77.9448,
+    },
+    departureTime: new Date(now.getTime() + 1.5 * 60 * 60 * 1000),
+    availableSeats: 3,
+    vehicleId: ichigoVehicle._id,
+    status: "active",
+    costShare: 45,
+  });
+
+  // Ichigo's Campus Route (UIT Building -> Premnagar Chowk Market)
+  await Ride.create({
+    creator: ichigo._id,
+    origin: {
+      text: "UIT Building (Uttaranchal Institute of Technology)",
+      lat: 30.3432,
+      lng: 77.9448,
+    },
+    destination: {
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
+    },
+    departureTime: new Date(now.getTime() + 5.5 * 60 * 60 * 1000),
+    availableSeats: 3,
+    vehicleId: ichigoVehicle._id,
+    status: "active",
+    costShare: 30,
+  });
+
+  // Makima's UPES Express (ISBT Dehradun -> UPES Bidholi) - Women-Friendly
+  await Ride.create({
+    creator: makima._id,
+    origin: {
+      text: "ISBT Dehradun, Haridwar Bypass",
+      lat: 30.2882,
+      lng: 78.0076,
+    },
+    destination: {
+      text: "UPES Bidholi Campus, Energy Acres",
+      lat: 30.4158,
+      lng: 77.9664,
+    },
+    departureTime: new Date(now.getTime() + 2 * 60 * 60 * 1000),
+    availableSeats: 3,
+    vehicleId: makimaVehicle._id,
+    status: "active",
+    costShare: 95,
+  });
+
+  // Makima's Campus Route (UIT Building -> Premnagar Chowk Market) - Women-Friendly
+  await Ride.create({
+    creator: makima._id,
+    origin: {
+      text: "UIT Building (Uttaranchal Institute of Technology)",
+      lat: 30.3432,
+      lng: 77.9448,
+    },
+    destination: {
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
+    },
+    departureTime: new Date(now.getTime() + 6.2 * 60 * 60 * 1000),
+    availableSeats: 3,
+    vehicleId: makimaVehicle._id,
+    status: "active",
+    costShare: 30,
+  });
+
+  // Zoro's GEU Route (Rispana Bridge -> Graphic Era Clement Town)
+  await Ride.create({
+    creator: zoro._id,
+    origin: {
+      text: "Rispana Bridge, Haridwar Road",
+      lat: 30.3015,
+      lng: 78.0512,
+    },
+    destination: {
+      text: "Graphic Era University, Clement Town",
+      lat: 30.2687,
+      lng: 78.0078,
+    },
+    departureTime: new Date(now.getTime() + 2.5 * 60 * 60 * 1000),
+    availableSeats: 3,
+    vehicleId: zoroVehicle._id,
+    status: "active",
+    costShare: 35,
+  });
+
+  // Mitsuha's DIT Route (Rajpur Road Jakhan -> DIT University) - Women-Friendly
+  await Ride.create({
+    creator: mitsuha._id,
+    origin: {
+      text: "Rajpur Road, Jakhan",
+      lat: 30.3642,
+      lng: 78.0701,
+    },
+    destination: {
+      text: "DIT University, Mussoorie Diversion Road",
+      lat: 30.3835,
+      lng: 78.0784,
+    },
+    departureTime: new Date(now.getTime() + 3 * 60 * 60 * 1000),
+    availableSeats: 3,
+    vehicleId: mitsuhaVehicle._id,
+    status: "active",
+    costShare: 30,
+  });
+
 
   // Ride 1: Aditya's Morning Express Commute (Campus Gate 1 -> City Metro Station)
   const adityaDepTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);

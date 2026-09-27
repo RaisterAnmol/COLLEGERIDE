@@ -118,3 +118,5 @@ $$\text{MatchScore} = 0.5 \times \text{RouteOverlap} + 0.3 \times \text{TimeMatc
 - **Emergency ICE & SOC**: Direct emergency SOS dispatcher, student ICE contacts persistence, and Security Operations Center (SOC).
 - **Ownership Verification**: Strict authorization middleware prevents cross-user ride modification or unauthorized request acceptance.
 
+
+# COLLEGERIDE

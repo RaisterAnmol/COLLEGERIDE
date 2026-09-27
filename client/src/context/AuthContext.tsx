@@ -71,8 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const data = await api.getMe();
       if (data?.user) {
         setUser(data.user);
-        localStorage.setItem("campusride_user", JSON.stringify(data.user));
-        localStorage.setItem("campusride_user_email", data.user.email);
         joinUserRoom(data.user._id);
         if (data.user.role === 'super_admin' || data.user.role === 'campus_admin' || data.user.role === 'moderator') {
           setActivePersona('admin');
@@ -85,7 +83,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (err) {
       console.warn("[Auth] Failed to refresh user profile:", err);
       localStorage.removeItem("campusride_token");
-      localStorage.removeItem("campusride_user");
       setToken(null);
       setUser(null);
     } finally {
@@ -107,10 +104,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res = await api.login(email, password);
       localStorage.setItem("campusride_auth_v2", "true");
       localStorage.setItem("campusride_token", res.token);
-      if (res.user) {
-        localStorage.setItem("campusride_user", JSON.stringify(res.user));
-        localStorage.setItem("campusride_user_email", res.user.email);
-      }
       setToken(res.token);
       setUser(res.user);
       joinUserRoom(res.user._id);
@@ -132,10 +125,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res = await api.register(userData);
       localStorage.setItem("campusride_auth_v2", "true");
       localStorage.setItem("campusride_token", res.token);
-      if (res.user) {
-        localStorage.setItem("campusride_user", JSON.stringify(res.user));
-        localStorage.setItem("campusride_user_email", res.user.email);
-      }
       setToken(res.token);
       setUser(res.user);
       joinUserRoom(res.user._id);
@@ -157,7 +146,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       const res = await api.updateProfile(data);
       if (res?.user) {
         setUser(res.user);
-        localStorage.setItem("campusride_user", JSON.stringify(res.user));
       }
     } finally {
       setLoading(false);
@@ -169,7 +157,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.removeItem("campusride_persona");
     localStorage.removeItem("campusride_auth_v2");
     localStorage.removeItem("campusride_user_email");
-    localStorage.removeItem("campusride_user");
     setToken(null);
     setUser(null);
   };

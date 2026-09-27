@@ -26,12 +26,6 @@ export const Navbar: React.FC = () => {
   const isDriver = user?.role === 'driver' || user?.accountType === 'DRIVER';
   const isAdmin = user?.role === 'super_admin' || user?.role === 'campus_admin' || user?.role === 'moderator';
 
-  const userAvatar =
-    user?.avatarURL ||
-    (user?.email ? localStorage.getItem('campusride_user_avatar_' + user.email.toLowerCase().trim()) : null) ||
-    localStorage.getItem('campusride_user_selfie') ||
-    '';
-
   // Navigation Links: Only show AFTER user is logged in
   const navLinks = user
     ? [
@@ -116,17 +110,14 @@ export const Navbar: React.FC = () => {
                 className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all shadow-xs group"
                 title="Manage ID Verification"
               >
-                {userAvatar ? (
-                  <img
-                    src={userAvatar}
-                    alt={user.name}
-                    className="w-7 h-7 rounded-full object-cover border border-slate-300"
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-[#143D32] text-white font-bold text-xs flex items-center justify-center uppercase">
-                    {user.name ? user.name.trim().charAt(0) : 'U'}
-                  </div>
-                )}
+                <img
+                  src={
+                    user.avatarURL ||
+                    '/test_uploads/profile_photo.jpg'
+                  }
+                  alt={user.name}
+                  className="w-7 h-7 rounded-full object-cover border border-slate-300"
+                />
                 <div className="flex flex-col text-left">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold text-slate-900 leading-none">
@@ -248,17 +239,14 @@ export const Navbar: React.FC = () => {
                 <div className="pt-3 flex flex-col gap-2.5">
                   <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      {userAvatar ? (
-                        <img
-                          src={userAvatar}
-                          alt={user.name}
-                          className="w-9 h-9 rounded-full object-cover border border-slate-300"
-                        />
-                      ) : (
-                        <div className="w-9 h-9 rounded-full bg-[#143D32] text-white font-bold text-sm flex items-center justify-center uppercase">
-                          {user.name ? user.name.trim().charAt(0) : 'U'}
-                        </div>
-                      )}
+                      <img
+                        src={
+                          user.avatarURL ||
+                          '/test_uploads/profile_photo.jpg'
+                        }
+                        alt={user.name}
+                        className="w-9 h-9 rounded-full object-cover border border-slate-300"
+                      />
                       <div>
                         <div className="font-bold text-sm text-slate-900">{user.name}</div>
                         <div className="text-xs text-slate-500">

@@ -1,10 +1,15 @@
 import React from 'react';
 import { ShieldCheck, Key, Lock, PhoneCall, AlertCircle, CheckCircle2, Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { PageHeroBanner } from '../components/common/PageHeroBanner';
+import safetyHeroImg from '../assets/illustrations/safety-hero.jpg';
+import womenSafeImg from '../assets/illustrations/women-safe-ride.jpg';
 
 export const SafetyPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F5F6F3] text-[#111111] py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <PageHeroBanner image={safetyHeroImg} alt="Student holding verified ID card on campus" caption="YOUR SAFETY, OUR PRIORITY" />
+
       {/* Header */}
       <div className="max-w-3xl">
         <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-3">

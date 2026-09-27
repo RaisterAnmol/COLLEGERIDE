@@ -8,6 +8,7 @@ import { CommuteTimeline } from "../components/landing/CommuteTimeline";
 import { TrustVerificationSection } from "../components/landing/TrustVerificationSection";
 import { StatusBanner } from "../components/landing/StatusBanner";
 import { Footer } from "../components/landing/Footer";
+import { CommunitySection } from "../components/landing/CommunitySection";
 export const LandingPage: React.FC = () => {
 
   return (
@@ -29,6 +30,9 @@ export const LandingPage: React.FC = () => {
 
       {/* Trust & Safety Verification */}
       <TrustVerificationSection />
+
+      {/* Campus Community */}
+      <CommunitySection />
 
       {/* Live Campus Telemetry with Viewport Counters */}
       <StatusBanner />

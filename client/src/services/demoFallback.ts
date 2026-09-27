@@ -15,9 +15,9 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 42,
     gender: "male",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
-    avatarURL: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     vehicle: { model: "Honda City i-VTEC (Silver)", plateLast4: "4821", type: "car" },
-    enrolledIdCardUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80",
+    enrolledIdCardUrl: "/test_uploads/profile_photo.jpg",
     lastDailyIdCheckDate: "",
   },
   "rahul.sharma@college.edu": {
@@ -35,7 +35,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 18,
     gender: "male",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
-    avatarURL: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43211"
   },
   "priya.singh@college.edu": {
@@ -53,9 +53,9 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 24,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     vehicle: { model: "Maruti Swift (Red)", plateLast4: "5512", type: "car" },
-    enrolledIdCardUrl: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80",
+    enrolledIdCardUrl: "/test_uploads/profile_photo.jpg",
     lastDailyIdCheckDate: "",
   },
   "admin@campusride.edu": {
@@ -68,7 +68,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     rating: 5.0,
     totalRides: 0,
     gender: "other",
-    avatarURL: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 135 277 0000"
   },
   "riya.rawat@geu.ac.in": {
@@ -86,7 +86,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 31,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43213",
     vehicle: { model: "Hyundai Grand i10 Nios (Polar White)", plateLast4: "8821", type: "car" }
   },
@@ -105,7 +105,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 19,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43214",
     vehicle: { model: "Maruti Baleno Alpha (Nexa Blue)", plateLast4: "4410", type: "car" }
   },
@@ -124,7 +124,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 38,
     gender: "male",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
-    avatarURL: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43215",
     vehicle: { model: "Honda Amaze (Modern Steel)", plateLast4: "9021", type: "car" }
   },
@@ -143,7 +143,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 14,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43216",
     vehicle: { model: "Tata Punch EV (Pristine White)", plateLast4: "1102", type: "car" }
   },
@@ -162,7 +162,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 22,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43217",
     vehicle: { model: "Tata Tiago EV (Tropical Mist)", plateLast4: "9011", type: "car" }
   },
@@ -181,7 +181,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 27,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1534751516642-a171edd25218?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43218",
     vehicle: { model: "Hyundai Creta SX (Atlas White)", plateLast4: "8834", type: "car" }
   },
@@ -200,7 +200,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 16,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43219",
     vehicle: { model: "Toyota Etios (Classic Silver)", plateLast4: "4490", type: "car" }
   },
@@ -219,7 +219,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 33,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43220",
     vehicle: { model: "Tata Altroz XZ (Opera Gold)", plateLast4: "6211", type: "car" }
   },
@@ -238,7 +238,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 20,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43221",
     vehicle: { model: "Maruti Brezza (Sizzling Red)", plateLast4: "7721", type: "car" }
   },
@@ -257,7 +257,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 15,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43222",
     vehicle: { model: "Maruti Swift Dzire (Silky Silver)", plateLast4: "4411", type: "car" }
   },
@@ -276,7 +276,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 12,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43223",
     vehicle: { model: "Honda Jazz (Pearl White)", plateLast4: "2233", type: "car" }
   },
@@ -295,7 +295,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 25,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43224",
     vehicle: { model: "Maruti Ciaz (Pearl Sangria Red)", plateLast4: "6677", type: "car" }
   },
@@ -314,7 +314,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 17,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43225",
     vehicle: { model: "Hyundai Venue (Denim Blue)", plateLast4: "5521", type: "car" }
   },
@@ -333,7 +333,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 19,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43226",
     vehicle: { model: "Kia Sonet (Gravity Grey)", plateLast4: "8812", type: "car" }
   },
@@ -352,7 +352,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 28,
     gender: "female",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: true },
-    avatarURL: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43227",
     vehicle: { model: "Tata Nexon EV (Teal Blue)", plateLast4: "8899", type: "car" }
   },
@@ -371,7 +371,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 30,
     gender: "male",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
-    avatarURL: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43228",
     vehicle: { model: "Volkswagen Polo (Flash Red)", plateLast4: "5544", type: "car" }
   },
@@ -390,7 +390,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 21,
     gender: "male",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
-    avatarURL: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43229",
     vehicle: { model: "Hyundai Verna (Abyss Black)", plateLast4: "1199", type: "car" }
   },
@@ -409,7 +409,7 @@ export const DEMO_FALLBACK_USERS: Record<string, any> = {
     totalRides: 26,
     gender: "male",
     preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
-    avatarURL: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=150&q=80",
+    avatarURL: "/test_uploads/profile_photo.jpg",
     phone: "+91 98765 43230",
     vehicle: { model: "Maruti Suzuki WagonR (Superior White)", plateLast4: "3302", type: "car" }
   }
@@ -430,7 +430,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 42,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Honda City i-VTEC (Silver)", plateLast4: "4821" },
     origin: { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3432, lng: 77.9448, coordinates: [77.9448, 30.3432] },
@@ -480,7 +480,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 8,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Maruti Suzuki Swift (Fire Red)", plateLast4: "5512" },
     origin: { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3432, lng: 77.9448, coordinates: [77.9448, 30.3432] },
@@ -530,7 +530,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 42,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Honda City i-VTEC (Silver)", plateLast4: "4821" },
     origin: { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3432, lng: 77.9448, coordinates: [77.9448, 30.3432] },
@@ -580,7 +580,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 22,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Tata Punch EV (Pristine White)", plateLast4: "8890" },
     origin: { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3432, lng: 77.9448, coordinates: [77.9448, 30.3432] },
@@ -630,7 +630,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 19,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Kia Sonet (Gravity Grey)", plateLast4: "8812" },
     origin: { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3432, lng: 77.9448, coordinates: [77.9448, 30.3432] },
@@ -680,7 +680,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 42,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Honda City i-VTEC (Silver)", plateLast4: "4821" },
     origin: { text: "Premnagar Chowk Market", lat: 30.3340, lng: 77.9620, coordinates: [77.9620, 30.3340] },
@@ -709,7 +709,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 28,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Hyundai i20 Sportz (Polar White)", plateLast4: "9104" },
     origin: { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3432, lng: 77.9448, coordinates: [77.9448, 30.3432] },
@@ -738,7 +738,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 34,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Kia Sonet Turbo (Gravity Grey)", plateLast4: "6640" },
     origin: { text: "Suddhowala Chowk (Student PG Hub)", lat: 30.3475, lng: 77.9320, coordinates: [77.9320, 30.3475] },
@@ -767,7 +767,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 31,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "bike", model: "Royal Enfield Himalayan", plateLast4: "3218" },
     origin: { text: "Suddhowala Chowk (Student PG Hub)", lat: 30.3475, lng: 77.9320, coordinates: [77.9320, 30.3475] },
@@ -796,7 +796,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 19,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Maruti Swift (Fire Red)", plateLast4: "5512" },
     origin: { text: "Ballupur Chowk (City Entrance)", lat: 30.3395, lng: 78.0125, coordinates: [78.0125, 30.3395] },
@@ -825,7 +825,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 22,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Tata Punch EV", plateLast4: "8890" },
     origin: { text: "Premnagar Chowk Market", lat: 30.3340, lng: 77.9620, coordinates: [77.9620, 30.3340] },
@@ -854,7 +854,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 38,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Tata Nexon EV Max", plateLast4: "5019" },
     origin: { text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)", lat: 30.3256, lng: 78.0437, coordinates: [78.0437, 30.3256] },
@@ -883,7 +883,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 25,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Maruti Baleno", plateLast4: "7752" },
     origin: { text: "Vikasnagar Bus Terminal", lat: 30.4350, lng: 77.7710, coordinates: [77.7710, 30.4350] },
@@ -912,7 +912,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 28,
       gender: "female",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Hyundai i20 Sportz (Polar White)", plateLast4: "9104" },
     origin: { text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)", lat: 30.3256, lng: 78.0437, coordinates: [78.0437, 30.3256] },
@@ -941,7 +941,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 42,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80"
+      avatarURL: "/test_uploads/profile_photo.jpg"
     },
     vehicle: { type: "car", model: "Honda City i-VTEC (Silver)", plateLast4: "4821" },
     origin: { text: "ISBT Dehradun (Inter-State Bus Terminal)", lat: 30.2885, lng: 78.0080, coordinates: [78.0080, 30.2885] },
@@ -1234,7 +1234,7 @@ export const DEMO_FALLBACK_OPERATIONS = {
       _id: "ong_01",
       driver: {
         name: "Aditya Kumar",
-        avatarURL: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=150&q=80",
+        avatarURL: "/test_uploads/profile_photo.jpg",
         institution: "Uttaranchal University",
         college: "Uttaranchal University",
         department: "CSE",
@@ -1268,7 +1268,7 @@ export const DEMO_FALLBACK_OPERATIONS = {
       _id: "ong_02",
       driver: {
         name: "Priya Singh",
-        avatarURL: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+        avatarURL: "/test_uploads/profile_photo.jpg",
         institution: "Uttaranchal University",
         college: "Uttaranchal University",
         department: "ECE",
@@ -1327,7 +1327,7 @@ export const DEMO_FALLBACK_VERIFICATIONS = [
       department: "CSE",
       year: 2
     },
-    studentIdCardURL: "https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=400&q=80",
+    studentIdCardURL: "/test_uploads/profile_photo.jpg",
     status: "approved",
     submittedAt: new Date(Date.now() - 86400000).toISOString()
   }

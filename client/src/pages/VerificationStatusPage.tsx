@@ -25,6 +25,8 @@ import {
   Calendar,
 } from "lucide-react";
 import { DailyDriverIdCheckModal } from "../components/verification/DailyDriverIdCheckModal";
+import { PageHeroBanner } from "../components/common/PageHeroBanner";
+import verificationHeroImg from "../assets/illustrations/verification-hero.jpg";
 
 export const VerificationStatusPage: React.FC = () => {
   const { user, refreshUser } = useAuth();
@@ -46,7 +48,7 @@ export const VerificationStatusPage: React.FC = () => {
   const enrolledIdCardUrl =
     user?.enrolledIdCardUrl ||
     localStorage.getItem('campusride_driver_id_card_' + (user?.email || '')) ||
-    'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80';
+    '/test_uploads/profile_photo.jpg';
 
   const handleDailyVerified = () => {
     setDailyCheckDate(todayStr);
@@ -177,44 +179,57 @@ export const VerificationStatusPage: React.FC = () => {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6">
-      {/* Breadcrumbs & Modern Clean Header */}
-      <div className="mb-6">
-        <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
-          <Link to="/" className="hover:text-slate-900 transition-colors">Home</Link>
-          <span className="text-slate-300">/</span>
-          <span className="text-slate-900 font-medium">Student Verification</span>
-        </nav>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
-              Campus ID & Driver Verification
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Verified credentials for {user.college || "University"} commuters and drivers.
-            </p>
-          </div>
-          <div>
+      {/* Verification Header Side-by-Side */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 sm:p-8 rounded-3xl border border-[#DDE1DE] shadow-xs mb-8">
+        <div className="lg:col-span-7 space-y-3">
+          <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+            <Link to="/" className="hover:text-slate-900 transition-colors">Home</Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-900 font-medium">Student Verification</span>
+          </nav>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Campus ID & Driver Verification
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500">
+            Verified credentials for {user?.college || "University"} commuters and drivers.
+          </p>
+          <div className="pt-2">
             {currentStatus === "verified" ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span>Verified Campus Member</span>
               </div>
             ) : currentStatus === "pending" ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
                 <span>Under Review</span>
               </div>
             ) : currentStatus === "rejected" ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-rose-500" />
                 <span>Action Needed</span>
               </div>
             ) : (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold">
                 <span className="w-2 h-2 rounded-full bg-slate-400" />
                 <span>Not Verified</span>
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="lg:col-span-5 w-full">
+          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+            <img
+              src={verificationHeroImg}
+              alt="Student scanning ID on phone for campus verification"
+              className="w-full h-48 sm:h-56 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+              CAMPUS VERIFICATION
+            </span>
           </div>
         </div>
       </div>

@@ -12,6 +12,7 @@ import {
 import gsap from "gsap";
 
 import { useAuth } from "../../context/AuthContext";
+import heroHome from "../../assets/illustrations/hero-home.jpg";
 
 export const Hero: React.FC = () => {
   const { activePersona, user } = useAuth();
@@ -94,126 +95,152 @@ export const Hero: React.FC = () => {
       ref={heroRef}
       className="relative pt-10 pb-20 md:pt-16 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden"
     >
-      <div className="flex flex-col items-center text-center">
-        {/* Verification Pill */}
-        <div className="hero-badge inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white text-slate-800 text-xs font-mono tracking-wider uppercase mb-8 border border-slate-200 shadow-sm">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>CampusRide · University Commute Network</span>
-          {user ? (
-            <span className="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-bold ml-1 text-[11px] shadow-xs">
-              {user.role === 'driver' || user.accountType === 'DRIVER'
-                ? '🚗 VERIFIED DRIVER'
-                : user.role === 'super_admin' || user.role === 'campus_admin'
-                ? '🏛️ CAMPUS ADMIN'
-                : user.accountType === 'WOMEN_PASSENGER'
-                ? '🛡️ WOMEN-ONLY STUDENT'
-                : '🎒 VERIFIED STUDENT'}
-            </span>
-          ) : (
-            <span className="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold ml-1 text-[11px]">
-              🔒 100% VERIFIED UNIVERSITY PEERS
-            </span>
-          )}
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* Left Column: Text Content */}
+        <div className="lg:col-span-7 flex flex-col items-start text-left">
+          {/* Verification Pill */}
+          <div className="hero-badge inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white text-slate-800 text-xs font-mono tracking-wider uppercase mb-6 border border-slate-200 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>CampusRide · University Commute Network</span>
+            {user ? (
+              <span className="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-bold ml-1 text-[11px] shadow-xs">
+                {user.role === 'driver' || user.accountType === 'DRIVER'
+                  ? '🚗 VERIFIED DRIVER'
+                  : user.role === 'super_admin' || user.role === 'campus_admin'
+                  ? '🏛️ CAMPUS ADMIN'
+                  : user.accountType === 'WOMEN_PASSENGER'
+                  ? '🛡️ WOMEN-ONLY STUDENT'
+                  : '🎒 VERIFIED STUDENT'}
+              </span>
+            ) : (
+              <span className="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold ml-1 text-[11px]">
+                🔒 100% VERIFIED UNIVERSITY PEERS
+              </span>
+            )}
+          </div>
 
-        {/* Hero Headline */}
-        <h1
-          ref={headlineRef}
-          className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-slate-900 leading-[1.05] max-w-4xl"
-        >
-          <span className="hero-line block">Your daily campus commute,</span>
-          <span className="hero-line block text-[#143D32]">
+          {/* Hero Headline */}
+          <h1
+            ref={headlineRef}
+            className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.08] max-w-2xl"
+          >
+            <span className="hero-line block">Your daily campus commute,</span>
+            <span className="hero-line block text-[#143D32]">
+              {user?.role === 'driver' || user?.accountType === 'DRIVER'
+                ? 'share your seats & save fuel.'
+                : user?.role === 'super_admin' || user?.role === 'campus_admin'
+                ? 'managed with campus-wide safety.'
+                : 'shared with peers you trust.'}
+            </span>
+          </h1>
+
+          {/* Supporting Copy */}
+          <p className="hero-sub mt-5 text-base sm:text-lg text-slate-600 max-w-xl font-normal leading-relaxed">
             {user?.role === 'driver' || user?.accountType === 'DRIVER'
-              ? 'share your seats & save fuel.'
+              ? 'Offer empty car/bike seats along your university route. Share commute expenses with verified student peers.'
               : user?.role === 'super_admin' || user?.role === 'campus_admin'
-              ? 'managed with campus-wide safety.'
-              : 'shared with peers you trust.'}
-          </span>
-        </h1>
+              ? 'Real-time university operations: live passenger tracking, incident monitoring, and campus mobility fare governance.'
+              : 'Direct rides with university peers heading your direction. Verified college IDs, zero commercial surge, and scheduled carpools.'}
+          </p>
 
-        {/* Supporting Copy */}
-        <p className="hero-sub mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed">
-          {user?.role === 'driver' || user?.accountType === 'DRIVER'
-            ? 'Offer empty car/bike seats along your university route. Share commute expenses with verified student peers.'
-            : user?.role === 'super_admin' || user?.role === 'campus_admin'
-            ? 'Real-time university operations: live passenger tracking, incident monitoring, and campus mobility fare governance.'
-            : 'Direct rides with university peers heading your direction. Verified college IDs, zero commercial surge, and scheduled carpools.'}
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="hero-cta mt-8 flex flex-wrap items-center justify-center gap-3.5">
-          {user?.role === 'driver' || user?.accountType === 'DRIVER' ? (
-            <>
-              <Link
-                to="/post"
-                className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-medium text-sm transition-all shadow-sm hover:shadow flex items-center gap-2 group"
-              >
-                <Car className="w-4 h-4 text-emerald-300" />
-                <span>Post a Ride Now</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/search"
-                className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-medium text-sm border border-slate-200 transition-all flex items-center gap-2"
-              >
-                <Search className="w-4 h-4 text-slate-600" />
-                <span>Browse Campus Rides</span>
-              </Link>
-            </>
-          ) : user?.role === 'super_admin' || user?.role === 'campus_admin' ? (
-            <>
-              <Link
-                to="/admin"
-                className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-medium text-sm transition-all shadow-sm hover:shadow flex items-center gap-2 group"
-              >
-                <ShieldCheck className="w-4 h-4 text-emerald-300" />
-                <span>Open Admin Dashboard</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/search"
-                className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-medium text-sm border border-slate-200 transition-all flex items-center gap-2"
-              >
-                <span>Live Route Monitor</span>
-              </Link>
-            </>
-          ) : user ? (
-            <>
-              <Link
-                to="/search"
-                className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-medium text-sm transition-all shadow-sm hover:shadow flex items-center gap-2 group"
-              >
-                <Search className="w-4 h-4" />
-                <span>Find a Ride</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/post"
-                className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-medium text-sm border border-slate-200 transition-all flex items-center gap-2"
-              >
-                <Car className="w-4 h-4 text-slate-600" />
-                <span>Offer a Ride</span>
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-medium text-sm transition-all shadow-sm hover:shadow flex items-center gap-2 group"
-              >
-                <span>Log In to CampusRide</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                to="/register"
-                className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-medium text-sm border border-slate-200 transition-all flex items-center gap-2"
-              >
-                <span>Create Student Account</span>
-              </Link>
-            </>
-          )}
+          {/* CTA Buttons */}
+          <div className="hero-cta mt-7 flex flex-wrap items-center gap-3.5">
+            {user?.role === 'driver' || user?.accountType === 'DRIVER' ? (
+              <>
+                <Link
+                  to="/post"
+                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
+                >
+                  <Car className="w-4 h-4 text-emerald-300" />
+                  <span>Post a Ride Now</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  to="/search"
+                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
+                >
+                  <Search className="w-4 h-4 text-slate-600" />
+                  <span>Browse Campus Rides</span>
+                </Link>
+              </>
+            ) : user?.role === 'super_admin' || user?.role === 'campus_admin' ? (
+              <>
+                <Link
+                  to="/admin"
+                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
+                >
+                  <ShieldCheck className="w-4 h-4 text-emerald-300" />
+                  <span>Open Admin Dashboard</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  to="/search"
+                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
+                >
+                  <span>Live Route Monitor</span>
+                </Link>
+              </>
+            ) : user ? (
+              <>
+                <Link
+                  to="/search"
+                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
+                >
+                  <Search className="w-4 h-4" />
+                  <span>Find a Ride</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  to="/post"
+                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
+                >
+                  <Car className="w-4 h-4 text-slate-600" />
+                  <span>Offer a Ride</span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
+                >
+                  <span>Log In to CampusRide</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
+                >
+                  <span>Create Student Account</span>
+                </Link>
+              </>
+            )}
+          </div>
         </div>
 
+        {/* Right Column: High-Res Daytime Illustration (No Blur) */}
+        <div className="lg:col-span-5 w-full">
+          <div className="relative rounded-3xl overflow-hidden border border-[#DDE1DE] shadow-xl bg-white group">
+            <img
+              src={heroHome}
+              alt="CampusRide campus community and student commute on a sunny morning"
+              className="w-full h-[320px] sm:h-[400px] lg:h-[460px] object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              loading="eager"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-mono">
+              <span className="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20">
+                CAMPUS COMMUTE
+              </span>
+              <span className="px-3 py-1.5 rounded-full bg-emerald-700 text-white font-semibold">
+                VERIFIED PEERS
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center text-center">
         {/* Corridor Quick Search Bar - Available to All Users */}
         <div className="hero-search mt-10 w-full max-w-3xl">
           <form

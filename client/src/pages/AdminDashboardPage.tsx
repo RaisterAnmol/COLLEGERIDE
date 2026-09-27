@@ -813,7 +813,7 @@ export const AdminDashboardPage: React.FC = () => {
                               >
                                 <div className="flex items-center gap-2.5">
                                   <img
-                                    src={p.avatarURL || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"}
+                                    src={p.avatarURL || "/test_uploads/profile_photo.jpg"}
                                     alt={p.name}
                                     className="w-8 h-8 rounded-lg object-cover bg-slate-100"
                                   />

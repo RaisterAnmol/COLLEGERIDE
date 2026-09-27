@@ -29,6 +29,7 @@ import {
   Phone,
 } from 'lucide-react';
 import { SearchableInput } from '../components/common/SearchableInput';
+import dashboardHeroImg from '../assets/illustrations/dashboard-hero.jpg';
 import {
   POPULAR_COLLEGES,
   POPULAR_DEPARTMENTS,
@@ -302,7 +303,55 @@ export const DashboardPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Main Grid Content */}
+      {/* Student Commute Hub Illustrated Banner */}
+        <div className="bg-white rounded-3xl border border-[#DDE1DE] p-6 sm:p-7 shadow-xs overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <div className="lg:col-span-7 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 inline-block">
+                DAILY COMMUTE OVERVIEW
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black text-[#111111] tracking-tight">
+                Your Campus Commute, <br />
+                <span className="text-[#143D32]">Always In Sync.</span>
+              </h2>
+              <p className="text-sm text-[#646A67] leading-relaxed max-w-lg">
+                Manage your active ride offers, review incoming seat bookings from university peers, and track your daily travel savings all in one place.
+              </p>
+              <div className="flex flex-wrap items-center gap-3 pt-1">
+                <Link
+                  to="/search"
+                  className="px-5 py-2.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white text-xs font-bold transition-all shadow-xs flex items-center gap-2"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Explore Live Corridors</span>
+                </Link>
+                <Link
+                  to="/safety"
+                  className="px-5 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold border border-slate-200 transition-all flex items-center gap-2"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Safety Guidelines</span>
+                </Link>
+              </div>
+            </div>
+            <div className="lg:col-span-5 w-full">
+              <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+                <img
+                  src={dashboardHeroImg}
+                  alt="Student checking commute schedule on campus bench"
+                  className="w-full h-48 sm:h-56 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+                  loading="lazy"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+                <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+                  CAMPUS COMMUTER HUB
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Grid Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Offered Rides (Driver Lane) */}
         <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle2, ShieldCheck, MapPin, Users, Key, Sparkles, Navigation, Play, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { PageHeroBanner } from '../common/PageHeroBanner';
+import routeStoryImg from '../../assets/illustrations/route-story.jpg';
 
 interface StepData {
   id: string;
@@ -91,21 +93,34 @@ export const RouteStory: React.FC = () => {
   }, [isAutoPlaying]);
 
   return (
-    <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#EAECF0]">
-      {/* Editorial Typography Header */}
-      <div className="max-w-4xl">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-mono font-semibold border border-blue-200/60 mb-3">
-          <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-          <span>SECTION 01 / THE JOURNEY SEQUENCE</span>
+    <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#EAECF0] bg-[#F5F6F3] rounded-3xl my-8">
+      {/* Editorial Header + Illustration Side-by-Side */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8 lg:gap-12">
+        {/* Left: Text */}
+        <div className="max-w-2xl lg:flex-1">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-mono font-semibold border border-blue-200/60 mb-3">
+            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            <span>SECTION 01 / THE JOURNEY SEQUENCE</span>
+          </div>
+          <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-[#101828] uppercase leading-[0.95]">
+            Commuting<br />
+            Shouldn't Be<br />
+            Complicated.
+          </h2>
+          <p className="mt-6 text-lg sm:text-xl text-[#667085] leading-relaxed max-w-xl">
+            CampusRide connects students travelling the same roads at the same time. No unpredictable cab surges. No standing in packed buses. No asking 14 friends on WhatsApp.
+          </p>
         </div>
-        <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-[#101828] uppercase leading-[0.95]">
-          Commuting<br />
-          Shouldn't Be<br />
-          Complicated.
-        </h2>
-        <p className="mt-6 text-lg sm:text-xl text-[#667085] leading-relaxed max-w-2xl">
-          CampusRide connects students travelling the same roads at the same time. No unpredictable cab surges. No standing in packed buses. No asking 14 friends on WhatsApp.
-        </p>
+        {/* Right: Illustration */}
+        <div className="lg:flex-1 max-w-xl lg:max-w-none">
+          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-xs">
+            <img src={routeStoryImg} alt="Aerial view of a winding campus road showing the CampusRide journey" className="w-full h-64 sm:h-72 md:h-80 object-cover" loading="lazy" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur text-white text-xs font-mono tracking-wide">
+              THE JOURNEY SEQUENCE
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Signature Continuous Journey Container */}

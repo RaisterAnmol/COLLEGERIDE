@@ -3,6 +3,8 @@ import { Building2, BarChart3, ShieldCheck, Leaf, ArrowRight, CheckCircle2, Sear
 import { Link } from 'react-router-dom';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
 import { useAuth } from '../context/AuthContext';
+import { PageHeroBanner } from '../components/common/PageHeroBanner';
+import campusesHeroImg from '../assets/illustrations/campuses-hero.jpg';
 
 export const CollegesPage: React.FC = () => {
   const { activePersona } = useAuth();
@@ -36,34 +38,55 @@ export const CollegesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F5F6F3] text-[#111111] py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
-      {/* Header with CSV Source Tag */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div className="max-w-3xl">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-300">
+      {/* Editorial Header + Illustrated Hero Card Side-by-Side */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 sm:p-10 rounded-3xl border border-[#DDE1DE] shadow-xs">
+        <div className="lg:col-span-7 space-y-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
               CSV DATASET POWERED
             </span>
             <span className="text-xs font-mono text-slate-500">
               uttarakhand_universities.csv ({UTTARAKHAND_UNIVERSITIES.length} institutions)
             </span>
           </div>
-          <h1 className="text-3xl sm:text-5xl font-black text-[#111111] tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#111111] tracking-tight leading-[1.1]">
             Uttarakhand Higher Education<br />
-            Carpool Network.
+            <span className="text-[#143D32]">Carpool Network.</span>
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-[#646A67] leading-relaxed">
+          <p className="text-base text-[#646A67] leading-relaxed">
             Connecting students and faculty across all 48 accredited universities in Uttarakhand, from Uttaranchal University and Graphic Era in Dehradun to Roorkee, Pantnagar, and Srinagar campuses.
           </p>
+          <div className="pt-2">
+            <button
+              onClick={handleDownloadCSV}
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white text-sm font-semibold transition-all shadow-md hover:shadow-lg cursor-pointer"
+              title="Download the source CSV file"
+            >
+              <Download className="w-4 h-4 text-emerald-300" />
+              <span>Download Universities CSV</span>
+            </button>
+          </div>
         </div>
 
-        <button
-          onClick={handleDownloadCSV}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#DDE1DE] text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all shadow-xs cursor-pointer self-start md:self-auto"
-          title="Download the source CSV file"
-        >
-          <Download className="w-4 h-4 text-[#143D32]" />
-          <span>Download Universities CSV</span>
-        </button>
+        <div className="lg:col-span-5 w-full">
+          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+            <img
+              src={campusesHeroImg}
+              alt="Aerial view of an Indian university campus with CampusRide car on ring road"
+              className="w-full h-56 sm:h-64 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-mono">
+              <span className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-sm border border-white/20">
+                48 CAMPUSES
+              </span>
+              <span className="px-3 py-1 rounded-full bg-emerald-700 text-white font-semibold">
+                ACTIVE CORRIDORS
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Institutional Pillars */}

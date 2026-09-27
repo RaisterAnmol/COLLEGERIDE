@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Star, ArrowRight, Clock, Users, CheckCircle2 } from 'lucide-react';
 import { DEMO_STUDENTS } from '../../data/mockData';
+import { PageHeroBanner } from '../common/PageHeroBanner';
+import communityImg from '../../assets/illustrations/community.jpg';
 
 export const CommunitySection: React.FC = () => {
   const [hoveredStudentId, setHoveredStudentId] = useState<string | null>(null);
@@ -9,6 +11,8 @@ export const CommunitySection: React.FC = () => {
 
   return (
     <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#DDE1DE]">
+      <PageHeroBanner image={communityImg} alt="Students celebrating beside a CampusRide car on campus" caption="CAMPUS COMMUNITY" />
+
       {/* Editorial Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 max-w-5xl">
         <div>
