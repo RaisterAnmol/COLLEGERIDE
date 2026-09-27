@@ -169,6 +169,9 @@ export const TrustVerificationSection: React.FC = () => {
                 <img
                   src={selectedStudent.avatar}
                   alt={selectedStudent.name}
+                  onError={(e) => {
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(selectedStudent.name)}&background=143D32&color=fff&bold=true`;
+                  }}
                   className="w-16 h-16 rounded-full object-cover border-2 border-[#175CD3] shadow-sm"
                 />
                 <div>

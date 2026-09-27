@@ -151,6 +151,9 @@ export const RideCards: React.FC = () => {
                   <img
                     src={ride.driverAvatar}
                     alt={ride.driverName}
+                    onError={(e) => {
+                      e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(ride.driverName)}&background=143D32&color=fff&bold=true`;
+                    }}
                     className="w-11 h-11 rounded-full object-cover border border-[#EAECF0] transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="flex-1 min-w-0">

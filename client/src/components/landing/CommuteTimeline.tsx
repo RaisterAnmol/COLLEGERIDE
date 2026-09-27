@@ -205,6 +205,9 @@ export const CommuteTimeline: React.FC = () => {
                 <img
                   src={active.avatar}
                   alt={active.driver}
+                  onError={(e) => {
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(active.driver)}&background=143D32&color=fff&bold=true`;
+                  }}
                   className="w-14 h-14 rounded-2xl object-cover border-2 border-white shadow-md bg-slate-100"
                 />
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 ring-2 ring-white flex items-center justify-center text-white">
