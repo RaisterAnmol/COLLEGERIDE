@@ -84,14 +84,14 @@ export const RecurringCommuteSchedule: React.FC = () => {
                 onMouseEnter={() => setActiveDayIdx(idx)}
                 className={`p-3 sm:p-4 rounded-xl text-center transition-all ${
                   isSelected
-                    ? 'bg-[#111111] text-white shadow-sm scale-105'
+                    ? 'bg-[#143D32] text-white shadow-sm scale-105'
                     : 'bg-[#F5F6F3] text-[#646A67] hover:bg-[#DDE1DE]/40'
                 }`}
                 data-cursor={d.day}
               >
                 <div className="text-xs sm:text-sm font-black font-mono">{d.day}</div>
                 <div className={`w-2 h-2 rounded-full mx-auto my-2 ${isSelected ? 'bg-[#18A66A]' : 'bg-[#DDE1DE]'}`} />
-                <div className={`text-[11px] font-mono ${isSelected ? 'text-[#DBEAFE]' : 'text-[#646A67]'}`}>
+                <div className={`text-[11px] font-mono ${isSelected ? 'text-emerald-200' : 'text-[#646A67]'}`}>
                   {d.time}
                 </div>
               </button>
@@ -158,7 +158,7 @@ export const RecurringCommuteSchedule: React.FC = () => {
 
             <Link
               to="/search"
-              className="py-2.5 px-4 rounded-lg bg-[#111111] hover:bg-black text-white font-mono text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+              className="py-2.5 px-4 rounded-lg bg-[#143D32] hover:bg-[#0E2C24] text-white font-mono text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
             >
               <span>Schedule your weekly commute →</span>
             </Link>

@@ -730,11 +730,11 @@ export const AuthPage: React.FC = () => {
                       </p>
 
                       {idCardPreview ? (
-                        <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500 bg-slate-950 p-2 shadow-inner">
+                        <div className="relative rounded-2xl overflow-hidden border-2 border-emerald-500 bg-[#0B1E19] p-2 shadow-inner">
                           <img
                             src={idCardPreview}
                             alt="Student ID Card Preview"
-                            className="w-full h-36 object-contain rounded-xl bg-slate-900"
+                            className="w-full h-36 object-contain rounded-xl bg-[#102A22]"
                           />
                           <div className="absolute top-3 right-3 flex items-center gap-1.5">
                             <span className="px-2.5 py-1 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center gap-1 shadow">
@@ -892,7 +892,7 @@ export const AuthPage: React.FC = () => {
 
       {/* Forgot Password Modal */}
       {isForgotOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-50 bg-[#143D32]/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
           <div className="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200">
             <button
               onClick={() => setIsForgotOpen(false)}

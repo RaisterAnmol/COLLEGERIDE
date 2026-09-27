@@ -270,8 +270,8 @@ export const PostRidePage: React.FC = () => {
               className="w-full h-52 sm:h-60 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
-            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50 text-xs font-mono">
               OFFER A RIDE
             </span>
           </div>

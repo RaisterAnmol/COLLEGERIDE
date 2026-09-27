@@ -342,8 +342,8 @@ export const DashboardPage: React.FC = () => {
                   className="w-full h-48 sm:h-56 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
-                <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+                <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
+                <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50 text-xs font-mono">
                   CAMPUS COMMUTER HUB
                 </span>
               </div>
@@ -486,7 +486,7 @@ export const DashboardPage: React.FC = () => {
 
       {/* Edit Academic Profile Modal Dialog */}
       {isEditingProfile && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 bg-[#143D32]/50 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-200">
           <div
             className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8"
             onClick={(e) => e.stopPropagation()}

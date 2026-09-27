@@ -681,7 +681,7 @@ export const AdminDashboardPage: React.FC = () => {
                     onClick={() => setOngoingFilter(filterVal)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all cursor-pointer ${
                       ongoingFilter === filterVal
-                        ? "bg-slate-900 text-white shadow-xs"
+                        ? "bg-[#143D32] text-white shadow-xs"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >

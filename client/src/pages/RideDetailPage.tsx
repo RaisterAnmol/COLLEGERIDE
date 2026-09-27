@@ -255,7 +255,7 @@ export const RideDetailPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowChat(true)}
-            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-colors"
+            className="px-4 py-2.5 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-colors"
           >
             <MessageSquare className="w-4 h-4 text-emerald-400" />
             Ride Coordination Chat

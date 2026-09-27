@@ -89,7 +89,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
       role="dialog"
       aria-modal="true"
       aria-labelledby="chat-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/50 backdrop-blur-sm p-4"
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col h-[550px] overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
@@ -100,7 +100,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
             </div>
             <div>
               <h3 id="chat-modal-title" className="font-bold text-sm text-white">{title}</h3>
-              <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+              <p className="text-[11px] text-emerald-200/80 mt-1 flex items-center gap-1">
                 <Shield className="w-3 h-3 text-emerald-400" />
                 Verified Campus Ride Channel
               </p>
@@ -108,7 +108,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-emerald-100 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

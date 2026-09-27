@@ -38,7 +38,7 @@ export const CollegesSection: React.FC = () => {
           <div className="pt-4">
             <Link
               to="/colleges"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#111111] hover:bg-black text-white text-xs font-mono font-bold shadow-xs transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] text-white text-xs font-mono font-bold shadow-xs transition-colors"
               data-cursor="INSTITUTION"
             >
               <span>Explore university mobility partnerships</span>

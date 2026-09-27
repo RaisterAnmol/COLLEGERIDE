@@ -167,7 +167,7 @@ export const IdentityDocumentUpload: React.FC<IdentityDocumentUploadProps> = ({
                   alt={file.name}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition-opacity">
+                <div className="absolute inset-0 bg-[#143D32]/40 opacity-0 group-hover/thumb:opacity-100 flex items-center justify-center transition-opacity">
                   <Eye className="w-4 h-4 text-white" />
                 </div>
               </div>
@@ -224,24 +224,24 @@ export const IdentityDocumentUpload: React.FC<IdentityDocumentUploadProps> = ({
       {/* Modal Zoom Viewer */}
       {isZoomOpen && previewUrl && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-[#143D32]/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
           onClick={() => setIsZoomOpen(false)}
         >
           <div
-            className="relative bg-slate-900 border border-slate-700 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
+            className="relative bg-white border border-slate-200 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="p-4 border-b border-emerald-900 bg-[#143D32] flex items-center justify-between text-white">
               <div>
                 <h3 className="text-sm font-semibold text-white">{label} Preview</h3>
-                <p className="text-xs text-slate-400">{file?.name}</p>
+                <p className="text-xs text-emerald-200/80">{file?.name}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setZoomScale((s) => Math.min(s + 0.25, 3))}
-                  className="p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg"
+                  className="p-1.5 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                   title="Zoom In"
                 >
                   <ZoomIn className="w-4 h-4" />
@@ -249,7 +249,7 @@ export const IdentityDocumentUpload: React.FC<IdentityDocumentUploadProps> = ({
                 <button
                   type="button"
                   onClick={() => setZoomScale((s) => Math.max(s - 0.25, 0.5))}
-                  className="p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg"
+                  className="p-1.5 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                   title="Zoom Out"
                 >
                   <ZoomOut className="w-4 h-4" />
@@ -257,7 +257,7 @@ export const IdentityDocumentUpload: React.FC<IdentityDocumentUploadProps> = ({
                 <button
                   type="button"
                   onClick={() => setZoomScale(1)}
-                  className="p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg"
+                  className="p-1.5 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
                   title="Reset Zoom"
                 >
                   <RotateCcw className="w-4 h-4" />
@@ -265,7 +265,7 @@ export const IdentityDocumentUpload: React.FC<IdentityDocumentUploadProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsZoomOpen(false)}
-                  className="p-1.5 text-slate-400 hover:text-white bg-slate-800 rounded-lg ml-2"
+                  className="p-1.5 text-emerald-100 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg transition-colors ml-2"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -273,7 +273,7 @@ export const IdentityDocumentUpload: React.FC<IdentityDocumentUploadProps> = ({
             </div>
 
             {/* Image viewport */}
-            <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-slate-950/60 min-h-[300px]">
+            <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-[#0B1E19] min-h-[300px]">
               <img
                 src={previewUrl}
                 alt="Document Zoom View"

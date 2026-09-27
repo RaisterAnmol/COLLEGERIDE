@@ -299,7 +299,7 @@ export const SelfieCapture: React.FC<SelfieCaptureProps> = ({
         {/* Captured state */}
         {capturedData ? (
           <div className="flex flex-col items-center gap-3">
-            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-emerald-500 shadow-lg relative bg-slate-900">
+            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-emerald-500 shadow-lg relative bg-[#0B1E19]">
               <img
                 src={capturedData.previewUrl}
                 alt="Captured Selfie"
@@ -325,7 +325,7 @@ export const SelfieCapture: React.FC<SelfieCaptureProps> = ({
           /* Live Camera View */
           <div className="relative flex flex-col items-center w-full py-2">
             {/* Guide Oval */}
-            <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-emerald-500 shadow-md bg-black flex items-center justify-center">
+            <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-emerald-500 shadow-md bg-[#0B1E19] flex items-center justify-center">
               <video
                 ref={setVideoRef}
                 autoPlay

@@ -325,7 +325,7 @@ export const TripTrackingPage: React.FC = () => {
           </div>
           <button
             onClick={() => setCorridorDeviation(null)}
-            className="px-3 py-1 bg-black/20 hover:bg-black/30 rounded text-xs uppercase tracking-wider font-mono shrink-0"
+            className="px-3 py-1 bg-emerald-950/20 hover:bg-emerald-950/30 rounded text-xs uppercase tracking-wider font-mono shrink-0"
           >
             Acknowledge
           </button>
@@ -542,7 +542,7 @@ export const TripTrackingPage: React.FC = () => {
                   Numeric Pickup Code
                 </span>
                 <div className="flex items-center justify-center gap-3">
-                  <div className="text-5xl font-mono font-black tracking-widest bg-black/20 py-3 px-6 rounded-xl border border-white/15">
+                  <div className="text-5xl font-mono font-black tracking-widest bg-[#0B1E19]/80 py-3 px-6 rounded-xl border border-emerald-500/20">
                     {trip.otp}
                   </div>
                   <button

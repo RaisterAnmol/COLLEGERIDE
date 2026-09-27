@@ -45,21 +45,21 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/50 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
-        <div className="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
+        <div className="bg-[#143D32] text-white px-5 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-              <Star className="w-4 h-4 fill-emerald-400" />
+            <div className="w-8 h-8 rounded-lg bg-white/10 text-emerald-300 flex items-center justify-center">
+              <Star className="w-4 h-4 fill-emerald-300" />
             </div>
             <div>
               <h3 className="font-semibold text-sm leading-none text-white">Rate Your Commute</h3>
-              <p className="text-[11px] text-slate-400 mt-0.5">Build campus carpool trust</p>
+              <p className="text-[11px] text-emerald-200/80 mt-0.5">Build campus carpool trust</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+            className="p-1.5 text-emerald-100 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

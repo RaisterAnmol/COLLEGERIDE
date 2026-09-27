@@ -62,8 +62,8 @@ export const RouteBuilder: React.FC = () => {
                     onClick={() => handleCorridorSelect(c)}
                     className={`px-3 py-2 rounded-lg text-left text-xs font-mono transition-all flex items-center justify-between border ${
                       selectedCorridorId === c.id
-                        ? 'bg-[#111111] text-white border-[#111111] font-bold shadow-xs'
-                        : 'bg-[#F5F6F3] text-[#646A67] border-[#DDE1DE] hover:border-[#111111]'
+                        ? 'bg-[#143D32] text-white border-[#143D32] font-bold shadow-xs'
+                        : 'bg-[#F5F6F3] text-[#646A67] border-[#DDE1DE] hover:border-[#143D32]'
                     }`}
                   >
                     <span className="truncate">{c.name}</span>

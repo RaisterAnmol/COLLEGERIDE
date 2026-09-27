@@ -14,7 +14,7 @@ export const HeroIllustration: React.FC = () => {
       />
 
       {/* Gentle left-side readability shade only behind the text card */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-black/5 to-transparent md:w-1/2 pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#143D32]/25 via-[#143D32]/10 to-transparent md:w-1/2 pointer-events-none" />
 
       {/* Foreground Hero Content Card */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 w-full">

@@ -173,8 +173,8 @@ export const NetworkMap: React.FC = () => {
               onClick={() => setSelectedCorridor(corr.id)}
               className={`px-3 py-1.5 rounded-lg uppercase transition-all cursor-pointer flex items-center gap-1.5 ${
                 selectedCorridor === corr.id
-                  ? 'bg-slate-900 text-white font-semibold shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  ? 'bg-[#143D32] text-white font-semibold shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-emerald-50'
               }`}
             >
               <span>{corr.label}</span>
@@ -397,7 +397,7 @@ export const NetworkMap: React.FC = () => {
                     <div
                       className={`px-3.5 py-2 rounded-full shadow-md transition-all flex items-center gap-2.5 border ${
                         isSelected
-                          ? 'bg-slate-900 text-white border-blue-500 ring-4 ring-blue-500/25 scale-105 shadow-xl'
+                          ? 'bg-[#143D32] text-white border-emerald-500 ring-4 ring-emerald-500/25 scale-105 shadow-xl'
                           : 'bg-white text-slate-800 border-slate-200 hover:border-blue-400 hover:shadow-lg hover:scale-102'
                       }`}
                     >
@@ -544,7 +544,7 @@ export const NetworkMap: React.FC = () => {
               <div className="mt-6 pt-5 border-t border-slate-200">
                 <Link
                   to={`/search?from=${encodeURIComponent(activeVehicle.route.split('→')[0].trim())}&to=Uttaranchal%20University%20Gate%201`}
-                  className="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all group"
+                  className="w-full py-3 px-4 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm hover:shadow transition-all group"
                 >
                   <span>Book Seat with {activeVehicle.driver.split(' ')[0]} ({activeVehicle.fare})</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

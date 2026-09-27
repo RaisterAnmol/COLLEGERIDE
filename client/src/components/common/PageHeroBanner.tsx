@@ -15,13 +15,13 @@ export const PageHeroBanner: React.FC<PageHeroBannerProps> = ({
 }) => {
   const gradient = overlay === "rose"
     ? "bg-gradient-to-t from-rose-950/70 via-rose-900/10 to-transparent"
-    : "bg-gradient-to-t from-black/60 via-black/10 to-transparent";
+    : "bg-gradient-to-t from-[#143D32]/75 via-[#143D32]/20 to-transparent";
   return (
     <div className={`relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-xs mb-8 ${className}`}>
       <img src={image} alt={alt} className={`w-full ${heightClassName} object-cover`} loading="lazy" />
       <div className={`absolute inset-0 ${gradient}`} />
       {caption && (
-        <span className="absolute bottom-4 left-4 sm:bottom-5 sm:left-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur text-white text-xs font-mono tracking-wide">
+        <span className="absolute bottom-4 left-4 sm:bottom-5 sm:left-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur border border-emerald-400/30 text-emerald-50 text-xs font-mono tracking-wide shadow-sm">
           {caption}
         </span>
       )}

@@ -85,8 +85,8 @@ export const TrustVerificationFlow: React.FC = () => {
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
                   selectedStudent.id === p.id
-                    ? 'bg-[#111111] text-white border-[#111111] font-bold shadow-xs'
-                    : 'bg-[#F5F6F3] text-[#646A67] border-[#DDE1DE] hover:text-[#111111]'
+                    ? 'bg-[#143D32] text-white border-[#143D32] font-bold shadow-xs'
+                    : 'bg-[#F5F6F3] text-[#646A67] border-[#DDE1DE] hover:text-[#143D32]'
                 }`}
               >
                 {p.name.split(' ')[0]} ({p.role.toUpperCase()})

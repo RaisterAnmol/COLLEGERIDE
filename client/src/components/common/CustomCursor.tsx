@@ -57,10 +57,10 @@ export const CustomCursor: React.FC = () => {
       <div
         className={`rounded-full flex items-center justify-center transition-all duration-200 ${
           cursorText
-            ? 'px-3 py-1.5 bg-[#111111] text-white text-[11px] font-mono tracking-wider shadow-lg'
+            ? 'px-3 py-1.5 bg-[#143D32] text-white text-[11px] font-mono tracking-wider shadow-lg'
             : isHovered
             ? 'w-8 h-8 bg-[#1769FF]/20 border border-[#1769FF] scale-125 backdrop-blur-[1px]'
-            : 'w-3 h-3 bg-[#111111] shadow-sm'
+            : 'w-3 h-3 bg-[#143D32] shadow-sm'
         }`}
       >
         {cursorText && <span>{cursorText}</span>}

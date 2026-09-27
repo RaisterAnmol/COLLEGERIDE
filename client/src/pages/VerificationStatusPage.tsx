@@ -226,8 +226,8 @@ export const VerificationStatusPage: React.FC = () => {
               className="w-full h-48 sm:h-56 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
-            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50 text-xs font-mono">
               CAMPUS VERIFICATION
             </span>
           </div>
@@ -504,7 +504,7 @@ export const VerificationStatusPage: React.FC = () => {
                   onClick={() => setShowDailyModal(true)}
                   className={`w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-white flex items-center justify-center gap-2 cursor-pointer transition-all ${
                     isDailyVerified
-                      ? "bg-slate-800 hover:bg-slate-900 shadow-xs"
+                      ? "bg-[#143D32] hover:bg-[#0E2C24] shadow-xs"
                       : "bg-[#143D32] hover:bg-[#0d2820] shadow-sm"
                   }`}
                 >

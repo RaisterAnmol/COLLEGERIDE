@@ -44,7 +44,7 @@ export const BoardingPassModal: React.FC<BoardingPassModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="boarding-pass-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/50 backdrop-blur-sm p-4"
     >
       <div className="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl border border-slate-200">
         {/* Pass Header */}
@@ -59,7 +59,7 @@ export const BoardingPassModal: React.FC<BoardingPassModalProps> = ({
           <button
             onClick={onClose}
             aria-label="Close boarding pass"
-            className="p-1 rounded-lg hover:bg-black/20 text-white/70 hover:text-white transition-colors cursor-pointer"
+            className="p-1 rounded-lg hover:bg-white/10 text-white/70 hover:text-white transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>

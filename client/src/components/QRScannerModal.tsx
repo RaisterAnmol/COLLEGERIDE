@@ -151,16 +151,16 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/50 backdrop-blur-sm p-4">
       <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-[#143D32] flex items-center justify-center">
               <Camera className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-slate-900">Scan Driver's QR Code</h3>
+              <h3 className="font-semibold text-sm text-[#143D32]">Scan Driver's QR Code</h3>
               <p className="text-[11px] text-slate-500">Align QR within frame to verify pickup</p>
             </div>
           </div>
@@ -173,7 +173,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
         </div>
 
         {/* Viewport Area */}
-        <div className="relative bg-slate-950 aspect-square flex items-center justify-center overflow-hidden">
+        <div className="relative bg-[#0B1E19] aspect-square flex items-center justify-center overflow-hidden">
           {scannedSuccess ? (
             <div className="text-center text-white space-y-2 z-10">
               <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />

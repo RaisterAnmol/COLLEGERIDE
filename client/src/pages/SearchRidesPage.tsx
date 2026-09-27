@@ -317,8 +317,8 @@ export const SearchRidesPage: React.FC = () => {
               className="w-full h-52 sm:h-60 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
-            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50 text-xs font-mono">
               FIND A RIDE
             </span>
           </div>
@@ -327,19 +327,19 @@ export const SearchRidesPage: React.FC = () => {
 
       {/* Driver notice banner */}
       {isDriver && (
-        <div className="bg-slate-900 text-white rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+        <div className="bg-[#143D32] text-white rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm border border-emerald-800">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-white/10 text-emerald-300 flex items-center justify-center">
               <Car className="w-5 h-5" />
             </div>
             <div>
               <p className="font-bold text-sm">Offering a ride as a verified driver?</p>
-              <p className="text-xs text-slate-300">Publish your daily commute route and let classmates book open seats along your way.</p>
+              <p className="text-xs text-emerald-100/90">Publish your daily commute route and let classmates book open seats along your way.</p>
             </div>
           </div>
           <Link
             to="/post"
-            className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all text-center shrink-0 cursor-pointer"
+            className="px-4 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-[#143D32] text-xs font-extrabold transition-all text-center shrink-0 cursor-pointer shadow-sm"
           >
             Post a Ride Now
           </Link>

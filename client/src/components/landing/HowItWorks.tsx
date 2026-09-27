@@ -90,8 +90,8 @@ export const HowItWorks: React.FC = () => {
               onClick={() => setActiveIdx(idx)}
               className={`p-4 sm:p-5 rounded-xl text-left transition-all relative ${
                 isCurrent
-                  ? 'bg-[#111111] text-white shadow-sm'
-                  : 'hover:bg-[#F5F6F3] text-[#646A67]'
+                  ? 'bg-[#143D32] text-white shadow-sm'
+                  : 'hover:bg-emerald-50/60 text-[#646A67]'
               }`}
               data-cursor={`STEP ${s.step}`}
             >
@@ -196,14 +196,14 @@ export const HowItWorks: React.FC = () => {
 
               {activeStep.mockup.type === 'ride' && (
                 <div className="space-y-4 font-mono">
-                  <div className="p-5 bg-[#111111] text-white rounded-xl text-center">
-                    <span className="text-[10px] text-[#98A2B3] uppercase tracking-widest block mb-1">
+                  <div className="p-5 bg-[#143D32] text-white rounded-xl text-center border border-emerald-800 shadow-sm">
+                    <span className="text-[10px] text-emerald-200/80 uppercase tracking-widest block mb-1">
                       ENCRYPTED DEPARTURE OTP
                     </span>
                     <div className="text-3xl font-black tracking-widest text-[#18A66A]">
                       {activeStep.mockup.otp}
                     </div>
-                    <p className="text-[10px] text-white/60 mt-1.5">
+                    <p className="text-[10px] text-emerald-100/70 mt-1.5">
                       ✓ Handshake Verified • Emergency SOS Armed
                     </p>
                   </div>

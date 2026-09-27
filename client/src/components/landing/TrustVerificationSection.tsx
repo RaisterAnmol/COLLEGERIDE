@@ -150,8 +150,8 @@ export const TrustVerificationSection: React.FC = () => {
                 }}
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
                   selectedStudent.id === p.id
-                    ? 'bg-[#101828] text-white font-bold shadow-sm'
-                    : 'bg-[#F7F8FA] text-[#667085] hover:text-[#101828] border border-[#EAECF0]'
+                    ? 'bg-[#143D32] text-white font-bold shadow-sm'
+                    : 'bg-[#F7F8FA] text-[#667085] hover:text-[#143D32] border border-[#EAECF0]'
                 }`}
               >
                 {p.name.split(' ')[0]} ({p.role.includes('Driver') ? 'Driver' : 'Passenger'})

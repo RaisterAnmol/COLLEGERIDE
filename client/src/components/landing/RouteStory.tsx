@@ -115,8 +115,8 @@ export const RouteStory: React.FC = () => {
         <div className="lg:flex-1 max-w-xl lg:max-w-none">
           <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-xs">
             <img src={routeStoryImg} alt="Aerial view of a winding campus road showing the CampusRide journey" className="w-full h-64 sm:h-72 md:h-80 object-cover" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-            <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/50 backdrop-blur text-white text-xs font-mono tracking-wide">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent" />
+            <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur border border-emerald-400/30 text-emerald-50 text-xs font-mono tracking-wide">
               THE JOURNEY SEQUENCE
             </span>
           </div>
@@ -389,10 +389,10 @@ export const RouteStory: React.FC = () => {
 
                 {activeStep === 2 && (
                   <div className="space-y-3">
-                    <div className="p-3 bg-[#101828] text-white rounded-lg flex items-center justify-between font-mono">
+                    <div className="p-3 bg-[#143D32] text-white rounded-lg flex items-center justify-between font-mono border border-emerald-800 shadow-sm">
                       <div className="flex items-center gap-2">
                         <Key className="w-4 h-4 text-[#12B76A]" />
-                        <span className="text-xs text-[#98A2B3]">BOARDING OTP:</span>
+                        <span className="text-xs text-emerald-200/80">BOARDING OTP:</span>
                       </div>
                       <div className="text-xl font-bold tracking-widest text-[#12B76A]">4 8 2 1</div>
                     </div>

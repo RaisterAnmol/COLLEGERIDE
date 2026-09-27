@@ -343,11 +343,11 @@ export const LiveTripMap: React.FC<LiveTripMapProps> = ({
       {/* Top Map HUD Bar */}
       <div className="absolute top-3 left-3 right-3 z-[1000] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         {/* Live Status Pill */}
-        <div className="pointer-events-auto bg-slate-900/90 backdrop-blur-md text-white px-3 py-1.5 rounded-2xl shadow-lg border border-slate-700 flex items-center gap-2 text-xs">
+        <div className="pointer-events-auto bg-[#143D32]/95 backdrop-blur-md text-white px-3 py-1.5 rounded-2xl shadow-lg border border-emerald-600/40 flex items-center gap-2 text-xs">
           <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
           <span className="font-bold">Live Route Transit</span>
           {gpsAccuracy && (
-            <span className="text-[10px] text-slate-400 font-mono">
+            <span className="text-[10px] text-emerald-200 font-mono">
               (±{gpsAccuracy}m)
             </span>
           )}
@@ -392,11 +392,11 @@ export const LiveTripMap: React.FC<LiveTripMapProps> = ({
 
       {/* Bottom Driver Controls Bar */}
       {isDriver && (
-        <div className="p-3.5 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs text-white">
+        <div className="p-3.5 bg-[#143D32] border-t border-emerald-800 flex items-center justify-between text-xs text-white">
           <div className="flex items-center gap-2">
             <Car className="w-4 h-4 text-emerald-400" />
             <span className="font-semibold">Driver Telemetry Hub:</span>
-            <span className="text-slate-400 hidden sm:inline">
+            <span className="text-emerald-200/80 hidden sm:inline">
               {isLiveGpsActive ? 'Broadcasting live coordinates' : 'GPS sharing idle'}
             </span>
           </div>

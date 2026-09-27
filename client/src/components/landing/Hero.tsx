@@ -227,9 +227,9 @@ export const Hero: React.FC = () => {
               className="w-full h-[320px] sm:h-[400px] lg:h-[460px] object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
               loading="eager"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
             <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-mono">
-              <span className="px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-sm border border-white/20">
+              <span className="px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50">
                 CAMPUS COMMUTE
               </span>
               <span className="px-3 py-1.5 rounded-full bg-emerald-700 text-white font-semibold">

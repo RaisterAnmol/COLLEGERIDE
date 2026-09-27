@@ -1412,8 +1412,8 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
 
         {/* Floating Top Hint Pill on Map */}
         {activeTab === 'route_choice' && (
-          <div className="absolute top-4 left-4 z-10 bg-slate-900/90 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl border border-slate-700 text-xs shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
-            <RouteIcon className="w-4 h-4 text-blue-400" />
+          <div className="absolute top-4 left-4 z-10 bg-[#143D32]/95 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl border border-emerald-600/40 text-xs shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
+            <RouteIcon className="w-4 h-4 text-emerald-300" />
             <span>
               <b>Interactive:</b> Click any road line or floating pill to switch routes!
             </span>
