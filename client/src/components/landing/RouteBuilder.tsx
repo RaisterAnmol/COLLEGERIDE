@@ -5,9 +5,9 @@ import { DEMO_CORRIDORS, DEMO_FEATURED_RIDES } from '../../data/mockData';
 
 export const RouteBuilder: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedCorridorId, setSelectedCorridorId] = useState('corridor-north');
-  const [fromLocation, setFromLocation] = useState('Rohini Sector 14 Metro');
-  const [toLocation, setToLocation] = useState('DTU Main Campus Gate 1');
+  const [selectedCorridorId, setSelectedCorridorId] = useState('corridor-selaqui');
+  const [fromLocation, setFromLocation] = useState('Selaqui Industrial & Institutional Hub');
+  const [toLocation, setToLocation] = useState('Campus Gate 1 (Uttaranchal University Main Entrance)');
   const [departureTime, setDepartureTime] = useState('08:15 AM');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
 

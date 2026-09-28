@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { IRide } from '../types';
@@ -38,13 +38,13 @@ export interface PresetLocation {
   category: 'Campus Buildings' | 'Dehradun & Surrounding';
 }
 
-const PRESET_LOCATIONS: PresetLocation[] = [
+export const PRESET_LOCATIONS: PresetLocation[] = [
   // Dehradun - Uttaranchal University Campus Buildings
   { text: 'UIT Building (Uttaranchal Institute of Technology)', lat: 30.3432, lng: 77.9448, category: 'Campus Buildings' },
   { text: 'USCS Building (School of Computing Sciences)', lat: 30.3428, lng: 77.9456, category: 'Campus Buildings' },
   { text: 'BBA Building (Uttaranchal Institute of Management)', lat: 30.3420, lng: 77.9461, category: 'Campus Buildings' },
   { text: 'Central Academic Library & Law Block', lat: 30.3425, lng: 77.9450, category: 'Campus Buildings' },
-  { text: 'Campus Gate 1 (Main Entrance, Premnagar Road)', lat: 30.3415, lng: 77.9440, category: 'Campus Buildings' },
+  { text: 'Campus Gate 1 (Uttaranchal University Main Entrance)', lat: 30.3415, lng: 77.9440, category: 'Campus Buildings' },
 
   // Dehradun Regional Transit & Student Hubs
   { text: 'Premnagar Chowk Market', lat: 30.3340, lng: 77.9620, category: 'Dehradun & Surrounding' },
@@ -55,6 +55,81 @@ const PRESET_LOCATIONS: PresetLocation[] = [
   { text: 'Ballupur Chowk (City Entrance)', lat: 30.3395, lng: 78.0125, category: 'Dehradun & Surrounding' },
   { text: 'Clock Tower (Ghanta Ghar / Paltan Bazaar)', lat: 30.3256, lng: 78.0437, category: 'Dehradun & Surrounding' },
 ];
+
+export function findPresetIndex(paramText: string | null | undefined, defaultIdx: number): number {
+  if (!paramText) return defaultIdx;
+  const lower = paramText.toLowerCase().trim();
+
+  // 1. Direct or strong substring match
+  const directIdx = PRESET_LOCATIONS.findIndex(
+    (p) => p.text.toLowerCase().includes(lower) || lower.includes(p.text.toLowerCase())
+  );
+  if (directIdx !== -1) return directIdx;
+
+  // 2. Specific geographic keywords (Campus takes absolute precedence before regional city terms)
+  if (lower.includes('uit') || lower.includes('tech')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('UIT Building'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('uscs') || lower.includes('computing') || lower.includes('cs')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('USCS Building'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('bba') || lower.includes('management') || lower.includes('uim') || lower.includes('mba')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('BBA Building'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('library') || lower.includes('law')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Central Academic Library'));
+    if (idx !== -1) return idx;
+  }
+  if (
+    lower.includes('gate 1') ||
+    lower.includes('gate-1') ||
+    lower.includes('gate1') ||
+    lower.includes('main gate') ||
+    lower.includes('campus gate') ||
+    lower.includes('uttaranchal') ||
+    lower.includes('university') ||
+    lower.includes('campus') ||
+    /\buu\b/.test(lower)
+  ) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Campus Gate 1'));
+    if (idx !== -1) return idx;
+  }
+
+  // 3. Dehradun regional student & transit hubs
+  if (lower.includes('selaqui') || lower.includes('selaquie') || lower.includes('pharma')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Selaqui'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('suddhowala') || lower.includes('sudhowala')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Suddhowala'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('premnagar') || lower.includes('prem nagar')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Premnagar'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('ballupur')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Ballupur'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('clock tower') || lower.includes('ghanta ghar') || lower.includes('paltan')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Clock Tower'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('vikasnagar')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('Vikasnagar'));
+    if (idx !== -1) return idx;
+  }
+  if (lower.includes('isbt')) {
+    const idx = PRESET_LOCATIONS.findIndex((p) => p.text.includes('ISBT'));
+    if (idx !== -1) return idx;
+  }
+
+  return defaultIdx;
+}
 
 const UNIVERSITIES = [
   'Any',
@@ -86,13 +161,44 @@ const SEMESTERS = ['Any', '1', '2', '3', '4', '5', '6', '7', '8'];
 export const SearchRidesPage: React.FC = () => {
   const { user, activePersona } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  // Basic Route State
-  const [originIndex, setOriginIndex] = useState(0); // UIT Building
-  const [destIndex, setDestIndex] = useState(5); // Premnagar Chowk Market
-  const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
-  const [seats, setSeats] = useState(1);
+  const initialFromParam = searchParams.get('from');
+  const initialToParam = searchParams.get('to');
+  const initialDateParam = searchParams.get('date');
+  const initialSeatsParam = searchParams.get('seats');
+
+  // Basic Route State (initialized dynamically from URL searchParams)
+  const [originIndex, setOriginIndex] = useState(() =>
+    findPresetIndex(initialFromParam, 0)
+  );
+  const [destIndex, setDestIndex] = useState(() =>
+    findPresetIndex(initialToParam, initialFromParam ? (findPresetIndex(initialFromParam, 0) === 4 ? 5 : 4) : 5)
+  );
+  const [date, setDate] = useState(() => initialDateParam || new Date().toISOString().slice(0, 10));
+  const [seats, setSeats] = useState(() => (initialSeatsParam ? Math.max(1, Number(initialSeatsParam)) : 1));
   const [womenOnlyDriver, setWomenOnlyDriver] = useState(() => !!user?.preferences?.womenOnlyDriver);
+
+  // Sync state whenever URL query params change
+  useEffect(() => {
+    const fromParam = searchParams.get('from');
+    const toParam = searchParams.get('to');
+    const dateParam = searchParams.get('date');
+    const seatsParam = searchParams.get('seats');
+
+    if (fromParam !== null) {
+      setOriginIndex(findPresetIndex(fromParam, 0));
+    }
+    if (toParam !== null) {
+      setDestIndex(findPresetIndex(toParam, 4));
+    }
+    if (dateParam) {
+      setDate(dateParam);
+    }
+    if (seatsParam) {
+      setSeats(Math.max(1, Number(seatsParam)));
+    }
+  }, [searchParams]);
 
   // Academic Hierarchical Filters (Optional / 'Any' supported)
   const [college, setCollege] = useState('Any');
@@ -173,12 +279,6 @@ export const SearchRidesPage: React.FC = () => {
     setRequestSuccess(null);
     setRequestError(null);
 
-    if (!user) {
-      setRequestError('Please log in to search rides.');
-      setLoading(false);
-      return;
-    }
-
     try {
       const origin = PRESET_LOCATIONS[originIndex];
       const dest = PRESET_LOCATIONS[destIndex];
@@ -202,7 +302,13 @@ export const SearchRidesPage: React.FC = () => {
         verifiedOnly,
       });
 
-      setRides(res || []);
+      if (!res || res.length === 0) {
+        // If exact coordinate corridor has no match, fetch all active rides so user always sees available rides
+        const allActive = await api.getRides({ womenOnlyDriver, status: 'active' });
+        setRides(allActive || []);
+      } else {
+        setRides(res);
+      }
       setSearched(true);
     } catch (err: any) {
       console.error('[Search] Error searching rides:', err);
@@ -216,12 +322,6 @@ export const SearchRidesPage: React.FC = () => {
   const handleShowAll = async () => {
     setLoading(true);
     setRequestError(null);
-
-    if (!user) {
-      setRequestError('Please log in to browse rides.');
-      setLoading(false);
-      return;
-    }
 
     try {
       const res = await api.getRides({
@@ -752,9 +852,18 @@ export const SearchRidesPage: React.FC = () => {
         </div>
       )}
       {requestError && (
-        <div className="p-4 bg-red-50 border border-red-300 text-red-900 rounded-2xl flex items-center gap-3 text-sm font-medium">
-          <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
-          <span>{requestError}</span>
+        <div className="p-4 bg-red-50 border border-red-300 text-red-900 rounded-2xl flex flex-wrap items-center justify-between gap-3 text-sm font-medium">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+            <span>{requestError}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleSearch()}
+            className="px-3.5 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shadow-xs"
+          >
+            Retry Search
+          </button>
         </div>
       )}
 

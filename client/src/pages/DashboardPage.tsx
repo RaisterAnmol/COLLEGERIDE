@@ -155,12 +155,22 @@ export const DashboardPage: React.FC = () => {
             <div className="flex items-start sm:items-center gap-5">
               {/* Avatar Container with Clean Glowing Ring */}
               <div className="relative shrink-0 select-none">
-                <div className="w-18 h-18 sm:w-22 sm:h-22 rounded-2xl p-1 bg-gradient-to-tr from-emerald-400 to-teal-500 shadow-md shadow-emerald-500/20 flex items-center justify-center overflow-hidden">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 max-w-[80px] max-h-[80px] sm:max-w-[96px] sm:max-h-[96px] min-w-[80px] min-h-[80px] sm:min-w-[96px] sm:min-h-[96px] rounded-2xl p-1 bg-gradient-to-tr from-emerald-400 to-teal-500 shadow-md shadow-emerald-500/20 flex items-center justify-center overflow-hidden shrink-0">
                   {userAvatar ? (
                     <img
                       src={userAvatar}
                       alt={user?.name || 'Student'}
-                      className="w-full h-full rounded-[14px] object-cover bg-slate-100"
+                      className="w-full h-full max-w-[72px] max-h-[72px] sm:max-w-[88px] sm:max-h-[88px] aspect-square rounded-[14px] object-cover bg-slate-100 block"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = 'none';
+                        const parent = e.currentTarget.parentElement;
+                        if (parent) {
+                          const fallback = document.createElement('div');
+                          fallback.className = 'w-full h-full rounded-[14px] bg-gradient-to-br from-[#143D32] to-[#10b981] text-white font-black text-2xl sm:text-3xl flex items-center justify-center uppercase select-none';
+                          fallback.innerText = (user?.name ? user.name.trim().charAt(0) : 'U');
+                          parent.appendChild(fallback);
+                        }
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full rounded-[14px] bg-gradient-to-br from-[#143D32] to-[#10b981] text-white font-black text-2xl sm:text-3xl flex items-center justify-center uppercase select-none">

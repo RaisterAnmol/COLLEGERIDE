@@ -8,6 +8,10 @@ import {
   Search,
   ShieldCheck,
   CheckCircle2,
+  Landmark,
+  ChevronDown,
+  X,
+  Activity,
 } from "lucide-react";
 import gsap from "gsap";
 
@@ -17,9 +21,21 @@ import heroHome from "../../assets/illustrations/hero-home.jpg";
 export const Hero: React.FC = () => {
   const { activePersona, user } = useAuth();
   const navigate = useNavigate();
-  const [from, setFrom] = useState("Selaqui Hub");
-  const [to, setTo] = useState("Uttaranchal University Gate 1");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [from, setFrom] = useState("Premnagar Chowk");
+  const [to, setTo] = useState("UIT & USCS Gate 1");
+  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+
+  const formatDisplayDate = (dStr: string) => {
+    try {
+      const d = new Date(dStr);
+      if (isNaN(d.getTime())) return dStr;
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+    } catch {
+      return dStr;
+    }
+  };
   const heroRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
 
@@ -240,68 +256,133 @@ export const Hero: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex flex-col items-center text-center">
-        {/* Corridor Quick Search Bar - Available to All Users */}
-        <div className="hero-search mt-10 w-full max-w-3xl">
-          <form
-            onSubmit={handleSearch}
-            className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch gap-2"
-          >
-            <div className="flex-1 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus-within:border-[#143D32] focus-within:bg-white transition-colors">
-              <MapPin className="w-4 h-4 text-[#143D32] shrink-0" />
-              <div className="flex-1 text-left">
-                <label className="block text-[10px] font-mono uppercase text-slate-500">
-                  From
-                </label>
-                <input
-                  type="text"
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value)}
-                  placeholder="Pickup area (e.g. Selaqui Hub)"
-                  className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
-                />
+      <div className="flex flex-col items-center text-center w-full">
+        {/* Corridor Quick Search Bar - Find a Ride */}
+        <div className="hero-search mt-10 w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded-2xl md:rounded-3xl border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-4 sm:p-6 transition-all text-left">
+            <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 lg:gap-5">
+              {/* Left Title Block with Transit Nodes Icon */}
+              <div className="flex items-center gap-3 shrink-0 pr-2 lg:border-r lg:border-slate-100 lg:pr-5">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#143D32] flex items-center justify-center shrink-0 border border-emerald-100/80">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="6" cy="18" r="2.5" />
+                    <circle cx="18" cy="6" r="2.5" />
+                    <circle cx="6" cy="6" r="2.5" />
+                    <path d="M6 8.5v7" />
+                    <path d="M8.5 6h7" />
+                    <path d="M8 8l8 8" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-tight">Find a Ride</h3>
+                  <p className="text-xs text-slate-500 font-normal leading-tight mt-0.5 whitespace-nowrap">
+                    Search campus routes and<br className="hidden sm:inline lg:hidden xl:inline" /> travel together
+                  </p>
+                </div>
               </div>
+
+              {/* Form Inputs & Search Button */}
+              <form onSubmit={handleSearch} className="flex-1 flex flex-col md:flex-row items-stretch gap-2.5">
+                {/* FROM input */}
+                <div className="flex-1 min-w-[170px] flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600 bg-white transition-all">
+                  <MapPin className="w-4 h-4 text-slate-800 shrink-0" />
+                  <div className="flex-1 text-left min-w-0">
+                    <label className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">FROM</label>
+                    <input
+                      type="text"
+                      value={from}
+                      onChange={(e) => setFrom(e.target.value)}
+                      placeholder="Pickup hub"
+                      className="w-full bg-transparent text-sm font-semibold text-slate-800 focus:outline-none truncate"
+                    />
+                  </div>
+                  {from && (
+                    <button
+                      type="button"
+                      onClick={() => setFrom("")}
+                      className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                      title="Clear origin"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* TO CAMPUS input */}
+                <div className="flex-1 min-w-[190px] flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600 bg-white transition-all">
+                  <Landmark className="w-4 h-4 text-[#143D32] shrink-0" />
+                  <div className="flex-1 text-left min-w-0">
+                    <label className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">TO CAMPUS</label>
+                    <input
+                      type="text"
+                      value={to}
+                      onChange={(e) => setTo(e.target.value)}
+                      placeholder="Campus gate"
+                      className="w-full bg-transparent text-sm font-semibold text-slate-800 focus:outline-none truncate"
+                    />
+                  </div>
+                  {to && (
+                    <button
+                      type="button"
+                      onClick={() => setTo("")}
+                      className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
+                      title="Clear destination"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                {/* DATE input */}
+                <div className="w-full md:w-[185px] flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600 bg-white transition-all relative cursor-pointer">
+                  <Calendar className="w-4 h-4 text-slate-700 shrink-0" />
+                  <div className="flex-1 text-left min-w-0">
+                    <label className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">DATE</label>
+                    <div className="text-sm font-semibold text-slate-800 truncate">
+                      {formatDisplayDate(date)}
+                    </div>
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                    />
+                  </div>
+                  <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" />
+                </div>
+
+                {/* SEARCH BUTTON */}
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-sm shrink-0 cursor-pointer"
+                >
+                  <Search className="w-4 h-4 text-white" />
+                  <span>Search</span>
+                </button>
+              </form>
             </div>
 
-            <div className="flex-1 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus-within:border-[#143D32] focus-within:bg-white transition-colors">
-              <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
-              <div className="flex-1 text-left">
-                <label className="block text-[10px] font-mono uppercase text-slate-500">
-                  To Campus
-                </label>
-                <input
-                  type="text"
-                  value={to}
-                  onChange={(e) => setTo(e.target.value)}
-                  placeholder="Campus gate (e.g. Uttaranchal University Gate 1)"
-                  className="w-full bg-transparent text-sm text-slate-900 focus:outline-none"
-                />
+            {/* Bottom Sub-Bar */}
+            <div className="mt-4 pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
+                <span className="font-semibold text-slate-700">Verified campus network</span>
+                <span className="text-slate-300">•</span>
+                <span>Only college students &amp; verified drivers</span>
+              </div>
+              <div className="flex items-center gap-3 text-xs">
+                <div className="flex items-center gap-1.5 font-medium text-slate-700">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>4 active channels</span>
+                </div>
+                <span className="text-slate-300">|</span>
+                <div className="flex items-center gap-1.5 font-medium text-slate-700">
+                  <Activity className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Live GPS Telemetry</span>
+                </div>
               </div>
             </div>
-
-            <div className="w-full md:w-36 flex items-center gap-2.5 px-3 py-2 rounded-lg bg-slate-50 border border-slate-200">
-              <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
-              <div className="flex-1 text-left">
-                <label className="block text-[10px] font-mono uppercase text-slate-500">
-                  Date
-                </label>
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-transparent text-xs font-mono text-slate-900 focus:outline-none"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-lg bg-[#143D32] hover:bg-[#0f2e26] text-white font-medium text-sm transition-all flex items-center justify-center gap-2 shadow-sm shrink-0 cursor-pointer"
-            >
-              <Search className="w-4 h-4" />
-              <span>Search</span>
-            </button>
-          </form>
+          </div>
         </div>
       </div>
 

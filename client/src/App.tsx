@@ -17,6 +17,7 @@ const SafetyPage = lazy(() => import('./pages/SafetyPage').then(m => ({ default:
 const CollegesPage = lazy(() => import('./pages/CollegesPage').then(m => ({ default: m.CollegesPage })));
 const VerificationStatusPage = lazy(() => import('./pages/VerificationStatusPage').then(m => ({ default: m.VerificationStatusPage })));
 const FaceVerifyPage = lazy(() => import('./pages/FaceVerifyPage').then(m => ({ default: m.FaceVerifyPage })));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
 function RouteFallback() {
   return (
@@ -54,7 +55,7 @@ export default function App() {
                 <Route path="/admin" element={<AdminDashboardPage />} />
                 <Route path="/safety" element={<SafetyPage />} />
                 <Route path="/colleges" element={<CollegesPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Suspense>
           </main>

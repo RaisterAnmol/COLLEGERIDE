@@ -25,7 +25,7 @@ const PRESET_LOCATIONS = [
   { text: "USCS Building (School of Computing Sciences)", lat: 30.3428, lng: 77.9456 },
   { text: "BBA Building (Uttaranchal Institute of Management)", lat: 30.3420, lng: 77.9461 },
   { text: "Central Academic Library & Law Block", lat: 30.3425, lng: 77.9450 },
-  { text: "Campus Gate 1 (Main Entrance, Premnagar Road)", lat: 30.3415, lng: 77.9440 },
+  { text: "Campus Gate 1 (Uttaranchal University Main Entrance)", lat: 30.3415, lng: 77.9440 },
 
   // Dehradun Regional Transit & Student Hubs
   { text: "Premnagar Chowk Market", lat: 30.3340, lng: 77.9620 },

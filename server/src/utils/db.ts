@@ -1,6 +1,14 @@
 import mongoose from "mongoose";
+import dns from "node:dns";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { logger } from "./logger";
+
+// Configure reliable DNS servers to guarantee SRV resolution across all platforms & cloud providers
+try {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch {
+  // Ignore in restricted environments
+}
 
 let mongoMemoryServer: MongoMemoryServer | null = null;
 
@@ -13,6 +21,11 @@ export function maskMongoUri(rawUri: string): string {
 }
 
 export async function connectDB(): Promise<typeof mongoose> {
+  // If already connected, reuse existing mongoose connection
+  if (mongoose.connection.readyState === 1) {
+    return mongoose;
+  }
+
   const uri = process.env.MONGODB_URI;
 
   if (process.env.NODE_ENV === "production" && (!uri || uri.trim().length === 0)) {
@@ -24,7 +37,7 @@ export async function connectDB(): Promise<typeof mongoose> {
     );
   }
 
-  if (uri && uri.trim().length > 0) {
+  if (process.env.NODE_ENV !== "test" && uri && uri.trim().length > 0) {
     const trimmedUri = uri.trim();
     const isSrv = trimmedUri.startsWith("mongodb+srv://");
     const maskedUri = maskMongoUri(trimmedUri);

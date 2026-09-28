@@ -2,7 +2,7 @@ import { Router, Response } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
 import { Ride, User, Vehicle } from "../models";
-import { requireAuth, requireRole, requireVerificationApproved, AuthenticatedRequest } from "../middleware/auth";
+import { requireAuth, optionalAuth, requireRole, requireVerificationApproved, AuthenticatedRequest } from "../middleware/auth";
 import { calculateMatchScore, haversineDistanceKm } from "../services/matchingEngine";
 import { logger } from "../utils/logger";
 
