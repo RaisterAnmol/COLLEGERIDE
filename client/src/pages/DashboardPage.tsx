@@ -168,9 +168,21 @@ export const DashboardPage: React.FC = () => {
     loadDashboardData();
   }, [user]);
 
+  const [passengerCommuteTab, setPassengerCommuteTab] = useState<'upcoming' | 'previous'>('upcoming');
+
+  // Role & derived calculations
+  const isPassenger = user?.accountType === 'PASSENGER' || user?.accountType === 'WOMEN_PASSENGER' || (user?.role !== 'driver' && myOfferedRides.length === 0);
+  const upcomingRequests = myRequests.filter((r) => r.status === 'pending' || r.status === 'accepted');
+  const previousRequests = myRequests.filter((r) => r.status === 'declined' || r.status === 'cancelled' || (r as any).status === 'completed');
+
   // Derived review calculations
-  const driverReviews = reviews.filter((r) => r.role === 'driver');
-  const passengerReviews = reviews.filter((r) => r.role === 'passenger');
+  const driverReviews = reviews.filter((r) => (r.role || '').toLowerCase() === 'driver');
+  const passengerReviews = reviews.filter((r) => {
+    const role = (r.role || '').toLowerCase();
+    if (role === 'passenger') return true;
+    if (!role) return isPassenger;
+    return false;
+  });
   const displayedReviews =
     reviewFilter === 'driver'
       ? driverReviews
@@ -424,159 +436,371 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Grid Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Offered Rides (Driver Lane) */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                🚗
-              </div>
-              <h2 className="text-lg font-bold text-slate-900">Your Offered Rides</h2>
-            </div>
-            <Link to="/post" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
-              + Post New Ride
-            </Link>
-          </div>
-
-          {loading ? (
-            <div className="py-8 text-center text-slate-400 text-xs">Loading rides...</div>
-          ) : myOfferedRides.length === 0 ? (
-            <div className="py-8 text-center text-slate-400">
-              <Car className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-              <p className="text-sm font-medium text-slate-600">No commute rides posted yet</p>
-              <p className="text-xs text-slate-400 mt-1">
-                Share empty seats on your daily university route and split fuel costs.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {myOfferedRides.map((ride) => (
-                <div
-                  key={ride._id}
-                  onClick={() => navigate(`/rides/${ride._id}`)}
-                  className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 hover:bg-white transition-all cursor-pointer shadow-sm"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 font-semibold text-sm text-slate-900">
-                        <span>{ride.origin?.text || 'Origin'}</span>
-                        <ArrowRight className="w-3 h-3 text-slate-400" />
-                        <span>{ride.destination?.text || 'Destination'}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-500">
-                        <span>{new Date(ride.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        <span>•</span>
-                        <span>{ride.availableSeats} seats left</span>
-                        <span>•</span>
-                        <span className="font-bold text-emerald-600">₹{(ride as any).pricing?.costPerSeat ?? (ride as any).pricePerSeat ?? 0}</span>
-                      </div>
-                    </div>
-
-                    <span className="text-xs font-bold text-slate-400 hover:text-emerald-600">
-                      View Details →
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Booked Rides & Requests (Passenger Lane) */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+      {/* Main Content: Role-Adaptive for Passenger vs Driver */}
+      {isPassenger ? (
+        /* Dedicated Passenger Commute & Bookings Hub */
+        <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xl shadow-2xs shrink-0">
                 🎒
               </div>
-              <h2 className="text-lg font-bold text-slate-900">Your Ride Requests</h2>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xl font-black text-slate-900 tracking-tight">Your Campus Commutes & Bookings</h2>
+                  <span className="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-bold">
+                    Passenger Hub
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Track upcoming ride bookings, view driver arrival, and review your previous university carpools
+                </p>
+              </div>
             </div>
-            <Link to="/search" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
-              Browse Matches →
-            </Link>
+
+            <div className="flex items-center gap-3 self-start sm:self-auto">
+              {/* Tab Selector: Upcoming vs Previous */}
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setPassengerCommuteTab('upcoming')}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    passengerCommuteTab === 'upcoming'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Upcoming ({upcomingRequests.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPassengerCommuteTab('previous')}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                    passengerCommuteTab === 'previous'
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Previous ({previousRequests.length})
+                </button>
+              </div>
+
+              <Link
+                to="/search"
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs flex items-center gap-1.5"
+              >
+                <Search className="w-3.5 h-3.5" />
+                Find a Ride
+              </Link>
+            </div>
           </div>
 
+          {/* Commutes Tab Content */}
           {loading ? (
-            <div className="py-8 text-center text-slate-400 text-xs">Loading requests...</div>
-          ) : myRequests.length === 0 ? (
-            <div className="py-8 text-center text-slate-400">
-              <Search className="w-8 h-8 mx-auto text-slate-300 mb-2" />
-              <p className="text-sm font-medium text-slate-600">No active bookings yet</p>
-              <p className="text-xs text-slate-400 mt-1">
-                Search campus routes to get matched with student drivers in seconds.
-              </p>
+            <div className="py-12 text-center text-slate-400 text-xs">
+              <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+              Loading your commutes...
             </div>
-          ) : (
-            <div className="space-y-3">
-              {myRequests.map((req) => {
-                const ride = typeof req.rideId === 'object' ? req.rideId : null;
-                return (
-                  <div
-                    key={req._id}
-                    onClick={() => ride && navigate(`/rides/${ride._id}`)}
-                    className="p-4 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-white transition-all cursor-pointer shadow-sm"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 font-semibold text-sm text-slate-900">
-                          <span>{ride?.origin?.text || 'Origin'}</span>
-                          <ArrowRight className="w-3 h-3 text-slate-400" />
-                          <span>{ride?.destination?.text || 'Destination'}</span>
+          ) : passengerCommuteTab === 'upcoming' ? (
+            upcomingRequests.length === 0 ? (
+              <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-2xl p-8 bg-slate-50/50">
+                <Search className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-sm font-bold text-slate-800">No active bookings or upcoming rides</h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                  Search campus routes to get matched with verified student drivers commuting to your college.
+                </p>
+                <Link
+                  to="/search"
+                  className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-sm"
+                >
+                  <Search className="w-4 h-4" />
+                  Explore Available Rides
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {upcomingRequests.map((req) => {
+                  const ride = typeof req.rideId === 'object' ? req.rideId : null;
+                  const isAccepted = req.status === 'accepted';
+                  return (
+                    <div
+                      key={req._id}
+                      onClick={() => ride && navigate(`/rides/${ride._id}`)}
+                      className="p-5 rounded-2xl border border-slate-200 hover:border-blue-400 bg-white transition-all cursor-pointer shadow-xs space-y-4 hover:shadow-md"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Route Itinerary
+                          </span>
+                          <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
+                            <span>{ride?.origin?.text || 'Origin'}</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                            <span>{ride?.destination?.text || 'Destination'}</span>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-slate-500">
-                          <span>Driver: {ride?.creator?.name || 'Classmate'}</span>
-                          <span>•</span>
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
-                              req.status === 'accepted'
-                                ? 'bg-emerald-100 text-emerald-800 font-bold'
-                                : req.status === 'pending'
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-slate-200 text-slate-700'
-                            }`}
-                          >
-                            {req.status}
+
+                        <span
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase ${
+                            isAccepted
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                              : 'bg-amber-100 text-amber-800 border border-amber-200'
+                          }`}
+                        >
+                          {isAccepted ? 'Confirmed • Trip Ready' : 'Pending Confirmation'}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div>
+                          <span className="text-slate-400 block text-[10px] font-medium">DRIVER</span>
+                          <span className="font-bold text-slate-800">{ride?.creator?.name || 'Classmate Driver'}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block text-[10px] font-medium">DEPARTURE</span>
+                          <span className="font-bold text-slate-800">
+                            {ride?.departureTime
+                              ? new Date(ride.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                              : 'Scheduled'}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-slate-400 block text-[10px] font-medium">FARE SHARE</span>
+                          <span className="font-black text-emerald-600">
+                            ₹{(ride as any)?.pricing?.costPerSeat ?? (ride as any)?.pricePerSeat ?? 25}
                           </span>
                         </div>
                       </div>
 
-                      {req.status === 'accepted' && (
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-xs text-slate-400 font-medium">
+                          {isAccepted ? 'Pickup Bay OTP Ready' : 'Waiting for Driver'}
+                        </span>
                         <div className="flex items-center gap-2">
-                          <span className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-sm">
-                            Trip Ready →
-                          </span>
-                          {ride?.creator && (
+                          {isAccepted && (
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setActiveReviewModal({
-                                  tripId: req._id,
-                                  toUserId: ride.creator._id || (ride.creator as any).id,
-                                  recipientName: ride.creator.name || 'Student Driver',
-                                  role: 'driver',
-                                  college: ride.creator.college,
-                                });
+                                navigate('/tracking');
                               }}
-                              className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
-                              title="Rate driver for this commute"
+                              className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-xs"
                             >
-                              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                              <span>Rate Driver</span>
+                              Track Trip →
                             </button>
                           )}
+                          <span className="text-xs font-bold text-slate-500 hover:text-blue-600">
+                            Details →
+                          </span>
                         </div>
-                      )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )
+          ) : (
+            /* Previous Commutes Tab */
+            previousRequests.length === 0 ? (
+              <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-2xl p-8 bg-slate-50/50">
+                <CheckCircle2 className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="text-sm font-bold text-slate-800">No previous commutes yet</h3>
+                <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
+                  Completed campus carpools will be listed here. You will also be able to review and rate student drivers.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {previousRequests.map((req) => {
+                  const ride = typeof req.rideId === 'object' ? req.rideId : null;
+                  return (
+                    <div
+                      key={req._id}
+                      className="p-5 rounded-2xl border border-slate-200 bg-white transition-all shadow-xs space-y-4"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
+                            <span>{ride?.origin?.text || 'Origin'}</span>
+                            <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
+                            <span>{ride?.destination?.text || 'Destination'}</span>
+                          </div>
+                          <span className="text-xs text-slate-500 block">
+                            Driver: <span className="font-semibold text-slate-700">{ride?.creator?.name || 'Peer Driver'}</span>
+                          </span>
+                        </div>
+
+                        <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold uppercase">
+                          Completed Commute
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                        <span className="text-xs text-slate-400">
+                          {req.requestedAt ? new Date(req.requestedAt).toLocaleDateString() : 'Past Ride'}
+                        </span>
+
+                        {ride?.creator && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveReviewModal({
+                                tripId: req._id,
+                                toUserId: ride.creator._id || (ride.creator as any).id,
+                                recipientName: ride.creator.name || 'Student Driver',
+                                role: 'driver',
+                                college: ride.creator.college,
+                              });
+                            }}
+                            className="px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                          >
+                            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                            Review Driver
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )
           )}
         </div>
-      </div>
+      ) : (
+        /* Driver Main Grid Content */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Offered Rides (Driver Lane) */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                  🚗
+                </div>
+                <h2 className="text-lg font-bold text-slate-900">Your Offered Rides</h2>
+              </div>
+              <Link to="/post" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+                + Post New Ride
+              </Link>
+            </div>
+
+            {loading ? (
+              <div className="py-8 text-center text-slate-400 text-xs">Loading rides...</div>
+            ) : myOfferedRides.length === 0 ? (
+              <div className="py-8 text-center text-slate-400">
+                <Car className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                <p className="text-sm font-medium text-slate-600">No commute rides posted yet</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  Share empty seats on your daily university route and split fuel costs.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {myOfferedRides.map((ride) => (
+                  <div
+                    key={ride._id}
+                    onClick={() => navigate(`/rides/${ride._id}`)}
+                    className="p-4 rounded-xl border border-slate-200 hover:border-emerald-500 bg-slate-50 hover:bg-white transition-all cursor-pointer shadow-sm"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 font-semibold text-sm text-slate-900">
+                          <span>{ride.origin?.text || 'Origin'}</span>
+                          <ArrowRight className="w-3 h-3 text-slate-400" />
+                          <span>{ride.destination?.text || 'Destination'}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-slate-500">
+                          <span>{new Date(ride.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <span>•</span>
+                          <span>{ride.availableSeats} seats left</span>
+                          <span>•</span>
+                          <span className="font-bold text-emerald-600">₹{(ride as any).pricing?.costPerSeat ?? (ride as any).pricePerSeat ?? 0}</span>
+                        </div>
+                      </div>
+
+                      <span className="text-xs font-bold text-slate-400 hover:text-emerald-600">
+                        View Details →
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Booked Rides & Requests (Passenger Lane for Driver) */}
+          <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  🎒
+                </div>
+                <h2 className="text-lg font-bold text-slate-900">Incoming Seat Bookings</h2>
+              </div>
+              <Link to="/search" className="text-xs font-semibold text-emerald-600 hover:text-emerald-700">
+                Browse Matches →
+              </Link>
+            </div>
+
+            {loading ? (
+              <div className="py-8 text-center text-slate-400 text-xs">Loading requests...</div>
+            ) : myRequests.length === 0 ? (
+              <div className="py-8 text-center text-slate-400">
+                <Search className="w-8 h-8 mx-auto text-slate-300 mb-2" />
+                <p className="text-sm font-medium text-slate-600">No active bookings yet</p>
+                <p className="text-xs text-slate-400 mt-1">
+                  When students request seats on your ride, they will appear here for confirmation.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {myRequests.map((req) => {
+                  const ride = typeof req.rideId === 'object' ? req.rideId : null;
+                  return (
+                    <div
+                      key={req._id}
+                      onClick={() => ride && navigate(`/rides/${ride._id}`)}
+                      className="p-4 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-white transition-all cursor-pointer shadow-sm"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 font-semibold text-sm text-slate-900">
+                            <span>{ride?.origin?.text || 'Origin'}</span>
+                            <ArrowRight className="w-3 h-3 text-slate-400" />
+                            <span>{ride?.destination?.text || 'Destination'}</span>
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-slate-500">
+                            <span>Rider: {(req as any).passengerName || (req as any).passengerId?.name || 'Classmate'}</span>
+                            <span>•</span>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-semibold uppercase ${
+                                req.status === 'accepted'
+                                  ? 'bg-emerald-100 text-emerald-800 font-bold'
+                                  : req.status === 'pending'
+                                  ? 'bg-amber-100 text-amber-800'
+                                  : 'bg-slate-200 text-slate-700'
+                              }`}
+                            >
+                              {req.status}
+                            </span>
+                          </div>
+                        </div>
+
+                        {req.status === 'accepted' && (
+                          <div className="flex items-center gap-2">
+                            <span className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-sm">
+                              Trip Ready →
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Campus Peer Reviews & Mutual Trust Section */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
@@ -743,6 +967,9 @@ export const DashboardPage: React.FC = () => {
                         )}
                       </div>
                       <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                          {isDriverRev ? 'Passenger Commuter' : 'Student Driver'}
+                        </span>
                         <h4 className="font-bold text-sm text-slate-900 leading-tight">
                           {reviewerName}
                         </h4>
@@ -753,14 +980,14 @@ export const DashboardPage: React.FC = () => {
                     </div>
 
                     <span
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold ${
                         isDriverRev
                           ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                           : 'bg-blue-50 text-blue-800 border border-blue-200'
                       }`}
                     >
-                      {isDriverRev ? <Car className="w-3 h-3" /> : <UserCheck className="w-3 h-3" />}
-                      {isDriverRev ? 'Reviewed as Driver' : 'Reviewed as Passenger'}
+                      {isDriverRev ? <Car className="w-3.5 h-3.5 text-emerald-600" /> : <UserCheck className="w-3.5 h-3.5 text-blue-600" />}
+                      {isDriverRev ? 'Feedback on Driver Service' : 'Feedback on Passenger Rider'}
                     </span>
                   </div>
 

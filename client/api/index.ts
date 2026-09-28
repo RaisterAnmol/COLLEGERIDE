@@ -10,14 +10,7 @@ try {
   // Ignore in restricted environments
 }
 
-function getCleanMongoUri(): string {
-  let raw = (process.env.MONGODB_URI || '').trim();
-  // Strip surrounding quotes if accidentally included in Vercel environment variables
-  if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
-    raw = raw.slice(1, -1).trim();
-  }
-  return raw;
-}
+const MONGODB_URI = process.env.MONGODB_URI || '';
 
 const JWT_SECRET =
   process.env.JWT_SECRET ||
@@ -30,24 +23,15 @@ async function getDatabase() {
     return cachedDb;
   }
 
-  const cleanUri = getCleanMongoUri();
-  if (!cleanUri) {
+  if (!MONGODB_URI) {
     throw new Error('MONGODB_URI environment variable is missing in serverless configuration. Please set MONGODB_URI in Vercel project environment variables.');
   }
 
   if (mongoose.connection.readyState === 0) {
-    try {
-      await mongoose.connect(cleanUri, {
-        serverSelectionTimeoutMS: 15000,
-        connectTimeoutMS: 15000,
-      });
-    } catch (err: any) {
-      const errMsg = (err && err.message) ? err.message : '';
-      if (errMsg.toLowerCase().includes('auth') || errMsg.toLowerCase().includes('authentication failed')) {
-        throw new Error('Database authentication error: MongoDB Atlas rejected the database username or password in MONGODB_URI. Please verify your MongoDB Atlas Database Access credentials in Vercel.');
-      }
-      throw err;
-    }
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 15000,
+      connectTimeoutMS: 15000,
+    });
   }
 
   cachedDb = mongoose.connection.db;
@@ -319,9 +303,24 @@ export default async function handler(req: any, res: any) {
       const seats = parseInt(url.searchParams.get('seats') || '1', 10);
       const womenOnly = url.searchParams.get('womenOnlyDriver') === 'true';
       const college = url.searchParams.get('college');
+      const creatorId = url.searchParams.get('creatorId');
+
+      let query: any = {};
+      if (creatorId) {
+        try {
+          query.$or = [
+            { creator: creatorId },
+            ...(mongoose.Types.ObjectId.isValid(creatorId)
+              ? [{ creator: new mongoose.Types.ObjectId(creatorId) }]
+              : []),
+          ];
+        } catch {
+          query.creator = creatorId;
+        }
+      }
 
       // Fetch active rides
-      const rawRides = await ridesCol.find({}).limit(100).toArray();
+      const rawRides = await ridesCol.find(query).limit(100).toArray();
 
       // Collect creator IDs
       const creatorIds: any[] = [];
@@ -484,10 +483,56 @@ export default async function handler(req: any, res: any) {
         query.rideId = rideIdParam;
       }
       if (authUser && roleParam === 'passenger') {
-        query.passengerId = authUser.id;
+        try {
+          query.$or = [
+            { passengerId: authUser.id },
+            ...(mongoose.Types.ObjectId.isValid(authUser.id)
+              ? [{ passengerId: new mongoose.Types.ObjectId(authUser.id) }]
+              : []),
+          ];
+        } catch {
+          query.passengerId = authUser.id;
+        }
       }
-      const requests = await reqsCol.find(query).limit(50).toArray();
-      return res.status(200).json(requests);
+
+      const requests = await reqsCol.find(query).sort({ requestedAt: -1, createdAt: -1 }).limit(50).toArray();
+
+      const populated = await Promise.all(
+        requests.map(async (r: any) => {
+          let rideObj = r.rideId;
+          if (rideObj) {
+            try {
+              let rId = rideObj;
+              if (typeof rId === 'string' && mongoose.Types.ObjectId.isValid(rId)) {
+                rId = new mongoose.Types.ObjectId(rId);
+              }
+              const foundRide = await ridesCol.findOne({ _id: rId });
+              if (foundRide) {
+                let driverObj = null;
+                if (foundRide.creator) {
+                  try {
+                    let cId = foundRide.creator;
+                    if (typeof cId === 'string' && mongoose.Types.ObjectId.isValid(cId)) {
+                      cId = new mongoose.Types.ObjectId(cId);
+                    }
+                    driverObj = await usersCol.findOne({ _id: cId }, { projection: { passwordHash: 0 } });
+                  } catch {}
+                }
+                rideObj = {
+                  ...foundRide,
+                  creator: driverObj || { name: 'Campus Driver', college: 'Uttaranchal University' },
+                };
+              }
+            } catch {}
+          }
+          return {
+            ...r,
+            rideId: rideObj,
+          };
+        })
+      );
+
+      return res.status(200).json(populated);
     }
 
     // TRIPS: GET /api/trips
@@ -643,7 +688,19 @@ export default async function handler(req: any, res: any) {
 
       const reviews = await reviewsCol.find(query).sort({ createdAt: -1 }).toArray();
 
-      // Populate fromUserId
+      let targetUserDoc: any = null;
+      try {
+        targetUserDoc = await usersCol.findOne({
+          $or: [
+            { _id: targetUserId },
+            ...(mongoose.Types.ObjectId.isValid(targetUserId)
+              ? [{ _id: new mongoose.Types.ObjectId(targetUserId) }]
+              : []),
+          ],
+        });
+      } catch {}
+
+      // Populate fromUserId, infer role and default tags if missing on older documents
       const populated = await Promise.all(
         reviews.map(async (r: any) => {
           let reviewer: any = null;
@@ -656,8 +713,23 @@ export default async function handler(req: any, res: any) {
               reviewer = await usersCol.findOne({ _id: fId }, { projection: { passwordHash: 0 } });
             } catch {}
           }
+
+          let inferredRole = r.role;
+          if (!inferredRole) {
+            inferredRole = (targetUserDoc?.accountType === 'DRIVER') ? 'driver' : 'passenger';
+          }
+
+          let inferredTags = Array.isArray(r.tags) && r.tags.length > 0 ? r.tags : [];
+          if (inferredTags.length === 0) {
+            inferredTags = inferredRole === 'passenger'
+              ? ['Ready at Pickup Bay ⏱️', 'Respectful & Polite 🙌', 'Great Classmate 👍']
+              : ['Safe & Smooth Driving 🚗', 'Punctual Arrival ⏱️', 'Clean Vehicle ✨'];
+          }
+
           return {
             ...r,
+            role: inferredRole,
+            tags: inferredTags,
             fromUserId: reviewer || {
               name: 'Campus Commuter',
               college: 'Uttaranchal University',
