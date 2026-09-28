@@ -457,14 +457,20 @@ export default async function handler(req: any, res: any) {
       });
     }
 
-    // RIDE REQUESTS: GET /api/rides/requests
-    if (pathname === '/api/rides/requests' && method === 'GET') {
+    // RIDE REQUESTS: GET /api/requests or /api/rides/requests
+    if ((pathname === '/api/requests' || pathname === '/api/rides/requests') && method === 'GET') {
       const authUser = getAuthUser(req);
+      const roleParam = url.searchParams.get('role');
+      const rideIdParam = url.searchParams.get('rideId');
+
       let query: any = {};
-      if (authUser) {
-        query = { passengerId: authUser.id };
+      if (rideIdParam) {
+        query.rideId = rideIdParam;
       }
-      const requests = await reqsCol.find(query).limit(20).toArray();
+      if (authUser && roleParam === 'passenger') {
+        query.passengerId = authUser.id;
+      }
+      const requests = await reqsCol.find(query).limit(50).toArray();
       return res.status(200).json(requests);
     }
 

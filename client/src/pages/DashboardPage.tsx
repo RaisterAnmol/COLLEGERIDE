@@ -139,20 +139,29 @@ export const DashboardPage: React.FC = () => {
 
   const loadDashboardData = async () => {
     if (!user) return;
+    setLoading(true);
+    const userId = user._id || (user as any).id;
+
     try {
-      setLoading(true);
-      const [ridesRes, reqsRes] = await Promise.all([
-        api.getRides({ creatorId: user._id }),
+      const [ridesRes, reqsRes] = await Promise.allSettled([
+        api.getRides({ creatorId: userId }),
         api.getRequests('passenger'),
       ]);
-      setMyOfferedRides(ridesRes || []);
-      setMyRequests(reqsRes || []);
-      await loadReviews(user._id);
+
+      if (ridesRes.status === 'fulfilled') {
+        setMyOfferedRides(ridesRes.value || []);
+      }
+      if (reqsRes.status === 'fulfilled') {
+        setMyRequests(reqsRes.value || []);
+      }
     } catch (err) {
-      console.error('[Dashboard] Error loading data:', err);
-    } finally {
-      setLoading(false);
+      console.error('[Dashboard] Error loading rides/requests:', err);
     }
+
+    if (userId) {
+      await loadReviews(userId);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
