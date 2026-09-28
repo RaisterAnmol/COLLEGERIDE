@@ -10,7 +10,14 @@ try {
   // Ignore in restricted environments
 }
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+function getCleanMongoUri(): string {
+  let raw = (process.env.MONGODB_URI || '').trim();
+  // Strip surrounding quotes if accidentally included in Vercel environment variables
+  if ((raw.startsWith('"') && raw.endsWith('"')) || (raw.startsWith("'") && raw.endsWith("'"))) {
+    raw = raw.slice(1, -1).trim();
+  }
+  return raw;
+}
 
 const JWT_SECRET =
   process.env.JWT_SECRET ||
@@ -23,15 +30,24 @@ async function getDatabase() {
     return cachedDb;
   }
 
-  if (!MONGODB_URI) {
+  const cleanUri = getCleanMongoUri();
+  if (!cleanUri) {
     throw new Error('MONGODB_URI environment variable is missing in serverless configuration. Please set MONGODB_URI in Vercel project environment variables.');
   }
 
   if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 15000,
-      connectTimeoutMS: 15000,
-    });
+    try {
+      await mongoose.connect(cleanUri, {
+        serverSelectionTimeoutMS: 15000,
+        connectTimeoutMS: 15000,
+      });
+    } catch (err: any) {
+      const errMsg = (err && err.message) ? err.message : '';
+      if (errMsg.toLowerCase().includes('auth') || errMsg.toLowerCase().includes('authentication failed')) {
+        throw new Error('Database authentication error: MongoDB Atlas rejected the database username or password in MONGODB_URI. Please verify your MongoDB Atlas Database Access credentials in Vercel.');
+      }
+      throw err;
+    }
   }
 
   cachedDb = mongoose.connection.db;
