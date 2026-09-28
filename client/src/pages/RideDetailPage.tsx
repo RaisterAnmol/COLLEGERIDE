@@ -21,7 +21,12 @@ import {
   XCircle,
   AlertCircle,
   Sparkles,
+  Award,
+  UserCheck,
+  Check,
 } from "lucide-react";
+import { ReviewModal } from "../components/ReviewModal";
+import reviewsTrustImg from "../assets/illustrations/campus-reviews-trust.jpg";
 
 export const RideDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -38,6 +43,17 @@ export const RideDetailPage: React.FC = () => {
   const [successMsg, setSuccessMsg] = useState("");
   const [showDailyIdModal, setShowDailyIdModal] = useState(false);
 
+  // Driver Reviews State
+  const [driverReviews, setDriverReviews] = useState<any[]>([]);
+  const [driverReviewsLoading, setDriverReviewsLoading] = useState(false);
+  const [activeReviewModal, setActiveReviewModal] = useState<{
+    tripId: string;
+    toUserId: string;
+    recipientName: string;
+    role: 'driver' | 'passenger';
+    college?: string;
+  } | null>(null);
+
   const isDriver = ride?.creator?._id === user?._id;
 
   const loadData = async () => {
@@ -49,6 +65,19 @@ export const RideDetailPage: React.FC = () => {
         rideData = rideData.length > 0 ? rideData[0] : null;
       }
       setRide(rideData);
+
+      // Fetch driver reviews
+      if (rideData?.creator?._id) {
+        try {
+          setDriverReviewsLoading(true);
+          const revs = await api.getUserReviews(rideData.creator._id, 'driver');
+          setDriverReviews(Array.isArray(revs) ? revs : []);
+        } catch {
+          // Silent fallback
+        } finally {
+          setDriverReviewsLoading(false);
+        }
+      }
 
       joinRideRoom(id);
 
@@ -428,18 +457,37 @@ export const RideDetailPage: React.FC = () => {
                     <span>Request Sent ({myRequest.status})</span>
                   </span>
                   {myRequest.status === "accepted" && (
-                    <button
-                      onClick={() => {
-                        if (activeTrip) {
-                          navigate(`/trips/${activeTrip._id}`);
-                        } else {
-                          navigate("/dashboard");
-                        }
-                      }}
-                      className="px-4 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 cursor-pointer shadow-sm"
-                    >
-                      {activeTrip ? "Scan Pickup QR →" : "View Dashboard →"}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          if (activeTrip) {
+                            navigate(`/trips/${activeTrip._id}`);
+                          } else {
+                            navigate("/dashboard");
+                          }
+                        }}
+                        className="px-4 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 cursor-pointer shadow-sm"
+                      >
+                        {activeTrip ? "Scan Pickup QR →" : "View Dashboard →"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveReviewModal({
+                            tripId: id || 'trip_' + Date.now(),
+                            toUserId: ride.creator._id || (ride.creator as any).id,
+                            recipientName: ride.creator.name || 'Driver',
+                            role: 'driver',
+                            college: ride.creator.college,
+                          });
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                        title="Rate Driver"
+                      >
+                        <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                        <span>Rate Driver</span>
+                      </button>
+                    </div>
                   )}
                 </div>
               ) : (
@@ -456,6 +504,124 @@ export const RideDetailPage: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Verified Driver Reputation & Reviews Card */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
+              <Award className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-900 text-base">
+                Verified Driver Trust & Reviews
+              </h3>
+              <p className="text-xs text-slate-500">
+                Community feedback for {ride.creator?.name || 'this student driver'}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+              <span>{ride.creator?.rating?.toFixed(1) || '5.0'} / 5.0 Rating</span>
+            </div>
+            <span className="text-xs text-slate-400">
+              ({driverReviews.length} verified reviews)
+            </span>
+          </div>
+        </div>
+
+        {/* Driver Reviews List / Empty State */}
+        {driverReviewsLoading ? (
+          <div className="py-6 text-center text-slate-400 text-xs">
+            Loading verified driver reviews...
+          </div>
+        ) : driverReviews.length === 0 ? (
+          <div className="flex flex-col sm:flex-row items-center gap-4 p-5 rounded-2xl bg-emerald-50/60 border border-emerald-100">
+            <img
+              src={reviewsTrustImg}
+              alt="Verified Student Commutes"
+              className="w-24 h-20 rounded-xl object-cover border border-emerald-200 shadow-xs shrink-0"
+            />
+            <div className="space-y-1">
+              <h4 className="text-xs font-bold text-emerald-950 uppercase tracking-wider">
+                Exemplary Campus Safety Record
+              </h4>
+              <p className="text-xs text-slate-600">
+                {ride.creator?.name} is an active student at {ride.creator?.college || 'our university'}, verified with student ID credentials and active route telemetry.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {driverReviews.map((rev, idx) => {
+              const reviewer = rev.fromUserId || {};
+              const reviewerName = reviewer.name || 'Student Passenger';
+              return (
+                <div
+                  key={rev._id || idx}
+                  className="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2.5"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center uppercase">
+                        {reviewer.avatarURL ? (
+                          <img
+                            src={reviewer.avatarURL}
+                            alt={reviewerName}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        ) : (
+                          reviewerName.charAt(0)
+                        )}
+                      </div>
+                      <div>
+                        <span className="font-bold text-xs text-slate-900 block leading-tight">
+                          {reviewerName}
+                        </span>
+                        <span className="text-[11px] text-slate-500">
+                          {reviewer.college || 'Verified Classmate'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-0.5 text-amber-400">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={`w-3 h-3 ${
+                            s <= (rev.rating || 5)
+                              ? 'fill-amber-400 text-amber-400'
+                              : 'text-slate-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {Array.isArray(rev.tags) && rev.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {rev.tags.map((t: string) => (
+                        <span
+                          key={t}
+                          className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <p className="text-xs text-slate-600 italic">
+                    "{rev.comment || 'Smooth driving and punctual campus commute!'}"
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Interactive Walk-to-Pickup & Route Choice Navigation Map */}
@@ -554,15 +720,36 @@ export const RideDetailPage: React.FC = () => {
                         </button>
                       </>
                     ) : (
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                          req.status === "accepted"
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {req.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                            req.status === "accepted"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {req.status}
+                        </span>
+                        {req.status === "accepted" && req.passengerId && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveReviewModal({
+                                tripId: id || 'trip_' + Date.now(),
+                                toUserId: req.passengerId._id || (req.passengerId as any).id,
+                                recipientName: req.passengerId.name || 'Passenger',
+                                role: 'passenger',
+                                college: req.passengerId.college,
+                              });
+                            }}
+                            className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Rate Passenger"
+                          >
+                            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                            <span>Rate Passenger</span>
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 </div>
@@ -591,6 +778,22 @@ export const RideDetailPage: React.FC = () => {
           onVerified={() => {
             setShowDailyIdModal(false);
             executeStartTrip();
+          }}
+        />
+      )}
+
+      {/* Review Modal Dialog */}
+      {activeReviewModal && (
+        <ReviewModal
+          tripId={activeReviewModal.tripId}
+          toUserId={activeReviewModal.toUserId}
+          recipientName={activeReviewModal.recipientName}
+          role={activeReviewModal.role}
+          college={activeReviewModal.college}
+          onClose={() => setActiveReviewModal(null)}
+          onSuccess={() => {
+            setActiveReviewModal(null);
+            loadData();
           }}
         />
       )}

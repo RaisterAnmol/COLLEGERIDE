@@ -2546,6 +2546,8 @@ export async function seedDemoData() {
       fromUserId: rahul._id,
       toUserId: aditya._id,
       rating: 5,
+      role: 'driver',
+      tags: ['Safe & Smooth Driving 🚗', 'Punctual Arrival ⏱️', 'Clean Vehicle ✨'],
       comment:
         "Super punctual! Silver Honda City was very clean and great AC on a hot commute.",
       createdAt: new Date(now.getTime() - 23 * 60 * 60 * 1000),
@@ -2555,6 +2557,8 @@ export async function seedDemoData() {
       fromUserId: aditya._id,
       toUserId: rahul._id,
       rating: 5,
+      role: 'passenger',
+      tags: ['Ready at Pickup Bay ⏱️', 'Respectful & Polite 🙌', 'Great Classmate 👍'],
       comment:
         "Rahul was right on time at Gate 1 ATM. Great classmate to carpool with!",
       createdAt: new Date(now.getTime() - 23 * 60 * 60 * 1000),
@@ -2564,6 +2568,8 @@ export async function seedDemoData() {
       fromUserId: sneha._id,
       toUserId: vikram._id,
       rating: 5,
+      role: 'driver',
+      tags: ['Safe & Smooth Driving 🚗', 'Careful Hill Driving 🏔️', 'Fair Cost Split 💳'],
       comment:
         "Smooth and careful driving to the Central Station. Saved me from heavy auto rickshaw surge!",
       createdAt: new Date(now.getTime() - 47 * 60 * 60 * 1000),
@@ -2573,6 +2579,8 @@ export async function seedDemoData() {
       fromUserId: rahul._id,
       toUserId: rohan._id,
       rating: 5,
+      role: 'driver',
+      tags: ['Safe & Smooth Driving 🚗', 'Punctual Arrival ⏱️', 'Courteous & Friendly 😊'],
       comment:
         "Rohan gave an extra helmet and drove super safely on the highway. Quick bike commute!",
       createdAt: new Date(now.getTime() - 71 * 60 * 60 * 1000),
@@ -2582,6 +2590,8 @@ export async function seedDemoData() {
       fromUserId: tanvi._id,
       toUserId: aditya._id,
       rating: 5,
+      role: 'driver',
+      tags: ['Great Conversation 💬', 'Punctual Arrival ⏱️', 'Clean Vehicle ✨'],
       comment:
         "Airport pickup was flawless. Shared great tips for 1st-year engineering classes!",
       createdAt: new Date(now.getTime() - 95 * 60 * 60 * 1000),
@@ -2591,6 +2601,8 @@ export async function seedDemoData() {
       fromUserId: priya._id,
       toUserId: ananya._id,
       rating: 5,
+      role: 'driver',
+      tags: ['Safe & Smooth Driving 🚗', 'Clean Vehicle ✨', 'Courteous & Friendly 😊'],
       comment:
         "Best carpool experience ever! Loved the women-only verified safety and quiet EV ride.",
       createdAt: new Date(now.getTime() - 10 * 60 * 1000),

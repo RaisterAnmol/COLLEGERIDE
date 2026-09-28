@@ -27,9 +27,17 @@ import {
   X,
   BookOpen,
   Phone,
+  Award,
+  MessageSquare,
+  ThumbsUp,
+  Heart,
+  Check,
+  UserCheck,
 } from 'lucide-react';
 import { SearchableInput } from '../components/common/SearchableInput';
+import { ReviewModal } from '../components/ReviewModal';
 import dashboardHeroImg from '../assets/illustrations/dashboard-hero.jpg';
+import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.jpg';
 import {
   POPULAR_COLLEGES,
   POPULAR_DEPARTMENTS,
@@ -43,6 +51,18 @@ export const DashboardPage: React.FC = () => {
   const [myOfferedRides, setMyOfferedRides] = useState<IRide[]>([]);
   const [myRequests, setMyRequests] = useState<IRideRequest[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Reviews State
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [reviewFilter, setReviewFilter] = useState<'all' | 'driver' | 'passenger'>('all');
+  const [activeReviewModal, setActiveReviewModal] = useState<{
+    tripId: string;
+    toUserId: string;
+    recipientName: string;
+    role: 'driver' | 'passenger';
+    college?: string;
+  } | null>(null);
 
   // Edit Profile Modal State
   const [isEditingProfile, setIsEditingProfile] = useState(false);
@@ -105,6 +125,18 @@ export const DashboardPage: React.FC = () => {
     }
   };
 
+  const loadReviews = async (userId: string) => {
+    try {
+      setReviewsLoading(true);
+      const res = await api.getUserReviews(userId);
+      setReviews(Array.isArray(res) ? res : []);
+    } catch (err) {
+      console.warn('[Dashboard] Could not load reviews:', err);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
   const loadDashboardData = async () => {
     if (!user) return;
     try {
@@ -115,6 +147,7 @@ export const DashboardPage: React.FC = () => {
       ]);
       setMyOfferedRides(ridesRes || []);
       setMyRequests(reqsRes || []);
+      await loadReviews(user._id);
     } catch (err) {
       console.error('[Dashboard] Error loading data:', err);
     } finally {
@@ -125,6 +158,27 @@ export const DashboardPage: React.FC = () => {
   useEffect(() => {
     loadDashboardData();
   }, [user]);
+
+  // Derived review calculations
+  const driverReviews = reviews.filter((r) => r.role === 'driver');
+  const passengerReviews = reviews.filter((r) => r.role === 'passenger');
+  const displayedReviews =
+    reviewFilter === 'driver'
+      ? driverReviews
+      : reviewFilter === 'passenger'
+      ? passengerReviews
+      : reviews;
+
+  // Aggregate compliment tags
+  const tagCounts: Record<string, number> = {};
+  for (const r of reviews) {
+    if (Array.isArray(r.tags)) {
+      for (const t of r.tags) {
+        tagCounts[t] = (tagCounts[t] || 0) + 1;
+      }
+    }
+  }
+  const topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
 
   const userAvatar =
     user?.avatarURL ||
@@ -480,9 +534,31 @@ export const DashboardPage: React.FC = () => {
                       </div>
 
                       {req.status === 'accepted' && (
-                        <span className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-sm">
-                          Trip Ready →
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="px-3 py-1 bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-sm">
+                            Trip Ready →
+                          </span>
+                          {ride?.creator && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveReviewModal({
+                                  tripId: req._id,
+                                  toUserId: ride.creator._id || (ride.creator as any).id,
+                                  recipientName: ride.creator.name || 'Student Driver',
+                                  role: 'driver',
+                                  college: ride.creator.college,
+                                });
+                              }}
+                              className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                              title="Rate driver for this commute"
+                            >
+                              <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                              <span>Rate Driver</span>
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -491,6 +567,237 @@ export const DashboardPage: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Campus Peer Reviews & Mutual Trust Section */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
+        {/* Header & Title */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-md shadow-emerald-500/20 shrink-0">
+              <Award className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-black text-slate-900 tracking-tight">Campus Peer Reviews & Trust</h2>
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-bold">
+                  Mutual Ratings
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Verified feedback from student drivers and passengers across Uttarakhand universities
+              </p>
+            </div>
+          </div>
+
+          {/* Filter Tabs */}
+          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setReviewFilter('all')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                reviewFilter === 'all'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              All ({reviews.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setReviewFilter('driver')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                reviewFilter === 'driver'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Car className="w-3 h-3" />
+              As Driver ({driverReviews.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setReviewFilter('passenger')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                reviewFilter === 'passenger'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <UserCheck className="w-3 h-3" />
+              As Passenger ({passengerReviews.length})
+            </button>
+          </div>
+        </div>
+
+        {/* Reputation Visual Banner & Top Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-slate-50 border border-emerald-100/90 rounded-2xl p-5 sm:p-6">
+          <div className="md:col-span-4 flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-emerald-100 shadow-xs text-center">
+            <div className="text-4xl font-black text-slate-900 tracking-tight flex items-center gap-1.5">
+              <span>{user?.rating?.toFixed(1) || '5.0'}</span>
+              <Star className="w-7 h-7 fill-amber-400 text-amber-400" />
+            </div>
+            <div className="flex items-center gap-1 text-amber-400 my-1">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star key={s} className="w-4 h-4 fill-amber-400 text-amber-400" />
+              ))}
+            </div>
+            <p className="text-xs font-bold text-slate-700 mt-1">
+              Based on {reviews.length} verified campus commutes
+            </p>
+            <span className="mt-2 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+              <ShieldCheck className="w-3 h-3 text-emerald-600" />
+              100% University Verified
+            </span>
+          </div>
+
+          <div className="md:col-span-8 flex flex-col sm:flex-row items-center gap-5">
+            <div className="w-full sm:w-44 h-32 rounded-xl overflow-hidden border border-emerald-200/80 shrink-0 shadow-xs relative">
+              <img
+                src={reviewsTrustImg}
+                alt="Verified Campus Peer Trust"
+                className="w-full h-full object-cover object-center scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent flex items-end p-2">
+                <span className="text-[10px] font-bold text-white bg-emerald-600/90 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                  Campus Trust Network
+                </span>
+              </div>
+            </div>
+
+            <div className="space-y-2.5 w-full">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                Top Peer Badges & Commendations
+              </h4>
+              {topTags.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {topTags.map(([tag, count]) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white border border-emerald-200 text-emerald-900 text-xs font-semibold shadow-2xs"
+                    >
+                      <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
+                      <span>{tag}</span>
+                      <span className="ml-0.5 px-1.5 py-0.2 bg-emerald-100 text-emerald-800 rounded-full text-[10px] font-black">
+                        {count}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-slate-500 italic">
+                  Badges appear automatically as drivers and passengers exchange compliments upon ride completion.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Reviews Feed */}
+        {reviewsLoading ? (
+          <div className="py-12 text-center text-slate-400 text-xs">
+            <div className="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            Loading verified reviews...
+          </div>
+        ) : displayedReviews.length === 0 ? (
+          <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-2xl p-6 bg-slate-50/50">
+            <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+            <p className="text-sm font-bold text-slate-700">No {reviewFilter !== 'all' ? reviewFilter : ''} reviews yet</p>
+            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+              Completed commutes automatically unlock mutual reviews. Both the driver and passengers rate each other to ensure a safe, high-trust campus carpool community.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {displayedReviews.map((rev, idx) => {
+              const reviewer = rev.fromUserId || {};
+              const reviewerName = reviewer.name || 'Campus Commuter';
+              const reviewerCollege = reviewer.college || user?.college || 'University Peer';
+              const isDriverRev = rev.role === 'driver';
+
+              return (
+                <div
+                  key={rev._id || idx}
+                  className="p-5 rounded-2xl border border-slate-200 hover:border-emerald-300 bg-white transition-all shadow-xs space-y-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white font-bold text-sm flex items-center justify-center shrink-0 uppercase shadow-xs">
+                        {reviewer.avatarURL ? (
+                          <img
+                            src={reviewer.avatarURL}
+                            alt={reviewerName}
+                            className="w-full h-full object-cover rounded-xl"
+                          />
+                        ) : (
+                          reviewerName.charAt(0)
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-slate-900 leading-tight">
+                          {reviewerName}
+                        </h4>
+                        <p className="text-xs text-slate-500 font-medium">
+                          {reviewerCollege} {reviewer.year ? `• Year ${reviewer.year}` : ''}
+                        </p>
+                      </div>
+                    </div>
+
+                    <span
+                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                        isDriverRev
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                          : 'bg-blue-50 text-blue-800 border border-blue-200'
+                      }`}
+                    >
+                      {isDriverRev ? <Car className="w-3 h-3" /> : <UserCheck className="w-3 h-3" />}
+                      {isDriverRev ? 'Reviewed as Driver' : 'Reviewed as Passenger'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-0.5 text-amber-400">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-3.5 h-3.5 ${
+                            star <= (rev.rating || 5)
+                              ? 'fill-amber-400 text-amber-400'
+                              : 'text-slate-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-xs font-bold text-slate-800">
+                      {rev.rating ? `${rev.rating}.0` : '5.0'}
+                    </span>
+                    <span className="text-slate-300">•</span>
+                    <span className="text-[11px] text-slate-400">
+                      {rev.createdAt ? new Date(rev.createdAt).toLocaleDateString() : 'Verified Commute'}
+                    </span>
+                  </div>
+
+                  {Array.isArray(rev.tags) && rev.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {rev.tags.map((t: string) => (
+                        <span
+                          key={t}
+                          className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-semibold border border-slate-200"
+                        >
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100 italic">
+                    "{rev.comment || 'Smooth, punctual and courteous campus commute!'}"
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       </div>
 
@@ -664,6 +971,22 @@ export const DashboardPage: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Review Modal Dialog */}
+      {activeReviewModal && (
+        <ReviewModal
+          tripId={activeReviewModal.tripId}
+          toUserId={activeReviewModal.toUserId}
+          recipientName={activeReviewModal.recipientName}
+          role={activeReviewModal.role}
+          college={activeReviewModal.college}
+          onClose={() => setActiveReviewModal(null)}
+          onSuccess={() => {
+            if (user) loadReviews(user._id);
+            setActiveReviewModal(null);
+          }}
+        />
       )}
     </div>
   );

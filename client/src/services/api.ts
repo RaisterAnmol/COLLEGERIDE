@@ -289,6 +289,8 @@ class ApiService {
     toUserId: string;
     rating: number;
     comment?: string;
+    role?: "driver" | "passenger";
+    tags?: string[];
   }) {
     return this.request<any>("/api/reviews", {
       method: "POST",
@@ -296,8 +298,9 @@ class ApiService {
     });
   }
 
-  async getUserReviews(userId: string) {
-    return this.request<any[]>(`/api/users/${userId}/reviews`);
+  async getUserReviews(userId: string, role?: "driver" | "passenger") {
+    const qs = role ? `?role=${role}` : "";
+    return this.request<any[]>(`/api/users/${userId}/reviews${qs}`);
   }
 
   // Mobility Analytics

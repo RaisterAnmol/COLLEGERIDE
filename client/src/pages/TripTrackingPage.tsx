@@ -737,6 +737,8 @@ export const TripTrackingPage: React.FC = () => {
           tripId={trip._id}
           toUserId={recipientForReview._id}
           recipientName={recipientForReview.name || 'Commuter'}
+          role={isDriver ? 'passenger' : 'driver'}
+          college={(recipientForReview as any)?.college}
           onClose={() => setShowReview(false)}
           onSuccess={() => {
             navigate('/dashboard');

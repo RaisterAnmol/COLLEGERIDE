@@ -112,6 +112,7 @@ export default async function handler(req: any, res: any) {
     const reqsCol = db.collection('riderequests');
     const tripsCol = db.collection('trips');
     const hubsCol = db.collection('pickuphubs');
+    const reviewsCol = db.collection('reviews');
 
     // Healthcheck
     if (pathname === '/api/health' || pathname === '/api') {
@@ -515,6 +516,136 @@ export default async function handler(req: any, res: any) {
         .toArray();
 
       return res.status(200).json(pendingUsers);
+    }
+
+    // REVIEWS: POST /api/reviews
+    if (pathname === '/api/reviews' && method === 'POST') {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required to submit reviews' });
+      }
+
+      const body = await parseBody(req);
+      const { tripId, toUserId, rating, comment, role, tags } = body;
+
+      if (!toUserId || !rating) {
+        return res.status(400).json({ code: 'BAD_REQUEST', message: 'toUserId and rating are required' });
+      }
+
+      if (authUser.id === toUserId) {
+        return res.status(400).json({ code: 'BAD_REQUEST', message: 'You cannot review yourself' });
+      }
+
+      const numericRating = Math.max(1, Math.min(5, parseInt(rating, 10) || 5));
+      const reviewerId = authUser.id;
+
+      // Check for existing review
+      const existing = await reviewsCol.findOne({
+        tripId: tripId ? tripId.toString() : { $exists: true },
+        fromUserId: reviewerId,
+        toUserId: toUserId.toString(),
+      });
+      if (existing) {
+        return res.status(409).json({ code: 'CONFLICT', message: 'You have already reviewed this peer for this commute' });
+      }
+
+      const recipientRole = role || 'driver';
+
+      const newReview = {
+        tripId: tripId || 'trip_' + Date.now(),
+        fromUserId: reviewerId,
+        toUserId: toUserId.toString(),
+        rating: numericRating,
+        comment: (comment || '').trim(),
+        role: recipientRole,
+        tags: Array.isArray(tags) ? tags : [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await reviewsCol.insertOne(newReview);
+
+      // Recompute recipient's average rating
+      const allUserReviews = await reviewsCol.find({ toUserId: toUserId.toString() }).toArray();
+      const totalScore = allUserReviews.reduce((sum: number, r: any) => sum + (r.rating || 5), 0);
+      const avgRating = Math.round((totalScore / (allUserReviews.length || 1)) * 10) / 10;
+
+      try {
+        let uId: any = toUserId;
+        try {
+          if (mongoose.Types.ObjectId.isValid(toUserId)) {
+            uId = new mongoose.Types.ObjectId(toUserId);
+          }
+        } catch {}
+        await usersCol.updateOne({ _id: uId }, { $set: { rating: avgRating } });
+      } catch (err) {
+        console.warn('Could not update user rating:', err);
+      }
+
+      let reviewerProfile: any = null;
+      try {
+        reviewerProfile = await usersCol.findOne(
+          { _id: new mongoose.Types.ObjectId(reviewerId) },
+          { projection: { passwordHash: 0 } }
+        );
+      } catch {}
+
+      return res.status(201).json({
+        review: {
+          ...newReview,
+          _id: result.insertedId,
+          fromUserId: reviewerProfile || { name: authUser.email?.split('@')[0] || 'Peer Commuter' },
+        },
+        updatedRating: avgRating,
+      });
+    }
+
+    // REVIEWS: GET /api/users/:id/reviews
+    const userReviewsMatch = pathname.match(/^\/api\/users\/([^/]+)\/reviews$/);
+    if (userReviewsMatch && method === 'GET') {
+      const targetUserId = userReviewsMatch[1];
+      const roleFilter = url.searchParams.get('role');
+
+      const query: any = {
+        $or: [
+          { toUserId: targetUserId },
+          ...(mongoose.Types.ObjectId.isValid(targetUserId)
+            ? [{ toUserId: new mongoose.Types.ObjectId(targetUserId) }]
+            : []),
+        ],
+      };
+
+      if (roleFilter && (roleFilter === 'driver' || roleFilter === 'passenger')) {
+        query.role = roleFilter;
+      }
+
+      const reviews = await reviewsCol.find(query).sort({ createdAt: -1 }).toArray();
+
+      // Populate fromUserId
+      const populated = await Promise.all(
+        reviews.map(async (r: any) => {
+          let reviewer: any = null;
+          if (r.fromUserId) {
+            try {
+              let fId = r.fromUserId;
+              if (typeof fId === 'string' && mongoose.Types.ObjectId.isValid(fId)) {
+                fId = new mongoose.Types.ObjectId(fId);
+              }
+              reviewer = await usersCol.findOne({ _id: fId }, { projection: { passwordHash: 0 } });
+            } catch {}
+          }
+          return {
+            ...r,
+            fromUserId: reviewer || {
+              name: 'Campus Commuter',
+              college: 'Uttaranchal University',
+              year: 3,
+            },
+          };
+        })
+      );
+
+      return res.status(200).json(populated);
     }
 
     // 404 for unhandled API paths

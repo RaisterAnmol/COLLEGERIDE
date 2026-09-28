@@ -7,6 +7,8 @@ export interface IReview extends Document {
   toUserId: mongoose.Types.ObjectId;
   rating: number; // 1 to 5
   comment: string;
+  role?: 'driver' | 'passenger'; // Role of the user being reviewed
+  tags?: string[]; // e.g. "Punctual Arrival", "Safe Driving", etc.
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,6 +43,15 @@ const ReviewSchema = new Schema<IReview>(
       type: String,
       trim: true,
       default: '',
+    },
+    role: {
+      type: String,
+      enum: ['driver', 'passenger'],
+      default: 'driver',
+    },
+    tags: {
+      type: [String],
+      default: [],
     },
   },
   { timestamps: true }

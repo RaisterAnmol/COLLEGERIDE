@@ -12,6 +12,8 @@ const createReviewSchema = z.object({
   toUserId: z.string().refine((id) => mongoose.Types.ObjectId.isValid(id), "Invalid toUserId"),
   rating: z.coerce.number().int().min(1, "Rating must be at least 1").max(5, "Rating cannot exceed 5"),
   comment: z.string().trim().max(1000).optional().default(""),
+  role: z.enum(["driver", "passenger"]).optional(),
+  tags: z.array(z.string().trim().max(50)).optional().default([]),
 });
 
 // POST /api/reviews
@@ -26,7 +28,7 @@ router.post("/", requireAuth, async (req: AuthenticatedRequest, res: Response): 
       return;
     }
 
-    const { tripId, toUserId, rating, comment } = parseResult.data;
+    const { tripId, toUserId, rating, comment, role, tags } = parseResult.data;
     const fromUserId = req.user!.id;
 
     if (fromUserId === toUserId) {
@@ -61,12 +63,16 @@ router.post("/", requireAuth, async (req: AuthenticatedRequest, res: Response): 
       return;
     }
 
+    const computedRole = role || (driverMatch === toUserId ? "driver" : "passenger");
+
     const review = await Review.create({
       tripId,
       fromUserId,
       toUserId,
       rating,
       comment: comment || "",
+      role: computedRole,
+      tags: tags || [],
     });
 
     // Recompute recipient's average rating
@@ -77,8 +83,8 @@ router.post("/", requireAuth, async (req: AuthenticatedRequest, res: Response): 
     await User.findByIdAndUpdate(toUserId, { rating: avgRating });
 
     const populatedReview = await Review.findById(review._id)
-      .populate("fromUserId", "name avatarURL college year")
-      .populate("toUserId", "name avatarURL college year");
+      .populate("fromUserId", "name avatarURL college year department")
+      .populate("toUserId", "name avatarURL college year department");
 
     res.status(201).json({
       review: populatedReview,
@@ -94,13 +100,19 @@ router.post("/", requireAuth, async (req: AuthenticatedRequest, res: Response): 
 router.get("/users/:id/reviews", async (req, res): Promise<void> => {
   try {
     const { id } = req.params;
+    const { role } = req.query;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({ code: "BAD_REQUEST", error: "Invalid user ID" });
       return;
     }
 
-    const reviews = await Review.find({ toUserId: id })
-      .populate("fromUserId", "name avatarURL college year")
+    const filter: any = { toUserId: id };
+    if (role && (role === "driver" || role === "passenger")) {
+      filter.role = role;
+    }
+
+    const reviews = await Review.find(filter)
+      .populate("fromUserId", "name avatarURL college year department")
       .sort({ createdAt: -1 });
 
     res.status(200).json(reviews);
