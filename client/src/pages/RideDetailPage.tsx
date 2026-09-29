@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { ReviewModal } from "../components/ReviewModal";
 import reviewsTrustImg from "../assets/illustrations/campus-reviews-trust.jpg";
+import { sanitizeLocationText } from "../utils/sanitizeLocation";
 
 export const RideDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -306,7 +307,7 @@ export const RideDetailPage: React.FC = () => {
                     Departure Origin
                   </span>
                   <div className="text-base font-bold text-slate-900">
-                    {ride.origin.text}
+                    {sanitizeLocationText(ride.origin.text)}
                   </div>
                   <div className="text-xs text-slate-500">
                     Coords: ({ride.origin.lat.toFixed(4)},{" "}
@@ -318,7 +319,7 @@ export const RideDetailPage: React.FC = () => {
                     Destination Arrival
                   </span>
                   <div className="text-base font-bold text-slate-900">
-                    {ride.destination.text}
+                    {sanitizeLocationText(ride.destination.text)}
                   </div>
                   <div className="text-xs text-slate-500">
                     Coords: ({ride.destination.lat.toFixed(4)},{" "}
@@ -374,8 +375,8 @@ export const RideDetailPage: React.FC = () => {
               <span>🗺️ Verified Highway Route & Designated Campus Pickup Bay</span>
             </h3>
             <PickupAndRouteNavigationMap
-              originText={ride.origin.text}
-              destinationText={ride.destination.text}
+              originText={sanitizeLocationText(ride.origin.text)}
+              destinationText={sanitizeLocationText(ride.destination.text)}
             />
           </div>
         </div>
@@ -626,8 +627,8 @@ export const RideDetailPage: React.FC = () => {
 
       {/* Interactive Walk-to-Pickup & Route Choice Navigation Map */}
       <PickupAndRouteNavigationMap
-        originText={ride.origin.text}
-        destinationText={ride.destination.text}
+        originText={sanitizeLocationText(ride.origin.text)}
+        destinationText={sanitizeLocationText(ride.destination.text)}
       />
 
       {/* Driver Incoming Requests Panel */}
@@ -764,7 +765,7 @@ export const RideDetailPage: React.FC = () => {
         <ChatModal
           rideId={ride._id}
           onClose={() => setShowChat(false)}
-          title={`Ride Chat: ${ride.origin.text} → ${ride.destination.text}`}
+          title={`Ride Chat: ${sanitizeLocationText(ride.origin.text)} → ${sanitizeLocationText(ride.destination.text)}`}
         />
       )}
 

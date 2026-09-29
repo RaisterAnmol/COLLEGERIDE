@@ -10,7 +10,7 @@ const WEEK_DAYS = [
     fullDay: 'Monday',
     time: '08:15 AM',
     driver: DEMO_STUDENTS.aditya,
-    route: 'Rohini Sector 14 → DTU Mech Portico',
+    route: 'Premnagar Chowk Market → UIT Engineering Portico',
     status: 'Automated Class Schedule',
   },
   {
@@ -19,7 +19,7 @@ const WEEK_DAYS = [
     fullDay: 'Tuesday',
     time: '08:30 AM',
     driver: DEMO_STUDENTS.ananya,
-    route: 'Pitampura Metro → IGDTUW & DTU Hub',
+    route: 'Selaqui Industrial Hub → Uttaranchal University',
     status: 'Automated Class Schedule',
   },
   {
@@ -28,7 +28,7 @@ const WEEK_DAYS = [
     fullDay: 'Wednesday',
     time: '08:15 AM',
     driver: DEMO_STUDENTS.aditya,
-    route: 'Rohini Sector 14 → DTU Mech Portico',
+    route: 'Premnagar Chowk Market → UIT Engineering Portico',
     status: 'Automated Class Schedule',
   },
   {
@@ -37,7 +37,7 @@ const WEEK_DAYS = [
     fullDay: 'Thursday',
     time: '08:30 AM',
     driver: DEMO_STUDENTS.ananya,
-    route: 'Pitampura Metro → IGDTUW & DTU Hub',
+    route: 'Selaqui Industrial Hub → Uttaranchal University',
     status: 'Automated Class Schedule',
   },
   {
@@ -46,7 +46,7 @@ const WEEK_DAYS = [
     fullDay: 'Friday',
     time: '08:15 AM',
     driver: DEMO_STUDENTS.siddharth,
-    route: 'Dwarka / Janakpuri → Campus Gate',
+    route: 'Suddhowala Chowk → Campus Gate 1',
     status: 'Automated Class Schedule',
   },
 ];

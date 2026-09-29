@@ -16,7 +16,7 @@ export const NetworkSection: React.FC = () => {
             Moves Together.
           </h2>
           <p className="mt-4 text-base sm:text-lg text-[#98A2B3] max-w-xl">
-            A real-time transit mesh connecting student residences, metro interchanges, and college departments into one unified mobility collective.
+            A real-time transit mesh connecting student residences, transit corridors, and college departments into one unified mobility collective.
           </p>
         </div>
 
@@ -26,7 +26,7 @@ export const NetworkSection: React.FC = () => {
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-[#18A66A] animate-pulse" />
               <span className="text-white font-bold">REGIONAL CAMPUS TOPOLOGY:</span>
-              <span>DELHI-NCR INTERCONNECT</span>
+              <span>DEHRADUN-PREMNAGAR INTERCONNECT</span>
             </div>
             <div className="hidden sm:flex items-center gap-4">
               <span>LATENCY: 14MS</span>
@@ -58,51 +58,51 @@ export const NetworkSection: React.FC = () => {
                 className="route-dash-moving"
               />
 
-              {/* Node 1: West Hub (NSUT / Dwarka) */}
+              {/* Node 1: West Hub (Selaqui / Suddhowala) */}
               <g transform="translate(140, 150)">
                 <circle r="22" fill="#101515" stroke="#1769FF" strokeWidth="2.5" />
                 <circle r="8" fill="#1769FF" />
                 <text x="0" y="-32" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="700">
-                  NSUT / DWARKA
+                  SELAQUI / SUDDHOWALA
                 </text>
                 <text x="0" y="38" textAnchor="middle" fill="#98A2B3" fontSize="10" fontFamily="monospace">
                   920 Active Commuters
                 </text>
               </g>
 
-              {/* Node 2: Central Metro Interchange */}
+              {/* Node 2: Central Premnagar Chowk Transit Hub */}
               <g transform="translate(450, 150)">
                 <circle r="26" fill="#101515" stroke="#FFFFFF" strokeWidth="2.5" />
                 <circle r="10" fill="#FFFFFF" />
                 <text x="0" y="-36" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="800">
-                  METRO TRANSIT INTERCHANGE
+                  PREMNAGAR CHOWK TRANSIT HUB
                 </text>
                 <text x="0" y="42" textAnchor="middle" fill="#18A66A" fontSize="10" fontFamily="monospace">
                   18 Active Hub Convoys
                 </text>
               </g>
 
-              {/* Node 3: North Campus (DTU) */}
+              {/* Node 3: Uttaranchal University (UU) */}
               <g transform="translate(760, 80)">
                 <circle r="24" fill="#101515" stroke="#18A66A" strokeWidth="2.5" />
                 <circle r="9" fill="#18A66A" />
                 <text x="0" y="-34" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="700">
-                  DTU MAIN CAMPUS
+                  UTTARANCHAL UNIVERSITY
                 </text>
                 <text x="0" y="38" textAnchor="middle" fill="#98A2B3" fontSize="10" fontFamily="monospace">
-                  1,480 Verified Students
+                  1,850 Verified Students
                 </text>
               </g>
 
-              {/* Node 4: East Hub (DU North Campus) */}
+              {/* Node 4: East Hub (Graphic Era / UPES) */}
               <g transform="translate(760, 220)">
                 <circle r="20" fill="#101515" stroke="#1769FF" strokeWidth="2" />
                 <circle r="7" fill="#1769FF" />
                 <text x="0" y="34" textAnchor="middle" fill="#FFFFFF" fontSize="12" fontWeight="700">
-                  DU NORTH CAMPUS
+                  GRAPHIC ERA / UPES HUB
                 </text>
                 <text x="0" y="-28" textAnchor="middle" fill="#98A2B3" fontSize="10" fontFamily="monospace">
-                  802 Verified Students
+                  1,420 Verified Students
                 </text>
               </g>
             </svg>

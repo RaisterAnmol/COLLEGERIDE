@@ -52,7 +52,7 @@ export const CollegesSection: React.FC = () => {
           <div className="flex items-center justify-between pb-4 border-b border-[#DDE1DE] font-mono text-xs">
             <div className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-[#1769FF]" />
-              <span className="font-bold text-[#111111]">DTU CAMPUS MOBILITY TELEMETRY</span>
+              <span className="font-bold text-[#111111]">UU CAMPUS MOBILITY TELEMETRY</span>
             </div>
             <span className="text-[#18A66A] font-bold">ONLINE</span>
           </div>
@@ -82,7 +82,7 @@ export const CollegesSection: React.FC = () => {
           </div>
 
           <div className="mt-6 pt-4 border-t border-[#DDE1DE] flex items-center justify-between text-xs text-[#646A67] font-mono">
-            <span>Enclave: Delhi Tech University</span>
+            <span>Enclave: Uttaranchal University</span>
             <span className="text-[#1769FF] font-semibold">Protected Domain</span>
           </div>
         </div>

@@ -87,14 +87,14 @@ describe("Super Senior Agent — Complete Live E2E Verification Pass", () => {
       .set("Authorization", `Bearer ${adityaToken}`)
       .send({
         origin: {
-          text: "Campus Gate 1 (Main Entrance)",
-          lat: 28.545,
-          lng: 77.192,
+          text: "Campus Gate 1 (Main Entrance, Premnagar Road)",
+          lat: 30.3415,
+          lng: 77.9440,
         },
         destination: {
-          text: "City Metro Station (Blue Line)",
-          lat: 28.567,
-          lng: 77.208,
+          text: "Premnagar Chowk Market",
+          lat: 30.3340,
+          lng: 77.9620,
         },
         departureTime: tomorrow.toISOString(),
         availableSeats: 3,
@@ -110,10 +110,10 @@ describe("Super Senior Agent — Complete Live E2E Verification Pass", () => {
     const searchRes = await request(app)
       .get("/api/rides")
       .query({
-        originLat: 28.545,
-        originLng: 77.192,
-        destLat: 28.567,
-        destLng: 77.208,
+        originLat: 30.3415,
+        originLng: 77.9440,
+        destLat: 30.3340,
+        destLng: 77.9620,
         seats: 1,
       })
       .set("Authorization", `Bearer ${rahulToken}`);

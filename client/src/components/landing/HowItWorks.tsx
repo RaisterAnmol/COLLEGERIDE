@@ -10,14 +10,14 @@ const STEPS = [
     description:
       'Enter your morning departure point and targeted college portico. CampusRide instantly scans active university corridors for classmates traveling that exact road.',
     details: [
-      { label: 'Origin Precision', value: 'Metro, Apartment, or Hostel Gate' },
+      { label: 'Origin Precision', value: 'Chowk Hub, Apartment, or Hostel Gate' },
       { label: 'Time Tolerance', value: 'Flexible ±15 min window' },
       { label: 'Zero Commercial Cabs', value: 'Direct student driver matching' },
     ],
     mockup: {
       type: 'input',
-      from: 'Sector 14 Rohini (Block C)',
-      to: 'DTU Main Campus Gate 1',
+      from: 'Premnagar Chowk Market',
+      to: 'Campus Gate 1 (Uttaranchal University)',
       time: '08:15 AM Slot',
     },
   },
@@ -35,8 +35,8 @@ const STEPS = [
     mockup: {
       type: 'match',
       name: 'Aditya Kumar',
-      college: 'DTU Mechanical Engineering · 3rd Yr',
-      car: 'Honda City (DL 8C AK 4920)',
+      college: 'Uttaranchal University Mechanical · 3rd Yr',
+      car: 'Honda City (UK 07 AK 4821)',
       score: '94% Match',
       seats: '2 Seats Available',
     },

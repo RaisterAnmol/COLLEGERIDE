@@ -3,7 +3,7 @@
 ## 1. Multi-Tenancy Architecture
 
 CampusRide is engineered as a multi-tenant platform centered around two core domain primitives:
-- `Institution`: Accredited university entity with authorized email domains (e.g. `dtu.ac.in`, `college.edu`).
+- `Institution`: Accredited university entity with authorized email domains (e.g. `uuofficial.edu.in`, `college.edu`).
 - `Campus`: Physical campuses belonging to an institution, with distinct pickup hubs, safe parking shelters, and geofence safety zones.
 
 ### Cross-Institution Data Isolation

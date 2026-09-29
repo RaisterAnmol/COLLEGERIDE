@@ -8,13 +8,13 @@ import {
 describe('Section 8.1 Matching Engine Unit Tests (Senior QA Gatekeeper)', () => {
   const baseTime = new Date('2026-09-20T09:00:00.000Z');
 
-  // Campus Gate (Origin) & City Metro Station (Destination)
-  const campusOrigin = { lat: 28.545, lng: 77.192 };
-  const metroDest = { lat: 28.567, lng: 77.208 };
+  // Campus Gate (Origin) & Premnagar Chowk (Destination)
+  const campusOrigin = { lat: 30.3415, lng: 77.9440 };
+  const premnagarDest = { lat: 30.3340, lng: 77.9620 };
 
   const defaultDriverRide: DriverRideInput = {
     origin: campusOrigin,
-    destination: metroDest,
+    destination: premnagarDest,
     departureTime: baseTime,
     availableSeats: 3,
     driverGender: 'male',
@@ -27,7 +27,7 @@ describe('Section 8.1 Matching Engine Unit Tests (Senior QA Gatekeeper)', () => 
   test('1. Same route, same time -> score ≈ 1.0 (within rounding)', () => {
     const passengerQuery: PassengerQueryInput = {
       origin: { ...campusOrigin },
-      destination: { ...metroDest },
+      destination: { ...premnagarDest },
       departureTime: new Date(baseTime.getTime()),
       requestedSeats: 1,
     };
@@ -68,7 +68,7 @@ describe('Section 8.1 Matching Engine Unit Tests (Senior QA Gatekeeper)', () => 
 
     const passengerQuery: PassengerQueryInput = {
       origin: { ...campusOrigin },
-      destination: { ...metroDest },
+      destination: { ...premnagarDest },
       departureTime: delayedTime,
       requestedSeats: 1,
     };
@@ -84,7 +84,7 @@ describe('Section 8.1 Matching Engine Unit Tests (Senior QA Gatekeeper)', () => 
   test('4. Seats available < seats requested -> disqualified regardless of other scores', () => {
     const passengerQuery: PassengerQueryInput = {
       origin: { ...campusOrigin },
-      destination: { ...metroDest },
+      destination: { ...premnagarDest },
       departureTime: baseTime,
       requestedSeats: 4, // driver only has 3
     };
@@ -101,7 +101,7 @@ describe('Section 8.1 Matching Engine Unit Tests (Senior QA Gatekeeper)', () => 
     // Priya requests a women-only driver, but Aditya is male
     const passengerQuery: PassengerQueryInput = {
       origin: { ...campusOrigin },
-      destination: { ...metroDest },
+      destination: { ...premnagarDest },
       departureTime: baseTime,
       requestedSeats: 1,
       preferences: {

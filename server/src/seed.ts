@@ -62,87 +62,87 @@ export async function seedDemoData() {
   // ==========================================
   // 0. MULTI-INSTITUTION INFRASTRUCTURE
   // ==========================================
-  const dtuInstitution = await Institution.create({
-    name: "Delhi Technological University",
-    code: "DTU",
-    domain: "dtu.ac.in",
-    allowedDomains: ["dtu.ac.in", "college.edu"],
+  const geuInstitution = await Institution.create({
+    name: "Graphic Era University",
+    code: "GEU",
+    domain: "geu.ac.in",
+    allowedDomains: ["geu.ac.in", "college.edu"],
     active: true,
   });
 
   const iitInstitution = await Institution.create({
-    name: "Indian Institute of Technology Delhi",
-    code: "IITD",
-    domain: "iitd.ac.in",
-    allowedDomains: ["iitd.ac.in", "college.edu"],
+    name: "UPES Dehradun",
+    code: "UPES",
+    domain: "upes.ac.in",
+    allowedDomains: ["upes.ac.in", "college.edu"],
     active: true,
   });
 
-  const dtuCampus = await Campus.create({
-    institutionId: dtuInstitution._id,
-    name: "Main Campus - Bawana Road",
-    code: "DTU-MAIN",
+  const geuCampus = await Campus.create({
+    institutionId: geuInstitution._id,
+    name: "Graphic Era Main Campus - Bell Road",
+    code: "GEU-MAIN",
     location: {
       type: "Point",
-      coordinates: [77.1173, 28.7501],
+      coordinates: [77.9947, 30.2687],
     },
-    address: "Shahbad Daulatpur, Main Bawana Road, Delhi 110042",
+    address: "566/6, Bell Road, Society Area, Clement Town, Dehradun 248002",
     active: true,
   });
 
   const hubGate1 = await PickupHub.create({
-    institutionId: dtuInstitution._id,
-    campusId: dtuCampus._id,
-    name: "Campus Main Gate 1 (Bawana Road)",
-    code: "GATE-1",
+    institutionId: geuInstitution._id,
+    campusId: geuCampus._id,
+    name: "Graphic Era Main Gate 1 (Bell Road)",
+    code: "GEU-GATE1",
     location: {
       type: "Point",
-      coordinates: [77.1165, 28.7495],
+      coordinates: [77.9945, 30.2685],
     },
-    address: "Main Entrance Gate 1, Bawana Road, Delhi",
+    address: "Main Entrance Gate 1, Bell Road, Clement Town, Dehradun",
     radiusMeters: 50,
     description: "Designated shelter with CCTV and 24/7 campus security booth",
     active: true,
   });
 
   const hubLibrary = await PickupHub.create({
-    institutionId: dtuInstitution._id,
-    campusId: dtuCampus._id,
-    name: "Central Library Roundabout",
-    code: "LIB-RO",
+    institutionId: geuInstitution._id,
+    campusId: geuCampus._id,
+    name: "Graphic Era Central Library Quad",
+    code: "GEU-LIB",
     location: {
       type: "Point",
-      coordinates: [77.118, 28.7505],
+      coordinates: [77.9950, 30.2690],
     },
-    address: "Knowledge Square, Central University Circle",
+    address: "Knowledge Square, Central Campus Circle, Dehradun",
     radiusMeters: 40,
-    description: "Well-lit passenger waiting area near Academic Block 2",
+    description: "Well-lit passenger waiting area near CS & IT Block",
     active: true,
   });
 
   const hubHostel = await PickupHub.create({
-    institutionId: dtuInstitution._id,
-    campusId: dtuCampus._id,
-    name: "Hostel Block 4 Transit Bay",
-    code: "HOSTEL-4",
+    institutionId: geuInstitution._id,
+    campusId: geuCampus._id,
+    name: "Clement Town Transit Bay",
+    code: "GEU-HOSTEL",
     location: {
       type: "Point",
-      coordinates: [77.12, 28.752],
+      coordinates: [77.9955, 30.2695],
     },
-    address: "South Residential Corridor",
+    address: "Clement Town Student Residential Corridor, Dehradun",
     radiusMeters: 60,
     description: "Designated carpool bay with solar streetlighting",
     active: true,
   });
 
-  const dtuGeofence = await Geofence.create({
-    institutionId: dtuInstitution._id,
-    campusId: dtuCampus._id,
-    name: "DTU Main Perimeter Safe Zone",
+  const geuGeofence = await Geofence.create({
+    institutionId: geuInstitution._id,
+    campusId: geuCampus._id,
+    name: "Graphic Era Perimeter Safe Zone",
     type: "campus_boundary",
     center: {
-      latitude: 28.7501,
-      longitude: 77.1173,
+      latitude: 30.2687,
+      longitude: 77.9947,
     },
     radiusMeters: 1800,
     active: true,
@@ -338,10 +338,10 @@ export async function seedDemoData() {
     accountType: "ADMIN",
     avatarURL: "/test_uploads/driver_male_ichigo.jpg",
     enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
-    college: "Delhi Technological University",
+    college: "Graphic Era University",
     year: 4,
-    institutionId: dtuInstitution._id,
-    campusId: dtuCampus._id,
+    institutionId: geuInstitution._id,
+    campusId: geuCampus._id,
     phone: "+91 99999 00002",
     verificationStatus: "verified",
     isEmailVerified: true,
@@ -362,7 +362,7 @@ export async function seedDemoData() {
     passwordHash,
     role: "driver",
     accountType: "DRIVER",
-    driverIdentifier: "DL-07-2022-004821",
+    driverIdentifier: "UK-07-2022-004821",
     college: "Uttaranchal University",
     course: "B.Tech",
     department: "CSE",
@@ -459,7 +459,7 @@ export async function seedDemoData() {
     passwordHash,
     role: "driver",
     accountType: "DRIVER",
-    driverIdentifier: "DL-07-2023-009104",
+    driverIdentifier: "UK-07-2023-009104",
     college: "Uttaranchal University",
     course: "MBA",
     department: "Management",
@@ -617,8 +617,8 @@ export async function seedDemoData() {
     passwordHash,
     role: "driver",
     accountType: "DRIVER",
-    driverIdentifier: "DL-04-2021-005019",
-    college: "Delhi Technological University",
+    driverIdentifier: "UK-07-2021-005019",
+    college: "Uttaranchal University",
     course: "B.Tech",
     department: "Civil",
     year: 4,
@@ -651,7 +651,7 @@ export async function seedDemoData() {
     role: "driver",
     accountType: "DRIVER",
     driverIdentifier: "UK-07-2023-006640",
-    college: "Delhi Technological University",
+    college: "Graphic Era University",
     course: "B.Tech",
     department: "CSE",
     year: 3,
@@ -1297,19 +1297,19 @@ export async function seedDemoData() {
   });
 
 
-  // Ride 1: Aditya's Morning Express Commute (Campus Gate 1 -> City Metro Station)
+  // Ride 1: Aditya's Morning Express Commute (Premnagar Chowk -> UIT Building)
   const adityaDepTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
   const adityaRide = await Ride.create({
     creator: aditya._id,
     origin: {
-      text: "Campus Gate 1 (Main Entrance)",
-      lat: 28.545,
-      lng: 77.192,
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
     },
     destination: {
-      text: "City Metro Station (Blue Line)",
-      lat: 28.567,
-      lng: 77.208,
+      text: "UIT Building (Uttaranchal Institute of Technology)",
+      lat: 30.3432,
+      lng: 77.9448,
     },
     departureTime: adityaDepTime,
     availableSeats: 3,
@@ -1317,19 +1317,19 @@ export async function seedDemoData() {
     status: "active",
   });
 
-  // Ride 1b: Aditya's Evening Return Route (City Metro Station -> Campus Gate 1)
+  // Ride 1b: Aditya's Evening Return Route (UIT Building -> Premnagar Chowk)
   const adityaReturnDepTime = new Date(now.getTime() + 6 * 60 * 60 * 1000);
   const adityaReturnRide = await Ride.create({
     creator: aditya._id,
     origin: {
-      text: "City Metro Station (Blue Line)",
-      lat: 28.567,
-      lng: 77.208,
+      text: "UIT Building (Uttaranchal Institute of Technology)",
+      lat: 30.3432,
+      lng: 77.9448,
     },
     destination: {
-      text: "Campus Gate 1 (Main Entrance)",
-      lat: 28.545,
-      lng: 77.192,
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
     },
     departureTime: adityaReturnDepTime,
     availableSeats: 2, // 1 seat reserved by Rahul
@@ -1337,19 +1337,19 @@ export async function seedDemoData() {
     status: "active",
   });
 
-  // Ride 2: Ananya's Women-Friendly Route (Campus Gate 1 -> City Metro Station)
+  // Ride 2: Ananya's Women-Friendly Route (Selaqui Hub -> USCS Building)
   const ananyaDepTime = new Date(now.getTime() + 2.5 * 60 * 60 * 1000);
   const ananyaRide = await Ride.create({
     creator: ananya._id,
     origin: {
-      text: "Campus Gate 1 (Main Entrance)",
-      lat: 28.545,
-      lng: 77.192,
+      text: "Selaqui Industrial Hub (Chakrata Road)",
+      lat: 30.3685,
+      lng: 77.8540,
     },
     destination: {
-      text: "City Metro Station (Blue Line)",
-      lat: 28.567,
-      lng: 77.208,
+      text: "USCS Building (School of Computing Sciences)",
+      lat: 30.3428,
+      lng: 77.9456,
     },
     departureTime: ananyaDepTime,
     availableSeats: 2,
@@ -1361,19 +1361,19 @@ export async function seedDemoData() {
     },
   });
 
-  // Ride 3: Rohan's Tech Park Bike Commute
+  // Ride 3: Rohan's Student Hostel Bike Commute (Suddhowala -> Selaqui Tech Corridor)
   const rohanDepTime = new Date(now.getTime() + 3 * 60 * 60 * 1000);
   const rohanRide = await Ride.create({
     creator: rohan._id,
     origin: {
-      text: "North Campus Hostel Complex",
-      lat: 28.552,
-      lng: 77.185,
+      text: "Suddhowala Student Hostel Corridor",
+      lat: 30.3475,
+      lng: 77.9320,
     },
     destination: {
-      text: "Cyber City Tech Park",
-      lat: 28.495,
-      lng: 77.089,
+      text: "Selaqui Pharma & Tech Corridor",
+      lat: 30.3685,
+      lng: 77.8540,
     },
     departureTime: rohanDepTime,
     availableSeats: 1,
@@ -1381,19 +1381,19 @@ export async function seedDemoData() {
     status: "active",
   });
 
-  // Ride 4: Vikram's Central Station Route
+  // Ride 4: Vikram's Central Station Route (Campus Gate 1 -> Dehradun Railway Station)
   const vikramDepTime = new Date(now.getTime() + 5 * 60 * 60 * 1000);
   const vikramRide = await Ride.create({
     creator: vikram._id,
     origin: {
-      text: "Campus Gate 1 (Main Entrance)",
-      lat: 28.545,
-      lng: 77.192,
+      text: "Campus Gate 1 (Main Entrance, Premnagar Road)",
+      lat: 30.3415,
+      lng: 77.9440,
     },
     destination: {
-      text: "Central Railway Station",
-      lat: 28.58,
-      lng: 77.22,
+      text: "Dehradun Railway Station",
+      lat: 30.3165,
+      lng: 78.0322,
     },
     departureTime: vikramDepTime,
     availableSeats: 3,
@@ -1405,19 +1405,19 @@ export async function seedDemoData() {
     },
   });
 
-  // Ride 5: Kabir's Green EV Commute (IIT Delhi -> Connaught Place Central)
+  // Ride 5: Kabir's Green EV Commute (ISBT Dehradun -> Clock Tower Paltan Bazaar)
   const kabirDepTime = new Date(now.getTime() + 1.5 * 60 * 60 * 1000);
   const kabirRide = await Ride.create({
     creator: kabir._id,
     origin: {
-      text: "IIT Delhi Main Gate (Hauz Khas)",
-      lat: 28.545,
-      lng: 77.1926,
+      text: "ISBT Dehradun Inter-State Terminal",
+      lat: 30.2885,
+      lng: 78.0080,
     },
     destination: {
-      text: "Connaught Place Inner Circle",
-      lat: 28.6315,
-      lng: 77.2167,
+      text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)",
+      lat: 30.3256,
+      lng: 78.0437,
     },
     departureTime: kabirDepTime,
     availableSeats: 3,
@@ -1429,19 +1429,19 @@ export async function seedDemoData() {
     },
   });
 
-  // Ride 6: Meera's Women-Only Commute (IGDTUW Kashmere Gate -> Pitampura Metro)
+  // Ride 6: Meera's Women-Only Commute (Ballupur Chowk -> Central Academic Library)
   const meeraDepTime = new Date(now.getTime() + 4 * 60 * 60 * 1000);
   const meeraRide = await Ride.create({
     creator: meera._id,
     origin: {
-      text: "Indira Gandhi Technical Campus Gate",
-      lat: 28.6652,
-      lng: 77.2324,
+      text: "Ballupur Chowk (Chakrata Road)",
+      lat: 30.3395,
+      lng: 78.0125,
     },
     destination: {
-      text: "Pitampura Metro Interchange",
-      lat: 28.6987,
-      lng: 77.1422,
+      text: "Central Academic Library & Law Block",
+      lat: 30.3425,
+      lng: 77.9450,
     },
     departureTime: meeraDepTime,
     availableSeats: 3,
@@ -1449,21 +1449,21 @@ export async function seedDemoData() {
     status: "active",
   });
 
-  // Ride 7: Aditya's Airport Connect Route (Tomorrow morning)
+  // Ride 7: Aditya's Vikasnagar Commute (Vikasnagar Bus Terminal -> Campus Gate 1)
   const tomorrowMorning = new Date(now);
   tomorrowMorning.setDate(tomorrowMorning.getDate() + 1);
   tomorrowMorning.setHours(8, 0, 0, 0);
   const airportRide = await Ride.create({
     creator: aditya._id,
     origin: {
-      text: "Airport Terminal 1",
-      lat: 28.556,
-      lng: 77.1,
+      text: "Vikasnagar Bus Terminal",
+      lat: 30.4350,
+      lng: 77.7710,
     },
     destination: {
-      text: "Campus Gate 1 (Main Entrance)",
-      lat: 28.545,
-      lng: 77.192,
+      text: "Campus Gate 1 (Main Entrance, Premnagar Road)",
+      lat: 30.3415,
+      lng: 77.9440,
     },
     departureTime: tomorrowMorning,
     availableSeats: 2,
@@ -2371,12 +2371,12 @@ export async function seedDemoData() {
     messages: [
       {
         senderId: aditya._id,
-        text: "Hey Rahul! Departing from City Metro back towards campus at scheduled time.",
+        text: "Hey Rahul! Departing from Premnagar Chowk back towards campus at scheduled time.",
         time: new Date(now.getTime() - 25 * 60 * 1000),
       },
       {
         senderId: rahul._id,
-        text: "Great! I'm standing right near the Metro Gate 3 in a blue hoodie.",
+        text: "Great! I'm standing right near the Premnagar Chowk Bus Bay in a blue hoodie.",
         time: new Date(now.getTime() - 20 * 60 * 1000),
       },
       {
@@ -2440,7 +2440,7 @@ export async function seedDemoData() {
     messages: [
       {
         senderId: kabir._id,
-        text: "Hey Arjun, heading out from IIT Hauz Khas. Tata Nexon EV ready to roll.",
+        text: "Hey Arjun, heading out from Clock Tower Paltan Bazaar. Tata Nexon EV ready to roll.",
         time: new Date(now.getTime() - 20 * 60 * 1000),
       },
       {
@@ -2615,11 +2615,11 @@ export async function seedDemoData() {
   await VerificationRequest.create([
     {
       userId: arjun._id,
-      institutionId: dtuInstitution._id,
-      campusId: dtuCampus._id,
+      institutionId: uuInstitution._id,
+      campusId: uuCampus._id,
       accountType: "PASSENGER",
       role: "student",
-      studentIdentifier: "2023DTU-CS-104",
+      studentIdentifier: "2023UU-CS-104",
       documentType: "student_id",
       idDocumentStorageKey: "sample_student_id.png",
       selfieStorageKey: "sample_selfie.png",
@@ -2630,12 +2630,12 @@ export async function seedDemoData() {
     },
     {
       userId: aditya._id,
-      institutionId: dtuInstitution._id,
-      campusId: dtuCampus._id,
+      institutionId: uuInstitution._id,
+      campusId: uuCampus._id,
       accountType: "DRIVER",
       role: "driver",
-      studentIdentifier: "2022DTU-ME-019",
-      driverIdentifier: "DL-07-2022-004821",
+      studentIdentifier: "2022UU-ME-019",
+      driverIdentifier: "UK-07-2022-004821",
       documentType: "driving_license",
       idDocumentStorageKey: "sample_student_id.png",
       drivingLicenseStorageKey: "sample_license.png",
@@ -2649,11 +2649,11 @@ export async function seedDemoData() {
     },
     {
       userId: zoya._id,
-      institutionId: dtuInstitution._id,
-      campusId: dtuCampus._id,
+      institutionId: geuInstitution._id,
+      campusId: geuCampus._id,
       accountType: "WOMEN_PASSENGER",
       role: "student",
-      studentIdentifier: "2024DTU-EE-082",
+      studentIdentifier: "2024GEU-EE-082",
       documentType: "student_id",
       idDocumentStorageKey: "sample_student_id.png",
       selfieStorageKey: "sample_selfie.png",
@@ -2675,13 +2675,13 @@ export async function seedDemoData() {
     incidentNumber: `INC-${now.toISOString().slice(0, 10).replace(/-/g, "")}-7K2L`,
     triggeredBy: rahul._id,
     tripId: adityaRahulTrip._id,
-    institutionId: dtuInstitution._id,
-    campusId: dtuCampus._id,
+    institutionId: uuInstitution._id,
+    campusId: uuCampus._id,
     location: {
-      latitude: 28.7495,
-      longitude: 77.1165,
+      latitude: 30.3426,
+      longitude: 77.9452,
       accuracy: 12,
-      address: "Near Gate 1 Roundabout, Outer Ring Road",
+      address: "Near Gate 1 Roundabout, Premnagar Road",
     },
     status: "ACTIVE",
     campusSecurityNotified: true,
@@ -2706,7 +2706,7 @@ export async function seedDemoData() {
       userId: rahul._id,
       type: "TRIP_UPDATE",
       title: "Ride Confirmed with Aditya",
-      body: "Your ride from Rohini Sector 14 to DTU Campus is scheduled for 8:45 AM. Your pickup OTP will be verified by Aditya at boarding.",
+      body: "Your ride from Premnagar Chowk Market to UIT Campus is scheduled for 8:45 AM. Your pickup OTP will be verified by Aditya at boarding.",
       deliveryChannels: ["in_app", "socket"],
       deliveryStatus: { in_app: "sent" },
     },
@@ -2714,7 +2714,7 @@ export async function seedDemoData() {
       userId: aditya._id,
       type: "VERIFICATION_STATUS",
       title: "Vehicle & Student ID Approved",
-      body: "Your DTU Student ID and Honda City documents have been verified by Campus Administration.",
+      body: "Your Uttaranchal University Student ID and Honda City documents have been verified by Campus Administration.",
       deliveryChannels: ["in_app", "socket"],
       deliveryStatus: { in_app: "sent" },
     },
@@ -2724,7 +2724,7 @@ export async function seedDemoData() {
   console.log("  - 12 Verified University Students across 4 institutions");
   console.log("  - 2 Campus Security & Administrative accounts");
   console.log(
-    "  - 3 Universities (UU, DTU, IITD) with 2 Campuses, 11 Pickup Hubs, and 2 Geofences",
+    "  - 3 Universities (UU, GEU, UPES) with 2 Campuses, 11 Pickup Hubs, and 2 Geofences",
   );
   console.log("  - 6 Registered Vehicles (Sedans, EVs, Bikes)");
   console.log("  - 13 Active Campus Commute Offers (including Premnagar, Selaqui, Suddhowala, Vikasnagar & Campus Buildings)");

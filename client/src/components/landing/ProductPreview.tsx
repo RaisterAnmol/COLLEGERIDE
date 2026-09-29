@@ -31,7 +31,7 @@ export const ProductPreview: React.FC = () => {
           </div>
 
           <div className="px-6 py-1 rounded-md bg-[#FFFFFF] border border-[#DDE1DE] text-[11px] font-mono text-[#646A67]">
-            https://campusride.edu/search?corridor=north-delhi-dtu
+            https://campusride.edu/search?corridor=premnagar-selaqui-uu
           </div>
 
           <div className="text-[11px] font-mono text-[#18A66A] font-semibold hidden sm:block">
@@ -46,7 +46,7 @@ export const ProductPreview: React.FC = () => {
             <div className="p-4 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE]">
               <span className="text-[10px] text-[#646A67] uppercase block">Selected Corridor</span>
               <div className="font-bold text-[#111111] text-sm mt-1">
-                Rohini Sec 14 ──●── DTU Gate 1
+                Premnagar Chowk ──●── UU Gate 1
               </div>
               <div className="mt-2 text-[11px] text-[#18A66A] font-semibold">
                 ✓ 94% Matching Overlap Detected

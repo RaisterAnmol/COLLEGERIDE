@@ -17,7 +17,7 @@ Creates a new verified student account.
     "name": "Aditya Kumar",
     "email": "aditya.kumar@college.edu",
     "password": "SecurePassword123!",
-    "college": "Delhi Technological University",
+    "college": "Uttaranchal University",
     "year": 3,
     "gender": "male",
     "phone": "+91 98765 43210",
@@ -97,11 +97,11 @@ Posts a new student driver commute offer.
 - **Body**:
   ```json
   {
-    "origin": { "address": "Rohini Sector 14", "lat": 28.715, "lng": 77.125 },
-    "destination": { "address": "Campus Gate 1", "lat": 28.7495, "lng": 77.1165 },
+    "origin": { "address": "Premnagar Chowk Market", "lat": 30.3340, "lng": 77.9620 },
+    "destination": { "address": "Campus Gate 1 (Premnagar Road)", "lat": 30.3415, "lng": 77.9440 },
     "departureTime": "2026-09-22T08:30:00.000Z",
     "totalSeats": 3,
-    "costPerSeat": 40,
+    "costPerSeat": 25,
     "notes": "Leaving promptly at 8:30 AM"
   }
   ```
@@ -127,8 +127,8 @@ Passenger requests a seat on an active ride offer.
 - **Body**:
   ```json
   {
-    "pickupLocation": { "address": "Sector 15 Metro", "lat": 28.721, "lng": 77.123 },
-    "dropoffLocation": { "address": "DTU Gate 1", "lat": 28.7495, "lng": 77.1165 },
+    "pickupLocation": { "address": "Suddhowala Chowk", "lat": 30.3475, "lng": 77.9320 },
+    "dropoffLocation": { "address": "UIT Building Portico", "lat": 30.3432, "lng": 77.9448 },
     "seatsRequested": 1
   }
   ```

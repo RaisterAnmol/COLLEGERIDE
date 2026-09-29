@@ -20,7 +20,7 @@ describe("Agent 9: Security & Authorization Bypass Test Suite", () => {
       name: "Student Alpha",
       email: "alpha.student@college.edu",
       passwordHash: "dummyHashedPassword123",
-      college: "Delhi Technological University",
+      college: "Uttaranchal University",
       year: 2,
       verificationStatus: "verified",
       tokenVersion: 0,
@@ -40,7 +40,7 @@ describe("Agent 9: Security & Authorization Bypass Test Suite", () => {
       name: "Student Beta",
       email: "beta.student@college.edu",
       passwordHash: "dummyHashedPassword123",
-      college: "Delhi Technological University",
+      college: "Uttaranchal University",
       year: 3,
       verificationStatus: "verified",
       tokenVersion: 0,
@@ -58,8 +58,8 @@ describe("Agent 9: Security & Authorization Bypass Test Suite", () => {
     // Create a ride owned by User A
     const ride = await Ride.create({
       creator: userA._id,
-      origin: { text: "Campus Gate 1", lat: 28.7495, lng: 77.1165 },
-      destination: { text: "City Metro", lat: 28.567, lng: 77.208 },
+      origin: { text: "Campus Gate 1 (Premnagar Road)", lat: 30.3415, lng: 77.9440 },
+      destination: { text: "Premnagar Chowk Market", lat: 30.3340, lng: 77.9620 },
       departureTime: new Date(Date.now() + 3600000),
       availableSeats: 3,
       status: "active",

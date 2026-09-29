@@ -401,7 +401,7 @@ export const AdminDashboardPage: React.FC = () => {
                 <option value="Graphic Era University">Graphic Era University</option>
                 <option value="University of Petroleum and Energy Studies">UPES</option>
                 <option value="DIT University">DIT University</option>
-                <option value="Delhi Technological University">Delhi Technological University</option>
+                <option value="Doon University">Doon University</option>
                 <option value="ALL">All Campuses (Global Super Admin View)</option>
               </select>
             )}

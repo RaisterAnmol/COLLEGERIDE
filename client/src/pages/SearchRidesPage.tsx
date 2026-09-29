@@ -30,6 +30,7 @@ import { PickupAndRouteNavigationMap } from '../components/map/PickupAndRouteNav
 import { PageHeroBanner } from '../components/common/PageHeroBanner';
 import findRideImg from '../assets/illustrations/find-ride.jpg';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
+import { sanitizeLocationText } from '../utils/sanitizeLocation';
 
 export interface PresetLocation {
   text: string;
@@ -1032,14 +1033,14 @@ export const SearchRidesPage: React.FC = () => {
                     <div className="w-2 h-2 rounded-full bg-emerald-500" />
                     <div>
                       <span className="text-slate-400 text-[10px] block uppercase font-semibold">From</span>
-                      <span className="font-bold text-slate-800">{ride.origin.text}</span>
+                      <span className="font-bold text-slate-800">{sanitizeLocationText(ride.origin.text)}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-blue-500" />
                     <div>
                       <span className="text-slate-400 text-[10px] block uppercase font-semibold">To</span>
-                      <span className="font-bold text-slate-800">{ride.destination.text}</span>
+                      <span className="font-bold text-slate-800">{sanitizeLocationText(ride.destination.text)}</span>
                     </div>
                   </div>
                 </div>

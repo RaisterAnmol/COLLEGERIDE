@@ -45,7 +45,7 @@ export const ProblemSection: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-sm font-bold text-[#111111]">Time Reclaimed</div>
-                  <div className="text-xs text-[#646A67]">Direct carpool vs 2 metro transfers</div>
+                  <div className="text-xs text-[#646A67]">Direct carpool vs multiple Vikram/bus transfers</div>
                 </div>
               </div>
               <div className="text-right font-mono">

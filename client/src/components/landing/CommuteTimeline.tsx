@@ -109,7 +109,7 @@ const WEEK_DAYS: DaySchedule[] = [
     college: 'Uttaranchal University (USCS)',
     vehicle: 'Honda City (UK 07 AK 4821)',
     route: 'Ballupur Chowk → UU Gate 1 Main Porch',
-    pickupPoint: 'Ballupur Chowk Metro/Bus Stand',
+    pickupPoint: 'Ballupur Chowk Flyover Bus Bay',
     dropPoint: 'UU Campus Gate 1 Academic Bay',
     status: 'Confirmed Weekly Seat',
     fare: '₹25',

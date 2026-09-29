@@ -66,7 +66,7 @@ export const StatusBanner: React.FC = () => {
             CampusRide Network.
           </h2>
           <p className="mt-2 text-base text-[#667085]">
-            Verified university transit activity across Delhi-NCR colleges.
+            Verified university transit activity across Dehradun, Premnagar & Selaqui campuses.
           </p>
         </div>
 

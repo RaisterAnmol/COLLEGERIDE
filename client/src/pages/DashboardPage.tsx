@@ -43,6 +43,7 @@ import {
   POPULAR_DEPARTMENTS,
   POPULAR_BRANCHES_COURSES,
 } from '../data/academicData';
+import { sanitizeLocationText } from '../utils/sanitizeLocation';
 
 export const DashboardPage: React.FC = () => {
   const { user, updateProfile } = useAuth();
@@ -534,9 +535,9 @@ export const DashboardPage: React.FC = () => {
                             Route Itinerary
                           </span>
                           <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
-                            <span>{ride?.origin?.text || 'Origin'}</span>
+                            <span>{sanitizeLocationText(ride?.origin?.text) || 'Origin'}</span>
                             <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                            <span>{ride?.destination?.text || 'Destination'}</span>
+                            <span>{sanitizeLocationText(ride?.destination?.text) || 'Destination'}</span>
                           </div>
                         </div>
 
@@ -621,9 +622,9 @@ export const DashboardPage: React.FC = () => {
                       <div className="flex items-start justify-between gap-3">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 font-bold text-sm text-slate-900">
-                            <span>{ride?.origin?.text || 'Origin'}</span>
+                            <span>{sanitizeLocationText(ride?.origin?.text) || 'Origin'}</span>
                             <ArrowRight className="w-3.5 h-3.5 text-slate-400" />
-                            <span>{ride?.destination?.text || 'Destination'}</span>
+                            <span>{sanitizeLocationText(ride?.destination?.text) || 'Destination'}</span>
                           </div>
                           <span className="text-xs text-slate-500 block">
                             Driver: <span className="font-semibold text-slate-700">{ride?.creator?.name || 'Peer Driver'}</span>
@@ -704,9 +705,9 @@ export const DashboardPage: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 font-semibold text-sm text-slate-900">
-                          <span>{ride.origin?.text || 'Origin'}</span>
+                          <span>{sanitizeLocationText(ride.origin?.text) || 'Origin'}</span>
                           <ArrowRight className="w-3 h-3 text-slate-400" />
-                          <span>{ride.destination?.text || 'Destination'}</span>
+                          <span>{sanitizeLocationText(ride.destination?.text) || 'Destination'}</span>
                         </div>
                         <div className="flex items-center gap-3 text-xs text-slate-500">
                           <span>{new Date(ride.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -764,9 +765,9 @@ export const DashboardPage: React.FC = () => {
                       <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2 font-semibold text-sm text-slate-900">
-                            <span>{ride?.origin?.text || 'Origin'}</span>
+                            <span>{sanitizeLocationText(ride?.origin?.text) || 'Origin'}</span>
                             <ArrowRight className="w-3 h-3 text-slate-400" />
-                            <span>{ride?.destination?.text || 'Destination'}</span>
+                            <span>{sanitizeLocationText(ride?.destination?.text) || 'Destination'}</span>
                           </div>
                           <div className="flex items-center gap-3 text-xs text-slate-500">
                             <span>Rider: {(req as any).passengerName || (req as any).passengerId?.name || 'Classmate'}</span>

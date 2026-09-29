@@ -51,8 +51,8 @@ Before score calculation, two invariant checks must pass:
 ## 4. Worked Numeric Example
 
 ### Scenario
-- **Driver (Aditya)**: Driving from **Rohini Sector 14** ($28.7150^\circ\text{N}, 77.1250^\circ\text{E}$) to **DTU Gate 1** ($28.7495^\circ\text{N}, 77.1165^\circ\text{E}$) at 08:30 AM with 3 seats.
-- **Passenger (Rahul)**: Requesting 1 seat from **Rohini Sector 15** ($28.7210^\circ\text{N}, 77.1230^\circ\text{E}$) to **DTU Gate 1** at 08:33 AM.
+- **Driver (Aditya)**: Driving from **Premnagar Chowk Market** ($30.3340^\circ\text{N}, 77.9620^\circ\text{E}$) to **Campus Gate 1 (Uttaranchal University)** ($30.3415^\circ\text{N}, 77.9440^\circ\text{E}$) at 08:30 AM with 3 seats.
+- **Passenger (Rahul)**: Requesting 1 seat from **Suddhowala Chowk** ($30.3475^\circ\text{N}, 77.9320^\circ\text{E}$) to **Campus Gate 1 (Uttaranchal University)** at 08:33 AM.
 
 ### Step 1: Distance Computations (Haversine)
 - Driver baseline distance: $D_{\text{driver}} = 3.92\text{ km}$

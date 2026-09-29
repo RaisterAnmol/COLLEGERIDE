@@ -24,7 +24,7 @@ export const TestimonialsSection: React.FC = () => {
           Real Classmates.
         </h2>
         <p className="mt-4 text-base sm:text-lg text-[#646A67] max-w-xl">
-          Hear how university peers across Delhi-NCR replaced congested transit with reliable, affordable daily carpools.
+          Hear how university peers across Dehradun, Premnagar, and Selaqui replaced congested transit with reliable, affordable daily carpools.
         </p>
       </div>
 

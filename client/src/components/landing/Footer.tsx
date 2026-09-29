@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
           Where Are You Going?
         </h2>
         <p className="mt-4 text-base sm:text-lg text-[#667085] max-w-xl mx-auto">
-          Skip the crowded metros and cab surge pricing. Connect directly with university peers on your route today.
+          Skip crowded public transit and erratic auto surge pricing. Connect directly with university peers on your route today.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link

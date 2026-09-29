@@ -37,7 +37,7 @@ describe("CampusRide Comprehensive Security, RBAC & Integrations Test Suite", ()
       name: "Aryan Gupta",
       email: "aryan.gupta.security@college.edu",
       passwordHash: "passwordHash123",
-      college: "Delhi Technological University",
+      college: "Uttaranchal University",
       year: 2,
       verificationStatus: "unverified",
       role: "student",
@@ -240,7 +240,7 @@ describe("CampusRide Comprehensive Security, RBAC & Integrations Test Suite", ()
         name: "Rohit Verma",
         email: "rohit.verma@college.edu",
         passwordHash: "passwordHash123",
-        college: "Delhi Technological University",
+        college: "Uttaranchal University",
         year: 2,
         verificationStatus: "unverified",
       });
