@@ -456,6 +456,8 @@ export default async function handler(req: any, res: any) {
           placeId: m._id.toString(),
           name: m.name,
           formattedAddress: m.address,
+          name: sanitizeLocationText(m.name || ''),
+          formattedAddress: sanitizeLocationText(m.address || ''),
           location: { lat: m.location?.coordinates?.[1] || 30.34, lng: m.location?.coordinates?.[0] || 77.95 },
         })),
       });
@@ -1043,6 +1045,12 @@ export default async function handler(req: any, res: any) {
         { _id: 'hub_7', name: 'ISBT Dehradun Terminal', lat: 30.2885, lng: 77.9989, campus: 'Transport Hub' },
       ];
       return res.status(200).json({ hubs: list });
+      const sanitizedList = list.map((h: any) => ({
+        ...h,
+        name: sanitizeLocationText(h.name || ''),
+        campus: sanitizeLocationText(h.campus || 'Prem Nagar'),
+      }));
+      return res.status(200).json({ hubs: sanitizedList });
     }
 
     // ADMIN: GET /api/admin/operations
