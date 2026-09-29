@@ -132,6 +132,20 @@ export function findPresetIndex(paramText: string | null | undefined, defaultIdx
   return defaultIdx;
 }
 
+function haversineDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371; // Earth radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
 const UNIVERSITIES = [
   'Any',
   ...UTTARAKHAND_UNIVERSITIES.map((u) => u.name),
@@ -303,12 +317,56 @@ export const SearchRidesPage: React.FC = () => {
         verifiedOnly,
       });
 
+      // Sort: Corridor proximity FIRST, then academic affinity
+      const sortRidesByCorridor = (list: IRide[]) => {
+        return [...list].sort((a: any, b: any) => {
+          // 1. Proximity to search corridor (pickup + dropoff)
+          const aOrig = a.origin?.coordinates || (a.origin?.lat !== undefined ? [a.origin.lng, a.origin.lat] : []);
+          const aDest = a.destination?.coordinates || (a.destination?.lat !== undefined ? [a.destination.lng, a.destination.lat] : []);
+          const bOrig = b.origin?.coordinates || (b.origin?.lat !== undefined ? [b.origin.lng, b.origin.lat] : []);
+          const bDest = b.destination?.coordinates || (b.destination?.lat !== undefined ? [b.destination.lng, b.destination.lat] : []);
+
+          const aPickupDist = (aOrig.length === 2 && origin)
+            ? haversineDistanceKm(origin.lat, origin.lng, aOrig[1], aOrig[0])
+            : 99;
+          const aDestDist = (aDest.length === 2 && dest)
+            ? haversineDistanceKm(dest.lat, dest.lng, aDest[1], aDest[0])
+            : 99;
+          const aTotalDist = a.totalCorridorDist ?? (aPickupDist + aDestDist);
+
+          const bPickupDist = (bOrig.length === 2 && origin)
+            ? haversineDistanceKm(origin.lat, origin.lng, bOrig[1], bOrig[0])
+            : 99;
+          const bDestDist = (bDest.length === 2 && dest)
+            ? haversineDistanceKm(dest.lat, dest.lng, bDest[1], bDest[0])
+            : 99;
+          const bTotalDist = b.totalCorridorDist ?? (bPickupDist + bDestDist);
+
+          // If route distances differ by more than 0.8 km, closer corridor takes absolute priority
+          if (Math.abs(aTotalDist - bTotalDist) > 0.8) {
+            return aTotalDist - bTotalDist;
+          }
+
+          // 2. Academic Affinity priority rank (Rank 1: Course & Sem, Rank 2: Dept, Rank 3: College, Rank 4: None)
+          const rankA = a.match?.breakdown?.academicPriorityRank ?? 4;
+          const rankB = b.match?.breakdown?.academicPriorityRank ?? 4;
+          if (rankA !== rankB) {
+            return rankA - rankB;
+          }
+
+          // 3. Match score percentage
+          const pctA = a.match?.percentage ?? 0;
+          const pctB = b.match?.percentage ?? 0;
+          return pctB - pctA;
+        });
+      };
+
       if (!res || res.length === 0) {
         // If exact coordinate corridor has no match, fetch all active rides so user always sees available rides
         const allActive = await api.getRides({ womenOnlyDriver, status: 'active' });
-        setRides(allActive || []);
+        setRides(sortRidesByCorridor(allActive || []));
       } else {
-        setRides(res);
+        setRides(sortRidesByCorridor(res));
       }
       setSearched(true);
     } catch (err: any) {
@@ -325,6 +383,9 @@ export const SearchRidesPage: React.FC = () => {
     setRequestError(null);
 
     try {
+      const origin = PRESET_LOCATIONS[originIndex];
+      const dest = PRESET_LOCATIONS[destIndex];
+
       const res = await api.getRides({
         womenOnlyDriver,
         status: 'active',
@@ -338,7 +399,33 @@ export const SearchRidesPage: React.FC = () => {
         sameCollegeOnly,
         verifiedOnly,
       });
-      setRides(res || []);
+
+      const sorted = [...(res || [])].sort((a: any, b: any) => {
+        const aOrig = a.origin?.coordinates || (a.origin?.lat !== undefined ? [a.origin.lng, a.origin.lat] : []);
+        const aDest = a.destination?.coordinates || (a.destination?.lat !== undefined ? [a.destination.lng, a.destination.lat] : []);
+        const bOrig = b.origin?.coordinates || (b.origin?.lat !== undefined ? [b.origin.lng, b.origin.lat] : []);
+        const bDest = b.destination?.coordinates || (b.destination?.lat !== undefined ? [b.destination.lng, b.destination.lat] : []);
+
+        const aPickupDist = (aOrig.length === 2 && origin) ? haversineDistanceKm(origin.lat, origin.lng, aOrig[1], aOrig[0]) : 99;
+        const aDestDist = (aDest.length === 2 && dest) ? haversineDistanceKm(dest.lat, dest.lng, aDest[1], aDest[0]) : 99;
+        const aTotalDist = a.totalCorridorDist ?? (aPickupDist + aDestDist);
+
+        const bPickupDist = (bOrig.length === 2 && origin) ? haversineDistanceKm(origin.lat, origin.lng, bOrig[1], bOrig[0]) : 99;
+        const bDestDist = (bDest.length === 2 && dest) ? haversineDistanceKm(dest.lat, dest.lng, bDest[1], bDest[0]) : 99;
+        const bTotalDist = b.totalCorridorDist ?? (bPickupDist + bDestDist);
+
+        if (Math.abs(aTotalDist - bTotalDist) > 0.8) {
+          return aTotalDist - bTotalDist;
+        }
+
+        const rankA = a.match?.breakdown?.academicPriorityRank ?? 4;
+        const rankB = b.match?.breakdown?.academicPriorityRank ?? 4;
+        if (rankA !== rankB) return rankA - rankB;
+
+        return (b.match?.percentage ?? 0) - (a.match?.percentage ?? 0);
+      });
+
+      setRides(sorted);
       setSearched(true);
     } catch (err: any) {
       setRequestError(err.message || 'Failed to fetch rides.');
@@ -876,7 +963,7 @@ export const SearchRidesPage: React.FC = () => {
             {rides.length}
           </span>
         </h2>
-        <span className="text-xs text-slate-500">Sorted by Academic Affinity & AI Match (%)</span>
+        <span className="text-xs text-slate-500">Sorted by Route Proximity First, then Academic Affinity</span>
       </div>
 
       {/* Results List */}

@@ -340,17 +340,26 @@ router.get(
             return r.match.isMatch && r.match.matchScore >= 0.50;
           })
           .sort((a, b) => {
-            // Hierarchical Academic Priority Sorting:
-            // 1. First priority: Same Course & Semester (Rank 1)
-            // 2. Second priority: Same Department (Rank 2)
-            // 3. Third priority: Same University (Rank 3)
-            // 4. Fourth priority: General route score (Rank 4)
+            // USER DIRECTIVE: Route corridor proximity FIRST, then Academic Affinity!
+            // 1. First priority: Route Proximity & Detour Distance (closer corridor first)
+            const detourA = a.matchBreakdown?.detourDistanceKm ?? 99;
+            const detourB = b.matchBreakdown?.detourDistanceKm ?? 99;
+            if (Math.abs(detourA - detourB) > 0.05) {
+              return detourA - detourB;
+            }
+
+            // 2. Second priority: Academic Priority Rank among corridor-aligned rides
+            // Rank 1: Same Course & Semester
+            // Rank 2: Same Department
+            // Rank 3: Same University
+            // Rank 4: General
             const rankA = a.matchBreakdown?.academicPriorityRank ?? 4;
             const rankB = b.matchBreakdown?.academicPriorityRank ?? 4;
             if (rankA !== rankB) {
               return rankA - rankB; // 1 before 2, 2 before 3, etc.
             }
-            // Secondary sort: Combined Match Score
+
+            // 3. Third priority: Combined Match Score
             return b.match.matchScore - a.match.matchScore;
           });
 

@@ -172,7 +172,8 @@ export const DashboardPage: React.FC = () => {
   const [passengerCommuteTab, setPassengerCommuteTab] = useState<'upcoming' | 'previous'>('upcoming');
 
   // Role & derived calculations
-  const isPassenger = user?.accountType === 'PASSENGER' || user?.accountType === 'WOMEN_PASSENGER' || (user?.role !== 'driver' && myOfferedRides.length === 0);
+  const isDriver = (user as any)?.role === 'driver' || (user as any)?.accountType === 'DRIVER';
+  const isPassenger = !isDriver;
   const upcomingRequests = myRequests.filter((r) => r.status === 'pending' || r.status === 'accepted');
   const previousRequests = myRequests.filter((r) => r.status === 'declined' || r.status === 'cancelled' || (r as any).status === 'completed');
 
@@ -184,16 +185,17 @@ export const DashboardPage: React.FC = () => {
     if (!role) return isPassenger;
     return false;
   });
+  const roleReviews = isPassenger ? passengerReviews : driverReviews;
   const displayedReviews =
     reviewFilter === 'driver'
       ? driverReviews
       : reviewFilter === 'passenger'
       ? passengerReviews
-      : reviews;
+      : roleReviews;
 
   // Aggregate compliment tags
   const tagCounts: Record<string, number> = {};
-  for (const r of reviews) {
+  for (const r of roleReviews) {
     if (Array.isArray(r.tags)) {
       for (const t of r.tags) {
         tagCounts[t] = (tagCounts[t] || 0) + 1;
@@ -311,22 +313,25 @@ export const DashboardPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Right: High-Impact Action CTAs */}
+            {/* Right: High-Impact Action CTAs (Strictly Role-Specific) */}
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto">
-              <Link
-                to="/search"
-                className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
-              >
-                <Search className="w-4 h-4 transition-transform group-hover:scale-110" />
-                <span>Find a Ride</span>
-              </Link>
-              <Link
-                to="/post"
-                className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-semibold text-sm border border-slate-200 hover:border-emerald-300 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow"
-              >
-                <PlusCircle className="w-4 h-4 text-emerald-600" />
-                <span>Offer a Ride</span>
-              </Link>
+              {isPassenger ? (
+                <Link
+                  to="/search"
+                  className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                >
+                  <Search className="w-4 h-4 transition-transform group-hover:scale-110" />
+                  <span>Find a Ride</span>
+                </Link>
+              ) : (
+                <Link
+                  to="/post"
+                  className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                >
+                  <PlusCircle className="w-4 h-4 text-white" />
+                  <span>Offer a Ride</span>
+                </Link>
+              )}
             </div>
           </div>
 
@@ -835,32 +840,36 @@ export const DashboardPage: React.FC = () => {
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              All ({reviews.length})
+              All ({roleReviews.length})
             </button>
-            <button
-              type="button"
-              onClick={() => setReviewFilter('driver')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                reviewFilter === 'driver'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Car className="w-3 h-3" />
-              As Driver ({driverReviews.length})
-            </button>
-            <button
-              type="button"
-              onClick={() => setReviewFilter('passenger')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
-                reviewFilter === 'passenger'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <UserCheck className="w-3 h-3" />
-              As Passenger ({passengerReviews.length})
-            </button>
+            {isDriver && (
+              <button
+                type="button"
+                onClick={() => setReviewFilter('driver')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  reviewFilter === 'driver'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <Car className="w-3 h-3" />
+                As Driver ({driverReviews.length})
+              </button>
+            )}
+            {isPassenger && (
+              <button
+                type="button"
+                onClick={() => setReviewFilter('passenger')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1 ${
+                  reviewFilter === 'passenger'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <UserCheck className="w-3 h-3" />
+                As Passenger ({passengerReviews.length})
+              </button>
+            )}
           </div>
         </div>
 

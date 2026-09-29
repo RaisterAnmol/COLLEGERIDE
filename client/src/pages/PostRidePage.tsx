@@ -69,6 +69,14 @@ export const PostRidePage: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [publishedDetails, setPublishedDetails] = useState<{
+    originText: string;
+    destText: string;
+    seats: number;
+    fare: number;
+    time: string;
+  } | null>(null);
 
   // Load driver vehicle from profile
   useEffect(() => {
@@ -130,7 +138,15 @@ export const PostRidePage: React.FC = () => {
         },
       });
 
-      navigate("/dashboard");
+      setPublishedDetails({
+        originText: origin.text,
+        destText: destination.text,
+        seats: availableSeats,
+        fare: Math.max(10, pricePerSeat || 10),
+        time: new Date(departureDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      });
+      setShowSuccessModal(true);
+      setLoading(false);
     } catch (err: any) {
       setError(err.message || "Failed to post ride");
       setLoading(false);
@@ -723,6 +739,103 @@ export const PostRidePage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Animated Commute Published Success Modal */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
+              className="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-emerald-100 text-center relative overflow-hidden"
+            >
+              {/* Decorative background glow */}
+              <div className="absolute -top-24 -left-24 w-48 h-48 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-teal-400/20 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Animated Success Checkmark Ring */}
+              <motion.div
+                initial={{ scale: 0, rotate: -30 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.15, type: "spring", stiffness: 300, damping: 20 }}
+                className="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 mb-5"
+              >
+                <CheckCircle2 className="w-10 h-10 stroke-[2.5]" />
+              </motion.div>
+
+              <motion.h3
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+                className="text-2xl font-black text-slate-900 tracking-tight"
+              >
+                Campus Ride Published! 🎉
+              </motion.h3>
+
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-xs sm:text-sm text-slate-500 mt-2 max-w-md mx-auto"
+              >
+                Your commute offer is now live. Verified university classmates traveling along your corridor can request seats!
+              </motion.p>
+
+              {/* Commute Summary Card */}
+              {publishedDetails && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.35 }}
+                  className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-left space-y-2.5 text-xs shadow-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" />
+                    <span className="font-semibold text-slate-700 truncate">{publishedDetails.originText}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-teal-600 shrink-0" />
+                    <span className="font-semibold text-slate-700 truncate">{publishedDetails.destText}</span>
+                  </div>
+                  <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-slate-600 text-[11px]">
+                    <span>Departure: <strong>{publishedDetails.time}</strong></span>
+                    <span>Seats: <strong>{publishedDetails.seats} available</strong></span>
+                    <span>Cost-share: <strong>₹{publishedDetails.fare}</strong></span>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Action Buttons */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="mt-6 flex flex-col sm:flex-row items-center gap-3"
+              >
+                <button
+                  type="button"
+                  onClick={() => navigate('/dashboard')}
+                  className="w-full sm:flex-1 py-3 px-5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md shadow-emerald-600/20 cursor-pointer transition-all"
+                >
+                  Go to My Dashboard
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    setCurrentStep(1);
+                  }}
+                  className="w-full sm:w-auto py-3 px-4 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-700 font-semibold text-xs cursor-pointer transition-colors"
+                >
+                  Offer Another Commute
+                </button>
+              </motion.div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
