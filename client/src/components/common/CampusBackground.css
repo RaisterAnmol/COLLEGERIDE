@@ -314,10 +314,11 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  background-image: url('/assets/campus-map-bg.jpg');
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  opacity: 0.92;
+  opacity: 0.95;
   transition: opacity 0.8s ease-in-out;
   pointer-events: none;
 }
@@ -326,11 +327,11 @@
    VARIANT ADJUSTMENTS (applied via classes on container)
    ============================================================ */
 .campus-bg-auth {
-  opacity: 0.85;
+  opacity: 0.9;
 }
 
 .campus-bg-auth .campus-bg-backdrop {
-  opacity: 0.45;
+  opacity: 0.55;
 }
 
 .campus-bg-verification {
@@ -338,7 +339,7 @@
 }
 
 .campus-bg-verification .campus-bg-backdrop {
-  opacity: 0.78;
+  opacity: 0.85;
 }
 
 .campus-bg-dashboard {
@@ -346,7 +347,7 @@
 }
 
 .campus-bg-dashboard .campus-bg-backdrop {
-  opacity: 0.68;
+  opacity: 0.75;
 }
 
 .campus-bg-home {
@@ -354,5 +355,5 @@
 }
 
 .campus-bg-home .campus-bg-backdrop {
-  opacity: 0.92;
+  opacity: 0.95;
 }

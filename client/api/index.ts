@@ -339,6 +339,7 @@ export default async function handler(req: any, res: any) {
     const hubsCol = db.collection('pickuphubs');
     const reviewsCol = db.collection('reviews');
     const conversationsCol = db.collection('conversations');
+    const incidentsCol = db.collection('emergencyincidents');
 
     // ROUTES: POST /api/routes/calculate (Road routing with OSRM + smart fallback)
     if (pathname === '/api/routes/calculate' && method === 'POST') {
@@ -1418,6 +1419,123 @@ export default async function handler(req: any, res: any) {
       ];
 
       return res.status(200).json({ logs });
+    }
+
+    // EMERGENCY: POST /api/emergency/sos
+    if (pathname === '/api/emergency/sos' && method === 'POST') {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
+      const body = await parseBody(req);
+      const { location, tripId, emergencyContacts } = body || {};
+      const incidentNumber = `SOS-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const newIncident = {
+        incidentNumber,
+        tripId: tripId && mongoose.Types.ObjectId.isValid(tripId) ? new mongoose.Types.ObjectId(tripId) : null,
+        triggeredBy: new mongoose.Types.ObjectId(authUser.id),
+        location: {
+          latitude: location?.latitude || 30.3475,
+          longitude: location?.longitude || 77.9472,
+          address: location?.address || 'Premnagar, Dehradun Campus Corridor',
+        },
+        status: 'ACTIVE',
+        emergencyContactsNotified: emergencyContacts || [
+          { name: 'Campus Security', phone: '+91 12345 67890', dispatchStatus: 'SENT', sentAt: new Date() },
+        ],
+        campusSecurityNotified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await incidentsCol.insertOne(newIncident);
+      return res.status(201).json({
+        success: true,
+        incident: { ...newIncident, _id: result.insertedId },
+      });
+    }
+
+    // EMERGENCY: GET /api/emergency/incidents
+    if (pathname === '/api/emergency/incidents' && method === 'GET') {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
+      const isAdmin = ['campus_admin', 'super_admin', 'moderator'].includes(authUser.role || '');
+      let query: any = {};
+      if (!isAdmin) {
+        query = { triggeredBy: new mongoose.Types.ObjectId(authUser.id) };
+      } else {
+        const urlObj = new URL(req.url, 'http://localhost');
+        const status = urlObj.searchParams.get('status');
+        if (status && status !== 'ALL') {
+          query.status = status;
+        }
+      }
+
+      const rawIncidents = await incidentsCol.find(query).sort({ createdAt: -1 }).limit(50).toArray();
+
+      // Populate triggeredBy details from usersCol
+      const incidents = await Promise.all(
+        rawIncidents.map(async (inc: any) => {
+          let triggeredByUser = null;
+          if (inc.triggeredBy) {
+            try {
+              triggeredByUser = await usersCol.findOne(
+                { _id: new mongoose.Types.ObjectId(inc.triggeredBy) },
+                { projection: { name: 1, email: 1, phone: 1, college: 1, avatarURL: 1, emergencyContacts: 1 } }
+              );
+            } catch {
+              // ignore
+            }
+          }
+          return {
+            ...inc,
+            triggeredBy: triggeredByUser || { name: 'Student Commuter', college: 'Uttaranchal University' },
+          };
+        })
+      );
+
+      return res.status(200).json({ incidents });
+    }
+
+    // EMERGENCY: PATCH /api/emergency/incidents/:id/status
+    if (pathname.startsWith('/api/emergency/incidents/') && pathname.endsWith('/status') && (method === 'PATCH' || method === 'PUT')) {
+      const authUser = getAuthUser(req);
+      if (!authUser || !['campus_admin', 'super_admin', 'moderator'].includes(authUser.role || '')) {
+        return res.status(403).json({ code: 'FORBIDDEN', message: 'Admin access required' });
+      }
+
+      const parts = pathname.split('/');
+      const incidentId = parts[parts.length - 2];
+      const body = await parseBody(req);
+      const { status, securityNotes } = body || {};
+
+      const updateData: any = { status, updatedAt: new Date() };
+      if (securityNotes) updateData.securityNotes = securityNotes;
+      if (status === 'ACKNOWLEDGED') {
+        updateData.acknowledgedBy = new mongoose.Types.ObjectId(authUser.id);
+        updateData.acknowledgedAt = new Date();
+      } else if (status === 'RESOLVED' || status === 'FALSE_ALARM') {
+        updateData.resolvedBy = new mongoose.Types.ObjectId(authUser.id);
+        updateData.resolvedAt = new Date();
+      }
+
+      if (mongoose.Types.ObjectId.isValid(incidentId)) {
+        await incidentsCol.updateOne(
+          { _id: new mongoose.Types.ObjectId(incidentId) },
+          { $set: updateData }
+        );
+      }
+
+      const updated = mongoose.Types.ObjectId.isValid(incidentId)
+        ? await incidentsCol.findOne({ _id: new mongoose.Types.ObjectId(incidentId) })
+        : null;
+
+      return res.status(200).json({ incident: updated || { _id: incidentId, ...updateData } });
     }
 
     // 404 for unhandled API paths
