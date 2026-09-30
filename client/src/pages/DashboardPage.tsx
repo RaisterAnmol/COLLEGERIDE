@@ -38,6 +38,7 @@ import { SearchableInput } from '../components/common/SearchableInput';
 import { ReviewModal } from '../components/ReviewModal';
 import dashboardHeroImg from '../assets/illustrations/dashboard-hero.jpg';
 import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.jpg';
+import { CampusPageBackground } from '../components/common/CampusPageBackground';
 import {
   POPULAR_COLLEGES,
   POPULAR_DEPARTMENTS,
