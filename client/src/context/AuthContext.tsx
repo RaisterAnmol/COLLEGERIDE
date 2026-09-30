@@ -11,7 +11,7 @@ interface AuthContextType {
   loading: boolean;
   activePersona: PersonaRole;
   setActivePersona: (role: PersonaRole) => void;
-  login: (email: string, password?: string) => Promise<void>;
+  login: (email: string, password?: string) => Promise<IUser>;
   register: (userData: any) => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
   logout: () => void;
@@ -98,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [token]);
 
-  const login = async (email: string, password = DEMO_PASSWORD) => {
+  const login = async (email: string, password = DEMO_PASSWORD): Promise<IUser> => {
     setLoading(true);
     try {
       const res = await api.login(email, password);
@@ -114,6 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       } else {
         setActivePersona('passenger');
       }
+      return res.user;
     } finally {
       setLoading(false);
     }

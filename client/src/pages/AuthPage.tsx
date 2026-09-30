@@ -199,8 +199,17 @@ export const AuthPage: React.FC = () => {
         await register(payload);
         navigate("/dashboard");
       } else {
-        await login(email, password);
-        navigate("/dashboard");
+        const loggedInUser = await login(email, password);
+        // Admin roles (campus_admin, super_admin, moderator) go to the Admin Dashboard
+        if (
+          loggedInUser?.role === 'campus_admin' ||
+          loggedInUser?.role === 'super_admin' ||
+          loggedInUser?.role === 'moderator'
+        ) {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (err: any) {
       setError(err?.message || "Authentication failed. Please check credentials.");
