@@ -12,7 +12,7 @@ import { CommunitySection } from "../components/landing/CommunitySection";
 export const LandingPage: React.FC = () => {
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col antialiased selection:bg-[#143D32] selection:text-white">
+    <div className="min-h-screen text-slate-900 flex flex-col antialiased selection:bg-[#143D32] selection:text-white">
       {/* Hero Section */}
       <Hero />
 

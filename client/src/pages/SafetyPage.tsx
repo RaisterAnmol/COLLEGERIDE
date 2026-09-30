@@ -50,21 +50,8 @@ export const SafetyPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F7F4] text-[#1E2922] py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
-      {/* Decorative Botanical Leaf Accents */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-emerald-100/50 to-transparent rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-emerald-100/60 to-transparent rounded-full blur-3xl pointer-events-none" />
+    <div className="min-h-screen text-[#1E2922] py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
 
-      {/* Decorative corner illustrations */}
-      <svg className="absolute -bottom-6 -left-6 w-36 h-36 text-emerald-700/25 pointer-events-none" viewBox="0 0 100 100" fill="currentColor">
-        <path d="M10 90 Q 30 50, 70 40 Q 50 70, 10 90 Z" />
-        <path d="M20 95 Q 50 60, 90 60 Q 60 85, 20 95 Z" opacity="0.7" />
-        <path d="M5 80 Q 20 40, 50 30 Q 35 60, 5 80 Z" opacity="0.5" />
-      </svg>
-      <svg className="absolute -bottom-6 -right-6 w-36 h-36 text-emerald-700/25 pointer-events-none transform -scale-x-100" viewBox="0 0 100 100" fill="currentColor">
-        <path d="M10 90 Q 30 50, 70 40 Q 50 70, 10 90 Z" />
-        <path d="M20 95 Q 50 60, 90 60 Q 60 85, 20 95 Z" opacity="0.7" />
-      </svg>
 
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         

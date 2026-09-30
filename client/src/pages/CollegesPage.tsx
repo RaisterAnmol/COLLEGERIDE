@@ -37,7 +37,7 @@ export const CollegesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F6F3] text-[#111111] py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
+    <div className="min-h-screen text-[#111111] py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
       {/* Editorial Header + Illustrated Hero Card Side-by-Side */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 sm:p-10 rounded-3xl border border-[#DDE1DE] shadow-xs">
         <div className="lg:col-span-7 space-y-4">

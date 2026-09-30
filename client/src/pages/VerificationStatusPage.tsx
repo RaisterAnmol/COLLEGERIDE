@@ -183,7 +183,7 @@ export const VerificationStatusPage: React.FC = () => {
   const currentStatus = user.verificationStatus || "verified";
 
   return (
-    <div className="min-h-screen bg-[#F4F7F4] text-[#1E2922] py-8 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen text-[#1E2922] py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
 
         {/* TOP HERO BANNER (Matches Image 3) */}

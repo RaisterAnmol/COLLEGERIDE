@@ -38,7 +38,6 @@ import { SearchableInput } from '../components/common/SearchableInput';
 import { ReviewModal } from '../components/ReviewModal';
 import dashboardHeroImg from '../assets/illustrations/dashboard-hero.jpg';
 import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.jpg';
-import { CampusPageBackground } from '../components/common/CampusPageBackground';
 import {
   POPULAR_COLLEGES,
   POPULAR_DEPARTMENTS,
@@ -199,7 +198,7 @@ export const DashboardPage: React.FC = () => {
   const nextOfferedRide = myOfferedRides.length > 0 ? myOfferedRides[0] : null;
 
   return (
-    <div className="min-h-screen bg-[#F4F7F4] text-[#1E2922] pb-16 relative font-sans">
+    <div className="min-h-screen text-[#1E2922] pb-16 relative font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 relative z-10">
 
         {/* ============================================================== */}

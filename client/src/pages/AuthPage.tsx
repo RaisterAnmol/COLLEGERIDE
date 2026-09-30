@@ -277,7 +277,7 @@ export const AuthPage: React.FC = () => {
     : "Welcome back! Ready for your campus ride today?";
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#F4F9F6] via-[#EDF6F1] to-[#E5F2EB] flex flex-col items-center justify-center">
+    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center">
       {/* Top Playful Campus Brand Header */}
       <div className="w-full max-w-5xl flex items-center justify-between pb-5 mb-6 border-b border-emerald-200/60">
         <div className="flex items-center gap-3">
