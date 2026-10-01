@@ -280,14 +280,14 @@ export const AdminDashboardPage: React.FC = () => {
     }
   };
 
-  const activeIncidentsCount = incidents.filter(
-    (i) => i.status === "ACTIVE" || i.status === "ACKNOWLEDGED"
+  const activeIncidentsCount = (incidents || []).filter(
+    (i) => i && (i.status === "ACTIVE" || i.status === "ACKNOWLEDGED")
   ).length;
 
   const filteredIncidents =
     socFilter === "ALL"
-      ? incidents
-      : incidents.filter((i) => i.status === socFilter);
+      ? (incidents || [])
+      : (incidents || []).filter((i) => i && i.status === socFilter);
 
   const summary = analytics?.summary || {
     totalUsers: 8,
@@ -738,7 +738,7 @@ export const AdminDashboardPage: React.FC = () => {
                             <span className="text-xs text-slate-400 font-normal">/ seat</span>
                           </div>
                           <div className="text-[11px] text-slate-500 font-mono">
-                            Total Carpool Value: ₹{ride.totalValue || ride.pricePerSeat * Math.max(1, ride.passengers.length)}
+                            Total Carpool Value: ₹{ride.totalValue || ride.pricePerSeat * Math.max(1, ride.passengers?.length || 1)}
                           </div>
                         </div>
                         <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200">
