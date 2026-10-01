@@ -1,8 +1,10 @@
 import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { CustomCursor } from './components/common/CustomCursor';
+import { CampusBackground } from './components/common/CampusBackground';
+import type { CampusBackgroundVariant } from './components/common/CampusBackground';
 import { LandingPage } from './pages/LandingPage';
 import { AuthPage } from './pages/AuthPage';
 
@@ -27,39 +29,57 @@ function RouteFallback() {
   );
 }
 
+/** Maps current route to CampusBackground variant */
+function useBackgroundVariant(): CampusBackgroundVariant {
+  const { pathname } = useLocation();
+  if (pathname === '/' || pathname === '/colleges') return 'home';
+  if (['/auth', '/login', '/signin', '/register', '/signup'].includes(pathname)) return 'auth';
+  if (pathname === '/verification' || pathname === '/face-verify') return 'verification';
+  return 'dashboard';
+}
+
+function AppLayout() {
+  const variant = useBackgroundVariant();
+
+  return (
+    <div className="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] selection:bg-[#10B981] selection:text-white">
+      <CampusBackground variant={variant} />
+      <CustomCursor />
+      <Navbar />
+      <main className="flex-1 relative z-[1]">
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/login" element={<AuthPage />} />
+            <Route path="/signin" element={<AuthPage />} />
+            <Route path="/register" element={<AuthPage />} />
+            <Route path="/signup" element={<AuthPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/verification" element={<VerificationStatusPage />} />
+            <Route path="/face-verify" element={<FaceVerifyPage />} />
+            <Route path="/post" element={<PostRidePage />} />
+            <Route path="/post-ride" element={<Navigate to="/post" replace />} />
+            <Route path="/search" element={<SearchRidesPage />} />
+            <Route path="/rides" element={<Navigate to="/search" replace />} />
+            <Route path="/rides/:id" element={<RideDetailPage />} />
+            <Route path="/trips/:id" element={<TripTrackingPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/safety" element={<SafetyPage />} />
+            <Route path="/colleges" element={<CollegesPage />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </main>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans antialiased text-[#0F172A] selection:bg-[#10B981] selection:text-white">
-          <CustomCursor />
-          <Navbar />
-          <main className="flex-1">
-            <Suspense fallback={<RouteFallback />}>
-              <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/auth" element={<AuthPage />} />
-                <Route path="/login" element={<AuthPage />} />
-                <Route path="/signin" element={<AuthPage />} />
-                <Route path="/register" element={<AuthPage />} />
-                <Route path="/signup" element={<AuthPage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/verification" element={<VerificationStatusPage />} />
-                <Route path="/face-verify" element={<FaceVerifyPage />} />
-                <Route path="/post" element={<PostRidePage />} />
-                <Route path="/post-ride" element={<Navigate to="/post" replace />} />
-                <Route path="/search" element={<SearchRidesPage />} />
-                <Route path="/rides" element={<Navigate to="/search" replace />} />
-                <Route path="/rides/:id" element={<RideDetailPage />} />
-                <Route path="/trips/:id" element={<TripTrackingPage />} />
-                <Route path="/admin" element={<AdminDashboardPage />} />
-                <Route path="/safety" element={<SafetyPage />} />
-                <Route path="/colleges" element={<CollegesPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </Suspense>
-          </main>
-        </div>
+        <AppLayout />
       </BrowserRouter>
     </AuthProvider>
   );
