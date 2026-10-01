@@ -40,18 +40,32 @@ import {
   Eye,
 } from "lucide-react";
 
-type AdminTab = "overview" | "pricing" | "soc" | "verifications" | "analytics" | "hubs" | "audit";
+type AdminTab =
+  | "overview"
+  | "pricing"
+  | "soc"
+  | "verifications"
+  | "analytics"
+  | "hubs"
+  | "audit";
 
 export const AdminDashboardPage: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
-  const [reviewModalRequest, setReviewModalRequest] = useState<any | null>(null);
+  const [reviewModalRequest, setReviewModalRequest] = useState<any | null>(
+    null,
+  );
 
   // Authoritative Server Role Authorization: Only verified admins or moderators
   useEffect(() => {
-    if (user && user.role !== 'super_admin' && user.role !== 'campus_admin' && user.role !== 'moderator') {
-      navigate('/dashboard', { replace: true });
+    if (
+      user &&
+      user.role !== "super_admin" &&
+      user.role !== "campus_admin" &&
+      user.role !== "moderator"
+    ) {
+      navigate("/dashboard", { replace: true });
     }
   }, [user, navigate]);
 
@@ -74,7 +88,9 @@ export const AdminDashboardPage: React.FC = () => {
     };
   } | null>(null);
   const [opsLoading, setOpsLoading] = useState(false);
-  const [ongoingFilter, setOngoingFilter] = useState<"all" | "live" | "scheduled">("all");
+  const [ongoingFilter, setOngoingFilter] = useState<
+    "all" | "live" | "scheduled"
+  >("all");
   const [ongoingSearchQuery, setOngoingSearchQuery] = useState("");
 
   // Pricing Form State
@@ -83,7 +99,9 @@ export const AdminDashboardPage: React.FC = () => {
   const [perKmInput, setPerKmInput] = useState<number>(4.5);
   const [localBenchmarkInput, setLocalBenchmarkInput] = useState<string>("");
   const [pricingSaving, setPricingSaving] = useState(false);
-  const [pricingSuccessMsg, setPricingSuccessMsg] = useState<string | null>(null);
+  const [pricingSuccessMsg, setPricingSuccessMsg] = useState<string | null>(
+    null,
+  );
 
   // Telemetry & Stats State
   const [analytics, setAnalytics] = useState<IMobilityAnalytics | null>(null);
@@ -98,7 +116,8 @@ export const AdminDashboardPage: React.FC = () => {
 
   // Verification Queue State
   const [verifications, setVerifications] = useState<any[]>([]);
-  const [verificationFilter, setVerificationFilter] = useState<string>("pending");
+  const [verificationFilter, setVerificationFilter] =
+    useState<string>("pending");
   const [verificationsLoading, setVerificationsLoading] = useState(false);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState<string>("");
@@ -111,7 +130,9 @@ export const AdminDashboardPage: React.FC = () => {
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
 
-  const [notificationBanner, setNotificationBanner] = useState<string | null>(null);
+  const [notificationBanner, setNotificationBanner] = useState<string | null>(
+    null,
+  );
 
   // Load Initial Data
   useEffect(() => {
@@ -127,7 +148,9 @@ export const AdminDashboardPage: React.FC = () => {
     joinSecurityHub();
 
     const handleSosAlert = (data: any) => {
-      setNotificationBanner(`🚨 NEW EMERGENCY SOS TRIGGERED: Incident #${data.incidentId || "LIVE"}`);
+      setNotificationBanner(
+        `🚨 NEW EMERGENCY SOS TRIGGERED: Incident #${data.incidentId || "LIVE"}`,
+      );
       loadSocIncidents();
     };
 
@@ -225,7 +248,9 @@ export const AdminDashboardPage: React.FC = () => {
   async function handleSavePricing(e: React.FormEvent) {
     e.preventDefault();
     if (minPriceInput < 10) {
-      alert("Minimum price for riding cannot be less than ₹10 as per campus policy.");
+      alert(
+        "Minimum price for riding cannot be less than ₹10 as per campus policy.",
+      );
       return;
     }
     try {
@@ -236,7 +261,9 @@ export const AdminDashboardPage: React.FC = () => {
         pricePerKm: Number(perKmInput),
         localTransitComparison: localBenchmarkInput,
       });
-      setPricingSuccessMsg(`✓ Fare policy saved successfully! Minimum fare enforced at ₹${minPriceInput}.`);
+      setPricingSuccessMsg(
+        `✓ Fare policy saved successfully! Minimum fare enforced at ₹${minPriceInput}.`,
+      );
       loadAdminOperations();
       setTimeout(() => setPricingSuccessMsg(null), 4500);
     } catch (err: any) {
@@ -250,7 +277,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleUpdateIncidentStatus = async (
     incidentId: string,
     newStatus: "ACKNOWLEDGED" | "RESOLVED" | "FALSE_ALARM",
-    notes?: string
+    notes?: string,
   ) => {
     try {
       await api.updateIncidentStatus(incidentId, newStatus, notes);
@@ -267,7 +294,7 @@ export const AdminDashboardPage: React.FC = () => {
   const handleReviewVerification = async (
     requestId: string,
     decision: "approved" | "rejected",
-    reason?: string
+    reason?: string,
   ) => {
     try {
       await api.reviewVerificationRequest(requestId, decision, reason);
@@ -276,18 +303,20 @@ export const AdminDashboardPage: React.FC = () => {
       loadVerifications();
       loadAuditLogs();
     } catch (err: any) {
-      alert(`Failed to process verification: ${err.message || "Unknown error"}`);
+      alert(
+        `Failed to process verification: ${err.message || "Unknown error"}`,
+      );
     }
   };
 
-  const activeIncidentsCount = (incidents || []).filter(
-    (i) => i && (i.status === "ACTIVE" || i.status === "ACKNOWLEDGED")
+  const activeIncidentsCount = incidents.filter(
+    (i) => i.status === "ACTIVE" || i.status === "ACKNOWLEDGED",
   ).length;
 
   const filteredIncidents =
     socFilter === "ALL"
-      ? (incidents || [])
-      : (incidents || []).filter((i) => i && i.status === socFilter);
+      ? incidents
+      : incidents.filter((i) => i.status === socFilter);
 
   const summary = analytics?.summary || {
     totalUsers: 8,
@@ -311,10 +340,13 @@ export const AdminDashboardPage: React.FC = () => {
   // College Scoping: Campus Administrators only see rides & operations from their own college
   const adminCollege = user?.college;
   const isSuperAdmin = user?.role === "super_admin";
-  const [selectedCollegeScope, setSelectedCollegeScope] = useState<string>(() => adminCollege || "Uttaranchal University");
+  const [selectedCollegeScope, setSelectedCollegeScope] = useState<string>(
+    () => adminCollege || "Uttaranchal University",
+  );
 
   // Strictly enforce admin's college:
-  const activeCollegeScope = adminCollege || selectedCollegeScope || "Uttaranchal University";
+  const activeCollegeScope =
+    adminCollege || selectedCollegeScope || "Uttaranchal University";
 
   const allOngoingRides = (opsData?.ongoingRides || []).filter((ride: any) => {
     const target = (activeCollegeScope || "").toLowerCase().trim();
@@ -325,8 +357,10 @@ export const AdminDashboardPage: React.FC = () => {
 
   const filteredOngoingRides = allOngoingRides
     .filter((ride) => {
-      if (ongoingFilter === "live") return ride.isLiveNow || ride.status === "in_progress";
-      if (ongoingFilter === "scheduled") return !ride.isLiveNow && ride.status === "scheduled";
+      if (ongoingFilter === "live")
+        return ride.isLiveNow || ride.status === "in_progress";
+      if (ongoingFilter === "scheduled")
+        return !ride.isLiveNow && ride.status === "scheduled";
       return true;
     })
     .filter((ride) => {
@@ -335,7 +369,9 @@ export const AdminDashboardPage: React.FC = () => {
       const driverName = ride.driver?.name?.toLowerCase() || "";
       const origin = ride.origin?.text?.toLowerCase() || "";
       const dest = ride.destination?.text?.toLowerCase() || "";
-      const passengersStr = (ride.passengers || []).map((p: any) => p.name.toLowerCase()).join(" ");
+      const passengersStr = (ride.passengers || [])
+        .map((p: any) => p.name.toLowerCase())
+        .join(" ");
       return (
         driverName.includes(q) ||
         origin.includes(q) ||
@@ -381,14 +417,20 @@ export const AdminDashboardPage: React.FC = () => {
             Institutional Operations Center
           </h1>
           <p className="text-sm text-[#646A67] mt-1">
-            Real-time emergency monitoring, student identity gatekeeper, and campus mobility intelligence.
+            Real-time emergency monitoring, student identity gatekeeper, and
+            campus mobility intelligence.
           </p>
 
           {/* Institutional Campus Scoping Indicator */}
           <div className="mt-3 flex flex-wrap items-center gap-2.5">
             <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs">
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Campus Scoped: {activeCollegeScope === 'ALL' ? 'All Campuses (Super Admin)' : activeCollegeScope}</span>
+              <span>
+                Campus Scoped:{" "}
+                {activeCollegeScope === "ALL"
+                  ? "All Campuses (Super Admin)"
+                  : activeCollegeScope}
+              </span>
             </span>
 
             {isSuperAdmin && (
@@ -397,12 +439,20 @@ export const AdminDashboardPage: React.FC = () => {
                 onChange={(e) => setSelectedCollegeScope(e.target.value)}
                 className="text-xs p-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
               >
-                <option value="Uttaranchal University">Uttaranchal University</option>
-                <option value="Graphic Era University">Graphic Era University</option>
-                <option value="University of Petroleum and Energy Studies">UPES</option>
+                <option value="Uttaranchal University">
+                  Uttaranchal University
+                </option>
+                <option value="Graphic Era University">
+                  Graphic Era University
+                </option>
+                <option value="University of Petroleum and Energy Studies">
+                  UPES
+                </option>
                 <option value="DIT University">DIT University</option>
                 <option value="Doon University">Doon University</option>
-                <option value="ALL">All Campuses (Global Super Admin View)</option>
+                <option value="ALL">
+                  All Campuses (Global Super Admin View)
+                </option>
               </select>
             )}
           </div>
@@ -548,7 +598,10 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
               <div className="mt-3">
                 <div className="text-3xl font-black text-slate-900 tracking-tight">
-                  ₹{opsData ? opsData.kpis.totalRevenue.toLocaleString() : "18,450"}
+                  ₹
+                  {opsData
+                    ? opsData.kpis.totalRevenue.toLocaleString()
+                    : "18,450"}
                 </div>
                 <div className="text-xs text-slate-500 mt-1 flex items-center gap-1.5">
                   <span className="text-emerald-600 font-bold flex items-center">
@@ -558,7 +611,9 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Avg Fare: ₹{opsData?.pricingConfig?.basePrice || 20}/seat</span>
+                <span>
+                  Avg Fare: ₹{opsData?.pricingConfig?.basePrice || 20}/seat
+                </span>
                 <span className="text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded">
                   Min ₹10 Standard
                 </span>
@@ -584,7 +639,10 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Completed: {opsData ? Math.max(12, opsData.kpis.totalRides - 3) : 18}</span>
+                <span>
+                  Completed:{" "}
+                  {opsData ? Math.max(12, opsData.kpis.totalRides - 3) : 18}
+                </span>
                 <span className="text-blue-700 font-semibold bg-blue-50 px-2 py-0.5 rounded">
                   100% Verified
                 </span>
@@ -611,7 +669,11 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                <span>Passenger-Km: {opsData ? Math.round(opsData.kpis.co2SavedKg / 0.171) : 1260} km</span>
+                <span>
+                  Passenger-Km:{" "}
+                  {opsData ? Math.round(opsData.kpis.co2SavedKg / 0.171) : 1260}{" "}
+                  km
+                </span>
                 <span className="text-teal-700 font-semibold bg-teal-50 px-2 py-0.5 rounded">
                   Green Campus
                 </span>
@@ -630,7 +692,9 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
               <div className="mt-3">
                 <div className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span>{opsData ? opsData.kpis.ongoingRidesCount : 3} Live</span>
+                  <span>
+                    {opsData ? opsData.kpis.ongoingRidesCount : 3} Live
+                  </span>
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
                 </div>
                 <div className="text-xs text-slate-500 mt-1">
@@ -657,7 +721,8 @@ export const AdminDashboardPage: React.FC = () => {
                   </h2>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  Active drivers, onboard co-passengers, drop locations, and fare pricing breakdown.
+                  Active drivers, onboard co-passengers, drop locations, and
+                  fare pricing breakdown.
                 </p>
               </div>
 
@@ -685,7 +750,11 @@ export const AdminDashboardPage: React.FC = () => {
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                     }`}
                   >
-                    {filterVal === "all" ? "All Rides" : filterVal === "live" ? "Live On Road" : "Scheduled"}
+                    {filterVal === "all"
+                      ? "All Rides"
+                      : filterVal === "live"
+                        ? "Live On Road"
+                        : "Scheduled"}
                   </button>
                 ))}
               </div>
@@ -695,11 +764,16 @@ export const AdminDashboardPage: React.FC = () => {
             <div className="divide-y divide-slate-100">
               {filteredOngoingRides.length === 0 ? (
                 <div className="p-10 text-center text-slate-400 text-sm">
-                  {opsLoading ? "Loading live rides..." : "No rides match the selected filter."}
+                  {opsLoading
+                    ? "Loading live rides..."
+                    : "No rides match the selected filter."}
                 </div>
               ) : (
                 filteredOngoingRides.map((ride: any) => (
-                  <div key={ride.id} className="p-6 hover:bg-slate-50/60 transition-colors space-y-4">
+                  <div
+                    key={ride.id}
+                    className="p-6 hover:bg-slate-50/60 transition-colors space-y-4"
+                  >
                     {/* Top status & Fare value bar */}
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
@@ -708,24 +782,30 @@ export const AdminDashboardPage: React.FC = () => {
                             ride.isLiveNow || ride.status === "in_progress"
                               ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                               : ride.status === "driver_started"
-                              ? "bg-amber-100 text-amber-800 border border-amber-300"
-                              : "bg-blue-100 text-blue-800 border border-blue-300"
+                                ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                : "bg-blue-100 text-blue-800 border border-blue-300"
                           }`}
                         >
                           <span
                             className={`w-2 h-2 rounded-full ${
-                              ride.isLiveNow ? "bg-emerald-500 animate-ping" : "bg-blue-500"
+                              ride.isLiveNow
+                                ? "bg-emerald-500 animate-ping"
+                                : "bg-blue-500"
                             }`}
                           />
                           {ride.status === "in_progress"
                             ? "IN PROGRESS (ON ROAD)"
                             : ride.status === "driver_started"
-                            ? "DRIVER EN ROUTE TO PICKUP"
-                            : "SCHEDULED COMMUTE"}
+                              ? "DRIVER EN ROUTE TO PICKUP"
+                              : "SCHEDULED COMMUTE"}
                         </span>
 
                         <span className="text-xs text-slate-500 font-mono">
-                          Slot: {new Date(ride.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          Slot:{" "}
+                          {new Date(ride.startTime).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </span>
                       </div>
 
@@ -733,12 +813,21 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="flex items-center gap-3">
                         <div className="text-right">
                           <div className="text-sm font-black text-slate-900 flex items-center justify-end gap-1">
-                            <span className="text-xs text-slate-500 font-normal">Fare:</span>
-                            <span className="text-emerald-600 font-mono">₹{ride.pricePerSeat}</span>
-                            <span className="text-xs text-slate-400 font-normal">/ seat</span>
+                            <span className="text-xs text-slate-500 font-normal">
+                              Fare:
+                            </span>
+                            <span className="text-emerald-600 font-mono">
+                              ₹{ride.pricePerSeat}
+                            </span>
+                            <span className="text-xs text-slate-400 font-normal">
+                              / seat
+                            </span>
                           </div>
                           <div className="text-[11px] text-slate-500 font-mono">
-                            Total Carpool Value: ₹{ride.totalValue || ride.pricePerSeat * Math.max(1, ride.passengers?.length || 1)}
+                            Total Carpool Value: ₹
+                            {ride.totalValue ||
+                              ride.pricePerSeat *
+                                Math.max(1, ride.passengers.length)}
                           </div>
                         </div>
                         <span className="text-[10px] font-bold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-lg border border-emerald-200">
@@ -753,22 +842,43 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono flex items-center justify-between">
                           <span>Who is Riding (Driver)</span>
-                          <span className="text-emerald-600 text-[10px]">Verified Driver</span>
+                          <span className="text-emerald-600 text-[10px]">
+                            Verified Driver
+                          </span>
                         </div>
 
                         <div className="flex items-center gap-3">
                           <img
-                            src={ride.driver.avatarURL}
-                            alt={ride.driver.name}
+                            src={
+                              ride.driver?.avatarURL ||
+                              "/test_uploads/profile_photo.jpg"
+                            }
+                            alt={ride.driver?.name || "Driver"}
                             className="w-12 h-12 rounded-xl object-cover bg-slate-200"
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src =
+                                "/test_uploads/profile_photo.jpg";
+                            }}
                           />
+
                           <div>
-                            <div className="font-bold text-sm text-slate-900">{ride.driver.name}</div>
-                            <div className="text-xs text-slate-600">
-                              {ride.driver.college || "Uttaranchal University"}
+                            <div className="font-bold text-sm text-slate-900">
+                              {ride.driver?.name ||
+                                "Driver details unavailable"}
                             </div>
+
+                            <div className="text-xs text-slate-600">
+                              {ride.driver?.college || "College not available"}
+                            </div>
+
                             <div className="text-[11px] text-slate-500">
-                              {ride.driver.course} {ride.driver.department ? `(${ride.driver.department})` : ""} • ⭐ {ride.driver.rating || 4.8}
+                              {ride.driver?.course || ""}
+                              {ride.driver?.department
+                                ? ` (${ride.driver.department})`
+                                : ""}
+                              {" • ⭐ "}
+                              {ride.driver?.rating ?? "N/A"}
                             </div>
                           </div>
                         </div>
@@ -777,12 +887,21 @@ export const AdminDashboardPage: React.FC = () => {
                           <div className="flex items-center justify-between text-slate-700">
                             <span className="text-slate-500">Vehicle:</span>
                             <span className="font-bold">
-                              {ride.driver?.vehicle?.model || ride.driver?.vehicleModel || "Honda City i-VTEC"} (Plate: {ride.driver?.vehicle?.plateLast4 || ride.driver?.vehiclePlate || "4821"})
+                              {ride.driver?.vehicle?.model ||
+                                ride.driver?.vehicleModel ||
+                                "Honda City i-VTEC"}{" "}
+                              (Plate:{" "}
+                              {ride.driver?.vehicle?.plateLast4 ||
+                                ride.driver?.vehiclePlate ||
+                                "4821"}
+                              )
                             </span>
                           </div>
                           <div className="flex items-center justify-between text-slate-700">
                             <span className="text-slate-500">Phone:</span>
-                            <span className="font-mono text-xs">{ride.driver?.phone || "+91 98765 43210"}</span>
+                            <span className="font-mono text-xs">
+                              {ride.driver?.phone || "+91 98765 43210"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -796,41 +915,54 @@ export const AdminDashboardPage: React.FC = () => {
                           </span>
                         </div>
 
-                        {(!ride.passengers || ride.passengers.length === 0) ? (
+                        {!ride.passengers || ride.passengers.length === 0 ? (
                           <div className="py-5 text-center text-xs text-slate-500">
                             <Users className="w-6 h-6 mx-auto text-slate-300 mb-1" />
                             <p>No co-passengers joined yet.</p>
                             <p className="text-[11px] text-slate-400 mt-0.5">
-                              {ride.availableSeats || 3} empty seats available for classmates.
+                              {ride.availableSeats || 3} empty seats available
+                              for classmates.
                             </p>
                           </div>
                         ) : (
                           <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
-                            {(ride.passengers || []).map((p: any, pIdx: number) => (
-                              <div
-                                key={p.id || pIdx}
-                                className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-2 text-xs"
-                              >
-                                <div className="flex items-center gap-2.5">
-                                  <img
-                                    src={p.avatarURL || "/test_uploads/profile_photo.jpg"}
-                                    alt={p.name}
-                                    className="w-8 h-8 rounded-lg object-cover bg-slate-100"
-                                  />
-                                  <div>
-                                    <div className="font-bold text-slate-900">{p.name}</div>
-                                    <div className="text-[11px] text-slate-500">
-                                      {p.department || "Student"} • {p.college?.split(' ')[0] || "UU"}
+                            {(ride.passengers || []).map(
+                              (p: any, pIdx: number) => (
+                                <div
+                                  key={p.id || pIdx}
+                                  className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-2 text-xs"
+                                >
+                                  <div className="flex items-center gap-2.5">
+                                    <img
+                                      src={
+                                        p.avatarURL ||
+                                        "/test_uploads/profile_photo.jpg"
+                                      }
+                                      alt={p.name}
+                                      className="w-8 h-8 rounded-lg object-cover bg-slate-100"
+                                    />
+                                    <div>
+                                      <div className="font-bold text-slate-900">
+                                        {p.name}
+                                      </div>
+                                      <div className="text-[11px] text-slate-500">
+                                        {p.department || "Student"} •{" "}
+                                        {p.college?.split(" ")[0] || "UU"}
+                                      </div>
                                     </div>
                                   </div>
+                                  {p.emergencyContact && (
+                                    <span className="text-[10px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded font-mono">
+                                      ICE:{" "}
+                                      {typeof p.emergencyContact === "string"
+                                        ? p.emergencyContact
+                                        : p.emergencyContact.relation ||
+                                          "Parent"}
+                                    </span>
+                                  )}
                                 </div>
-                                {p.emergencyContact && (
-                                  <span className="text-[10px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded font-mono">
-                                    ICE: {typeof p.emergencyContact === 'string' ? p.emergencyContact : p.emergencyContact.relation || 'Parent'}
-                                  </span>
-                                )}
-                              </div>
-                            ))}
+                              ),
+                            )}
                           </div>
                         )}
                       </div>
@@ -839,7 +971,9 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3">
                         <div className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono flex items-center justify-between">
                           <span>Pickup & Drop Point</span>
-                          <span className="text-emerald-700 text-[10px] font-bold">Via Safe Bridge</span>
+                          <span className="text-emerald-700 text-[10px] font-bold">
+                            Via Safe Bridge
+                          </span>
                         </div>
 
                         <div className="space-y-2.5 text-xs">
@@ -849,8 +983,14 @@ export const AdminDashboardPage: React.FC = () => {
                               A
                             </div>
                             <div>
-                              <div className="text-[10px] uppercase font-bold text-slate-400">Pickup Location</div>
-                              <div className="font-bold text-slate-900">{ride.origin?.text || ride.pickupPoint?.text || "Premnagar Chowk"}</div>
+                              <div className="text-[10px] uppercase font-bold text-slate-400">
+                                Pickup Location
+                              </div>
+                              <div className="font-bold text-slate-900">
+                                {ride.origin?.text ||
+                                  ride.pickupPoint?.text ||
+                                  "Premnagar Chowk"}
+                              </div>
                             </div>
                           </div>
 
@@ -860,15 +1000,23 @@ export const AdminDashboardPage: React.FC = () => {
                               B
                             </div>
                             <div>
-                              <div className="text-[10px] uppercase font-bold text-red-600 font-bold">Drop Destination</div>
-                              <div className="font-bold text-slate-900">{ride.destination?.text || ride.dropPoint?.text || "Campus Gate 1"}</div>
+                              <div className="text-[10px] uppercase font-bold text-red-600 font-bold">
+                                Drop Destination
+                              </div>
+                              <div className="font-bold text-slate-900">
+                                {ride.destination?.text ||
+                                  ride.dropPoint?.text ||
+                                  "Campus Gate 1"}
+                              </div>
                             </div>
                           </div>
                         </div>
 
                         <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
                           <span>🌉 Nanda Ki Chowki Bridge</span>
-                          <span className="font-mono font-semibold text-slate-700">~{ride.distanceKm || 8.4} km</span>
+                          <span className="font-mono font-semibold text-slate-700">
+                            ~{ride.distanceKm || 8.4} km
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -886,10 +1034,12 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-slate-900">
-                  Campus Mobility Minimum Fare Policy: ₹{opsData?.pricingConfig?.minPricePerSeat || 10}
+                  Campus Mobility Minimum Fare Policy: ₹
+                  {opsData?.pricingConfig?.minPricePerSeat || 10}
                 </h4>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Set to match local transit communication prices (Vikram / auto / e-rickshaw shared hop rates).
+                  Set to match local transit communication prices (Vikram / auto
+                  / e-rickshaw shared hop rates).
                 </p>
               </div>
             </div>
@@ -918,7 +1068,10 @@ export const AdminDashboardPage: React.FC = () => {
                   Fare Pricing & Local Communication Alignment
                 </h2>
                 <p className="text-xs text-slate-500 mt-1">
-                  Adjust minimum fares and per-km rates to reflect local communication/transit prices (e.g. Dehradun Vikram, e-rickshaws, and shared autos). Minimum ride fare must be at least ₹10.
+                  Adjust minimum fares and per-km rates to reflect local
+                  communication/transit prices (e.g. Dehradun Vikram,
+                  e-rickshaws, and shared autos). Minimum ride fare must be at
+                  least ₹10.
                 </p>
               </div>
               {pricingSuccessMsg && (
@@ -937,18 +1090,23 @@ export const AdminDashboardPage: React.FC = () => {
                     Minimum Ride Fare (₹)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">
+                      ₹
+                    </span>
                     <input
                       type="number"
                       min={10}
                       value={minPriceInput}
-                      onChange={(e) => setMinPriceInput(Math.max(10, Number(e.target.value)))}
+                      onChange={(e) =>
+                        setMinPriceInput(Math.max(10, Number(e.target.value)))
+                      }
                       required
                       className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
                   <p className="text-[11px] text-slate-500">
-                    Mandatory minimum fare for any campus ride. Cannot be lower than ₹10.
+                    Mandatory minimum fare for any campus ride. Cannot be lower
+                    than ₹10.
                   </p>
                 </div>
 
@@ -958,12 +1116,16 @@ export const AdminDashboardPage: React.FC = () => {
                     Base Starting Fare (₹)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">
+                      ₹
+                    </span>
                     <input
                       type="number"
                       min={10}
                       value={basePriceInput}
-                      onChange={(e) => setBasePriceInput(Math.max(10, Number(e.target.value)))}
+                      onChange={(e) =>
+                        setBasePriceInput(Math.max(10, Number(e.target.value)))
+                      }
                       required
                       className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
                     />
@@ -979,13 +1141,17 @@ export const AdminDashboardPage: React.FC = () => {
                     Per-KM Rate (₹/km)
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">₹</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-bold">
+                      ₹
+                    </span>
                     <input
                       type="number"
                       step="0.5"
                       min={1}
                       value={perKmInput}
-                      onChange={(e) => setPerKmInput(Math.max(1, Number(e.target.value)))}
+                      onChange={(e) =>
+                        setPerKmInput(Math.max(1, Number(e.target.value)))
+                      }
                       required
                       className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
                     />
@@ -1009,7 +1175,8 @@ export const AdminDashboardPage: React.FC = () => {
                   className="w-full p-3 rounded-xl bg-white border border-slate-200 text-xs text-slate-800 focus:outline-none focus:border-emerald-500"
                 />
                 <p className="text-[11px] text-slate-500">
-                  Displayed as a reference to drivers and riders when posting or reviewing fares.
+                  Displayed as a reference to drivers and riders when posting or
+                  reviewing fares.
                 </p>
               </div>
 
@@ -1020,24 +1187,48 @@ export const AdminDashboardPage: React.FC = () => {
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
                   <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                    <div className="font-bold text-slate-900">Premnagar ↔ UIT Gate</div>
-                    <div className="text-emerald-700 font-bold mt-1">₹10 – ₹15</div>
-                    <div className="text-[10px] text-slate-500">Standard local short-hop</div>
+                    <div className="font-bold text-slate-900">
+                      Premnagar ↔ UIT Gate
+                    </div>
+                    <div className="text-emerald-700 font-bold mt-1">
+                      ₹10 – ₹15
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Standard local short-hop
+                    </div>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                    <div className="font-bold text-slate-900">Suddhowala ↔ Campus</div>
-                    <div className="text-emerald-700 font-bold mt-1">₹15 – ₹20</div>
-                    <div className="text-[10px] text-slate-500">Hostel corridor bridge link</div>
+                    <div className="font-bold text-slate-900">
+                      Suddhowala ↔ Campus
+                    </div>
+                    <div className="text-emerald-700 font-bold mt-1">
+                      ₹15 – ₹20
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Hostel corridor bridge link
+                    </div>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                    <div className="font-bold text-slate-900">Selaqui ↔ Campus</div>
-                    <div className="text-emerald-700 font-bold mt-1">₹25 – ₹35</div>
-                    <div className="text-[10px] text-slate-500">Industrial & residential corridor</div>
+                    <div className="font-bold text-slate-900">
+                      Selaqui ↔ Campus
+                    </div>
+                    <div className="text-emerald-700 font-bold mt-1">
+                      ₹25 – ₹35
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      Industrial & residential corridor
+                    </div>
                   </div>
                   <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                    <div className="font-bold text-slate-900">ISBT Dehradun ↔ Campus</div>
-                    <div className="text-emerald-700 font-bold mt-1">₹45 – ₹60</div>
-                    <div className="text-[10px] text-slate-500">City bus & inter-city connector</div>
+                    <div className="font-bold text-slate-900">
+                      ISBT Dehradun ↔ Campus
+                    </div>
+                    <div className="text-emerald-700 font-bold mt-1">
+                      ₹45 – ₹60
+                    </div>
+                    <div className="text-[10px] text-slate-500">
+                      City bus & inter-city connector
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1049,7 +1240,11 @@ export const AdminDashboardPage: React.FC = () => {
                   className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
                 >
                   <CheckCircle2 className="w-4 h-4" />
-                  <span>{pricingSaving ? "Saving Policy..." : "Save & Apply Fare Policy"}</span>
+                  <span>
+                    {pricingSaving
+                      ? "Saving Policy..."
+                      : "Save & Apply Fare Policy"}
+                  </span>
                 </button>
               </div>
             </form>
@@ -1062,20 +1257,24 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white p-4 rounded-xl border border-[#DDE1DE]">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[#646A67] uppercase">Filter Incidents:</span>
-              {(["ALL", "ACTIVE", "ACKNOWLEDGED", "RESOLVED"] as const).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setSocFilter(status)}
-                  className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors ${
-                    socFilter === status
-                      ? "bg-[#143D32] text-white font-semibold"
-                      : "bg-[#F7F5F0] text-[#646A67] hover:text-[#18201D]"
-                  }`}
-                >
-                  {status}
-                </button>
-              ))}
+              <span className="text-xs font-mono text-[#646A67] uppercase">
+                Filter Incidents:
+              </span>
+              {(["ALL", "ACTIVE", "ACKNOWLEDGED", "RESOLVED"] as const).map(
+                (status) => (
+                  <button
+                    key={status}
+                    onClick={() => setSocFilter(status)}
+                    className={`px-2.5 py-1 text-xs font-mono rounded-lg transition-colors ${
+                      socFilter === status
+                        ? "bg-[#143D32] text-white font-semibold"
+                        : "bg-[#F7F5F0] text-[#646A67] hover:text-[#18201D]"
+                    }`}
+                  >
+                    {status}
+                  </button>
+                ),
+              )}
             </div>
             <div className="text-xs font-mono text-[#646A67] flex items-center gap-2">
               <Radio className="w-3.5 h-3.5 text-[#18A66A] animate-pulse" />
@@ -1091,9 +1290,12 @@ export const AdminDashboardPage: React.FC = () => {
           ) : filteredIncidents.length === 0 ? (
             <div className="bg-white p-12 rounded-2xl border border-[#DDE1DE] text-center">
               <ShieldCheck className="w-12 h-12 text-[#18A66A] mx-auto mb-3" />
-              <h3 className="text-base font-bold text-[#18201D]">All Corridors Secure</h3>
+              <h3 className="text-base font-bold text-[#18201D]">
+                All Corridors Secure
+              </h3>
               <p className="text-xs text-[#646A67] mt-1 max-w-md mx-auto">
-                No active emergency SOS distress signals reported across registered campus transit zones.
+                No active emergency SOS distress signals reported across
+                registered campus transit zones.
               </p>
             </div>
           ) : (
@@ -1119,8 +1321,8 @@ export const AdminDashboardPage: React.FC = () => {
                             isUrgent
                               ? "bg-[#D9383A] text-white animate-bounce"
                               : isAck
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-emerald-100 text-emerald-800"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-emerald-100 text-emerald-800"
                           }`}
                         >
                           <ShieldAlert className="w-5 h-5" />
@@ -1135,8 +1337,8 @@ export const AdminDashboardPage: React.FC = () => {
                                 isUrgent
                                   ? "bg-[#D9383A] text-white"
                                   : isAck
-                                  ? "bg-amber-100 text-amber-800 border border-amber-300"
-                                  : "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                                    ? "bg-amber-100 text-amber-800 border border-amber-300"
+                                    : "bg-emerald-100 text-emerald-800 border border-emerald-300"
                               }`}
                             >
                               {incident.status}
@@ -1153,7 +1355,12 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="flex items-center gap-2">
                         {isUrgent && (
                           <button
-                            onClick={() => handleUpdateIncidentStatus(incident._id, "ACKNOWLEDGED")}
+                            onClick={() =>
+                              handleUpdateIncidentStatus(
+                                incident._id,
+                                "ACKNOWLEDGED",
+                              )
+                            }
                             className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-semibold font-mono tracking-wider transition-colors shadow-xs"
                           >
                             ACKNOWLEDGE
@@ -1174,7 +1381,13 @@ export const AdminDashboardPage: React.FC = () => {
 
                         {!isResolved && (
                           <button
-                            onClick={() => handleUpdateIncidentStatus(incident._id, "FALSE_ALARM", "Operator verified safe")}
+                            onClick={() =>
+                              handleUpdateIncidentStatus(
+                                incident._id,
+                                "FALSE_ALARM",
+                                "Operator verified safe",
+                              )
+                            }
                             className="px-3 py-1.5 bg-white border border-[#DDE1DE] hover:bg-[#F7F5F0] text-[#646A67] rounded-xl text-xs font-mono transition-colors"
                           >
                             FALSE ALARM
@@ -1195,11 +1408,15 @@ export const AdminDashboardPage: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-1.5 text-[#646A67]">
                           <Mail className="w-3.5 h-3.5" />
-                          <span>{incident.triggeredBy?.email || "Unknown"}</span>
+                          <span>
+                            {incident.triggeredBy?.email || "Unknown"}
+                          </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-[#646A67]">
                           <Phone className="w-3.5 h-3.5" />
-                          <span>{incident.triggeredBy?.phone || "No phone listed"}</span>
+                          <span>
+                            {incident.triggeredBy?.phone || "No phone listed"}
+                          </span>
                         </div>
                       </div>
 
@@ -1209,7 +1426,8 @@ export const AdminDashboardPage: React.FC = () => {
                           GPS Coordinates & Fix
                         </span>
                         <div className="font-mono font-semibold text-[#18201D]">
-                          {incident.location?.latitude?.toFixed(6)}, {incident.location?.longitude?.toFixed(6)}
+                          {incident.location?.latitude?.toFixed(6)},{" "}
+                          {incident.location?.longitude?.toFixed(6)}
                         </div>
                         <div className="text-[#646A67]">
                           Accuracy: ±{incident.location?.accuracy || 15} meters
@@ -1230,17 +1448,29 @@ export const AdminDashboardPage: React.FC = () => {
                         <span className="font-mono text-[10px] uppercase text-[#646A67] block">
                           Emergency Contacts Dispatched
                         </span>
-                        {incident.contactsNotified && incident.contactsNotified.length > 0 ? (
+                        {incident.contactsNotified &&
+                        incident.contactsNotified.length > 0 ? (
                           <div className="space-y-1">
-                            {incident.contactsNotified.map((c: any, idx: number) => (
-                              <div key={idx} className="flex items-center justify-between bg-[#F7F5F0] p-1.5 rounded border border-[#DDE1DE]">
-                                <span className="font-medium text-[#18201D]">{c.name} ({c.relationship})</span>
-                                <span className="font-mono text-[10px] text-[#18A66A] font-semibold">{c.status}</span>
-                              </div>
-                            ))}
+                            {incident.contactsNotified.map(
+                              (c: any, idx: number) => (
+                                <div
+                                  key={idx}
+                                  className="flex items-center justify-between bg-[#F7F5F0] p-1.5 rounded border border-[#DDE1DE]"
+                                >
+                                  <span className="font-medium text-[#18201D]">
+                                    {c.name} ({c.relationship})
+                                  </span>
+                                  <span className="font-mono text-[10px] text-[#18A66A] font-semibold">
+                                    {c.status}
+                                  </span>
+                                </div>
+                              ),
+                            )}
                           </div>
                         ) : (
-                          <span className="text-[#646A67] italic">Campus security alerted directly.</span>
+                          <span className="text-[#646A67] italic">
+                            Campus security alerted directly.
+                          </span>
                         )}
                       </div>
                     </div>
@@ -1266,7 +1496,13 @@ export const AdminDashboardPage: React.FC = () => {
                             Cancel
                           </button>
                           <button
-                            onClick={() => handleUpdateIncidentStatus(incident._id, "RESOLVED", resolutionNotes)}
+                            onClick={() =>
+                              handleUpdateIncidentStatus(
+                                incident._id,
+                                "RESOLVED",
+                                resolutionNotes,
+                              )
+                            }
                             className="px-3 py-1.5 bg-[#18A66A] text-white text-xs font-mono font-semibold rounded-lg"
                           >
                             Confirm Resolution
@@ -1287,7 +1523,9 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-[#DDE1DE]">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[#646A67] uppercase">Queue Filter:</span>
+              <span className="text-xs font-mono text-[#646A67] uppercase">
+                Queue Filter:
+              </span>
               {(["pending", "approved", "rejected"] as const).map((st) => (
                 <button
                   key={st}
@@ -1318,9 +1556,12 @@ export const AdminDashboardPage: React.FC = () => {
           ) : filteredVerifications.length === 0 ? (
             <div className="bg-white p-12 rounded-2xl border border-[#DDE1DE] text-center">
               <CheckCircle2 className="w-12 h-12 text-[#18A66A] mx-auto mb-3" />
-              <h3 className="text-base font-bold text-[#18201D]">Queue Clear</h3>
+              <h3 className="text-base font-bold text-[#18201D]">
+                Queue Clear
+              </h3>
               <p className="text-xs text-[#646A67] mt-1 max-w-md mx-auto">
-                No student verification requests pending review for this campus filter.
+                No student verification requests pending review for this campus
+                filter.
               </p>
             </div>
           ) : (
@@ -1350,8 +1591,8 @@ export const AdminDashboardPage: React.FC = () => {
                           req.status === "pending"
                             ? "bg-amber-100 text-amber-800 border border-amber-300"
                             : req.status === "approved"
-                            ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                            : "bg-red-100 text-red-800 border border-red-300"
+                              ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
+                              : "bg-red-100 text-red-800 border border-red-300"
                         }`}
                       >
                         {req.status}
@@ -1360,7 +1601,9 @@ export const AdminDashboardPage: React.FC = () => {
 
                     <div className="py-4 space-y-2 text-xs">
                       <div className="flex justify-between">
-                        <span className="text-[#646A67]">Roll / ID Number:</span>
+                        <span className="text-[#646A67]">
+                          Roll / ID Number:
+                        </span>
                         <span className="font-mono font-bold text-[#18201D]">
                           {req.studentIdentifier}
                         </span>
@@ -1368,13 +1611,15 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="flex justify-between">
                         <span className="text-[#646A67]">Document Type:</span>
                         <span className="font-mono text-[#18201D] uppercase">
-                          {req.documentType || "Student ID"} ({req.documentMimeType?.split("/")[1] || "JPEG"})
+                          {req.documentType || "Student ID"} (
+                          {req.documentMimeType?.split("/")[1] || "JPEG"})
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-[#646A67]">File Size:</span>
                         <span className="font-mono text-[#18201D]">
-                          {Math.round((req.documentSizeBytes || 250000) / 1024)} KB
+                          {Math.round((req.documentSizeBytes || 250000) / 1024)}{" "}
+                          KB
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -1510,7 +1755,7 @@ export const AdminDashboardPage: React.FC = () => {
               {peakHours.map((slot, i) => {
                 const heightPercent = Math.min(
                   Math.max((slot.rides / 16) * 100, 15),
-                  100
+                  100,
                 );
                 return (
                   <div
@@ -1566,18 +1811,25 @@ export const AdminDashboardPage: React.FC = () => {
                     <span className="w-2.5 h-2.5 rounded-full bg-[#18A66A]" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm text-[#18201D]">{hub.name}</h3>
-                    <p className="text-xs text-[#646A67] mt-1">{hub.description}</p>
+                    <h3 className="font-bold text-sm text-[#18201D]">
+                      {hub.name}
+                    </h3>
+                    <p className="text-xs text-[#646A67] mt-1">
+                      {hub.description}
+                    </p>
                   </div>
                   <div className="pt-2 border-t border-[#DDE1DE] text-xs font-mono space-y-1">
                     <div className="flex justify-between text-[#646A67]">
                       <span>Safe Buffer Radius:</span>
-                      <span className="font-semibold text-[#18201D]">{hub.geofenceRadiusMeters} meters</span>
+                      <span className="font-semibold text-[#18201D]">
+                        {hub.geofenceRadiusMeters} meters
+                      </span>
                     </div>
                     <div className="flex justify-between text-[#646A67]">
                       <span>Coordinates:</span>
                       <span className="text-[#18201D]">
-                        {hub.location?.coordinates[1]?.toFixed(4)}, {hub.location?.coordinates[0]?.toFixed(4)}
+                        {hub.location?.coordinates[1]?.toFixed(4)},{" "}
+                        {hub.location?.coordinates[0]?.toFixed(4)}
                       </span>
                     </div>
                   </div>
@@ -1617,7 +1869,10 @@ export const AdminDashboardPage: React.FC = () => {
             ) : (
               <div className="divide-y divide-[#DDE1DE] max-h-[500px] overflow-y-auto">
                 {auditLogs.map((log) => (
-                  <div key={log._id} className="p-4 hover:bg-[#F7F5F0]/50 transition-colors flex items-center justify-between text-xs">
+                  <div
+                    key={log._id}
+                    className="p-4 hover:bg-[#F7F5F0]/50 transition-colors flex items-center justify-between text-xs"
+                  >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-[#143D32]">
@@ -1628,7 +1883,8 @@ export const AdminDashboardPage: React.FC = () => {
                         </span>
                       </div>
                       <div className="text-[#646A67] font-mono text-[11px]">
-                        Target: {log.resourceType} {log.resourceId ? `(#${log.resourceId.slice(-6)})` : ""}
+                        Target: {log.resourceType}{" "}
+                        {log.resourceId ? `(#${log.resourceId.slice(-6)})` : ""}
                       </div>
                     </div>
                     <div className="text-right font-mono text-[#646A67] text-[11px] space-y-0.5">
