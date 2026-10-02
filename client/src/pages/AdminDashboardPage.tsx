@@ -915,7 +915,7 @@ export const AdminDashboardPage: React.FC = () => {
                           </span>
                         </div>
 
-                        {!ride.passengers || ride.passengers.length === 0 ? (
+                        {!ride.passengers || (ride.passengers?.length ?? 0) === 0 ? (
                           <div className="py-5 text-center text-xs text-slate-500">
                             <Users className="w-6 h-6 mx-auto text-slate-300 mb-1" />
                             <p>No co-passengers joined yet.</p>
@@ -926,42 +926,50 @@ export const AdminDashboardPage: React.FC = () => {
                           </div>
                         ) : (
                           <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
-                            {(ride.passengers || []).map(
-                              (p: any, pIdx: number) => (
-                                <div
-                                  key={p.id || pIdx}
-                                  className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-2 text-xs"
-                                >
-                                  <div className="flex items-center gap-2.5">
-                                    <img
-                                      src={
-                                        p.avatarURL ||
-                                        "/test_uploads/profile_photo.jpg"
-                                      }
-                                      alt={p.name}
-                                      className="w-8 h-8 rounded-lg object-cover bg-slate-100"
-                                    />
-                                    <div>
-                                      <div className="font-bold text-slate-900">
-                                        {p.name}
-                                      </div>
-                                      <div className="text-[11px] text-slate-500">
-                                        {p.department || "Student"} •{" "}
-                                        {p.college?.split(" ")[0] || "UU"}
+                            {(ride.passengers || []).filter(Boolean).map(
+                              (rawP: any, pIdx: number) => {
+                                const p = typeof rawP === "object" ? rawP : { id: rawP, name: `Passenger #${pIdx + 1}` };
+                                return (
+                                  <div
+                                    key={p.id || p._id || pIdx}
+                                    className="p-2.5 rounded-xl bg-white border border-slate-200 flex items-center justify-between gap-2 text-xs"
+                                  >
+                                    <div className="flex items-center gap-2.5">
+                                      <img
+                                        src={
+                                          p?.avatarURL ||
+                                          "/test_uploads/profile_photo.jpg"
+                                        }
+                                        alt={p?.name || "Passenger"}
+                                        className="w-8 h-8 rounded-lg object-cover bg-slate-100"
+                                        onError={(e) => {
+                                          e.currentTarget.onerror = null;
+                                          e.currentTarget.src =
+                                            "/test_uploads/profile_photo.jpg";
+                                        }}
+                                      />
+                                      <div>
+                                        <div className="font-bold text-slate-900">
+                                          {p?.name || "Student Passenger"}
+                                        </div>
+                                        <div className="text-[11px] text-slate-500">
+                                          {p?.department || "Student"} •{" "}
+                                          {p?.college?.split(" ")[0] || "UU"}
+                                        </div>
                                       </div>
                                     </div>
+                                    {p?.emergencyContact && (
+                                      <span className="text-[10px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded font-mono">
+                                        ICE:{" "}
+                                        {typeof p.emergencyContact === "string"
+                                          ? p.emergencyContact
+                                          : p.emergencyContact?.relation ||
+                                            "Parent"}
+                                      </span>
+                                    )}
                                   </div>
-                                  {p.emergencyContact && (
-                                    <span className="text-[10px] text-purple-700 bg-purple-50 px-2 py-0.5 rounded font-mono">
-                                      ICE:{" "}
-                                      {typeof p.emergencyContact === "string"
-                                        ? p.emergencyContact
-                                        : p.emergencyContact.relation ||
-                                          "Parent"}
-                                    </span>
-                                  )}
-                                </div>
-                              ),
+                                );
+                              },
                             )}
                           </div>
                         )}

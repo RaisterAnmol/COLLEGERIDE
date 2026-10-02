@@ -940,24 +940,79 @@ export default async function handler(req: any, res: any) {
     // RIDE REQUESTS: GET /api/requests or /api/rides/requests
     if ((pathname === '/api/requests' || pathname === '/api/rides/requests') && method === 'GET') {
       const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
       const roleParam = url.searchParams.get('role');
       const rideIdParam = url.searchParams.get('rideId');
 
       let query: any = {};
+      const userObjId = mongoose.Types.ObjectId.isValid(authUser.id)
+        ? new mongoose.Types.ObjectId(authUser.id)
+        : null;
+
       if (rideIdParam) {
-        query.rideId = rideIdParam;
-      }
-      if (authUser && roleParam === 'passenger') {
-        try {
-          query.$or = [
-            { passengerId: authUser.id },
-            ...(mongoose.Types.ObjectId.isValid(authUser.id)
-              ? [{ passengerId: new mongoose.Types.ObjectId(authUser.id) }]
-              : []),
-          ];
-        } catch {
-          query.passengerId = authUser.id;
+        let rId: any = rideIdParam;
+        if (mongoose.Types.ObjectId.isValid(rId)) {
+          rId = new mongoose.Types.ObjectId(rId);
         }
+        const ride = await ridesCol.findOne({ _id: rId });
+        if (!ride) {
+          return res.status(404).json({ code: 'NOT_FOUND', message: 'Ride not found' });
+        }
+        const isCreator = String(ride.creator) === String(authUser.id);
+        if (isCreator) {
+          query = {
+            $or: [
+              { rideId: rideIdParam },
+              ...(mongoose.Types.ObjectId.isValid(rideIdParam) ? [{ rideId: new mongoose.Types.ObjectId(rideIdParam) }] : []),
+            ],
+          };
+        } else {
+          // Non-creator passenger can only view their own request for this ride
+          query = {
+            $and: [
+              {
+                $or: [
+                  { rideId: rideIdParam },
+                  ...(mongoose.Types.ObjectId.isValid(rideIdParam) ? [{ rideId: new mongoose.Types.ObjectId(rideIdParam) }] : []),
+                ],
+              },
+              {
+                $or: [
+                  { passengerId: authUser.id },
+                  ...(userObjId ? [{ passengerId: userObjId }] : []),
+                ],
+              },
+            ],
+          };
+        }
+      } else if (roleParam === 'driver') {
+        // Driver can only see requests for rides they created
+        const driverRides = await ridesCol.find({
+          $or: [
+            { creator: authUser.id },
+            ...(userObjId ? [{ creator: userObjId }] : []),
+          ],
+        }).project({ _id: 1 }).toArray();
+
+        const driverRideIds = driverRides.map((r: any) => r._id);
+        const driverRideIdStrs = driverRides.map((r: any) => String(r._id));
+        query = {
+          $or: [
+            { rideId: { $in: driverRideIds } },
+            { rideId: { $in: driverRideIdStrs } },
+          ],
+        };
+      } else {
+        // Default or passenger: strictly scope to passenger's own requests
+        query = {
+          $or: [
+            { passengerId: authUser.id },
+            ...(userObjId ? [{ passengerId: userObjId }] : []),
+          ],
+        };
       }
 
       const requests = await reqsCol.find(query).sort({ requestedAt: -1, createdAt: -1 }).limit(50).toArray();
@@ -990,9 +1045,36 @@ export default async function handler(req: any, res: any) {
               }
             } catch {}
           }
+
+          let passengerObj = r.passengerId;
+          if (passengerObj) {
+            try {
+              let pId = passengerObj;
+              if (typeof pId === 'string' && mongoose.Types.ObjectId.isValid(pId)) {
+                pId = new mongoose.Types.ObjectId(pId);
+              }
+              const foundUser = await usersCol.findOne({ _id: pId }, { projection: { passwordHash: 0 } });
+              if (foundUser) {
+                passengerObj = {
+                  id: String(foundUser._id),
+                  _id: String(foundUser._id),
+                  name: foundUser.name,
+                  email: foundUser.email,
+                  college: foundUser.college,
+                  year: foundUser.year,
+                  avatarURL: foundUser.avatarURL || '/test_uploads/profile_photo.jpg',
+                  rating: foundUser.rating || 5.0,
+                  totalRides: foundUser.totalRides || 0,
+                  phone: foundUser.phone || '',
+                };
+              }
+            } catch {}
+          }
+
           return {
             ...r,
             rideId: rideObj,
+            passengerId: passengerObj,
           };
         })
       );
@@ -1028,7 +1110,27 @@ export default async function handler(req: any, res: any) {
 
     // TRIPS: GET /api/trips
     if (pathname === '/api/trips' && method === 'GET') {
-      const trips = await tripsCol.find({}).limit(20).toArray();
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+      const userObjId = mongoose.Types.ObjectId.isValid(authUser.id)
+        ? new mongoose.Types.ObjectId(authUser.id)
+        : null;
+
+      const trips = await tripsCol.find({
+        $or: [
+          { driverId: authUser.id },
+          { passengerId: authUser.id },
+          { 'passengers.userId': authUser.id },
+          ...(userObjId ? [
+            { driverId: userObjId },
+            { passengerId: userObjId },
+            { 'passengers.userId': userObjId },
+          ] : []),
+        ],
+      }).sort({ createdAt: -1 }).limit(20).toArray();
+
       return res.status(200).json(trips.map(sanitizeTrip));
     }
 
@@ -1055,6 +1157,68 @@ export default async function handler(req: any, res: any) {
     // ADMIN: GET /api/admin/operations
     if (pathname === '/api/admin/operations' && method === 'GET') {
       const rides = await ridesCol.find({ status: 'active' }).limit(10).toArray();
+      const populatedRides = await Promise.all(
+        rides.map(async (r: any) => {
+          let driverObj = r.driver || null;
+          if (!driverObj && r.creator) {
+            try {
+              let cId = r.creator;
+              if (typeof cId === 'string' && mongoose.Types.ObjectId.isValid(cId)) {
+                cId = new mongoose.Types.ObjectId(cId);
+              }
+              driverObj = await usersCol.findOne({ _id: cId }, { projection: { passwordHash: 0 } });
+            } catch {}
+          }
+          let populatedPassengers: any[] = [];
+          if (Array.isArray(r.passengers)) {
+            populatedPassengers = await Promise.all(
+              r.passengers.map(async (pItem: any) => {
+                if (typeof pItem === 'object' && pItem !== null && (pItem.name || pItem.avatarURL)) {
+                  return pItem;
+                }
+                const pId = typeof pItem === 'object' && pItem !== null ? (pItem._id || pItem.id) : pItem;
+                if (pId) {
+                  try {
+                    let lookupId = pId;
+                    if (typeof lookupId === 'string' && mongoose.Types.ObjectId.isValid(lookupId)) {
+                      lookupId = new mongoose.Types.ObjectId(lookupId);
+                    }
+                    const userDoc = await usersCol.findOne({ _id: lookupId }, { projection: { passwordHash: 0 } });
+                    if (userDoc) {
+                      return {
+                        id: String(userDoc._id),
+                        _id: String(userDoc._id),
+                        name: userDoc.name || 'Student Passenger',
+                        avatarURL: userDoc.avatarURL || '/test_uploads/profile_photo.jpg',
+                        college: userDoc.college || 'Uttaranchal University',
+                        department: userDoc.department || 'Student',
+                        emergencyContact: userDoc.emergencyContact || null,
+                      };
+                    }
+                  } catch {}
+                }
+                return {
+                  id: String(pId || 'passenger'),
+                  name: 'Student Passenger',
+                  avatarURL: '/test_uploads/profile_photo.jpg',
+                  college: 'Uttaranchal University',
+                  department: 'Student',
+                };
+              })
+            );
+          }
+          return {
+            ...r,
+            driver: driverObj || {
+              name: 'Campus Driver',
+              college: 'Uttaranchal University',
+              avatarURL: '/test_uploads/profile_photo.jpg',
+            },
+            passengers: populatedPassengers,
+          };
+        })
+      );
+
       const totalRides = await ridesCol.countDocuments();
       const totalUsers = await usersCol.countDocuments();
       const completedTrips = await tripsCol.countDocuments({ status: 'completed' });
@@ -1065,7 +1229,7 @@ export default async function handler(req: any, res: any) {
       const totalRevenue = Math.max(16800, totalRides * 25);
 
       return res.status(200).json({
-        ongoingRides: rides,
+        ongoingRides: populatedRides,
         adminCollege: 'Uttaranchal University',
         kpis: {
           ongoingRidesCount: rides.length,
