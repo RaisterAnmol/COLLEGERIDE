@@ -1,6 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
 import { CustomCursor } from './components/common/CustomCursor';
 import { CampusBackground } from './components/common/CampusBackground';
@@ -29,6 +29,46 @@ function RouteFallback() {
   );
 }
 
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return <RouteFallback />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return <RouteFallback />;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  const isAdmin =
+    user.role === 'campus_admin' ||
+    user.role === 'super_admin' ||
+    (user as any).role === 'admin' ||
+    user.accountType === 'ADMIN' ||
+    Boolean(user.email && user.email.startsWith('admin@'));
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 /** Maps current route to CampusBackground variant */
 function useBackgroundVariant(): CampusBackgroundVariant {
   const { pathname } = useLocation();
@@ -55,16 +95,16 @@ function AppLayout() {
             <Route path="/signin" element={<AuthPage />} />
             <Route path="/register" element={<AuthPage />} />
             <Route path="/signup" element={<AuthPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/verification" element={<VerificationStatusPage />} />
-            <Route path="/face-verify" element={<FaceVerifyPage />} />
-            <Route path="/post" element={<PostRidePage />} />
+            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+            <Route path="/verification" element={<ProtectedRoute><VerificationStatusPage /></ProtectedRoute>} />
+            <Route path="/face-verify" element={<ProtectedRoute><FaceVerifyPage /></ProtectedRoute>} />
+            <Route path="/post" element={<ProtectedRoute><PostRidePage /></ProtectedRoute>} />
             <Route path="/post-ride" element={<Navigate to="/post" replace />} />
             <Route path="/search" element={<SearchRidesPage />} />
             <Route path="/rides" element={<Navigate to="/search" replace />} />
             <Route path="/rides/:id" element={<RideDetailPage />} />
-            <Route path="/trips/:id" element={<TripTrackingPage />} />
-            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/trips/:id" element={<ProtectedRoute><TripTrackingPage /></ProtectedRoute>} />
+            <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
             <Route path="/safety" element={<SafetyPage />} />
             <Route path="/colleges" element={<CollegesPage />} />
             <Route path="*" element={<NotFoundPage />} />

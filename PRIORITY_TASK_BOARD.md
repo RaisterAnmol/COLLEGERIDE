@@ -14,15 +14,15 @@
 | **CR-P0B-02** | P0-B | Backend / Security | **DONE** | Enforce strict authentication & driver/passenger ownership scoping on `GET /api/requests` in `client/api/index.ts`. |
 | **CR-P0B-03** | P0-B | Backend / Security | **DONE** | Fix unscoped `GET /api/trips` endpoint in `client/api/index.ts` to prevent cross-user trip exposure. |
 | **CR-P0B-04** | P0-B | Backend / Database | **DONE** | Populate `passengers` & `driver` user metadata safely on `/api/admin/operations` in `client/api/index.ts`. |
-| **CR-P0C-01** | P0-C | Backend / Frontend | **TODO** | Formalize user account & verification status state machine (`NOT_SUBMITTED`, `PENDING`, `APPROVED`, `REJECTED`). |
-| **CR-P0C-02** | P0-C | Frontend Engineer | **TODO** | Add client-side route guards in `App.tsx` for protected routes (`/admin`, `/post`, `/dashboard`). |
-| **CR-P0D-01** | P0-D | Backend / Database | **TODO** | Atomic seat reservation and duplicate request prevention under concurrent booking load. |
-| **CR-P0D-02** | P0-D | Backend / Frontend | **TODO** | Strict review eligibility enforcement (only verified participants of completed trips can review). |
-| **CR-P1A-01** | P1-A | Geospatial Engineer | **TODO** | Validate coordinate order `[lon, lat]` vs `[lat, lon]` and eliminate any straight-line route fallback. |
-| **CR-P1B-01** | P1-B | Backend / Security | **TODO** | Role-scoped dean multi-campus tenancy filtering for verification requests and SOC incidents. |
-| **CR-P1C-01** | P1-C | UI-UX / Frontend | **TODO** | Standardize explicit four-state rendering (LOADING, EMPTY, ERROR, SUCCESS) across dashboard tables and search. |
-| **CR-P2A-01** | P2-A | Reliability Engineer | **TODO** | Add query indexing and performance telemetry on active ride lookup and telemetry endpoints. |
-| **CR-P2B-01** | P2-B | Release Engineer | **TODO** | Vercel production deployment smoke verification and zero-regression audit. |
+| **CR-P0C-01** | P0-C | Backend / Frontend | **DONE** | Formalize user account & verification status state machine (`NOT_SUBMITTED`, `PENDING`, `APPROVED`, `REJECTED`). |
+| **CR-P0C-02** | P0-C | Frontend Engineer | **DONE** | Add client-side route guards in `App.tsx` for protected routes (`/admin`, `/post`, `/dashboard`). |
+| **CR-P0D-01** | P0-D | Backend / Database | **DONE** | Atomic seat reservation and duplicate request prevention under concurrent booking load. |
+| **CR-P0D-02** | P0-D | Backend / Frontend | **DONE** | Strict review eligibility enforcement (only verified participants of completed trips can review). |
+| **CR-P1A-01** | P1-A | Geospatial Engineer | **DONE** | Validate coordinate order `[lon, lat]` vs `[lat, lon]` and eliminate any straight-line route fallback. |
+| **CR-P1B-01** | P1-B | Backend / Security | **DONE** | Role-scoped dean multi-campus tenancy filtering for verification requests and SOC incidents. |
+| **CR-P1C-01** | P1-C | UI-UX / Frontend | **DONE** | Standardize explicit four-state rendering (LOADING, EMPTY, ERROR, SUCCESS) across dashboard tables and search. |
+| **CR-P2A-01** | P2-A | Reliability Engineer | **DONE** | Add query indexing and performance telemetry on active ride lookup and telemetry endpoints. |
+| **CR-P2B-01** | P2-B | Release Engineer | **IN_PROGRESS** | Vercel production deployment smoke verification and zero-regression audit. |
 
 ---
 

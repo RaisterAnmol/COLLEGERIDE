@@ -52,6 +52,7 @@ export const DashboardPage: React.FC = () => {
   const [myOfferedRides, setMyOfferedRides] = useState<IRide[]>([]);
   const [myRequests, setMyRequests] = useState<IRideRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
 
   // Reviews State
   const [reviews, setReviews] = useState<any[]>([]);
@@ -141,6 +142,7 @@ export const DashboardPage: React.FC = () => {
   const loadDashboardData = async () => {
     if (!user) return;
     setLoading(true);
+    setDashboardError(null);
     const userId = user._id || (user as any).id;
 
     try {
@@ -155,8 +157,12 @@ export const DashboardPage: React.FC = () => {
       if (reqsRes.status === 'fulfilled') {
         setMyRequests(reqsRes.value || []);
       }
-    } catch (err) {
+      if (ridesRes.status === 'rejected' && reqsRes.status === 'rejected') {
+        setDashboardError('Failed to load rides and requests. Please check your connection.');
+      }
+    } catch (err: any) {
       console.error('[Dashboard] Error loading rides/requests:', err);
+      setDashboardError(err.message || 'Failed to load dashboard data');
     }
 
     if (userId) {
@@ -200,6 +206,20 @@ export const DashboardPage: React.FC = () => {
   return (
     <div className="min-h-screen text-[#1E2922] pb-16 relative font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 relative z-10">
+        {dashboardError && (
+          <div className="bg-rose-50 border border-rose-200 text-rose-800 px-4 py-3 rounded-2xl flex items-center justify-between gap-3 text-sm">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+              <span>{dashboardError}</span>
+            </div>
+            <button
+              onClick={() => loadDashboardData()}
+              className="px-3 py-1 bg-rose-600 text-white font-medium rounded-lg text-xs hover:bg-rose-700 transition"
+            >
+              Retry
+            </button>
+          </div>
+        )}
 
         {/* ============================================================== */}
         {/* DRIVER DASHBOARD VIEW (Strictly Matches Image 2)              */}
