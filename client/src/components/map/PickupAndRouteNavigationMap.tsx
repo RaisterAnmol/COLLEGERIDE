@@ -389,6 +389,38 @@ function snapRouteEndpoints(
   return points;
 }
 
+const getLayerConfig = (type: 'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm') => {
+  if (type === 'google_satellite') {
+    return {
+      url: 'https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en',
+      subdomains: ['0', '1', '2', '3'],
+      attribution: 'Imagery &copy; Google Maps',
+    };
+  }
+  if (type === 'osm') {
+    return {
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      subdomains: ['a', 'b', 'c'],
+      attribution: '&copy; OpenStreetMap contributors',
+    };
+  }
+  if (type === 'carto_voyager') {
+    const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
+    return {
+      url: cartoKey
+        ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      subdomains: ['a', 'b', 'c', 'd'],
+      attribution: '&copy; CARTO',
+    };
+  }
+  return {
+    url: 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en',
+    subdomains: ['0', '1', '2', '3'],
+    attribution: 'Map data &copy; Google Maps',
+  };
+};
+
 export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   originText = 'Premnagar Chowk Market',
   destinationText = 'UIT Building (Uttaranchal Institute of Technology)',
@@ -404,7 +436,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('google_streets');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -837,24 +869,11 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         }
       });
 
-      const getTileUrl = (type: string) => {
-        const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
-        if (type === 'google_satellite') return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en';
-        if (type === 'osm') return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-        if (type === 'carto_voyager') {
-          return cartoKey
-            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
-        }
-        return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
-      };
-
-      const tileUrl = getTileUrl(mapLayerType);
-
-      const tileLayer = L.tileLayer(tileUrl, {
+      const initialConfig = getLayerConfig(mapLayerType);
+      const tileLayer = L.tileLayer(initialConfig.url, {
         maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c', 'd'],
-        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / CARTO',
+        subdomains: initialConfig.subdomains,
+        attribution: initialConfig.attribution,
       }).addTo(map);
 
       const layerGroup = L.layerGroup().addTo(map);
@@ -862,25 +881,38 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       mapInstanceRef.current = map;
       layerGroupRef.current = layerGroup;
       tileLayerRef.current = tileLayer;
+
+      // Delayed resize invalidation to eliminate gray tiles
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 150);
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 400);
     }
   }, []);
 
-  // Update Tile Layer when layer type switches
+  // Update Tile Layer cleanly when layer type switches
   useEffect(() => {
-    if (!mapInstanceRef.current || !tileLayerRef.current) return;
-    const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
-    const tileUrl =
-      mapLayerType === 'google_satellite'
-        ? 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en'
-        : mapLayerType === 'osm'
-        ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-        : mapLayerType === 'carto_voyager'
-        ? (cartoKey
-            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png')
-        : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
+    const map = mapInstanceRef.current;
+    if (!map) return;
 
-    tileLayerRef.current.setUrl(tileUrl);
+    if (tileLayerRef.current) {
+      map.removeLayer(tileLayerRef.current);
+    }
+
+    const config = getLayerConfig(mapLayerType);
+    const newLayer = L.tileLayer(config.url, {
+      maxZoom: 20,
+      subdomains: config.subdomains,
+      attribution: config.attribution,
+    }).addTo(map);
+
+    tileLayerRef.current = newLayer;
+
+    setTimeout(() => {
+      map.invalidateSize();
+    }, 100);
   }, [mapLayerType]);
 
   // Render Markers, Clickable Polylines, and Google Maps Floating Midpoint ETA Pills
@@ -1254,17 +1286,6 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setMapLayerType('carto_voyager')}
-                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                  mapLayerType === 'carto_voyager'
-                    ? 'bg-white text-emerald-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Carto Map
-              </button>
-              <button
-                type="button"
                 onClick={() => setMapLayerType('osm')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'osm'
@@ -1272,7 +1293,18 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Terrain
+                OpenStreetMap
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapLayerType('carto_voyager')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                  mapLayerType === 'carto_voyager'
+                    ? 'bg-white text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Carto
               </button>
             </div>
 
