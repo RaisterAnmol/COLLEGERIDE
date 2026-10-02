@@ -427,7 +427,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
+  const [mapLayerType, setMapLayerType] = useState<'osm' | 'google_streets' | 'google_satellite' | 'carto_voyager'>('osm');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -904,7 +904,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       const tileLayer = L.tileLayer(tileUrl, {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c', 'd'],
-        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / CARTO',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors / Google Maps',
       }).addTo(map);
 
       const layerGroup = L.layerGroup().addTo(map);
@@ -1282,6 +1282,17 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
             <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
               <button
                 type="button"
+                onClick={() => setMapLayerType('osm')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                  mapLayerType === 'osm'
+                    ? 'bg-white text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                OpenStreetMap
+              </button>
+              <button
+                type="button"
                 onClick={() => setMapLayerType('google_streets')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'google_streets'
@@ -1312,17 +1323,6 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                 }`}
               >
                 Carto Map
-              </button>
-              <button
-                type="button"
-                onClick={() => setMapLayerType('osm')}
-                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                  mapLayerType === 'osm'
-                    ? 'bg-white text-blue-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Terrain
               </button>
             </div>
 
