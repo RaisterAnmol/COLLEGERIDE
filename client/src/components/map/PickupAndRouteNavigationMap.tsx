@@ -427,7 +427,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'osm' | 'google_satellite' | 'carto_voyager'>('google_streets');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -1378,7 +1378,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                 onClick={() => setMapLayerType('google_streets')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'google_streets'
-                    ? 'bg-white text-blue-700 shadow-xs'
+                    ? 'bg-white text-emerald-800 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -1386,10 +1386,21 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
               </button>
               <button
                 type="button"
+                onClick={() => setMapLayerType('osm')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                  mapLayerType === 'osm'
+                    ? 'bg-white text-emerald-800 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                OpenStreetMap
+              </button>
+              <button
+                type="button"
                 onClick={() => setMapLayerType('google_satellite')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'google_satellite'
-                    ? 'bg-white text-blue-700 shadow-xs'
+                    ? 'bg-white text-emerald-800 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -1400,22 +1411,11 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                 onClick={() => setMapLayerType('carto_voyager')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'carto_voyager'
-                    ? 'bg-white text-emerald-700 shadow-xs'
+                    ? 'bg-white text-emerald-800 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Carto Map
-              </button>
-              <button
-                type="button"
-                onClick={() => setMapLayerType('osm')}
-                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                  mapLayerType === 'osm'
-                    ? 'bg-white text-blue-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Terrain
               </button>
             </div>
 
