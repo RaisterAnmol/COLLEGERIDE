@@ -416,14 +416,16 @@ export default async function handler(req: any, res: any) {
       });
     }
 
-    // Healthcheck
-    if (pathname === '/api/health' || pathname === '/api') {
+    // Healthcheck & Readiness
+    if (pathname === '/api/health' || pathname === '/api' || pathname === '/api/ready') {
       const usersCount = await usersCol.countDocuments();
       const ridesCount = await ridesCol.countDocuments();
       return res.status(200).json({
         status: 'ok',
         service: 'CampusRide Serverless API',
         database: 'connected',
+        ready: true,
+        buildVersion: 'v4.1-real-osrm-modal',
         stats: { usersCount, ridesCount },
         timestamp: new Date().toISOString(),
       });
