@@ -176,25 +176,6 @@ export const INITIAL_CORRIDORS: RouteCorridorOption[] = [
       { icon: 'arrive', instruction: 'Arrive at Campus Carpool Bay', distanceText: '200 m' },
     ],
   },
-  {
-    id: 'kehri_gaon_link',
-    name: 'Via Kehri Gaon Paved Link & Arcadia Grant',
-    tag: 'Local Alternate / Low Traffic',
-    distanceKm: 3.2,
-    durationMinutes: 7,
-    trafficStatus: 'light',
-    description: 'Smooth paved local connector via Kehri Gaon, bypassing the central market and bridge congestion',
-    viaWaypoints: ['Premnagar West Link', 'Kehri Gaon Paved Road', 'Arcadia South Approach'],
-    latLngs: REAL_KEHRI_GAON_ROAD,
-    color: '#0f9d58', // Google Green
-    fuelEstimateInr: 12,
-    turnSteps: [
-      { icon: 'depart', instruction: 'Depart via Premnagar West residential connector', distanceText: '500 m' },
-      { icon: 'turn-left', instruction: 'Follow Kehri Gaon paved link avoiding highway bottlenecks', distanceText: '1.5 km' },
-      { icon: 'straight', instruction: 'Cross Arcadia Grant south perimeter approach', distanceText: '900 m' },
-      { icon: 'arrive', instruction: 'Arrive at Campus Destination Porch', distanceText: '300 m' },
-    ],
-  },
 ];
 
 
@@ -392,20 +373,16 @@ function snapRouteEndpoints(
     points.reverse();
   }
 
-  // Prepend origin if not very close, or snap point 0 directly to orig
+  // Only micro-adjust if already within immediate proximity of the road endpoint (< 60 meters)
+  // NEVER prepend a distant coordinate, which causes fake diagonal straight lines across the map!
   const dOrig = Math.hypot(points[0][0] - orig[0], points[0][1] - orig[1]);
-  if (dOrig > 0.003) {
-    points.unshift(orig);
-  } else {
+  if (dOrig <= 0.0008) {
     points[0] = orig;
   }
 
-  // Append destination if not very close, or snap last point directly to dest
   const lastIdx = points.length - 1;
   const dDest = Math.hypot(points[lastIdx][0] - dest[0], points[lastIdx][1] - dest[1]);
-  if (dDest > 0.003) {
-    points.push(dest);
-  } else {
+  if (dDest <= 0.0008) {
     points[lastIdx] = dest;
   }
 
@@ -427,7 +404,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'osm' | 'google_satellite' | 'carto_voyager'>('google_streets');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -698,25 +675,6 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
           { icon: 'arrive', instruction: 'Arrive at Campus Destination Porch', distanceText: '200 m' },
         ],
       },
-      {
-        id: 'kehri_gaon_link',
-        name: 'Via Kehri Gaon Paved Link & Arcadia Grant',
-        tag: 'Local Alternate / Low Traffic',
-        distanceKm: 3.2,
-        durationMinutes: 7,
-        trafficStatus: 'light',
-        description: 'Smooth paved local connector via Kehri Gaon, bypassing the central market and bridge congestion',
-        viaWaypoints: ['Premnagar West Link', 'Kehri Gaon Paved Road', 'Arcadia South Approach'],
-        latLngs: snapRouteEndpoints(REAL_KEHRI_GAON_ROAD, orig, dest),
-        color: '#0f9d58',
-        fuelEstimateInr: 12,
-        turnSteps: [
-          { icon: 'depart', instruction: 'Depart via Premnagar West residential connector', distanceText: '500 m' },
-          { icon: 'turn-left', instruction: 'Follow Kehri Gaon paved link avoiding highway bottlenecks', distanceText: '1.5 km' },
-          { icon: 'straight', instruction: 'Cross Arcadia Grant south perimeter approach', distanceText: '900 m' },
-          { icon: 'arrive', instruction: 'Arrive at Campus University Bay', distanceText: '300 m' },
-        ],
-      },
     ];
   };
 
@@ -748,81 +706,73 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         if (routeData && routeData.decodedPath && routeData.decodedPath.length > 0) {
           const primaryCoords: [number, number][] = routeData.decodedPath;
 
-          // Update primary corridor with live routing data
-          baseCorridors[0].latLngs = snapRouteEndpoints(primaryCoords, originCoords, destCoords);
-          baseCorridors[0].distanceKm = +(routeData.distanceMeters / 1000).toFixed(1);
-          baseCorridors[0].durationMinutes = Math.max(3, Math.round(routeData.durationSeconds / 60));
-          baseCorridors[0].fuelEstimateInr = Math.max(10, Math.round((routeData.distanceMeters / 1000) * 3));
+          const primaryCorridor: RouteCorridorOption = {
+            id: 'osrm_primary',
+            name: baseCorridors[0]?.name || 'Via Verified Road Route',
+            tag: 'Fastest Route',
+            distanceKm: +(routeData.distanceMeters / 1000).toFixed(1),
+            durationMinutes: Math.max(3, Math.round(routeData.durationSeconds / 60)),
+            trafficStatus: 'light',
+            description: `Direct verified road commute (${+(routeData.distanceMeters / 1000).toFixed(1)} km) via public road network`,
+            viaWaypoints: baseCorridors[0]?.viaWaypoints || ['Verified Road'],
+            latLngs: snapRouteEndpoints(primaryCoords, originCoords, destCoords),
+            color: '#1a73e8', // Primary Blue
+            fuelEstimateInr: Math.max(10, Math.round((routeData.distanceMeters / 1000) * 3)),
+            turnSteps:
+              routeData.steps && routeData.steps.length > 0
+                ? routeData.steps.map((s, idx) => ({
+                    icon: idx === 0 ? 'depart' : idx === routeData.steps!.length - 1 ? 'arrive' : 'straight',
+                    instruction: s.instruction,
+                    distanceText: s.distanceMeters > 1000 ? `${(s.distanceMeters / 1000).toFixed(1)} km` : `${s.distanceMeters} m`,
+                  }))
+                : [
+                    { icon: 'depart', instruction: `Depart from ${currentOrigin}`, distanceText: '0 m' },
+                    { icon: 'straight', instruction: 'Follow verified road route', distanceText: `${(routeData.distanceMeters / 1000).toFixed(1)} km` },
+                    { icon: 'arrive', instruction: `Arrive at ${currentDest}`, distanceText: '0 m' },
+                  ],
+          };
 
-          // If turn-by-turn steps returned from backend, attach to primary corridor
-          if (routeData.steps && routeData.steps.length > 0) {
-            baseCorridors[0].turnSteps = routeData.steps.map((s, idx) => ({
-              icon: idx === 0 ? 'depart' : idx === routeData.steps!.length - 1 ? 'arrive' : 'straight',
-              instruction: s.instruction,
-              distanceText: s.distanceMeters > 1000 ? `${(s.distanceMeters / 1000).toFixed(1)} km` : `${s.distanceMeters} m`,
-            }));
+          const dynamicCorridors: RouteCorridorOption[] = [primaryCorridor];
+
+          // ONLY add an alternative if OSRM returned a real, verified alternative road
+          if (routeData.alternatives && routeData.alternatives.length > 0) {
+            routeData.alternatives.forEach((alt, idx) => {
+              if (alt.decodedPath && alt.decodedPath.length > 1) {
+                const altDistKm = +(alt.distanceMeters / 1000).toFixed(1);
+                if (altDistKm <= primaryCorridor.distanceKm * 1.35) {
+                  dynamicCorridors.push({
+                    id: `osrm_alt_${idx}`,
+                    name: alt.summary || `Alternative Road ${idx + 1}`,
+                    tag: 'Local Alternate / Low Traffic',
+                    distanceKm: altDistKm,
+                    durationMinutes: Math.max(4, Math.round(alt.durationSeconds / 60)),
+                    trafficStatus: 'light',
+                    description: `Alternative verified road route (${altDistKm} km)`,
+                    viaWaypoints: ['Alternative Road'],
+                    latLngs: snapRouteEndpoints(alt.decodedPath, originCoords, destCoords),
+                    color: '#0f9d58',
+                    fuelEstimateInr: Math.max(10, Math.round(altDistKm * 3)),
+                    turnSteps: [
+                      { icon: 'depart', instruction: 'Depart via alternate road', distanceText: '0 m' },
+                      { icon: 'straight', instruction: 'Follow alternate road route', distanceText: `${altDistKm} km` },
+                      { icon: 'arrive', instruction: 'Arrive at destination', distanceText: '0 m' },
+                    ],
+                  });
+                }
+              }
+            });
           }
 
-          // If backend returned alternatives, attach to secondary corridor
-          if (routeData.alternatives && routeData.alternatives.length > 0 && baseCorridors[1]) {
-            const alt = routeData.alternatives[0];
-            const altDistKm = +(alt.distanceMeters / 1000).toFixed(1);
-            if (altDistKm <= baseCorridors[0].distanceKm * 1.4) {
-              baseCorridors[1].latLngs = snapRouteEndpoints(
-                alt.decodedPath,
-                originCoords,
-                destCoords
-              );
-              baseCorridors[1].distanceKm = altDistKm;
-              baseCorridors[1].durationMinutes = Math.max(4, Math.round(alt.durationSeconds / 60));
-              baseCorridors[1].fuelEstimateInr = Math.max(10, Math.round(altDistKm * 3));
-              baseCorridors[1].name = alt.summary || baseCorridors[1].name;
-            }
+          setCorridors(dynamicCorridors);
+          if (!dynamicCorridors.some((c) => c.id === selectedCorridorIdRef.current)) {
+            setSelectedCorridorId(dynamicCorridors[0].id);
           }
-        }
-
-        // Strict filter: only retain corridors that strictly fit the commute distance and geographical context
-        const primaryDist = baseCorridors[0]?.distanceKm || 3.0;
-        const origLower = currentOrigin.toLowerCase();
-        const destLower = currentDest.toLowerCase();
-        const involvesSelaqui = origLower.includes('selaqui') || destLower.includes('selaqui');
-        const involvesSuddhowala = origLower.includes('suddhowala') || destLower.includes('suddhowala');
-
-        const validCorridors = baseCorridors.filter((c, idx) => {
-          if (idx === 0) return true; // keep primary route
-          // Distance guardrail: Detours > 35% are rejected
-          if (c.distanceKm > primaryDist * 1.35) return false;
-          // Context guardrail: Do not show Selaqui or Suddhowala when trip does not involve them
-          if (!involvesSelaqui && (c.name.toLowerCase().includes('selaqui') || c.id.includes('selaqui'))) return false;
-          if (!involvesSuddhowala && !involvesSelaqui && (c.name.toLowerCase().includes('suddhowala') || c.id.includes('suddhowala'))) return false;
-          return true;
-        });
-
-        const finalCorridors = validCorridors.length > 0 ? validCorridors : [baseCorridors[0]];
-        setCorridors(finalCorridors);
-        if (!finalCorridors.some((c) => c.id === selectedCorridorIdRef.current)) {
-          setSelectedCorridorId(finalCorridors[0].id);
         }
       } catch {
         const fallback = generateCorridors(originCoords, destCoords);
-        const primaryDist = fallback[0]?.distanceKm || 3.0;
-        const origLower = currentOrigin.toLowerCase();
-        const destLower = currentDest.toLowerCase();
-        const involvesSelaqui = origLower.includes('selaqui') || destLower.includes('selaqui');
-        const involvesSuddhowala = origLower.includes('suddhowala') || destLower.includes('suddhowala');
-
-        const validFallback = fallback.filter((c, idx) => {
-          if (idx === 0) return true;
-          if (c.distanceKm > primaryDist * 1.35) return false;
-          if (!involvesSelaqui && (c.name.toLowerCase().includes('selaqui') || c.id.includes('selaqui'))) return false;
-          if (!involvesSuddhowala && !involvesSelaqui && (c.name.toLowerCase().includes('suddhowala') || c.id.includes('suddhowala'))) return false;
-          return true;
-        });
-
-        const finalFallback = validFallback.length > 0 ? validFallback : [fallback[0]];
-        setCorridors(finalFallback);
-        if (!finalFallback.some((c) => c.id === selectedCorridorIdRef.current)) {
-          setSelectedCorridorId(finalFallback[0].id);
+        setCorridors(fallback);
+        if (!fallback.some((c) => c.id === selectedCorridorIdRef.current)) {
+          setSelectedCorridorId(fallback[0].id);
         }
       } finally {
         if (!isCancelled) setLoadingRoutes(false);
@@ -887,53 +837,24 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         }
       });
 
-      const getLayerConfig = (type: string) => {
-        const cartoKey =
-          (import.meta as any).env?.VITE_CARTO_API_KEY ||
-          (typeof window !== 'undefined'
-            ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || ''
-            : '');
-
-        if (type === 'google_satellite') {
-          return {
-            url: 'https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en',
-            subdomains: ['0', '1', '2', '3'],
-            maxZoom: 20,
-            attribution: 'Map data &copy; <a href="https://maps.google.com" target="_blank" rel="noreferrer">Google Maps</a>',
-          };
-        }
-        if (type === 'osm') {
-          return {
-            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            subdomains: ['a', 'b', 'c'],
-            maxZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
-          };
-        }
+      const getTileUrl = (type: string) => {
+        const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
+        if (type === 'google_satellite') return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en';
+        if (type === 'osm') return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         if (type === 'carto_voyager') {
-          return {
-            url: cartoKey
-              ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-              : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-            subdomains: ['a', 'b', 'c', 'd'],
-            maxZoom: 20,
-            attribution: '&copy; <a href="https://carto.com/attributions" target="_blank" rel="noreferrer">CARTO</a> / OpenStreetMap',
-          };
+          return cartoKey
+            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
         }
-        // google_streets
-        return {
-          url: 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en',
-          subdomains: ['0', '1', '2', '3'],
-          maxZoom: 20,
-          attribution: 'Map data &copy; <a href="https://maps.google.com" target="_blank" rel="noreferrer">Google Maps</a>',
-        };
+        return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
       };
 
-      const config = getLayerConfig(mapLayerType);
-      const tileLayer = L.tileLayer(config.url, {
-        maxZoom: config.maxZoom,
-        subdomains: config.subdomains,
-        attribution: config.attribution,
+      const tileUrl = getTileUrl(mapLayerType);
+
+      const tileLayer = L.tileLayer(tileUrl, {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c', 'd'],
+        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / CARTO',
       }).addTo(map);
 
       const layerGroup = L.layerGroup().addTo(map);
@@ -941,90 +862,26 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       mapInstanceRef.current = map;
       layerGroupRef.current = layerGroup;
       tileLayerRef.current = tileLayer;
-
-      // Invalidate size after layout settles to guarantee zero gray tiles
-      setTimeout(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
-        }
-      }, 150);
-      setTimeout(() => {
-        if (mapInstanceRef.current) {
-          mapInstanceRef.current.invalidateSize();
-        }
-      }, 400);
     }
   }, []);
 
   // Update Tile Layer when layer type switches
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!map) return;
+    if (!mapInstanceRef.current || !tileLayerRef.current) return;
+    const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
+    const tileUrl =
+      mapLayerType === 'google_satellite'
+        ? 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en'
+        : mapLayerType === 'osm'
+        ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        : mapLayerType === 'carto_voyager'
+        ? (cartoKey
+            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png')
+        : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
 
-    if (tileLayerRef.current) {
-      map.removeLayer(tileLayerRef.current);
-    }
-
-    const cartoKey =
-      (import.meta as any).env?.VITE_CARTO_API_KEY ||
-      (typeof window !== 'undefined'
-        ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || ''
-        : '');
-
-    let config = {
-      url: 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en',
-      subdomains: ['0', '1', '2', '3'] as string[],
-      maxZoom: 20,
-      attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a>',
-    };
-
-    if (mapLayerType === 'google_satellite') {
-      config = {
-        url: 'https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en',
-        subdomains: ['0', '1', '2', '3'],
-        maxZoom: 20,
-        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a>',
-      };
-    } else if (mapLayerType === 'osm') {
-      config = {
-        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        subdomains: ['a', 'b', 'c'],
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      };
-    } else if (mapLayerType === 'carto_voyager') {
-      config = {
-        url: cartoKey
-          ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-          : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-        subdomains: ['a', 'b', 'c', 'd'],
-        maxZoom: 20,
-        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-      };
-    }
-
-    const newTileLayer = L.tileLayer(config.url, {
-      maxZoom: config.maxZoom,
-      subdomains: config.subdomains,
-      attribution: config.attribution,
-    }).addTo(map);
-
-    newTileLayer.bringToBack();
-    tileLayerRef.current = newTileLayer;
-
-    map.invalidateSize();
+    tileLayerRef.current.setUrl(tileUrl);
   }, [mapLayerType]);
-
-  // Window resize handler to maintain full map tile coverage
-  useEffect(() => {
-    const handleResize = () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   // Render Markers, Clickable Polylines, and Google Maps Floating Midpoint ETA Pills
   useEffect(() => {
@@ -1378,7 +1235,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                 onClick={() => setMapLayerType('google_streets')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'google_streets'
-                    ? 'bg-white text-emerald-800 shadow-xs'
+                    ? 'bg-white text-blue-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -1386,21 +1243,10 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setMapLayerType('osm')}
-                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                  mapLayerType === 'osm'
-                    ? 'bg-white text-emerald-800 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                OpenStreetMap
-              </button>
-              <button
-                type="button"
                 onClick={() => setMapLayerType('google_satellite')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'google_satellite'
-                    ? 'bg-white text-emerald-800 shadow-xs'
+                    ? 'bg-white text-blue-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
@@ -1411,11 +1257,22 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                 onClick={() => setMapLayerType('carto_voyager')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'carto_voyager'
-                    ? 'bg-white text-emerald-800 shadow-xs'
+                    ? 'bg-white text-emerald-700 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Carto Map
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapLayerType('osm')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                  mapLayerType === 'osm'
+                    ? 'bg-white text-blue-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Terrain
               </button>
             </div>
 
