@@ -28,6 +28,7 @@ import {
 import { ReviewModal } from "../components/ReviewModal";
 import reviewsTrustImg from "../assets/illustrations/campus-reviews-trust.jpg";
 import { sanitizeLocationText } from "../utils/sanitizeLocation";
+import RideRequestSuccessModal from "../components/RideRequestSuccessModal";
 
 export const RideDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,6 +44,7 @@ export const RideDetailPage: React.FC = () => {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [showDailyIdModal, setShowDailyIdModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Driver Reviews State
   const [driverReviews, setDriverReviews] = useState<any[]>([]);
@@ -162,6 +164,7 @@ export const RideDetailPage: React.FC = () => {
       };
       localStorage.setItem("campusride_local_requests", JSON.stringify([newReq, ...localReqs]));
       setSuccessMsg("Seat request submitted! Awaiting driver confirmation.");
+      setShowSuccessModal(true);
       loadData();
     } catch (err: any) {
       setError(err.message || "Failed to request seat");
@@ -798,6 +801,12 @@ export const RideDetailPage: React.FC = () => {
           }}
         />
       )}
+
+      <RideRequestSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        rideName={ride ? `${sanitizeLocationText(ride.origin.text)} → ${sanitizeLocationText(ride.destination.text)}` : ''}
+      />
     </div>
   );
 };

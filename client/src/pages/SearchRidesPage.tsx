@@ -31,6 +31,7 @@ import { PageHeroBanner } from '../components/common/PageHeroBanner';
 import findRideImg from '../assets/illustrations/find-ride.jpg';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
 import { sanitizeLocationText } from '../utils/sanitizeLocation';
+import RideRequestSuccessModal from '../components/RideRequestSuccessModal';
 
 export interface PresetLocation {
   text: string;
@@ -239,6 +240,8 @@ export const SearchRidesPage: React.FC = () => {
   const [requestingId, setRequestingId] = useState<string | null>(null);
   const [requestSuccess, setRequestSuccess] = useState<string | null>(null);
   const [requestError, setRequestError] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successRideName, setSuccessRideName] = useState('');
 
   // Track seat requests to immediately and persistently display "Request Sent"
   const [requestedRideIds, setRequestedRideIds] = useState<Set<string>>(() => {
@@ -466,6 +469,12 @@ export const SearchRidesPage: React.FC = () => {
       };
       localStorage.setItem("campusride_local_requests", JSON.stringify([newReq, ...local]));
       setRequestSuccess('Seat requested! Driver has been notified in real time.');
+
+      // Find the ride name for the modal
+      const ride = rides.find(r => r._id === rideId);
+      const rideName = ride ? `${ride.origin?.text || 'Pickup'} → ${ride.destination?.text || 'Drop'}` : '';
+      setSuccessRideName(rideName);
+      setShowSuccessModal(true);
     } catch (err: any) {
       setRequestError(err.message || 'Failed to request seat');
     } finally {
@@ -1211,6 +1220,12 @@ export const SearchRidesPage: React.FC = () => {
           })}
         </div>
       )}
+
+      <RideRequestSuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        rideName={successRideName}
+      />
     </div>
   );
 };

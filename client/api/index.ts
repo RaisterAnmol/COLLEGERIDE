@@ -267,48 +267,6 @@ function decodePolyline(encoded: string): Array<[number, number]> {
   return points;
 }
 
-function encodePolyline(points: Array<[number, number]>): string {
-  let prevLat = 0, prevLng = 0, result = '';
-  for (const [lat, lng] of points) {
-    const latE5 = Math.round(lat * 1e5);
-    const lngE5 = Math.round(lng * 1e5);
-    const dLat = latE5 - prevLat;
-    const dLng = lngE5 - prevLng;
-    prevLat = latE5;
-    prevLng = lngE5;
-    const encodeNum = (num: number) => {
-      let s = num < 0 ? ~(num << 1) : num << 1;
-      let out = '';
-      while (s >= 0x20) {
-        out += String.fromCharCode((0x20 | (s & 0x1f)) + 63);
-        s >>= 5;
-      }
-      out += String.fromCharCode(s + 63);
-      return out;
-    };
-    result += encodeNum(dLat) + encodeNum(dLng);
-  }
-  return result;
-}
-
-function generateSyntheticRoadPath(
-  origin: { lat: number; lng: number },
-  destination: { lat: number; lng: number }
-): Array<[number, number]> {
-  const points: Array<[number, number]> = [];
-  const steps = 14;
-  for (let i = 0; i <= steps; i++) {
-    const fraction = i / steps;
-    const lat = origin.lat + (destination.lat - origin.lat) * fraction;
-    const lng = origin.lng + (destination.lng - origin.lng) * fraction;
-    const curve = Math.sin(fraction * Math.PI) * 0.003;
-    points.push([
-      Number((lat + curve).toFixed(6)),
-      Number((lng + curve * 0.5).toFixed(6)),
-    ]);
-  }
-  return points;
-}
 
 export default async function handler(req: any, res: any) {
   // 1. CORS headers
@@ -418,35 +376,19 @@ export default async function handler(req: any, res: any) {
         }
       } catch (_) {}
 
-      // Robust synthetic road path fallback
-      const distKm = haversineKm(origin, destination);
-      const distMeters = Math.max(800, Math.round(distKm * 1000 * 1.25));
-      const durationSec = Math.max(180, Math.round((distMeters / 1000 / 30) * 3600));
-      const path = generateSyntheticRoadPath(origin, destination);
-      const polyline = encodePolyline(path);
-
+      // Strictly real roads only: return noRouteFound: true so no fake paths are rendered
       return res.status(200).json({
         mode: 'LIVE',
-        provider: 'OSRM',
+        provider: 'NONE',
         calculatedAt,
-        distanceMeters: distMeters,
-        durationSeconds: durationSec,
-        encodedPolyline: polyline,
-        decodedPath: path,
-        alternatives: [
-          {
-            summary: 'Alternative Campus Link Road',
-            distanceMeters: Math.round(distMeters * 1.15),
-            durationSeconds: Math.round(durationSec * 1.2),
-            encodedPolyline: polyline,
-            decodedPath: path,
-          },
-        ],
-        steps: [
-          { instruction: 'Head towards main campus road', distanceMeters: 400, durationSeconds: 60 },
-          { instruction: 'Continue onto connecting corridor', distanceMeters: distMeters - 800, durationSeconds: durationSec - 120 },
-          { instruction: 'Arrive at designated drop hub', distanceMeters: 400, durationSeconds: 60 },
-        ],
+        distanceMeters: 0,
+        durationSeconds: 0,
+        encodedPolyline: '',
+        decodedPath: [],
+        alternatives: [],
+        steps: [],
+        noRouteFound: true,
+        message: 'No real road route could be found between these coordinates via OSRM.',
       });
     }
 
@@ -1878,18 +1820,22 @@ export default async function handler(req: any, res: any) {
 
       const convId = convMsgMatch[1];
       const body = await parseBody(req);
-      const { content, type = 'text' } = body;
+      const textContent = (body.content || body.text || '').trim();
+      const type = body.type || 'text';
 
-      if (!content) {
+      if (!textContent) {
         return res.status(400).json({ code: 'BAD_REQUEST', message: 'Message content is required' });
       }
 
+      const now = new Date();
       const message = {
         _id: new mongoose.Types.ObjectId(),
         senderId: authUser.id,
-        content: content.trim(),
+        content: textContent,
+        text: textContent,
         type,
-        createdAt: new Date(),
+        createdAt: now,
+        time: now,
       };
 
       let convQuery: any;

@@ -130,8 +130,12 @@ export interface ITrip {
 export interface IMessage {
   _id?: string;
   senderId: IUser | string;
-  text: string;
-  time: string;
+  content: string;
+  type?: string;
+  createdAt: string;
+  // Fallbacks for backwards compatibility
+  text?: string;
+  time?: string;
 }
 
 export interface IConversation {

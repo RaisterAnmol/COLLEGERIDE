@@ -427,13 +427,14 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('google_streets');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
   const [loadingRoutes, setLoadingRoutes] = useState<boolean>(false);
   const [customOriginCoords, setCustomOriginCoords] = useState<[number, number] | null>(null);
   const [customDestCoords, setCustomDestCoords] = useState<[number, number] | null>(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -733,6 +734,14 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         );
 
         if (isCancelled) return;
+
+        if (routeData && (routeData.noRouteFound || !routeData.decodedPath || routeData.decodedPath.length === 0)) {
+          setCorridors([]);
+          setStatusMessage('No real road route found between these locations. Try adjusting your pickup or drop-off points.');
+          return;
+        }
+
+        setStatusMessage(null);
 
         const baseCorridors = generateCorridors(originCoords, destCoords);
 
@@ -1446,8 +1455,16 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       <div className="relative w-full" style={{ height: compact ? 360 : 460 }}>
         <div ref={mapContainerRef} className="w-full h-full z-0" />
 
+        {/* Status Message Warning Banner */}
+        {statusMessage && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 bg-amber-100 text-amber-900 px-4 py-2 rounded-xl border border-amber-300 shadow-lg flex items-center gap-2 max-w-[90%] text-sm font-semibold text-center">
+            <span>⚠️</span>
+            <span>{statusMessage}</span>
+          </div>
+        )}
+
         {/* Floating Top Hint Pill on Map */}
-        {activeTab === 'route_choice' && (
+        {activeTab === 'route_choice' && !statusMessage && (
           <div className="absolute top-4 left-4 z-10 bg-[#143D32]/95 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl border border-emerald-600/40 text-xs shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
             <RouteIcon className="w-4 h-4 text-emerald-300" />
             <span>

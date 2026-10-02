@@ -26,7 +26,8 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
     async function loadChat() {
       try {
         setLoading(true);
-        const conv = await api.getConversation(rideId);
+        const data = await api.getConversation(rideId);
+        const conv = data?.conversation || data;
         if (isMounted && conv) {
           setConversation(conv);
           setMessages(conv.messages || []);
@@ -73,7 +74,14 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
     setSending(true);
 
     try {
-      await api.sendMessage(conversation._id, textToSend);
+      const res = await api.sendMessage(conversation._id, textToSend);
+      const newMsg = res?.message || res;
+      if (newMsg) {
+        setMessages((prev) => {
+          if (prev.some(m => m._id === newMsg._id)) return prev;
+          return [...prev, newMsg];
+        });
+      }
       // Socket event will automatically broadcast and append message to list
     } catch (err) {
       console.error('[ChatModal] Send message failed:', err);
@@ -147,14 +155,14 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
                         : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none'
                     }`}
                   >
-                    <p className="whitespace-pre-wrap break-words">{msg.text}</p>
+                    <p className="whitespace-pre-wrap break-words">{msg.content || msg.text}</p>
                     <div
                       className={`text-[9px] mt-1 text-right flex items-center justify-end gap-1 ${
                         isMe ? 'text-emerald-200' : 'text-slate-400'
                       }`}
                     >
                       <Clock className="w-2.5 h-2.5" />
-                      {new Date(msg.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(msg.createdAt || msg.time || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                 </div>

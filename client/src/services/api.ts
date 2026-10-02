@@ -279,7 +279,7 @@ class ApiService {
   async sendMessage(conversationId: string, text: string) {
     return this.request<any>(`/api/conversations/${conversationId}/messages`, {
       method: "POST",
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ content: text }),
     });
   }
 
