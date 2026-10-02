@@ -462,6 +462,7 @@ class ApiService {
       durationSeconds: number;
       encodedPolyline: string;
       decodedPath: Array<[number, number]>;
+      noRouteFound?: boolean;
       alternatives: Array<{
         summary: string;
         distanceMeters: number;

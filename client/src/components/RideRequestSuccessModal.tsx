@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { X } from 'lucide-react';
 
 interface RideRequestSuccessModalProps {
@@ -34,17 +34,17 @@ const RideRequestSuccessModal: React.FC<RideRequestSuccessModalProps> = ({ isOpe
   }, [isOpen, onClose]);
 
   // Animation variants
-  const backdropVariants = {
+  const backdropVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1 }
   };
 
-  const modalVariants = {
+  const modalVariants: Variants = {
     hidden: { opacity: 0, scale: 0.9 },
     visible: { 
       opacity: 1, 
       scale: 1,
-      transition: { type: 'spring', bounce: 0.15, duration: 0.4 }
+      transition: { type: 'spring' as const, bounce: 0.15, duration: 0.4 }
     },
     exit: { 
       opacity: 0, 
@@ -53,25 +53,25 @@ const RideRequestSuccessModal: React.FC<RideRequestSuccessModalProps> = ({ isOpe
     }
   };
 
-  const checkmarkVariants = {
+  const checkmarkVariants: Variants = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: { 
       pathLength: 1, 
       opacity: 1,
-      transition: { duration: 0.5, ease: "easeOut", delay: 0.2 }
+      transition: { duration: 0.5, ease: 'easeOut' as const, delay: 0.2 }
     }
   };
 
-  const circleVariants = {
+  const circleVariants: Variants = {
     hidden: { scale: 0, opacity: 0 },
     visible: { 
       scale: 1, 
       opacity: 1,
-      transition: { type: "spring", bounce: 0.4, duration: 0.6 }
+      transition: { type: 'spring' as const, bounce: 0.4, duration: 0.6 }
     }
   };
 
-  const textContainerVariants = {
+  const textContainerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -79,7 +79,7 @@ const RideRequestSuccessModal: React.FC<RideRequestSuccessModalProps> = ({ isOpe
     }
   };
 
-  const textItemVariants = {
+  const textItemVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: { 
       opacity: 1, 
@@ -88,11 +88,11 @@ const RideRequestSuccessModal: React.FC<RideRequestSuccessModalProps> = ({ isOpe
     }
   };
 
-  const progressVariants = {
+  const progressVariants: Variants = {
     hidden: { width: "100%" },
     visible: { 
       width: "0%",
-      transition: { duration: 4, ease: "linear" }
+      transition: { duration: 4, ease: 'linear' as const }
     }
   };
 
