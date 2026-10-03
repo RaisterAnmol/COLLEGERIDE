@@ -243,6 +243,12 @@ export const CampusBackground: React.FC<CampusBackgroundProps> = ({
         style={{ backgroundImage: `url(${currentBgImage})` }}
       />
 
+      {/* ── Atmospheric Scrim (Protects text legibility across all viewport heights) ── */}
+      <div className="campus-bg-scrim" />
+
+      {/* ── Radiant Sunlight Aurora Beam ── */}
+      <div className="campus-sunlight-beam" />
+
       {/* ── Dot grid mesh ─────────────────────────────────── */}
       <div className="dot-grid" />
 

@@ -406,179 +406,184 @@ export const AdminDashboardPage: React.FC = () => {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#DDE1DE] pb-6">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#143D32]/10 border border-[#143D32]/20 text-xs font-mono text-[#143D32] uppercase tracking-wider mb-2">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#143D32]" />
-            <span>CAMPUSRIDE SECURITY & MOBILITY COMMAND</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#18201D] tracking-tight">
-            Institutional Operations Center
-          </h1>
-          <p className="text-sm text-[#646A67] mt-1">
-            Real-time emergency monitoring, student identity gatekeeper, and
-            campus mobility intelligence.
-          </p>
+      {/* Header & Navigation Command Center Card */}
+      <div className="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-100 pb-6">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#143D32]/10 border border-[#143D32]/20 text-xs font-mono text-[#143D32] uppercase tracking-wider mb-2">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#143D32]" />
+              <span>CAMPUSRIDE SECURITY & MOBILITY COMMAND</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#18201D] tracking-tight">
+              {new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 17 ? 'Good afternoon' : 'Good evening'}, {user?.name?.split(' ')[0] || 'Admin'}
+            </h1>
+            <p className="text-sm text-[#646A67] mt-1">
+              Real-time emergency monitoring, student identity gatekeeper, and campus mobility intelligence.
+            </p>
 
-          {/* Institutional Campus Scoping Indicator */}
-          <div className="mt-3 flex flex-wrap items-center gap-2.5">
-            <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>
-                Campus Scoped:{" "}
-                {activeCollegeScope === "ALL"
-                  ? "All Campuses (Super Admin)"
-                  : activeCollegeScope}
+            {/* Institutional Campus Scoping Indicator */}
+            <div className="mt-3 flex flex-wrap items-center gap-2.5">
+              <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-300 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-xs">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <span>
+                  Campus Scoped:{" "}
+                  {activeCollegeScope === "ALL"
+                    ? "All Campuses (Super Admin)"
+                    : activeCollegeScope}
+                </span>
               </span>
-            </span>
 
-            {isSuperAdmin && (
-              <select
-                value={selectedCollegeScope}
-                onChange={(e) => setSelectedCollegeScope(e.target.value)}
-                className="text-xs p-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
-              >
-                <option value="Uttaranchal University">
-                  Uttaranchal University
-                </option>
-                <option value="Graphic Era University">
-                  Graphic Era University
-                </option>
-                <option value="University of Petroleum and Energy Studies">
-                  UPES
-                </option>
-                <option value="DIT University">DIT University</option>
-                <option value="Doon University">Doon University</option>
-                <option value="ALL">
-                  All Campuses (Global Super Admin View)
-                </option>
-              </select>
-            )}
+              {isSuperAdmin && (
+                <select
+                  value={selectedCollegeScope}
+                  onChange={(e) => setSelectedCollegeScope(e.target.value)}
+                  className="text-xs p-1.5 rounded-xl border border-slate-300 bg-white font-semibold text-slate-800 focus:outline-none focus:ring-1 focus:ring-emerald-500 cursor-pointer"
+                >
+                  <option value="Uttaranchal University">
+                    Uttaranchal University
+                  </option>
+                  <option value="Graphic Era University">
+                    Graphic Era University
+                  </option>
+                  <option value="University of Petroleum and Energy Studies">
+                    UPES
+                  </option>
+                  <option value="DIT University">DIT University</option>
+                  <option value="Doon University">Doon University</option>
+                  <option value="ALL">
+                    All Campuses (Global Super Admin View)
+                  </option>
+                </select>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-800">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>System Online</span>
+            </div>
+            <button
+              onClick={() => {
+                loadSocIncidents();
+                loadVerifications();
+                loadAnalytics();
+                loadHubs();
+                loadAuditLogs();
+              }}
+              className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-50 border border-[#DDE1DE] rounded-xl text-xs font-mono text-[#18201D] hover:bg-slate-100 transition-colors shadow-2xs cursor-pointer"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-[#646A67]" />
+              <span>REFRESH FEEDS</span>
+            </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Navigation Tabs Console */}
+        <div className="flex flex-wrap items-center gap-1.5 p-1.5 bg-slate-100/90 rounded-2xl border border-slate-200/70">
           <button
             onClick={() => {
-              loadSocIncidents();
-              loadVerifications();
-              loadAnalytics();
-              loadHubs();
-              loadAuditLogs();
+              setActiveTab("overview");
+              loadAdminOperations();
             }}
-            className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-[#DDE1DE] rounded-xl text-xs font-mono text-[#18201D] hover:bg-[#F7F5F0] transition-colors"
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-medium rounded-xl transition-all cursor-pointer ${
+              activeTab === "overview"
+                ? "bg-[#143D32] text-white font-bold shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            }`}
           >
-            <RefreshCw className="w-3.5 h-3.5 text-[#646A67]" />
-            <span>REFRESH FEEDS</span>
+            <Activity className="w-3.5 h-3.5 text-emerald-400" />
+            <span>OPERATIONS OVERVIEW</span>
+            {opsData?.kpis.ongoingRidesCount ? (
+              <span className="px-1.5 py-0.2 text-[10px] bg-emerald-500 text-white rounded-full font-bold ml-1">
+                {opsData.kpis.ongoingRidesCount} Live
+              </span>
+            ) : null}
+          </button>
+
+          <button
+            onClick={() => {
+              setActiveTab("pricing");
+              loadAdminOperations();
+            }}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-medium rounded-xl transition-all cursor-pointer ${
+              activeTab === "pricing"
+                ? "bg-[#143D32] text-white font-bold shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            }`}
+          >
+            <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+            <span>CAMPUS FARE & PRICING</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("soc")}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-medium rounded-xl transition-all cursor-pointer ${
+              activeTab === "soc"
+                ? "bg-[#D9383A] text-white font-bold shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            }`}
+          >
+            <ShieldAlert className="w-3.5 h-3.5" />
+            <span>SECURITY OPS (SOC)</span>
+            {activeIncidentsCount > 0 && (
+              <span className="px-1.5 py-0.2 text-[10px] bg-white text-[#D9383A] rounded-full font-bold animate-pulse ml-1">
+                {activeIncidentsCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => {
+              setActiveTab("verifications");
+              loadVerifications();
+            }}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-medium rounded-xl transition-all cursor-pointer ${
+              activeTab === "verifications"
+                ? "bg-[#143D32] text-white font-bold shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            }`}
+          >
+            <UserCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <span>STUDENT VERIFICATIONS</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-medium rounded-xl transition-all cursor-pointer ${
+              activeTab === "analytics"
+                ? "bg-[#143D32] text-white font-bold shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
+            <span>MOBILITY ANALYTICS</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("hubs")}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-medium rounded-xl transition-all cursor-pointer ${
+              activeTab === "hubs"
+                ? "bg-[#143D32] text-white font-bold shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            }`}
+          >
+            <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+            <span>CAMPUS HUBS</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("audit")}
+            className={`flex items-center gap-2 px-3.5 py-2 text-xs font-mono font-medium rounded-xl transition-all cursor-pointer ${
+              activeTab === "audit"
+                ? "bg-[#143D32] text-white font-bold shadow-xs"
+                : "text-slate-600 hover:text-slate-900 hover:bg-white/80"
+            }`}
+          >
+            <ClipboardList className="w-3.5 h-3.5 text-emerald-400" />
+            <span>AUDIT LOGS</span>
           </button>
         </div>
-      </div>
-
-      {/* Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[#DDE1DE] pb-px">
-        <button
-          onClick={() => {
-            setActiveTab("overview");
-            loadAdminOperations();
-          }}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-medium rounded-t-xl transition-colors border-b-2 cursor-pointer ${
-            activeTab === "overview"
-              ? "border-emerald-600 text-emerald-800 bg-white font-bold shadow-xs"
-              : "border-transparent text-[#646A67] hover:text-[#18201D] hover:bg-white/60"
-          }`}
-        >
-          <Activity className="w-4 h-4 text-emerald-600" />
-          <span>OPERATIONS OVERVIEW</span>
-          {opsData?.kpis.ongoingRidesCount ? (
-            <span className="px-1.5 py-0.5 text-[10px] bg-emerald-600 text-white rounded-full font-bold">
-              {opsData.kpis.ongoingRidesCount} Live
-            </span>
-          ) : null}
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab("pricing");
-            loadAdminOperations();
-          }}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-medium rounded-t-xl transition-colors border-b-2 cursor-pointer ${
-            activeTab === "pricing"
-              ? "border-emerald-600 text-emerald-800 bg-white font-bold shadow-xs"
-              : "border-transparent text-[#646A67] hover:text-[#18201D] hover:bg-white/60"
-          }`}
-        >
-          <Sliders className="w-4 h-4 text-emerald-600" />
-          <span>CAMPUS FARE & PRICING</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("soc")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-medium rounded-t-xl transition-colors border-b-2 cursor-pointer ${
-            activeTab === "soc"
-              ? "border-[#D9383A] text-[#D9383A] bg-white font-bold shadow-xs"
-              : "border-transparent text-[#646A67] hover:text-[#18201D] hover:bg-white/60"
-          }`}
-        >
-          <ShieldAlert className="w-4 h-4" />
-          <span>SECURITY OPS (SOC)</span>
-          {activeIncidentsCount > 0 && (
-            <span className="px-1.5 py-0.5 text-[10px] bg-[#D9383A] text-white rounded-full font-bold animate-pulse">
-              {activeIncidentsCount}
-            </span>
-          )}
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab("verifications");
-            loadVerifications();
-          }}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-medium rounded-t-xl transition-colors border-b-2 ${
-            activeTab === "verifications"
-              ? "border-[#143D32] text-[#143D32] bg-white font-bold shadow-xs"
-              : "border-transparent text-[#646A67] hover:text-[#18201D] hover:bg-white/60"
-          }`}
-        >
-          <UserCheck className="w-4 h-4" />
-          <span>STUDENT VERIFICATION QUEUE</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("analytics")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-medium rounded-t-xl transition-colors border-b-2 ${
-            activeTab === "analytics"
-              ? "border-[#143D32] text-[#143D32] bg-white font-bold shadow-xs"
-              : "border-transparent text-[#646A67] hover:text-[#18201D] hover:bg-white/60"
-          }`}
-        >
-          <BarChart3 className="w-4 h-4" />
-          <span>MOBILITY ANALYTICS</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("hubs")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-medium rounded-t-xl transition-colors border-b-2 ${
-            activeTab === "hubs"
-              ? "border-[#143D32] text-[#143D32] bg-white font-bold shadow-xs"
-              : "border-transparent text-[#646A67] hover:text-[#18201D] hover:bg-white/60"
-          }`}
-        >
-          <MapPin className="w-4 h-4" />
-          <span>CAMPUS HUBS & GEOFENCES</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("audit")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-xs font-mono font-medium rounded-t-xl transition-colors border-b-2 ${
-            activeTab === "audit"
-              ? "border-[#143D32] text-[#143D32] bg-white font-bold shadow-xs"
-              : "border-transparent text-[#646A67] hover:text-[#18201D] hover:bg-white/60"
-          }`}
-        >
-          <ClipboardList className="w-4 h-4" />
-          <span>IMMUTABLE AUDIT LOGS</span>
-        </button>
       </div>
 
       {/* TAB 0: REAL-TIME OPERATIONS & KPI DASHBOARD (DEFAULT) */}

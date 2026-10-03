@@ -95,7 +95,9 @@ export async function connectDB(): Promise<typeof mongoose> {
     logger.info(
       `[Database] Initializing isolated MongoDB engine (mongodb-memory-server)...`,
     );
-    mongoMemoryServer = await MongoMemoryServer.create();
+    mongoMemoryServer = await MongoMemoryServer.create({
+      instance: { launchTimeout: 60000 },
+    });
     const memoryUri = mongoMemoryServer.getUri();
     const conn = await mongoose.connect(memoryUri);
     console.log(`[Database] Connected to in-memory MongoDB at ${memoryUri}`);

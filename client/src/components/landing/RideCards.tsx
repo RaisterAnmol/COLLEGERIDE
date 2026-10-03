@@ -72,7 +72,7 @@ export const RideCards: React.FC = () => {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#EAECF0]">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 max-w-4xl">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 shadow-xs mb-10">
         <div>
           <p className="text-xs font-mono uppercase tracking-widest text-[#175CD3] font-semibold">
             Section 02 / Daily Commute Passes
@@ -86,7 +86,7 @@ export const RideCards: React.FC = () => {
         </div>
         <Link
           to="/search"
-          className="text-xs font-mono font-bold text-[#175CD3] hover:text-[#1749C2] flex items-center gap-1 self-start md:self-auto"
+          className="text-xs font-mono font-bold text-[#175CD3] hover:text-[#1749C2] flex items-center gap-1 self-start md:self-auto shrink-0 bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200"
         >
           <span>VIEW ALL 42 CORRIDORS</span>
           <ArrowRight className="w-3.5 h-3.5" />

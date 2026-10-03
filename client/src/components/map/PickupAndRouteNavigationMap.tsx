@@ -392,7 +392,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'osm'>('google_streets');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -828,8 +828,14 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       });
 
       const getTileUrl = (type: string) => {
+        const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
         if (type === 'google_satellite') return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en';
         if (type === 'osm') return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        if (type === 'carto_voyager') {
+          return cartoKey
+            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        }
         return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
       };
 
@@ -837,8 +843,8 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
 
       const tileLayer = L.tileLayer(tileUrl, {
         maxZoom: 20,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c'],
-        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / OpenStreetMap',
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c', 'd'],
+        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / CARTO',
       }).addTo(map);
 
       const layerGroup = L.layerGroup().addTo(map);
@@ -852,11 +858,16 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   // Update Tile Layer when layer type switches
   useEffect(() => {
     if (!mapInstanceRef.current || !tileLayerRef.current) return;
+    const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
     const tileUrl =
       mapLayerType === 'google_satellite'
         ? 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en'
         : mapLayerType === 'osm'
         ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        : mapLayerType === 'carto_voyager'
+        ? (cartoKey
+            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png')
         : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
 
     tileLayerRef.current.setUrl(tileUrl);
@@ -1233,6 +1244,17 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
               </button>
               <button
                 type="button"
+                onClick={() => setMapLayerType('carto_voyager')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                  mapLayerType === 'carto_voyager'
+                    ? 'bg-white text-emerald-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Carto Map
+              </button>
+              <button
+                type="button"
                 onClick={() => setMapLayerType('osm')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'osm'
@@ -1240,7 +1262,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                OpenStreetMap
+                Terrain
               </button>
             </div>
 
