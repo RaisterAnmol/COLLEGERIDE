@@ -72,7 +72,7 @@ export const TrustVerificationSection: React.FC = () => {
   return (
     <section id="trust" className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#EAECF0]">
       {/* Section Header */}
-      <div className="text-center max-w-3xl mx-auto p-6 sm:p-8 rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 shadow-xs">
+      <div className="text-center max-w-3xl mx-auto">
         <p className="text-xs font-mono uppercase tracking-widest text-[#175CD3] font-semibold">
           Section 04 / Identity & Trust Engine
         </p>

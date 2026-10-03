@@ -127,7 +127,7 @@ export const CommuteTimeline: React.FC = () => {
   return (
     <section id="weekly-timeline" className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200/80">
       {/* Section Header */}
-      <div className="max-w-4xl p-6 sm:p-8 rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 shadow-xs mb-8">
+      <div className="max-w-3xl">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 mb-3 shadow-xs">
           <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
           <span>ROUTINE CAMPUS CARPOOL TIMETABLE</span>

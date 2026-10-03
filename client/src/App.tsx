@@ -88,12 +88,14 @@ function useBackgroundVariant(): CampusBackgroundVariant {
 
 function AppLayout() {
   const variant = useBackgroundVariant();
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
     <div className="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] selection:bg-[#10B981] selection:text-white">
       <CampusBackground variant={variant} />
       <CustomCursor />
-      <Navbar />
+      {!isAdminRoute && <Navbar />}
       <main className="flex-1 relative z-[1]">
         <Suspense fallback={<RouteFallback />}>
           <Routes>

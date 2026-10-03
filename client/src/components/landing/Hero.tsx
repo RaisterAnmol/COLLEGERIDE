@@ -113,7 +113,7 @@ export const Hero: React.FC = () => {
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         {/* Left Column: Text Content */}
-        <div className="lg:col-span-7 flex flex-col items-start text-left p-6 sm:p-8 rounded-3xl bg-white/80 backdrop-blur-md border border-slate-200/80 shadow-xs">
+        <div className="lg:col-span-7 flex flex-col items-start text-left">
           {/* Verification Pill */}
           <div className="hero-badge inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white text-slate-800 text-xs font-mono tracking-wider uppercase mb-6 border border-slate-200 shadow-xs">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />

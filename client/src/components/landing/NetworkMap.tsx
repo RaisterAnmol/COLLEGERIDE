@@ -213,7 +213,7 @@ export const NetworkMap: React.FC = () => {
   const [selectedCorridor, setSelectedCorridor] = useState<'all' | 'north' | 'west' | 'east'>('all');
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState('');
-  const [mapLayerType, setMapLayerType] = useState<'google' | 'satellite' | 'osm'>('google');
+  const [mapLayerType, setMapLayerType] = useState<'google' | 'satellite' | 'carto'>('google');
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -237,13 +237,20 @@ export const NetworkMap: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const getTileUrl = (type: 'google' | 'satellite' | 'osm') => {
+  const getTileUrl = (type: 'google' | 'satellite' | 'carto') => {
+    const cartoKey =
+      (import.meta as any).env?.VITE_CARTO_API_KEY ||
+      (typeof window !== 'undefined'
+        ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || ''
+        : '');
 
     if (type === 'satellite') {
       return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en';
     }
-    if (type === 'osm') {
-      return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    if (type === 'carto') {
+      return cartoKey
+        ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
     }
     return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
   };
@@ -554,7 +561,7 @@ export const NetworkMap: React.FC = () => {
   return (
     <section id="live-map" className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-slate-200">
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 p-6 sm:p-8 rounded-3xl bg-white/85 backdrop-blur-md border border-slate-200/80 shadow-xs">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-mono font-semibold border border-emerald-200/80 shadow-2xs">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -651,12 +658,12 @@ export const NetworkMap: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMapLayerType('osm')}
+                  onClick={() => setMapLayerType('carto')}
                   className={`px-2.5 py-1 rounded-full font-bold transition-all cursor-pointer ${
-                    mapLayerType === 'osm' ? 'bg-[#143D32] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                    mapLayerType === 'carto' ? 'bg-[#143D32] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  🌍 OpenStreetMap
+                  ⚡ CARTO
                 </button>
               </div>
 

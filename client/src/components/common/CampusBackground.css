@@ -317,80 +317,29 @@
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  opacity: 0.58;
-  filter: saturate(1.08) brightness(1.02);
-  transition: opacity 0.8s ease-in-out;
+  opacity: 0.85;
+  transition: opacity 0.7s ease-in-out;
   pointer-events: none;
   will-change: transform, opacity;
 }
 
-/* ── Atmospheric Scrim (Eliminates text clash & guarantees AAA legibility) ── */
-.campus-bg-scrim {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at 45% 25%,
-    rgba(255, 255, 255, 0.40) 0%,
-    rgba(247, 250, 248, 0.65) 55%,
-    rgba(238, 246, 241, 0.88) 100%
-  );
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* ── Radiant Sunlight Aurora Beam (Ambient morning glow) ── */
-.campus-sunlight-beam {
-  position: absolute;
-  top: -20%;
-  right: -10%;
-  width: 75vw;
-  height: 80vh;
-  background: radial-gradient(
-    circle at 80% 20%,
-    rgba(254, 240, 199, 0.32) 0%,
-    rgba(168, 230, 207, 0.18) 45%,
-    transparent 75%
-  );
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: 2;
-  animation: sunlightPulse 22s ease-in-out infinite alternate;
-}
-
-@keyframes sunlightPulse {
-  0% {
-    opacity: 0.35;
-    transform: scale(1) translate(0, 0);
-  }
-  50% {
-    opacity: 0.65;
-    transform: scale(1.08) translate(-2%, 2%);
-  }
-  100% {
-    opacity: 0.4;
-    transform: scale(0.95) translate(1%, -1%);
-  }
-}
-
 /* Subtle continuous ambient camera movement */
 .campus-bg-animated {
-  animation: kenBurnsBg 42s ease-in-out infinite alternate;
+  animation: kenBurnsBg 45s ease-in-out infinite alternate;
 }
 
 @keyframes kenBurnsBg {
   0% {
-    transform: scale(1.0) translate(0%, 0%);
+    transform: scale(1) translate(0, 0);
   }
-  28% {
-    transform: scale(1.035) translate(-1.2%, -0.7%);
+  35% {
+    transform: scale(1.04) translate(-1.2%, -0.8%);
   }
-  62% {
-    transform: scale(1.06) translate(0.9%, -1.1%);
+  70% {
+    transform: scale(1.02) translate(1%, -1.2%);
   }
   100% {
-    transform: scale(1.025) translate(0.5%, 0.8%);
+    transform: scale(1.05) translate(-0.5%, 1%);
   }
 }
 
@@ -398,38 +347,37 @@
    VARIANT ADJUSTMENTS (applied via classes on container)
    ============================================================ */
 .campus-bg-home { opacity: 1; }
-.campus-bg-home .campus-bg-backdrop { opacity: 0.58; }
+.campus-bg-home .campus-bg-backdrop { opacity: 0.92; }
 
 .campus-bg-auth { opacity: 0.95; }
-.campus-bg-auth .campus-bg-backdrop { opacity: 0.45; filter: blur(2px); }
+.campus-bg-auth .campus-bg-backdrop { opacity: 0.55; filter: blur(1.5px); }
 
 .campus-bg-dashboard { opacity: 0.98; }
-.campus-bg-dashboard .campus-bg-backdrop { opacity: 0.55; }
+.campus-bg-dashboard .campus-bg-backdrop { opacity: 0.70; }
 
 .campus-bg-search { opacity: 0.98; }
-.campus-bg-search .campus-bg-backdrop { opacity: 0.55; }
+.campus-bg-search .campus-bg-backdrop { opacity: 0.72; }
 
 .campus-bg-post { opacity: 0.98; }
-.campus-bg-post .campus-bg-backdrop { opacity: 0.55; }
+.campus-bg-post .campus-bg-backdrop { opacity: 0.70; }
 
 .campus-bg-rideDetail { opacity: 0.98; }
-.campus-bg-rideDetail .campus-bg-backdrop { opacity: 0.55; }
+.campus-bg-rideDetail .campus-bg-backdrop { opacity: 0.72; }
 
 .campus-bg-verification { opacity: 0.98; }
-.campus-bg-verification .campus-bg-backdrop { opacity: 0.58; }
+.campus-bg-verification .campus-bg-backdrop { opacity: 0.78; }
 
 .campus-bg-admin { opacity: 0.98; }
-.campus-bg-admin .campus-bg-backdrop { opacity: 0.52; }
+.campus-bg-admin .campus-bg-backdrop { opacity: 0.75; }
 
 .campus-bg-safety { opacity: 0.98; }
-.campus-bg-safety .campus-bg-backdrop { opacity: 0.55; }
+.campus-bg-safety .campus-bg-backdrop { opacity: 0.75; }
 
 .campus-bg-colleges { opacity: 1; }
-.campus-bg-colleges .campus-bg-backdrop { opacity: 0.60; }
+.campus-bg-colleges .campus-bg-backdrop { opacity: 0.85; }
 
 @media (prefers-reduced-motion: reduce) {
-  .campus-bg-animated,
-  .campus-sunlight-beam {
+  .campus-bg-animated {
     animation: none !important;
     transform: none !important;
   }
