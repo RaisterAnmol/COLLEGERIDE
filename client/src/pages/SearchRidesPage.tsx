@@ -42,11 +42,11 @@ export interface PresetLocation {
 
 export const PRESET_LOCATIONS: PresetLocation[] = [
   // Dehradun - Uttaranchal University Campus Buildings
-  { text: 'UIT Building (Uttaranchal Institute of Technology)', lat: 30.3432, lng: 77.9448, category: 'Campus Buildings' },
-  { text: 'USCS Building (School of Computing Sciences)', lat: 30.3428, lng: 77.9456, category: 'Campus Buildings' },
-  { text: 'BBA Building (Uttaranchal Institute of Management)', lat: 30.3420, lng: 77.9461, category: 'Campus Buildings' },
-  { text: 'Central Academic Library & Law Block', lat: 30.3425, lng: 77.9450, category: 'Campus Buildings' },
-  { text: 'Campus Gate 1 (Uttaranchal University Main Entrance)', lat: 30.3415, lng: 77.9440, category: 'Campus Buildings' },
+  { text: 'UIT Building (Uttaranchal Institute of Technology)', lat: 30.3400, lng: 77.9515, category: 'Campus Buildings' },
+  { text: 'USCS Building (School of Computing Sciences)', lat: 30.3395, lng: 77.9510, category: 'Campus Buildings' },
+  { text: 'BBA Building (Uttaranchal Institute of Management)', lat: 30.3405, lng: 77.9520, category: 'Campus Buildings' },
+  { text: 'Central Academic Library & Law Block', lat: 30.3402, lng: 77.9508, category: 'Campus Buildings' },
+  { text: 'Campus Gate 1 (Uttaranchal University Main Entrance)', lat: 30.3412, lng: 77.9525, category: 'Campus Buildings' },
 
   // Dehradun Regional Transit & Student Hubs
   { text: 'Premnagar Chowk Market', lat: 30.3340, lng: 77.9620, category: 'Dehradun & Surrounding' },
@@ -320,10 +320,25 @@ export const SearchRidesPage: React.FC = () => {
         verifiedOnly,
       });
 
-      // Sort: Corridor proximity FIRST, then academic affinity
-      const sortRidesByCorridor = (list: IRide[]) => {
-        return [...list].sort((a: any, b: any) => {
-          // 1. Proximity to search corridor (pickup + dropoff)
+      // Filter & Sort: Corridor proximity FIRST (strictly filter out non-matching routes), then academic affinity
+      const filterAndSortRides = (list: IRide[]) => {
+        // When searching for a route, strictly filter out rides that do not match the requested corridor
+        const filtered = list.filter((r: any) => {
+          const rOrig = r.origin?.coordinates || (r.origin?.lat !== undefined ? [r.origin.lng, r.origin.lat] : []);
+          const rDest = r.destination?.coordinates || (r.destination?.lat !== undefined ? [r.destination.lng, r.destination.lat] : []);
+          if (rOrig.length !== 2 || rDest.length !== 2) return false;
+
+          const pDist = haversineDistanceKm(origin.lat, origin.lng, rOrig[1], rOrig[0]);
+          const dDist = haversineDistanceKm(dest.lat, dest.lng, rDest[1], rDest[0]);
+
+          // Both pickup and drop-off must be within 1.6 km of the requested route points
+          return pDist <= 1.6 && dDist <= 1.6;
+        });
+
+        // If strict corridor matches exist, ONLY show those matching rides (no unwanted library/intra-campus or other city rides)
+        const targetList = filtered.length > 0 ? filtered : list;
+
+        return [...targetList].sort((a: any, b: any) => {
           const aOrig = a.origin?.coordinates || (a.origin?.lat !== undefined ? [a.origin.lng, a.origin.lat] : []);
           const aDest = a.destination?.coordinates || (a.destination?.lat !== undefined ? [a.destination.lng, a.destination.lat] : []);
           const bOrig = b.origin?.coordinates || (b.origin?.lat !== undefined ? [b.origin.lng, b.origin.lat] : []);
@@ -335,7 +350,7 @@ export const SearchRidesPage: React.FC = () => {
           const aDestDist = (aDest.length === 2 && dest)
             ? haversineDistanceKm(dest.lat, dest.lng, aDest[1], aDest[0])
             : 99;
-          const aTotalDist = a.totalCorridorDist ?? (aPickupDist + aDestDist);
+          const aTotalDist = aPickupDist + aDestDist;
 
           const bPickupDist = (bOrig.length === 2 && origin)
             ? haversineDistanceKm(origin.lat, origin.lng, bOrig[1], bOrig[0])
@@ -343,14 +358,14 @@ export const SearchRidesPage: React.FC = () => {
           const bDestDist = (bDest.length === 2 && dest)
             ? haversineDistanceKm(dest.lat, dest.lng, bDest[1], bDest[0])
             : 99;
-          const bTotalDist = b.totalCorridorDist ?? (bPickupDist + bDestDist);
+          const bTotalDist = bPickupDist + bDestDist;
 
-          // If route distances differ by more than 0.8 km, closer corridor takes absolute priority
-          if (Math.abs(aTotalDist - bTotalDist) > 0.8) {
+          // 1. If route corridor distances differ by more than 0.4 km, closer route takes absolute priority
+          if (Math.abs(aTotalDist - bTotalDist) > 0.4) {
             return aTotalDist - bTotalDist;
           }
 
-          // 2. Academic Affinity priority rank (Rank 1: Course & Sem, Rank 2: Dept, Rank 3: College, Rank 4: None)
+          // 2. Academic Affinity priority rank among corridor-aligned rides (Rank 1: Course & Sem, Rank 2: Dept, Rank 3: College, Rank 4: None)
           const rankA = a.match?.breakdown?.academicPriorityRank ?? 4;
           const rankB = b.match?.breakdown?.academicPriorityRank ?? 4;
           if (rankA !== rankB) {
@@ -365,11 +380,18 @@ export const SearchRidesPage: React.FC = () => {
       };
 
       if (!res || res.length === 0) {
-        // If exact coordinate corridor has no match, fetch all active rides so user always sees available rides
-        const allActive = await api.getRides({ womenOnlyDriver, status: 'active' });
-        setRides(sortRidesByCorridor(allActive || []));
+        // If exact date match has no rides, fetch all active rides along this SAME corridor (never dump unrelated city routes)
+        const corridorActive = await api.getRides({
+          originLat: origin.lat,
+          originLng: origin.lng,
+          destLat: dest.lat,
+          destLng: dest.lng,
+          womenOnlyDriver,
+          status: 'active',
+        });
+        setRides(filterAndSortRides(corridorActive || []));
       } else {
-        setRides(sortRidesByCorridor(res));
+        setRides(filterAndSortRides(res));
       }
       setSearched(true);
     } catch (err: any) {
@@ -411,13 +433,13 @@ export const SearchRidesPage: React.FC = () => {
 
         const aPickupDist = (aOrig.length === 2 && origin) ? haversineDistanceKm(origin.lat, origin.lng, aOrig[1], aOrig[0]) : 99;
         const aDestDist = (aDest.length === 2 && dest) ? haversineDistanceKm(dest.lat, dest.lng, aDest[1], aDest[0]) : 99;
-        const aTotalDist = a.totalCorridorDist ?? (aPickupDist + aDestDist);
+        const aTotalDist = aPickupDist + aDestDist;
 
         const bPickupDist = (bOrig.length === 2 && origin) ? haversineDistanceKm(origin.lat, origin.lng, bOrig[1], bOrig[0]) : 99;
         const bDestDist = (bDest.length === 2 && dest) ? haversineDistanceKm(dest.lat, dest.lng, bDest[1], bDest[0]) : 99;
-        const bTotalDist = b.totalCorridorDist ?? (bPickupDist + bDestDist);
+        const bTotalDist = bPickupDist + bDestDist;
 
-        if (Math.abs(aTotalDist - bTotalDist) > 0.8) {
+        if (Math.abs(aTotalDist - bTotalDist) > 0.4) {
           return aTotalDist - bTotalDist;
         }
 

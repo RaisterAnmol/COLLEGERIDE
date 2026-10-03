@@ -698,13 +698,13 @@ export default async function handler(req: any, res: any) {
             if (destLat !== null && destLng !== null && r.destination?.lat && r.destination?.lng) {
               destDist = haversineKm({ lat: destLat, lng: destLng }, { lat: r.destination.lat, lng: r.destination.lng });
               totalCorridorDist = pickupDist + destDist;
-              // Corridor match threshold: pickup and dropoff within 2.5km of driver route
-              isDirectRouteMatch = pickupDist <= 2.5 && destDist <= 2.5;
+              // Corridor match threshold: pickup and dropoff within 1.6km of driver route
+              isDirectRouteMatch = pickupDist <= 1.6 && destDist <= 1.6;
               const driverTripDist = Math.max(haversineKm({ lat: r.origin.lat, lng: r.origin.lng }, { lat: r.destination.lat, lng: r.destination.lng }), 1.0);
               routeOverlap = Math.max(0, 1 - (pickupDist + destDist) / driverTripDist);
             } else {
-              isDirectRouteMatch = pickupDist <= 3.0;
-              routeOverlap = Math.max(0, 1 - pickupDist / 3.0);
+              isDirectRouteMatch = pickupDist <= 2.0;
+              routeOverlap = Math.max(0, 1 - pickupDist / 2.0);
             }
           }
 
@@ -771,6 +771,8 @@ export default async function handler(req: any, res: any) {
         .filter((r: any) => {
           if (r.availableSeats !== undefined && r.availableSeats < seats) return false;
           if (womenOnly && r.creator?.gender !== 'female') return false;
+          // STRICT CORRIDOR MATCHING: When origin/destination are queried, do NOT return random rides in other cities/directions!
+          if (hasRouteQuery && !r.isDirectRouteMatch) return false;
           if (college && college !== 'Any') {
             const cLower = college.toLowerCase();
             const dCol = (r.creator?.college || '').toLowerCase();
@@ -797,7 +799,7 @@ export default async function handler(req: any, res: any) {
             }
             // Closest total corridor distance (pickup + dropoff) first
             const distDiff = a.totalCorridorDist - b.totalCorridorDist;
-            if (Math.abs(distDiff) > 0.8) {
+            if (Math.abs(distDiff) > 0.4) {
               return distDiff;
             }
           }
@@ -808,7 +810,7 @@ export default async function handler(req: any, res: any) {
             return rankA - rankB;
           }
           // Tertiary: Match percentage
-          return b.match.percentage - a.match.percentage;
+          return (b.match?.percentage ?? 0) - (a.match?.percentage ?? 0);
         });
 
       return res.status(200).json(enrichedRides.map(sanitizeRide));

@@ -179,7 +179,7 @@ export async function seedDemoData() {
     code: "UU-UIT",
     location: {
       type: "Point",
-      coordinates: [77.9448, 30.3432],
+      coordinates: [77.9515, 30.3400],
     },
     address: "Engineering & Tech Block North Porch, Dehradun",
     radiusMeters: 50,
@@ -1186,8 +1186,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: new Date(now.getTime() + 1.5 * 60 * 60 * 1000),
     availableSeats: 3,
@@ -1201,8 +1201,8 @@ export async function seedDemoData() {
     creator: ichigo._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Premnagar Chowk Market",
@@ -1241,8 +1241,8 @@ export async function seedDemoData() {
     creator: makima._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Premnagar Chowk Market",
@@ -1308,8 +1308,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: adityaDepTime,
     availableSeats: 3,
@@ -1323,8 +1323,8 @@ export async function seedDemoData() {
     creator: aditya._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Premnagar Chowk Market",
@@ -1486,8 +1486,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: dehradunDepTime1,
     availableSeats: 3,
@@ -1554,8 +1554,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: dehradunDepTime4,
     availableSeats: 3,
@@ -1608,8 +1608,8 @@ export async function seedDemoData() {
     creator: ananya._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "USCS Building (School of Computing Sciences)",
@@ -1637,8 +1637,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: new Date(now.getTime() + 1.2 * 60 * 60 * 1000),
     availableSeats: 3,
@@ -1728,8 +1728,8 @@ export async function seedDemoData() {
     creator: meera._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Central Academic Library & Law Block",
@@ -1752,8 +1752,8 @@ export async function seedDemoData() {
     creator: aditya._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "USCS Building (School of Computing Sciences)",
@@ -1805,8 +1805,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: new Date(now.getTime() + 2.6 * 60 * 60 * 1000),
     availableSeats: 2,
@@ -1829,8 +1829,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: new Date(now.getTime() + 2.8 * 60 * 60 * 1000),
     availableSeats: 3,
@@ -1877,8 +1877,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: new Date(now.getTime() + 3.2 * 60 * 60 * 1000),
     availableSeats: 3,
@@ -1920,8 +1920,8 @@ export async function seedDemoData() {
     creator: sneha._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)",
@@ -1949,8 +1949,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: new Date(now.getTime() + 1.1 * 60 * 60 * 1000),
     availableSeats: 3,
@@ -1969,8 +1969,8 @@ export async function seedDemoData() {
     creator: aditya._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Premnagar Chowk Market",
@@ -1994,8 +1994,8 @@ export async function seedDemoData() {
     creator: ananya._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Premnagar Chowk Market",
@@ -2024,8 +2024,8 @@ export async function seedDemoData() {
     creator: sneha._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Premnagar Chowk Market",
@@ -2054,8 +2054,8 @@ export async function seedDemoData() {
     creator: rohan._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Suddhowala Chowk (Student PG Hub)",
@@ -2078,8 +2078,8 @@ export async function seedDemoData() {
     creator: vikram._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Selaqui Industrial & Institutional Hub",
@@ -2128,8 +2128,8 @@ export async function seedDemoData() {
     creator: tanvi._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     destination: {
       text: "Premnagar Chowk Market",
@@ -2287,8 +2287,8 @@ export async function seedDemoData() {
     },
     destination: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
-      lat: 30.3432,
-      lng: 77.9448,
+      lat: 30.3400,
+      lng: 77.9515,
     },
     departureTime: new Date(now.getTime() + 1.2 * 60 * 60 * 1000),
     availableSeats: 4,

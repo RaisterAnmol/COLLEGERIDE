@@ -55,7 +55,7 @@ export interface PickupLocationGuide {
   stepDirections: string[];
 }
 
-// 100% Real Road GPS Points from OSRM following actual Chakrata Road Bridge over Tons/Asan River
+// 100% Real Road GPS Points from OSRM connecting Premnagar Chowk directly to Uttaranchal University (UIT Building)
 const REAL_CHAKRATA_BRIDGE_ROAD: [number, number][] = [
   [30.33397, 77.96224], [30.33418, 77.96228], [30.33433, 77.9623], [30.33459, 77.96235],
   [30.3351, 77.96245], [30.33545, 77.96248], [30.33584, 77.9625], [30.33604, 77.96254],
@@ -72,19 +72,13 @@ const REAL_CHAKRATA_BRIDGE_ROAD: [number, number][] = [
   [30.33693, 77.95646], [30.33717, 77.95647], [30.33764, 77.95651], [30.33775, 77.9565],
   [30.33783, 77.9565], [30.3379, 77.95648], [30.33797, 77.95646], [30.33802, 77.95643],
   [30.3381, 77.95639], [30.33864, 77.95609], [30.33871, 77.95606], [30.33879, 77.95604],
-  [30.33886, 77.95601], [30.33989, 77.95537], [30.34001, 77.95531], [30.34012, 77.95527],
-  // Crossing River over the designated Chakrata Highway Bridge
-  [30.3408, 77.95512], [30.34092, 77.95508], [30.3412, 77.955], [30.34178, 77.95482],
-  [30.34254, 77.9547], [30.34293, 77.95464], [30.34304, 77.95456], [30.34314, 77.95446],
-  [30.34321, 77.95431], [30.34323, 77.95412], [30.34338, 77.95309], [30.3434, 77.95301],
-  [30.34352, 77.95237], [30.3437, 77.95144], [30.34373, 77.9513], [30.34375, 77.95123],
-  // Turning onto Arcadia Grant / Uttaranchal University Boulevard
-  [30.34391, 77.95044], [30.34425, 77.94895], [30.34451, 77.94777], [30.345, 77.9454],
-  [30.34448, 77.94522], [30.34442, 77.9452], [30.34437, 77.94519], [30.34433, 77.94519],
-  [30.34435, 77.94497], [30.34435, 77.94489], [30.34433, 77.9448], [30.3443, 77.94473],
-  [30.34427, 77.94466], [30.34423, 77.94462], [30.34417, 77.94456], [30.34412, 77.94453],
-  [30.34407, 77.94451], [30.34399, 77.94449], [30.3437, 77.94446], [30.34331, 77.94438],
-  [30.34321, 77.9448], // UIT Building North Porch
+  [30.33886, 77.95601], [30.33989, 77.95537], [30.33986, 77.95516], [30.33986, 77.95509],
+  [30.33986, 77.95502], [30.33986, 77.95469], [30.33986, 77.95449], [30.33986, 77.95443],
+  [30.33984, 77.95437], [30.3398, 77.95429], [30.33977, 77.95422], [30.33976, 77.95416],
+  [30.33976, 77.95391], [30.33976, 77.95332], [30.33975, 77.95325], [30.33974, 77.9532],
+  [30.33973, 77.95315], [30.33965, 77.95301], [30.33962, 77.95296], [30.33952, 77.9526],
+  [30.33949, 77.9525], [30.33947, 77.95243], [30.33942, 77.95233], [30.33935, 77.9522],
+  [30.3391, 77.9518], [30.33979, 77.95167], [30.34002, 77.95163]
 ];
 
 // 100% Real Road GPS Points from Suddhowala Student Hub to Uttaranchal University (Direct Link)
@@ -181,34 +175,34 @@ export const INITIAL_CORRIDORS: RouteCorridorOption[] = [
 
 // Known Geo Coordinates for Dehradun & Uttaranchal University
 export const GEO_COORDINATES: Record<string, [number, number]> = {
-  uit: [30.3432, 77.9448],
-  uscs: [30.3428, 77.9456],
-  bba: [30.342, 77.9461],
-  library: [30.3425, 77.945],
-  gate1: [30.3415, 77.944],
-  premnagar: [30.334, 77.962],
-  suddhowala: [30.3475, 77.932],
-  selaqui: [30.3685, 77.854],
-  vikasnagar: [30.435, 77.771],
-  isbt: [30.2885, 78.008],
+  uit: [30.3400, 77.9515],
+  uscs: [30.3395, 77.9510],
+  bba: [30.3405, 77.9520],
+  library: [30.3402, 77.9508],
+  gate1: [30.3412, 77.9525],
+  premnagar: [30.3340, 77.9620],
+  suddhowala: [30.3475, 77.9320],
+  selaqui: [30.3685, 77.8540],
+  vikasnagar: [30.4350, 77.7710],
+  isbt: [30.2885, 78.0080],
   ballupur: [30.3395, 78.0125],
   clocktower: [30.3256, 78.0437],
-  nandakichowki: [30.34, 77.953],
+  nandakichowki: [30.3435, 77.9535],
 };
 
 // Common Presets for Google Maps Origin/Destination Dropdown
 export const POPULAR_LOCATIONS: { name: string; key: string; coords: [number, number]; type: 'origin' | 'dest' | 'both' }[] = [
-  { name: 'Selaqui Industrial & Institutional Hub', key: 'selaqui', coords: [30.3685, 77.854], type: 'both' },
-  { name: 'Premnagar Chowk Market', key: 'premnagar', coords: [30.334, 77.962], type: 'both' },
-  { name: 'Suddhowala Chowk (Student PG Hub)', key: 'suddhowala', coords: [30.3475, 77.932], type: 'both' },
+  { name: 'Selaqui Industrial & Institutional Hub', key: 'selaqui', coords: [30.3685, 77.8540], type: 'both' },
+  { name: 'Premnagar Chowk Market', key: 'premnagar', coords: [30.3340, 77.9620], type: 'both' },
+  { name: 'Suddhowala Chowk (Student PG Hub)', key: 'suddhowala', coords: [30.3475, 77.9320], type: 'both' },
   { name: 'Ballupur Chowk (City Entrance)', key: 'ballupur', coords: [30.3395, 78.0125], type: 'both' },
   { name: 'Clock Tower (Ghanta Ghar)', key: 'clocktower', coords: [30.3256, 78.0437], type: 'both' },
-  { name: 'ISBT Dehradun', key: 'isbt', coords: [30.2885, 78.008], type: 'both' },
-  { name: 'UIT Building (Uttaranchal Institute of Technology)', key: 'uit', coords: [30.3432, 77.9448], type: 'both' },
-  { name: 'USCS Building (School of Computing Sciences)', key: 'uscs', coords: [30.3428, 77.9456], type: 'both' },
-  { name: 'BBA Building (Uttaranchal Institute of Management)', key: 'bba', coords: [30.342, 77.9461], type: 'both' },
-  { name: 'Central Academic Library & Law Block', key: 'library', coords: [30.3425, 77.945], type: 'both' },
-  { name: 'Campus Gate 1 (Uttaranchal University Main Entrance)', key: 'gate1', coords: [30.3415, 77.944], type: 'both' },
+  { name: 'ISBT Dehradun', key: 'isbt', coords: [30.2885, 78.0080], type: 'both' },
+  { name: 'UIT Building (Uttaranchal Institute of Technology)', key: 'uit', coords: [30.3400, 77.9515], type: 'both' },
+  { name: 'USCS Building (School of Computing Sciences)', key: 'uscs', coords: [30.3395, 77.9510], type: 'both' },
+  { name: 'BBA Building (Uttaranchal Institute of Management)', key: 'bba', coords: [30.3405, 77.9520], type: 'both' },
+  { name: 'Central Academic Library & Law Block', key: 'library', coords: [30.3402, 77.9508], type: 'both' },
+  { name: 'Campus Gate 1 (Uttaranchal University Main Entrance)', key: 'gate1', coords: [30.3412, 77.9525], type: 'both' },
 ];
 
 // Campus Building Guides with Walking Steps
@@ -217,7 +211,7 @@ export const CAMPUS_BUILDING_GUIDES: Record<string, PickupLocationGuide> = {
     hubName: 'UIT Building (Uttaranchal Institute of Technology)',
     buildingCode: 'UIT-ENGG',
     campusArea: 'Engineering Sciences Quad',
-    location: [30.3432, 77.9448],
+    location: [30.3400, 77.9515],
     walkDistanceMeters: 180,
     walkMinutes: 2,
     hasCctv: true,
@@ -234,7 +228,7 @@ export const CAMPUS_BUILDING_GUIDES: Record<string, PickupLocationGuide> = {
     hubName: 'USCS Building (School of Computing Sciences)',
     buildingCode: 'USCS-CS',
     campusArea: 'Computing & IT Boulevard',
-    location: [30.3428, 77.9456],
+    location: [30.3395, 77.9510],
     walkDistanceMeters: 230,
     walkMinutes: 3,
     hasCctv: true,
@@ -251,7 +245,7 @@ export const CAMPUS_BUILDING_GUIDES: Record<string, PickupLocationGuide> = {
     hubName: 'BBA Building (Uttaranchal Institute of Management)',
     buildingCode: 'UIM-BBA',
     campusArea: 'Management & Commerce Circle',
-    location: [30.342, 77.9461],
+    location: [30.3405, 77.9520],
     walkDistanceMeters: 210,
     walkMinutes: 3,
     hasCctv: true,
@@ -268,7 +262,7 @@ export const CAMPUS_BUILDING_GUIDES: Record<string, PickupLocationGuide> = {
     hubName: 'Campus Main Gate 1 (Premnagar Road Entrance)',
     buildingCode: 'GATE-01',
     campusArea: 'Main Security Checkpoint',
-    location: [30.3415, 77.944],
+    location: [30.3412, 77.9525],
     walkDistanceMeters: 340,
     walkMinutes: 4,
     hasCctv: true,
@@ -285,7 +279,7 @@ export const CAMPUS_BUILDING_GUIDES: Record<string, PickupLocationGuide> = {
     hubName: 'Central Academic Library & Law Block (LCD)',
     buildingCode: 'UU-LIB',
     campusArea: 'Knowledge Square',
-    location: [30.3425, 77.945],
+    location: [30.3402, 77.9508],
     walkDistanceMeters: 140,
     walkMinutes: 2,
     hasCctv: true,
@@ -389,38 +383,6 @@ function snapRouteEndpoints(
   return points;
 }
 
-const getLayerConfig = (type: 'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm') => {
-  if (type === 'google_satellite') {
-    return {
-      url: 'https://mt{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en',
-      subdomains: ['0', '1', '2', '3'],
-      attribution: 'Imagery &copy; Google Maps',
-    };
-  }
-  if (type === 'osm') {
-    return {
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      subdomains: ['a', 'b', 'c'],
-      attribution: '&copy; OpenStreetMap contributors',
-    };
-  }
-  if (type === 'carto_voyager') {
-    const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
-    return {
-      url: cartoKey
-        ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      subdomains: ['a', 'b', 'c', 'd'],
-      attribution: '&copy; CARTO',
-    };
-  }
-  return {
-    url: 'https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en',
-    subdomains: ['0', '1', '2', '3'],
-    attribution: 'Map data &copy; Google Maps',
-  };
-};
-
 export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   originText = 'Premnagar Chowk Market',
   destinationText = 'UIT Building (Uttaranchal Institute of Technology)',
@@ -436,7 +398,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('google_streets');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -451,13 +413,15 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const lastFittedBoundsKeyRef = useRef<string>('');
 
-  // Sync state if props change from outside
+  // Sync state if props change from outside and reset custom dragged coordinates
   useEffect(() => {
     setCurrentOrigin(originText);
+    setCustomOriginCoords(null);
   }, [originText]);
 
   useEffect(() => {
     setCurrentDest(destinationText);
+    setCustomDestCoords(null);
   }, [destinationText]);
 
   // Derive pickup guide based on props or heuristics
@@ -869,11 +833,24 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         }
       });
 
-      const initialConfig = getLayerConfig(mapLayerType);
-      const tileLayer = L.tileLayer(initialConfig.url, {
+      const getTileUrl = (type: string) => {
+        const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
+        if (type === 'google_satellite') return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en';
+        if (type === 'osm') return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        if (type === 'carto_voyager') {
+          return cartoKey
+            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        }
+        return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
+      };
+
+      const tileUrl = getTileUrl(mapLayerType);
+
+      const tileLayer = L.tileLayer(tileUrl, {
         maxZoom: 20,
-        subdomains: initialConfig.subdomains,
-        attribution: initialConfig.attribution,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c', 'd'],
+        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / CARTO',
       }).addTo(map);
 
       const layerGroup = L.layerGroup().addTo(map);
@@ -881,38 +858,25 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       mapInstanceRef.current = map;
       layerGroupRef.current = layerGroup;
       tileLayerRef.current = tileLayer;
-
-      // Delayed resize invalidation to eliminate gray tiles
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 150);
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 400);
     }
   }, []);
 
-  // Update Tile Layer cleanly when layer type switches
+  // Update Tile Layer when layer type switches
   useEffect(() => {
-    const map = mapInstanceRef.current;
-    if (!map) return;
+    if (!mapInstanceRef.current || !tileLayerRef.current) return;
+    const cartoKey = (import.meta as any).env?.VITE_CARTO_API_KEY || (typeof window !== 'undefined' ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || '' : '');
+    const tileUrl =
+      mapLayerType === 'google_satellite'
+        ? 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en'
+        : mapLayerType === 'osm'
+        ? 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        : mapLayerType === 'carto_voyager'
+        ? (cartoKey
+            ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png')
+        : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
 
-    if (tileLayerRef.current) {
-      map.removeLayer(tileLayerRef.current);
-    }
-
-    const config = getLayerConfig(mapLayerType);
-    const newLayer = L.tileLayer(config.url, {
-      maxZoom: 20,
-      subdomains: config.subdomains,
-      attribution: config.attribution,
-    }).addTo(map);
-
-    tileLayerRef.current = newLayer;
-
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 100);
+    tileLayerRef.current.setUrl(tileUrl);
   }, [mapLayerType]);
 
   // Render Markers, Clickable Polylines, and Google Maps Floating Midpoint ETA Pills
@@ -1286,17 +1250,6 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
               </button>
               <button
                 type="button"
-                onClick={() => setMapLayerType('osm')}
-                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
-                  mapLayerType === 'osm'
-                    ? 'bg-white text-blue-700 shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                OpenStreetMap
-              </button>
-              <button
-                type="button"
                 onClick={() => setMapLayerType('carto_voyager')}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
                   mapLayerType === 'carto_voyager'
@@ -1304,7 +1257,18 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                     : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                Carto
+                Carto Map
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapLayerType('osm')}
+                className={`px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                  mapLayerType === 'osm'
+                    ? 'bg-white text-blue-700 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                Terrain
               </button>
             </div>
 
