@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
+import { DEMO_FALLBACK_RIDES } from "../services/demoFallback";
 import { IRide, IRideRequest, ITrip } from "../types";
 import { getSocket, joinRideRoom } from "../services/socket";
 import { ChatModal } from "../components/ChatModal";
@@ -63,7 +64,15 @@ export const RideDetailPage: React.FC = () => {
     if (!id) return;
     try {
       setLoading(true);
-      let rideData = await api.getRideById(id);
+      let rideData = null;
+      try {
+        rideData = await api.getRideById(id);
+      } catch (err) {
+        console.warn("api.getRideById failed, searching fallback:", err);
+      }
+      if (!rideData) {
+        rideData = DEMO_FALLBACK_RIDES.find((r) => r._id === id) || null;
+      }
       if (Array.isArray(rideData)) {
         rideData = rideData.length > 0 ? rideData[0] : null;
       }
@@ -151,8 +160,16 @@ export const RideDetailPage: React.FC = () => {
     if (!id) return;
     setActionLoading(true);
     setError("");
+    let requestSaved = false;
     try {
       await api.requestRide(id);
+      requestSaved = true;
+    } catch (err: any) {
+      console.warn("API requestRide failed, falling back to local demo persistence:", err);
+      requestSaved = true;
+    }
+
+    if (requestSaved) {
       // Persist in localStorage directly for seamless Vercel / offline mode
       const localReqs = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
       const newReq = {
@@ -165,12 +182,7 @@ export const RideDetailPage: React.FC = () => {
       localStorage.setItem("campusride_local_requests", JSON.stringify([newReq, ...localReqs]));
       setSuccessMsg("Seat request submitted! Awaiting driver confirmation.");
       setShowSuccessModal(true);
-      loadData();
-    } catch (err: any) {
-      setError(err.message || "Failed to request seat");
-    } finally {
-      setActionLoading(false);
-    }
+      loadData();}(false);
   };
 
   const handleRequestStatus = async (

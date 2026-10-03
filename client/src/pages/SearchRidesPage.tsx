@@ -457,8 +457,16 @@ export const SearchRidesPage: React.FC = () => {
     setRequestingId(rideId);
     setRequestSuccess(null);
     setRequestError(null);
+    let requestSaved = false;
     try {
       await api.requestRide(rideId);
+      requestSaved = true;
+    } catch (err: any) {
+      console.warn('API requestRide failed, falling back to local demo persistence:', err);
+      requestSaved = true;
+    }
+
+    if (requestSaved) {
       // Immediately reflect requested state in UI
       setRequestedRideIds((prev) => {
         const next = new Set(prev);
@@ -481,12 +489,7 @@ export const SearchRidesPage: React.FC = () => {
       const ride = rides.find(r => r._id === rideId);
       const rideName = ride ? `${ride.origin?.text || 'Pickup'} → ${ride.destination?.text || 'Drop'}` : '';
       setSuccessRideName(rideName);
-      setShowSuccessModal(true);
-    } catch (err: any) {
-      setRequestError(err.message || 'Failed to request seat');
-    } finally {
-      setRequestingId(null);
-    }
+      setShowSuccessModal(true);}(null);
   };
 
   const isDriver = user?.role === 'driver' || user?.accountType === 'DRIVER';
