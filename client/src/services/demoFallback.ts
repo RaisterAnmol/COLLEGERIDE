@@ -1197,6 +1197,38 @@ export const DEMO_FALLBACK_RIDES = [
     routeOverlapPercent: 100
   },
   {
+    _id: "ride_clocktower_premnagar_kabir",
+    creator: DEMO_FALLBACK_USERS["aditya.kumar@college.edu"],
+    vehicle: { type: "car", model: "Honda City i-VTEC", plateLast4: "4821" },
+    origin: { text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)", lat: 30.3256, lng: 78.0437, coordinates: [78.0437, 30.3256] },
+    destination: { text: "Premnagar Chowk Market", lat: 30.3340, lng: 77.9620, coordinates: [77.9620, 30.3340] },
+    departureTime: new Date(Date.now() + 4500000).toISOString(),
+    availableSeats: 3,
+    totalSeats: 4,
+    pricePerSeat: 40,
+    status: "active",
+    preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
+    recurring: true,
+    detourMins: 0,
+    routeOverlapPercent: 100
+  },
+  {
+    _id: "ride_premnagar_clocktower_rahul",
+    creator: DEMO_FALLBACK_USERS["rahul.sharma@college.edu"],
+    vehicle: { type: "car", model: "Maruti Swift Dzire", plateLast4: "7124" },
+    origin: { text: "Premnagar Chowk Market", lat: 30.3340, lng: 77.9620, coordinates: [77.9620, 30.3340] },
+    destination: { text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)", lat: 30.3256, lng: 78.0437, coordinates: [78.0437, 30.3256] },
+    departureTime: new Date(Date.now() + 18000000).toISOString(),
+    availableSeats: 3,
+    totalSeats: 4,
+    pricePerSeat: 40,
+    status: "active",
+    preferences: { musicAllowed: true, smokingAllowed: false, womenOnlyDriver: false },
+    recurring: true,
+    detourMins: 0,
+    routeOverlapPercent: 100
+  },
+  {
     _id: "ride_vikasnagar_selaqui_pooja",
     creator: DEMO_FALLBACK_USERS["pooja.thapa@dit.ac.in"],
     vehicle: { type: "car", model: "Toyota Etios (Classic Silver)", plateLast4: "4490" },

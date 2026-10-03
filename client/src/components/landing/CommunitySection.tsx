@@ -16,7 +16,7 @@ export const CommunitySection: React.FC = () => {
       {/* Editorial Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 max-w-5xl">
         <div>
-          <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-3">
+          <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-semibold block mb-3">
             04 — STUDENT PROFILES ON YOUR CORRIDOR
           </span>
           <h2 className="text-heading-clamp font-black text-[#111111] uppercase tracking-tight">
@@ -31,7 +31,7 @@ export const CommunitySection: React.FC = () => {
 
         <Link
           to="/search"
-          className="text-xs font-mono font-bold text-[#1769FF] hover:text-[#1D4ED8] flex items-center gap-1.5 self-start md:self-auto"
+          className="text-xs font-mono font-bold text-emerald-700 hover:text-[#1D4ED8] flex items-center gap-1.5 self-start md:self-auto"
           data-cursor="ALL PEERS"
         >
           <span>EXPLORE ALL VERIFIED RIDERS</span>
@@ -49,17 +49,17 @@ export const CommunitySection: React.FC = () => {
               key={student.id}
               onMouseEnter={() => setHoveredStudentId(student.id)}
               onMouseLeave={() => setHoveredStudentId(null)}
-              className="bg-[#FFFFFF] rounded-2xl border border-[#DDE1DE] p-6 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-[#1769FF] hover:shadow-md flex flex-col justify-between group"
+              className="bg-white/95 backdrop-blur-sm rounded-2xl border border-emerald-100 p-6 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-md flex flex-col justify-between group"
             >
               <div>
                 {/* Header: Departure & Fare */}
                 <div className="flex items-center justify-between pb-3 border-b border-[#DDE1DE] font-mono text-xs">
                   <div className="flex items-center gap-1.5 text-[#111111] font-bold">
-                    <Clock className="w-3.5 h-3.5 text-[#1769FF]" />
+                    <Clock className="w-3.5 h-3.5 text-emerald-700" />
                     <span>{student.commuteRoute.departureTime}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-base font-black text-[#1769FF]">₹{student.commuteRoute.fare}</span>
+                    <span className="text-base font-black text-emerald-700">₹{student.commuteRoute.fare}</span>
                     <span className="text-[10px] text-[#646A67] ml-1">split</span>
                   </div>
                 </div>
@@ -93,7 +93,7 @@ export const CommunitySection: React.FC = () => {
                   {/* Animated Route Progress Bar */}
                   <div className="mt-2.5 h-1.5 w-full bg-[#F5F6F3] rounded-full overflow-hidden border border-[#DDE1DE]">
                     <div
-                      className={`h-full bg-[#1769FF] rounded-full transition-all duration-500 ${
+                      className={`h-full bg-emerald-600 rounded-full transition-all duration-500 ${
                         isHovered ? 'w-full' : 'w-1/3'
                       }`}
                     />
@@ -119,7 +119,7 @@ export const CommunitySection: React.FC = () => {
 
                 <Link
                   to="/search"
-                  className="inline-flex items-center gap-1 text-xs font-bold text-[#1769FF] group-hover:text-[#1D4ED8]"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-[#143D32] group-hover:text-emerald-700 transition-colors"
                 >
                   <span>Ride</span>
                   <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />

@@ -367,7 +367,7 @@ export const SearchRidesPage: React.FC = () => {
       if (!res || res.length === 0) {
         // If exact coordinate corridor has no match, fetch all active rides so user always sees available rides
         const allActive = await api.getRides({ womenOnlyDriver, status: 'active' });
-        setRides(sortRidesByCorridor(allActive || []));
+        setRides([]);
       } else {
         setRides(sortRidesByCorridor(res));
       }

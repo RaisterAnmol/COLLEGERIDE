@@ -1597,10 +1597,60 @@ export async function seedDemoData() {
       lat: 30.3256,
       lng: 78.0437,
     },
-    departureTime: dehradunDepTime6,
+        departureTime: dehradunDepTime6,
     availableSeats: 3,
     vehicleId: meeraVehicle._id,
     status: "active",
+  });
+
+  // Ride 13B: Kabir's Clock Tower Express (Clock Tower -> Premnagar Chowk Market)
+  const clockTowerDepTime = new Date(now.getTime() + 1.2 * 60 * 60 * 1000);
+  const clockTowerToPremnagarRide = await Ride.create({
+    creator: kabir._id,
+    origin: {
+      text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)",
+      lat: 30.3256,
+      lng: 78.0437,
+    },
+    destination: {
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
+    },
+    departureTime: clockTowerDepTime,
+    availableSeats: 3,
+    pricePerSeat: 40,
+    vehicleId: kabirVehicle._id,
+    status: "active",
+    recurringSchedule: {
+      daysOfWeek: [1, 2, 3, 4, 5],
+      time: "08:30",
+    },
+  });
+
+  // Ride 13C: Vikram's Return Express (Premnagar Chowk Market -> Clock Tower)
+  const premnagarToClockTowerDepTime = new Date(now.getTime() + 5 * 60 * 60 * 1000);
+  const premnagarToClockTowerRide = await Ride.create({
+    creator: vikram._id,
+    origin: {
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
+    },
+    destination: {
+      text: "Clock Tower (Ghanta Ghar / Paltan Bazaar)",
+      lat: 30.3256,
+      lng: 78.0437,
+    },
+    departureTime: premnagarToClockTowerDepTime,
+    availableSeats: 3,
+    pricePerSeat: 40,
+    vehicleId: vikramVehicle._id,
+    status: "active",
+    recurringSchedule: {
+      daysOfWeek: [1, 2, 3, 4, 5],
+      time: "17:15",
+    },
   });
 
   // Ride 14: Ananya's Campus Shuttle (UIT Building -> USCS Building) - Women-Friendly Intra-Campus Ride

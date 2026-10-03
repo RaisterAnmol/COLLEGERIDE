@@ -737,9 +737,20 @@ export default async function handler(req: any, res: any) {
           const academicBonus = sameCourseAndSemester ? 0.20 : sameDepartment ? 0.12 : sameCollege ? 0.05 : 0;
 
           // Composite match score: 70% Route Proximity + 15% Time/Seat + 15% Academic Bonus
-          const pickupScore = Math.max(0, 1 - pickupDist / 2.0);
-          const routeScore = (routeOverlap * 0.6 + pickupScore * 0.4);
-          const compositeScore = Math.min(1.0, Math.max(0.4, (routeScore * 0.70) + 0.15 + (academicBonus * 0.15)));
+          const pickupScore = Math.max(0, 1 - pickupDist / 2.5);
+          const destScore = destLat !== null ? Math.max(0, 1 - destDist / 2.5) : pickupScore;
+          const corridorScore = (pickupScore + destScore) / 2;
+
+          let compositeScore = 0;
+          if (hasRouteQuery) {
+            if (isDirectRouteMatch) {
+              compositeScore = Math.min(1.0, (corridorScore * 0.70) + 0.15 + (academicBonus * 0.15));
+            } else {
+              compositeScore = Math.max(0.1, corridorScore * 0.4);
+            }
+          } else {
+            compositeScore = Math.min(1.0, 0.65 + 0.15 + (academicBonus * 0.20));
+          }
           const percentage = Math.round(compositeScore * 100);
 
           return {
