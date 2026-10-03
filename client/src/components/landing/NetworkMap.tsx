@@ -213,7 +213,7 @@ export const NetworkMap: React.FC = () => {
   const [selectedCorridor, setSelectedCorridor] = useState<'all' | 'north' | 'west' | 'east'>('all');
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState('');
-  const [mapLayerType, setMapLayerType] = useState<'google' | 'satellite' | 'carto'>('google');
+  const [mapLayerType, setMapLayerType] = useState<'google' | 'satellite' | 'osm'>('google');
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
@@ -237,20 +237,12 @@ export const NetworkMap: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const getTileUrl = (type: 'google' | 'satellite' | 'carto') => {
-    const cartoKey =
-      (import.meta as any).env?.VITE_CARTO_API_KEY ||
-      (typeof window !== 'undefined'
-        ? (window as any).__CARTO_API_KEY__ || localStorage.getItem('VITE_CARTO_API_KEY') || ''
-        : '');
-
+  const getTileUrl = (type: 'google' | 'satellite' | 'osm') => {
     if (type === 'satellite') {
       return 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en';
     }
-    if (type === 'carto') {
-      return cartoKey
-        ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    if (type === 'osm') {
+      return 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     }
     return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
   };
@@ -658,12 +650,12 @@ export const NetworkMap: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setMapLayerType('carto')}
+                  onClick={() => setMapLayerType('osm')}
                   className={`px-2.5 py-1 rounded-full font-bold transition-all cursor-pointer ${
-                    mapLayerType === 'carto' ? 'bg-[#143D32] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                    mapLayerType === 'osm' ? 'bg-[#143D32] text-white shadow-2xs' : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  ⚡ CARTO
+                  🗺️ OpenStreetMap
                 </button>
               </div>
 
