@@ -250,7 +250,7 @@ export const NetworkMap: React.FC = () => {
     if (type === 'carto') {
       return cartoKey
         ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-        : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
     }
     return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
   };

@@ -404,7 +404,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('google_streets');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -844,7 +844,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         if (type === 'carto_voyager') {
           return cartoKey
             ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+            : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         }
         return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
       };
@@ -854,7 +854,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       const tileLayer = L.tileLayer(tileUrl, {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c', 'd'],
-        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / CARTO',
+        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / OpenStreetMap',
       }).addTo(map);
 
       const layerGroup = L.layerGroup().addTo(map);
@@ -877,7 +877,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         : mapLayerType === 'carto_voyager'
         ? (cartoKey
             ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png')
+            : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
         : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
 
     tileLayerRef.current.setUrl(tileUrl);
