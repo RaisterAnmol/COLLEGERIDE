@@ -318,27 +318,27 @@ export const CampusBackground: React.FC<CampusBackgroundProps> = ({
           {/* Location Nodes — pulsing circles at route intersections */}
           {/* Node 1: Main intersection */}
           <g>
-            <circle cx="600" cy="600" r="6" className="node-ripple" stroke="#F4C95D" />
-            <circle cx="600" cy="600" r="5" fill="#F4C95D" opacity="0.7" className="node-core" />
+            
+            
           </g>
           {/* Node 2: Secondary junction */}
           <g>
-            <circle cx="370" cy="360" r="5" className="node-ripple delay-1" stroke="#079B7F" />
-            <circle cx="370" cy="360" r="4" fill="#079B7F" opacity="0.6" className="node-core" />
+            
+            
           </g>
           {/* Node 3: Branch start */}
           {showBranch && (
             <g>
-              <circle cx="830" cy="830" r="4" className="node-ripple delay-2" stroke="#F4C95D" />
-              <circle cx="830" cy="830" r="3" fill="#F4C95D" opacity="0.5" className="node-core" />
+              
+              
             </g>
           )}
 
           {/* Map pins at key locations */}
-          <MapPin cx={600} cy={580} color="#F4C95D" size={0.9} />
-          <MapPin cx={370} cy={340} color="#079B7F" size={0.7} />
-          <MapPin cx={150} cy={780} color="#F4C95D" size={0.6} />
-          <MapPin cx={800} cy={160} color="#079B7F" size={0.55} />
+          
+          
+          
+          
 
           {/* Vehicles animated along the routes */}
           {showVehicles && (

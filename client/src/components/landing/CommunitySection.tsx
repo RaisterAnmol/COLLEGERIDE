@@ -14,32 +14,33 @@ export const CommunitySection: React.FC = () => {
       <PageHeroBanner image={communityImg} alt="Students celebrating beside a CampusRide car on campus" caption="CAMPUS COMMUNITY" />
 
       {/* Editorial Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 max-w-5xl">
+      <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-emerald-100 shadow-sm shadow-emerald-950/5 flex flex-col md:flex-row md:items-end justify-between gap-6 max-w-5xl">
         <div>
-          <span className="text-xs font-mono uppercase tracking-widest text-emerald-700 font-semibold block mb-3">
+          <span className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-emerald-800 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-full font-bold mb-4">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             04 — STUDENT PROFILES ON YOUR CORRIDOR
           </span>
-          <h2 className="text-heading-clamp font-black text-[#111111] uppercase tracking-tight">
+          <h2 className="text-heading-clamp font-black text-[#143D32] uppercase tracking-tight">
             The Best Route<br />
             Might Already<br />
             Have Someone On It.
           </h2>
-          <p className="mt-4 text-base sm:text-lg text-[#646A67] max-w-xl">
+          <p className="mt-4 text-base sm:text-lg text-slate-600 max-w-xl font-normal leading-relaxed">
             Real peers commuting from your neighborhood. Tap any profile pass to inspect their daily trajectory and book a seat.
           </p>
         </div>
 
         <Link
           to="/search"
-          className="text-xs font-mono font-bold text-emerald-700 hover:text-[#1D4ED8] flex items-center gap-1.5 self-start md:self-auto"
+          className="text-xs font-mono font-bold text-white bg-[#143D32] hover:bg-[#1A4F41] px-5 py-3 rounded-2xl flex items-center gap-2 self-start md:self-auto transition-all shadow-sm hover:shadow-md cursor-pointer shrink-0"
           data-cursor="ALL PEERS"
         >
           <span>EXPLORE ALL VERIFIED RIDERS</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4 text-emerald-300" />
         </Link>
       </div>
 
-      {/* Grid of Micro-Interaction Student Passes (Section 17) */}
+      {/* Grid of Micro-Interaction Student Passes */}
       <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {studentsList.slice(0, 4).map((student) => {
           const isHovered = hoveredStudentId === student.id;
@@ -49,18 +50,18 @@ export const CommunitySection: React.FC = () => {
               key={student.id}
               onMouseEnter={() => setHoveredStudentId(student.id)}
               onMouseLeave={() => setHoveredStudentId(null)}
-              className="bg-white/95 backdrop-blur-sm rounded-2xl border border-emerald-100 p-6 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-md flex flex-col justify-between group"
+              className="bg-white/95 rounded-2xl border border-emerald-100 p-6 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-md flex flex-col justify-between group"
             >
               <div>
                 {/* Header: Departure & Fare */}
-                <div className="flex items-center justify-between pb-3 border-b border-[#DDE1DE] font-mono text-xs">
-                  <div className="flex items-center gap-1.5 text-[#111111] font-bold">
-                    <Clock className="w-3.5 h-3.5 text-emerald-700" />
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 font-mono text-xs">
+                  <div className="flex items-center gap-1.5 text-slate-800 font-bold">
+                    <Clock className="w-3.5 h-3.5 text-emerald-600" />
                     <span>{student.commuteRoute.departureTime}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-base font-black text-emerald-700">₹{student.commuteRoute.fare}</span>
-                    <span className="text-[10px] text-[#646A67] ml-1">split</span>
+                    <span className="text-base font-black text-[#143D32]">₹{student.commuteRoute.fare}</span>
+                    <span className="text-[10px] text-slate-500 ml-1">split</span>
                   </div>
                 </div>
 

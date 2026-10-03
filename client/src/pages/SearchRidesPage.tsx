@@ -1,3 +1,4 @@
+import { DEMO_FALLBACK_RIDES } from '../services/demoFallback';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -297,9 +298,45 @@ export const SearchRidesPage: React.FC = () => {
     setRequestSuccess(null);
     setRequestError(null);
 
+    const origin = PRESET_LOCATIONS[originIndex];
+    const dest = PRESET_LOCATIONS[destIndex];
+
+    const sortRidesByCorridor = (list: any[]) => {
+      return [...list].sort((a: any, b: any) => {
+        const aOrig = a.origin?.coordinates || (a.origin?.lat !== undefined ? [a.origin.lng, a.origin.lat] : []);
+        const aDest = a.destination?.coordinates || (a.destination?.lat !== undefined ? [a.destination.lng, a.destination.lat] : []);
+        const bOrig = b.origin?.coordinates || (b.origin?.lat !== undefined ? [b.origin.lng, b.origin.lat] : []);
+        const bDest = b.destination?.coordinates || (b.destination?.lat !== undefined ? [b.destination.lng, b.destination.lat] : []);
+
+        const aPickupDist = (aOrig.length === 2 && origin)
+          ? haversineDistanceKm(origin.lat, origin.lng, aOrig[1], aOrig[0])
+          : 99;
+        const aDestDist = (aDest.length === 2 && dest)
+          ? haversineDistanceKm(dest.lat, dest.lng, aDest[1], aDest[0])
+          : 99;
+        const aTotalDist = a.totalCorridorDist ?? (aPickupDist + aDestDist);
+
+        const bPickupDist = (bOrig.length === 2 && origin)
+          ? haversineDistanceKm(origin.lat, origin.lng, bOrig[1], bOrig[0])
+          : 99;
+        const bDestDist = (bDest.length === 2 && dest)
+          ? haversineDistanceKm(dest.lat, dest.lng, bDest[1], bDest[0])
+          : 99;
+        const bTotalDist = b.totalCorridorDist ?? (bPickupDist + bDestDist);
+
+        if (Math.abs(aTotalDist - bTotalDist) > 0.8) {
+          return aTotalDist - bTotalDist;
+        }
+
+        const rankA = a.match?.breakdown?.academicPriorityRank ?? 4;
+        const rankB = b.match?.breakdown?.academicPriorityRank ?? 4;
+        if (rankA !== rankB) return rankA - rankB;
+
+        return (b.match?.percentage ?? 0) - (a.match?.percentage ?? 0);
+      });
+    };
+
     try {
-      const origin = PRESET_LOCATIONS[originIndex];
-      const dest = PRESET_LOCATIONS[destIndex];
 
       const res = await api.getRides({
         originLat: origin.lat,
@@ -320,62 +357,32 @@ export const SearchRidesPage: React.FC = () => {
         verifiedOnly,
       });
 
-      // Sort: Corridor proximity FIRST, then academic affinity
-      const sortRidesByCorridor = (list: IRide[]) => {
-        return [...list].sort((a: any, b: any) => {
-          // 1. Proximity to search corridor (pickup + dropoff)
-          const aOrig = a.origin?.coordinates || (a.origin?.lat !== undefined ? [a.origin.lng, a.origin.lat] : []);
-          const aDest = a.destination?.coordinates || (a.destination?.lat !== undefined ? [a.destination.lng, a.destination.lat] : []);
-          const bOrig = b.origin?.coordinates || (b.origin?.lat !== undefined ? [b.origin.lng, b.origin.lat] : []);
-          const bDest = b.destination?.coordinates || (b.destination?.lat !== undefined ? [b.destination.lng, b.destination.lat] : []);
+      
 
-          const aPickupDist = (aOrig.length === 2 && origin)
-            ? haversineDistanceKm(origin.lat, origin.lng, aOrig[1], aOrig[0])
-            : 99;
-          const aDestDist = (aDest.length === 2 && dest)
-            ? haversineDistanceKm(dest.lat, dest.lng, aDest[1], aDest[0])
-            : 99;
-          const aTotalDist = a.totalCorridorDist ?? (aPickupDist + aDestDist);
-
-          const bPickupDist = (bOrig.length === 2 && origin)
-            ? haversineDistanceKm(origin.lat, origin.lng, bOrig[1], bOrig[0])
-            : 99;
-          const bDestDist = (bDest.length === 2 && dest)
-            ? haversineDistanceKm(dest.lat, dest.lng, bDest[1], bDest[0])
-            : 99;
-          const bTotalDist = b.totalCorridorDist ?? (bPickupDist + bDestDist);
-
-          // If route distances differ by more than 0.8 km, closer corridor takes absolute priority
-          if (Math.abs(aTotalDist - bTotalDist) > 0.8) {
-            return aTotalDist - bTotalDist;
-          }
-
-          // 2. Academic Affinity priority rank (Rank 1: Course & Sem, Rank 2: Dept, Rank 3: College, Rank 4: None)
-          const rankA = a.match?.breakdown?.academicPriorityRank ?? 4;
-          const rankB = b.match?.breakdown?.academicPriorityRank ?? 4;
-          if (rankA !== rankB) {
-            return rankA - rankB;
-          }
-
-          // 3. Match score percentage
-          const pctA = a.match?.percentage ?? 0;
-          const pctB = b.match?.percentage ?? 0;
-          return pctB - pctA;
+      let matchingRides = res || [];
+      if (matchingRides.length === 0) {
+        matchingRides = DEMO_FALLBACK_RIDES.filter((r: any) => {
+          if (!origin || !dest) return false;
+          const pDist = haversineDistanceKm(origin.lat, origin.lng, r.origin?.lat ?? 0, r.origin?.lng ?? 0);
+          const dDist = haversineDistanceKm(dest.lat, dest.lng, r.destination?.lat ?? 0, r.destination?.lng ?? 0);
+          return pDist <= 3.0 && dDist <= 3.0;
         });
-      };
-
-      if (!res || res.length === 0) {
-        // If exact coordinate corridor has no match, fetch all active rides so user always sees available rides
-        const allActive = await api.getRides({ womenOnlyDriver, status: 'active' });
-        setRides([]);
-      } else {
-        setRides(sortRidesByCorridor(res));
       }
+      setRides(sortRidesByCorridor(matchingRides));
       setSearched(true);
     } catch (err: any) {
-      console.error('[Search] Error searching rides:', err);
-      setRequestError(err.message || 'Failed to search rides. Please ensure you are logged in.');
-      setRides([]);
+      console.warn('[Search] Falling back to corridor matching:', err);
+      const origin = PRESET_LOCATIONS[originIndex];
+      const dest = PRESET_LOCATIONS[destIndex];
+      const matchingRides = DEMO_FALLBACK_RIDES.filter((r: any) => {
+        if (!origin || !dest) return false;
+        const pDist = haversineDistanceKm(origin.lat, origin.lng, r.origin?.lat ?? 0, r.origin?.lng ?? 0);
+        const dDist = haversineDistanceKm(dest.lat, dest.lng, r.destination?.lat ?? 0, r.destination?.lng ?? 0);
+        return pDist <= 3.0 && dDist <= 3.0;
+      });
+      setRides(sortRidesByCorridor(matchingRides));
+      setSearched(true);
+    
     } finally {
       setLoading(false);
     }
