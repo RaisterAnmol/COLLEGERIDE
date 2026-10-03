@@ -311,49 +311,74 @@
 /* ── Base Layer: Illustrated Campus Map Backdrop ────────── */
 .campus-bg-backdrop {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url('/assets/campus-map-bg.jpg');
+  inset: -4%;
+  width: 108%;
+  height: 108%;
   background-size: cover;
   background-position: center center;
   background-repeat: no-repeat;
-  opacity: 0.95;
-  transition: opacity 0.8s ease-in-out;
+  opacity: 0.85;
+  transition: opacity 0.7s ease-in-out;
   pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Subtle continuous ambient camera movement */
+.campus-bg-animated {
+  animation: kenBurnsBg 45s ease-in-out infinite alternate;
+}
+
+@keyframes kenBurnsBg {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  35% {
+    transform: scale(1.04) translate(-1.2%, -0.8%);
+  }
+  70% {
+    transform: scale(1.02) translate(1%, -1.2%);
+  }
+  100% {
+    transform: scale(1.05) translate(-0.5%, 1%);
+  }
 }
 
 /* ============================================================
    VARIANT ADJUSTMENTS (applied via classes on container)
    ============================================================ */
-.campus-bg-auth {
-  opacity: 0.9;
-}
+.campus-bg-home { opacity: 1; }
+.campus-bg-home .campus-bg-backdrop { opacity: 0.92; }
 
-.campus-bg-auth .campus-bg-backdrop {
-  opacity: 0.55;
-}
+.campus-bg-auth { opacity: 0.95; }
+.campus-bg-auth .campus-bg-backdrop { opacity: 0.55; filter: blur(1.5px); }
 
-.campus-bg-verification {
-  opacity: 0.95;
-}
+.campus-bg-dashboard { opacity: 0.98; }
+.campus-bg-dashboard .campus-bg-backdrop { opacity: 0.70; }
 
-.campus-bg-verification .campus-bg-backdrop {
-  opacity: 0.85;
-}
+.campus-bg-search { opacity: 0.98; }
+.campus-bg-search .campus-bg-backdrop { opacity: 0.72; }
 
-.campus-bg-dashboard {
-  opacity: 0.95;
-}
+.campus-bg-post { opacity: 0.98; }
+.campus-bg-post .campus-bg-backdrop { opacity: 0.70; }
 
-.campus-bg-dashboard .campus-bg-backdrop {
-  opacity: 0.75;
-}
+.campus-bg-rideDetail { opacity: 0.98; }
+.campus-bg-rideDetail .campus-bg-backdrop { opacity: 0.72; }
 
-.campus-bg-home {
-  opacity: 1;
-}
+.campus-bg-verification { opacity: 0.98; }
+.campus-bg-verification .campus-bg-backdrop { opacity: 0.78; }
 
-.campus-bg-home .campus-bg-backdrop {
-  opacity: 0.95;
+.campus-bg-admin { opacity: 0.98; }
+.campus-bg-admin .campus-bg-backdrop { opacity: 0.75; }
+
+.campus-bg-safety { opacity: 0.98; }
+.campus-bg-safety .campus-bg-backdrop { opacity: 0.75; }
+
+.campus-bg-colleges { opacity: 1; }
+.campus-bg-colleges .campus-bg-backdrop { opacity: 0.85; }
+
+@media (prefers-reduced-motion: reduce) {
+  .campus-bg-animated {
+    animation: none !important;
+    transform: none !important;
+  }
 }

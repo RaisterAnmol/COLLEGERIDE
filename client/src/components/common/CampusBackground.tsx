@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import './CampusBackground.css';
 import campusMapBgImg from '../../assets/illustrations/campus-map-bg.jpg';
+import bgHome from '../../assets/illustrations/bg-home.png';
+import bgAuth from '../../assets/illustrations/bg-auth.png';
+import bgDashboard from '../../assets/illustrations/bg-dashboard.png';
+import bgSearch from '../../assets/illustrations/bg-search.png';
+import bgPost from '../../assets/illustrations/bg-post.png';
+import bgRideDetail from '../../assets/illustrations/bg-ride-detail.png';
+import bgVerification from '../../assets/illustrations/bg-verification.png';
+import bgAdmin from '../../assets/illustrations/bg-admin.png';
+import bgSafety from '../../assets/illustrations/bg-safety.png';
+import bgColleges from '../../assets/illustrations/bg-colleges.png';
 
 // ── SVG Route Paths (viewBox 0 0 1000 1000) ────────────────
 const PATHS = {
@@ -172,7 +182,31 @@ const FloatingLeaf: React.FC<{ className: string }> = ({ className }) => (
 // ══════════════════════════════════════════════════════════════
 // MAIN COMPONENT
 // ══════════════════════════════════════════════════════════════
-export type CampusBackgroundVariant = 'home' | 'dashboard' | 'auth' | 'verification';
+export type CampusBackgroundVariant =
+  | 'home'
+  | 'dashboard'
+  | 'auth'
+  | 'verification'
+  | 'search'
+  | 'post'
+  | 'rideDetail'
+  | 'admin'
+  | 'safety'
+  | 'colleges';
+
+// Per-page illustrated background image mapping
+const VARIANT_BG_IMAGE: Record<CampusBackgroundVariant, string> = {
+  home: bgHome,
+  auth: bgAuth,
+  dashboard: bgDashboard,
+  search: bgSearch,
+  post: bgPost,
+  rideDetail: bgRideDetail,
+  verification: bgVerification,
+  admin: bgAdmin,
+  safety: bgSafety,
+  colleges: bgColleges,
+};
 
 interface CampusBackgroundProps {
   variant?: CampusBackgroundVariant;
@@ -192,26 +226,21 @@ export const CampusBackground: React.FC<CampusBackgroundProps> = ({
   }, []);
 
   // Variant-based container class
-  const variantClass =
-    variant === 'auth'
-      ? 'campus-bg-auth'
-      : variant === 'verification'
-        ? 'campus-bg-verification'
-        : variant === 'dashboard'
-          ? 'campus-bg-dashboard'
-          : 'campus-bg-home';
+  const variantClass = `campus-bg-${variant}`;
+  const currentBgImage = VARIANT_BG_IMAGE[variant] || bgHome;
 
   const showBranch = variant !== 'auth';
-  const showLeaves = !reducedMotion && (variant === 'home' || variant === 'dashboard');
-  const showVehicles = !reducedMotion;
+  const showLeaves = !reducedMotion && (variant === 'home' || variant === 'dashboard' || variant === 'colleges');
+  const showVehicles = !reducedMotion && (variant === 'home' || variant === 'search' || variant === 'post');
 
   return (
     <div className={`campus-bg-container ${variantClass}`} aria-hidden="true">
 
-      {/* ── Base Layer: Illustrated Campus Map Backdrop ── */}
+      {/* ── Base Layer: Illustrated Campus Map Backdrop with smooth fade & Ken Burns motion ── */}
       <div
-        className="campus-bg-backdrop"
-        style={{ backgroundImage: `url(${campusMapBgImg})` }}
+        key={variant}
+        className="campus-bg-backdrop campus-bg-animated"
+        style={{ backgroundImage: `url(${currentBgImage})` }}
       />
 
       {/* ── Dot grid mesh ─────────────────────────────────── */}

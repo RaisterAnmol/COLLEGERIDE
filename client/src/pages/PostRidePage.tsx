@@ -21,11 +21,11 @@ import offerRideImg from "../assets/illustrations/offer-ride.jpg";
 
 const PRESET_LOCATIONS = [
   // Dehradun - Uttaranchal University Campus Buildings
-  { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3400, lng: 77.9515 },
-  { text: "USCS Building (School of Computing Sciences)", lat: 30.3395, lng: 77.9510 },
-  { text: "BBA Building (Uttaranchal Institute of Management)", lat: 30.3405, lng: 77.9520 },
-  { text: "Central Academic Library & Law Block", lat: 30.3402, lng: 77.9508 },
-  { text: "Campus Gate 1 (Uttaranchal University Main Entrance)", lat: 30.3412, lng: 77.9525 },
+  { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3432, lng: 77.9448 },
+  { text: "USCS Building (School of Computing Sciences)", lat: 30.3428, lng: 77.9456 },
+  { text: "BBA Building (Uttaranchal Institute of Management)", lat: 30.3420, lng: 77.9461 },
+  { text: "Central Academic Library & Law Block", lat: 30.3425, lng: 77.9450 },
+  { text: "Campus Gate 1 (Uttaranchal University Main Entrance)", lat: 30.3415, lng: 77.9440 },
 
   // Dehradun Regional Transit & Student Hubs
   { text: "Premnagar Chowk Market", lat: 30.3340, lng: 77.9620 },

@@ -72,9 +72,17 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 /** Maps current route to CampusBackground variant */
 function useBackgroundVariant(): CampusBackgroundVariant {
   const { pathname } = useLocation();
-  if (pathname === '/' || pathname === '/colleges') return 'home';
+  if (pathname === '/') return 'home';
   if (['/auth', '/login', '/signin', '/register', '/signup'].includes(pathname)) return 'auth';
   if (pathname === '/verification' || pathname === '/face-verify') return 'verification';
+  if (pathname === '/search' || pathname === '/rides') return 'search';
+  if (pathname === '/post' || pathname === '/post-ride') return 'post';
+  if (pathname.startsWith('/rides/')) return 'rideDetail';
+  if (pathname.startsWith('/trips/')) return 'rideDetail';
+  if (pathname === '/admin') return 'admin';
+  if (pathname === '/safety') return 'safety';
+  if (pathname === '/colleges') return 'colleges';
+  if (pathname === '/dashboard') return 'dashboard';
   return 'dashboard';
 }
 
