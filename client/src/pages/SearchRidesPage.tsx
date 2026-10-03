@@ -42,11 +42,11 @@ export interface PresetLocation {
 
 export const PRESET_LOCATIONS: PresetLocation[] = [
   // Dehradun - Uttaranchal University Campus Buildings
-  { text: 'UIT Building (Uttaranchal Institute of Technology)', lat: 30.3432, lng: 77.9448, category: 'Campus Buildings' },
-  { text: 'USCS Building (School of Computing Sciences)', lat: 30.3428, lng: 77.9456, category: 'Campus Buildings' },
-  { text: 'BBA Building (Uttaranchal Institute of Management)', lat: 30.3420, lng: 77.9461, category: 'Campus Buildings' },
-  { text: 'Central Academic Library & Law Block', lat: 30.3425, lng: 77.9450, category: 'Campus Buildings' },
-  { text: 'Campus Gate 1 (Uttaranchal University Main Entrance)', lat: 30.3415, lng: 77.9440, category: 'Campus Buildings' },
+  { text: 'UIT Building (Uttaranchal Institute of Technology)', lat: 30.3400, lng: 77.9515, category: 'Campus Buildings' },
+  { text: 'USCS Building (School of Computing Sciences)', lat: 30.3395, lng: 77.9518, category: 'Campus Buildings' },
+  { text: 'BBA Building (Uttaranchal Institute of Management)', lat: 30.3392, lng: 77.9520, category: 'Campus Buildings' },
+  { text: 'Central Academic Library & Law Block', lat: 30.3396, lng: 77.9517, category: 'Campus Buildings' },
+  { text: 'Campus Gate 1 (Uttaranchal University Main Entrance)', lat: 30.3400, lng: 77.9515, category: 'Campus Buildings' },
 
   // Dehradun Regional Transit & Student Hubs
   { text: 'Premnagar Chowk Market', lat: 30.3340, lng: 77.9620, category: 'Dehradun & Surrounding' },

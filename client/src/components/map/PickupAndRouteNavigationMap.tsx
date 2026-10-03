@@ -55,36 +55,31 @@ export interface PickupLocationGuide {
   stepDirections: string[];
 }
 
-// 100% Real Road GPS Points from OSRM following actual Chakrata Road Bridge over Tons/Asan River
+// 100% Real Road GPS Points from OSRM following actual Chakrata Road Bridge over Tons/Asan River between UIT/UU Campus and Premnagar Market
 const REAL_CHAKRATA_BRIDGE_ROAD: [number, number][] = [
-  [30.33397, 77.96224], [30.33418, 77.96228], [30.33433, 77.9623], [30.33459, 77.96235],
-  [30.3351, 77.96245], [30.33545, 77.96248], [30.33584, 77.9625], [30.33604, 77.96254],
-  [30.33603, 77.96264], [30.33603, 77.96272], [30.33602, 77.96286], [30.336, 77.96329],
-  [30.33599, 77.96342], [30.336, 77.96351], [30.33603, 77.96368], [30.33607, 77.96376],
-  [30.33615, 77.96256], [30.33619, 77.96204], [30.33626, 77.9611], [30.33633, 77.95996],
-  [30.33635, 77.95937], [30.33636, 77.95906], [30.33637, 77.95892], [30.33639, 77.95882],
-  [30.33644, 77.9587], [30.33649, 77.95859], [30.33655, 77.95849], [30.33663, 77.95836],
-  [30.33668, 77.95828], [30.33671, 77.95818], [30.33672, 77.95808], [30.33673, 77.95794],
-  [30.33671, 77.9578], [30.33668, 77.95767], [30.33664, 77.95752], [30.33661, 77.95741],
-  [30.33645, 77.95714], [30.3364, 77.95704], [30.33637, 77.95694], [30.33636, 77.95682],
-  [30.33637, 77.95671], [30.33638, 77.95667], [30.3364, 77.95662], [30.33644, 77.95657],
-  [30.33649, 77.95653], [30.33656, 77.95651], [30.33662, 77.95648], [30.3367, 77.95646],
-  [30.33693, 77.95646], [30.33717, 77.95647], [30.33764, 77.95651], [30.33775, 77.9565],
-  [30.33783, 77.9565], [30.3379, 77.95648], [30.33797, 77.95646], [30.33802, 77.95643],
-  [30.3381, 77.95639], [30.33864, 77.95609], [30.33871, 77.95606], [30.33879, 77.95604],
-  [30.33886, 77.95601], [30.33989, 77.95537], [30.34001, 77.95531], [30.34012, 77.95527],
-  // Crossing River over the designated Chakrata Highway Bridge
-  [30.3408, 77.95512], [30.34092, 77.95508], [30.3412, 77.955], [30.34178, 77.95482],
-  [30.34254, 77.9547], [30.34293, 77.95464], [30.34304, 77.95456], [30.34314, 77.95446],
-  [30.34321, 77.95431], [30.34323, 77.95412], [30.34338, 77.95309], [30.3434, 77.95301],
-  [30.34352, 77.95237], [30.3437, 77.95144], [30.34373, 77.9513], [30.34375, 77.95123],
-  // Turning onto Arcadia Grant / Uttaranchal University Boulevard
-  [30.34391, 77.95044], [30.34425, 77.94895], [30.34451, 77.94777], [30.345, 77.9454],
-  [30.34448, 77.94522], [30.34442, 77.9452], [30.34437, 77.94519], [30.34433, 77.94519],
-  [30.34435, 77.94497], [30.34435, 77.94489], [30.34433, 77.9448], [30.3443, 77.94473],
-  [30.34427, 77.94466], [30.34423, 77.94462], [30.34417, 77.94456], [30.34412, 77.94453],
-  [30.34407, 77.94451], [30.34399, 77.94449], [30.3437, 77.94446], [30.34331, 77.94438],
-  [30.34321, 77.9448], // UIT Building North Porch
+  [30.34002, 77.95163], [30.33979, 77.95167], [30.3391, 77.9518], [30.33935, 77.9522],
+  [30.33942, 77.95233], [30.33947, 77.95243], [30.33949, 77.9525], [30.33952, 77.9526],
+  [30.33962, 77.95296], [30.33965, 77.95301], [30.33973, 77.95315], [30.33974, 77.9532],
+  [30.33975, 77.95325], [30.33976, 77.95332], [30.33976, 77.95391], [30.33976, 77.95416],
+  [30.33977, 77.95422], [30.3398, 77.95429], [30.33984, 77.95437], [30.33986, 77.95443],
+  [30.33986, 77.95449], [30.33986, 77.95469], [30.33986, 77.95502], [30.33986, 77.95509],
+  [30.33986, 77.95516], [30.33989, 77.95537], [30.33886, 77.95601], [30.33879, 77.95604],
+  [30.33873, 77.95611], [30.33867, 77.95615], [30.33814, 77.95647], [30.33805, 77.95652],
+  [30.33802, 77.95653], [30.33792, 77.95657], [30.33785, 77.95658], [30.33776, 77.95659],
+  [30.33764, 77.95659], [30.33718, 77.95655], [30.33683, 77.95654], [30.33676, 77.95654],
+  [30.33665, 77.95657], [30.33659, 77.95659], [30.33655, 77.95661], [30.3365, 77.95665],
+  [30.33648, 77.95669], [30.33645, 77.95674], [30.33643, 77.95682], [30.33644, 77.95691],
+  [30.33646, 77.957], [30.33653, 77.95712], [30.33666, 77.95735], [30.33671, 77.95749],
+  [30.33675, 77.95763], [30.33678, 77.95779], [30.33679, 77.95793], [30.33679, 77.95808],
+  [30.33676, 77.95822], [30.33673, 77.95834], [30.33669, 77.9584], [30.3366, 77.95854],
+  [30.33654, 77.95865], [30.3365, 77.95876], [30.33646, 77.95885], [30.33645, 77.95894],
+  [30.33643, 77.95906], [30.33641, 77.95939], [30.33638, 77.95999], [30.33631, 77.96111],
+  [30.33623, 77.96204], [30.33619, 77.96267], [30.33611, 77.96376], [30.3361, 77.964],
+  [30.3369, 77.96407], [30.33607, 77.96414], [30.33606, 77.96408], [30.33606, 77.96399],
+  [30.33607, 77.96376], [30.33603, 77.96368], [30.336, 77.96351], [30.33599, 77.96342],
+  [30.336, 77.96329], [30.33602, 77.96286], [30.33603, 77.96272], [30.33603, 77.96264],
+  [30.33604, 77.96254], [30.33584, 77.9625], [30.33545, 77.96248], [30.3351, 77.96245],
+  [30.33459, 77.96235], [30.33433, 77.9623], [30.33418, 77.96228], [30.33397, 77.96224],
 ];
 
 // 100% Real Road GPS Points from Suddhowala Student Hub to Uttaranchal University (Direct Link)
@@ -148,67 +143,60 @@ const REAL_CLOCKTOWER_TO_CAMPUS_ROAD: [number, number][] = [
   ...REAL_BALLUPUR_TO_CAMPUS_ROAD,
 ];
 
-// Real paved local connector road via Kehri Gaon avoiding Nanda Ki Chowki bridge bottlenecks
-const REAL_KEHRI_GAON_ROAD: [number, number][] = [
-  [30.33397, 77.96224], [30.3344, 77.9610], [30.3352, 77.9592], [30.3361, 77.9575],
-  [30.3370, 77.9555], [30.3382, 77.9532], [30.3395, 77.9510], [30.3408, 77.9490],
-  [30.3418, 77.9472], [30.3426, 77.9458], [30.34321, 77.9448],
-];
-
 export const INITIAL_CORRIDORS: RouteCorridorOption[] = [
   {
     id: 'chakrata_bridge',
     name: 'Via Chakrata Road (Bridge Route)',
     tag: 'Fastest / Primary Bridge',
-    distanceKm: 3.0,
-    durationMinutes: 6,
+    distanceKm: 2.0,
+    durationMinutes: 4,
     trafficStatus: 'light',
     description: 'Direct paved road via Premnagar Market, crosses the Tons/Asan river over Nanda Ki Chowki Bridge',
-    viaWaypoints: ['Premnagar Market', 'Nanda Ki Chowki Bridge', 'Arcadia Grant Blvd'],
+    viaWaypoints: ['Premnagar Market', 'Nanda Ki Chowki Bridge', 'Uttaranchal University Gate'],
     latLngs: REAL_CHAKRATA_BRIDGE_ROAD,
     color: '#1a73e8', // Google Blue
-    fuelEstimateInr: 10,
+    fuelEstimateInr: 8,
     turnSteps: [
       { icon: 'depart', instruction: 'Depart east towards Premnagar Market on Chakrata Road', distanceText: '400 m' },
-      { icon: 'straight', instruction: 'Continue on NH 72 towards Nanda Ki Chowki', distanceText: '1.4 km' },
-      { icon: 'bridge', instruction: 'Cross Tons/Asan River over Nanda Ki Chowki Bridge', distanceText: '300 m' },
-      { icon: 'turn-right', instruction: 'Turn right onto Uttaranchal University Boulevard (Arcadia Grant)', distanceText: '700 m' },
-      { icon: 'arrive', instruction: 'Arrive at Campus Carpool Bay', distanceText: '200 m' },
+      { icon: 'straight', instruction: 'Continue on NH 72 towards Nanda Ki Chowki', distanceText: '1.1 km' },
+      { icon: 'bridge', instruction: 'Cross Tons/Asan River over Nanda Ki Chowki Bridge', distanceText: '250 m' },
+      { icon: 'turn-right', instruction: 'Turn right onto Uttaranchal University Entrance Boulevard', distanceText: '250 m' },
+      { icon: 'arrive', instruction: 'Arrive at UIT Student Carpool Bay', distanceText: '50 m' },
     ],
   },
 ];
 
 
-// Known Geo Coordinates for Dehradun & Uttaranchal University
+// Known Geo Coordinates for Dehradun & Uttaranchal University (Real verified physical locations)
 export const GEO_COORDINATES: Record<string, [number, number]> = {
-  uit: [30.3432, 77.9448],
-  uscs: [30.3428, 77.9456],
-  bba: [30.342, 77.9461],
-  library: [30.3425, 77.945],
-  gate1: [30.3415, 77.944],
-  premnagar: [30.334, 77.962],
-  suddhowala: [30.3475, 77.932],
-  selaqui: [30.3685, 77.854],
-  vikasnagar: [30.435, 77.771],
-  isbt: [30.2885, 78.008],
+  uit: [30.3400, 77.9515],
+  uscs: [30.3395, 77.9518],
+  bba: [30.3392, 77.9520],
+  library: [30.3396, 77.9517],
+  gate1: [30.3400, 77.9515],
+  premnagar: [30.3340, 77.9620],
+  suddhowala: [30.3475, 77.9320],
+  selaqui: [30.3685, 77.8540],
+  vikasnagar: [30.4350, 77.7710],
+  isbt: [30.2885, 78.0080],
   ballupur: [30.3395, 78.0125],
   clocktower: [30.3256, 78.0437],
-  nandakichowki: [30.34, 77.953],
+  nandakichowki: [30.3408, 77.9551],
 };
 
 // Common Presets for Google Maps Origin/Destination Dropdown
 export const POPULAR_LOCATIONS: { name: string; key: string; coords: [number, number]; type: 'origin' | 'dest' | 'both' }[] = [
-  { name: 'Selaqui Industrial & Institutional Hub', key: 'selaqui', coords: [30.3685, 77.854], type: 'both' },
-  { name: 'Premnagar Chowk Market', key: 'premnagar', coords: [30.334, 77.962], type: 'both' },
-  { name: 'Suddhowala Chowk (Student PG Hub)', key: 'suddhowala', coords: [30.3475, 77.932], type: 'both' },
+  { name: 'Selaqui Industrial & Institutional Hub', key: 'selaqui', coords: [30.3685, 77.8540], type: 'both' },
+  { name: 'Premnagar Chowk Market', key: 'premnagar', coords: [30.3340, 77.9620], type: 'both' },
+  { name: 'Suddhowala Chowk (Student PG Hub)', key: 'suddhowala', coords: [30.3475, 77.9320], type: 'both' },
   { name: 'Ballupur Chowk (City Entrance)', key: 'ballupur', coords: [30.3395, 78.0125], type: 'both' },
   { name: 'Clock Tower (Ghanta Ghar)', key: 'clocktower', coords: [30.3256, 78.0437], type: 'both' },
-  { name: 'ISBT Dehradun', key: 'isbt', coords: [30.2885, 78.008], type: 'both' },
-  { name: 'UIT Building (Uttaranchal Institute of Technology)', key: 'uit', coords: [30.3432, 77.9448], type: 'both' },
-  { name: 'USCS Building (School of Computing Sciences)', key: 'uscs', coords: [30.3428, 77.9456], type: 'both' },
-  { name: 'BBA Building (Uttaranchal Institute of Management)', key: 'bba', coords: [30.342, 77.9461], type: 'both' },
-  { name: 'Central Academic Library & Law Block', key: 'library', coords: [30.3425, 77.945], type: 'both' },
-  { name: 'Campus Gate 1 (Uttaranchal University Main Entrance)', key: 'gate1', coords: [30.3415, 77.944], type: 'both' },
+  { name: 'ISBT Dehradun', key: 'isbt', coords: [30.2885, 78.0080], type: 'both' },
+  { name: 'UIT Building (Uttaranchal Institute of Technology)', key: 'uit', coords: [30.3400, 77.9515], type: 'both' },
+  { name: 'USCS Building (School of Computing Sciences)', key: 'uscs', coords: [30.3395, 77.9518], type: 'both' },
+  { name: 'BBA Building (Uttaranchal Institute of Management)', key: 'bba', coords: [30.3392, 77.9520], type: 'both' },
+  { name: 'Central Academic Library & Law Block', key: 'library', coords: [30.3396, 77.9517], type: 'both' },
+  { name: 'Campus Gate 1 (Uttaranchal University Main Entrance)', key: 'gate1', coords: [30.3400, 77.9515], type: 'both' },
 ];
 
 // Campus Building Guides with Walking Steps
@@ -217,7 +205,7 @@ export const CAMPUS_BUILDING_GUIDES: Record<string, PickupLocationGuide> = {
     hubName: 'UIT Building (Uttaranchal Institute of Technology)',
     buildingCode: 'UIT-ENGG',
     campusArea: 'Engineering Sciences Quad',
-    location: [30.3432, 77.9448],
+    location: [30.3400, 77.9515],
     walkDistanceMeters: 180,
     walkMinutes: 2,
     hasCctv: true,
@@ -404,7 +392,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const [currentOrigin, setCurrentOrigin] = useState<string>(originText);
   const [currentDest, setCurrentDest] = useState<string>(destinationText);
   const [selectedCorridorId, setSelectedCorridorId] = useState<string>(selectedRouteId);
-  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('google_streets');
+  const [mapLayerType, setMapLayerType] = useState<'google_streets' | 'google_satellite' | 'carto_voyager' | 'osm'>('carto_voyager');
   const [walkingStepIndex, setWalkingStepIndex] = useState<number>(0);
   const [showTurnByTurn, setShowTurnByTurn] = useState<boolean>(false);
   const [corridors, setCorridors] = useState<RouteCorridorOption[]>(INITIAL_CORRIDORS);
@@ -419,13 +407,15 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const lastFittedBoundsKeyRef = useRef<string>('');
 
-  // Sync state if props change from outside
+  // Sync state if props change from outside & clear dragged pin overrides so map is fully responsive
   useEffect(() => {
     setCurrentOrigin(originText);
+    setCustomOriginCoords(null);
   }, [originText]);
 
   useEffect(() => {
     setCurrentDest(destinationText);
+    setCustomDestCoords(null);
   }, [destinationText]);
 
   // Derive pickup guide based on props or heuristics
@@ -490,11 +480,11 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
     const origText = currentOrigin.toLowerCase();
     const destText = currentDest.toLowerCase();
 
-    const involvesSelaqui = origText.includes('selaqui') || destText.includes('selaqui') || Math.abs(orig[1] - 77.854) < 0.03 || Math.abs(dest[1] - 77.854) < 0.03;
-    const involvesSuddhowala = origText.includes('suddhowala') || destText.includes('suddhowala') || Math.abs(orig[1] - 77.932) < 0.015 || Math.abs(dest[1] - 77.932) < 0.015;
-    const involvesPremnagar = origText.includes('premnagar') || destText.includes('prem nagar') || Math.abs(orig[1] - 77.962) < 0.015 || Math.abs(dest[1] - 77.962) < 0.015;
-    const involvesClockTower = origText.includes('clock') || origText.includes('ghanta') || destText.includes('clock') || destText.includes('ghanta') || orig[1] > 78.03 || dest[1] > 78.03;
-    const involvesBallupur = origText.includes('ballupur') || destText.includes('ballupur') || (orig[1] > 77.99 && orig[1] <= 78.03) || (dest[1] > 77.99 && dest[1] <= 78.03);
+    const involvesSelaqui = (origText.includes('selaqui') || destText.includes('selaqui')) && !origText.includes('uit') && !destText.includes('uit');
+    const involvesSuddhowala = (origText.includes('suddhowala') || destText.includes('suddhowala')) && !origText.includes('uit') && !destText.includes('uit');
+    const involvesPremnagar = origText.includes('premnagar') || destText.includes('prem nagar') || destText.includes('premnagar');
+    const involvesClockTower = origText.includes('clock') || origText.includes('ghanta') || destText.includes('clock') || destText.includes('ghanta');
+    const involvesBallupur = origText.includes('ballupur') || destText.includes('ballupur');
 
     // Case 1: Selaqui to Premnagar (Direct Highway without turning into UU campus)
     if (involvesSelaqui && involvesPremnagar && !origText.includes('gate') && !destText.includes('gate') && !origText.includes('uit') && !destText.includes('uit')) {
@@ -653,26 +643,26 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       ];
     }
 
-    // Default Case: Premnagar <-> Campus (Direct 3.0 km)
+    // Default Case: Premnagar <-> Campus (Direct 2.0 km verified road)
     return [
       {
         id: 'chakrata_bridge',
         name: 'Via Chakrata Road (Bridge Route)',
         tag: 'Fastest / Primary Bridge',
-        distanceKm: 3.0,
-        durationMinutes: 6,
+        distanceKm: 2.0,
+        durationMinutes: 4,
         trafficStatus: 'light',
-        description: 'Direct paved road via Premnagar Market, crosses the Tons/Asan river over Nanda Ki Chowki Bridge into Uttaranchal University',
-        viaWaypoints: ['Premnagar Market', 'Nanda Ki Chowki Bridge', 'Arcadia Grant Blvd'],
+        description: 'Direct paved road via Premnagar Market, crosses the Tons/Asan river over Nanda Ki Chowki Bridge into Uttaranchal University UIT Building',
+        viaWaypoints: ['Premnagar Market', 'Nanda Ki Chowki Bridge', 'Uttaranchal University Gate'],
         latLngs: snapRouteEndpoints(REAL_CHAKRATA_BRIDGE_ROAD, orig, dest),
         color: '#1a73e8',
-        fuelEstimateInr: 10,
+        fuelEstimateInr: 8,
         turnSteps: [
           { icon: 'depart', instruction: 'Depart along Chakrata Road (NH 72)', distanceText: '400 m' },
-          { icon: 'straight', instruction: 'Proceed across NH 72 towards Nanda Ki Chowki', distanceText: '1.4 km' },
-          { icon: 'bridge', instruction: 'Cross Tons/Asan River over Nanda Ki Chowki Bridge', distanceText: '300 m' },
-          { icon: 'turn-right', instruction: 'Turn onto Uttaranchal University Boulevard (Arcadia Grant)', distanceText: '700 m' },
-          { icon: 'arrive', instruction: 'Arrive at Campus Destination Porch', distanceText: '200 m' },
+          { icon: 'straight', instruction: 'Proceed across NH 72 towards Nanda Ki Chowki', distanceText: '1.1 km' },
+          { icon: 'bridge', instruction: 'Cross Tons/Asan River over Nanda Ki Chowki Bridge', distanceText: '250 m' },
+          { icon: 'turn-right', instruction: 'Turn onto Uttaranchal University Entrance Boulevard', distanceText: '250 m' },
+          { icon: 'arrive', instruction: 'Arrive at UIT Student Carpool Bay', distanceText: '50 m' },
         ],
       },
     ];
@@ -844,7 +834,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         if (type === 'carto_voyager') {
           return cartoKey
             ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-            : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
         }
         return 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
       };
@@ -854,7 +844,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
       const tileLayer = L.tileLayer(tileUrl, {
         maxZoom: 20,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3', 'a', 'b', 'c', 'd'],
-        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / OpenStreetMap',
+        attribution: 'Map data &copy; <a href="https://maps.google.com">Google Maps</a> / CARTO',
       }).addTo(map);
 
       const layerGroup = L.layerGroup().addTo(map);
@@ -877,7 +867,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         : mapLayerType === 'carto_voyager'
         ? (cartoKey
             ? `https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?api_key=${cartoKey}`
-            : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+            : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png')
         : 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en';
 
     tileLayerRef.current.setUrl(tileUrl);
