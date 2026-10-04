@@ -81,7 +81,7 @@ function useBackgroundVariant(): CampusBackgroundVariant {
   if (pathname.startsWith('/trips/')) return 'rideDetail';
   if (pathname === '/admin') return 'admin';
   if (pathname === '/safety') return 'safety';
-  if (pathname === '/colleges') return 'colleges';
+  if (pathname === '/colleges' || pathname === '/campuses') return 'colleges';
   if (pathname === '/dashboard') return 'dashboard';
   return 'dashboard';
 }
@@ -117,6 +117,7 @@ function AppLayout() {
             <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
             <Route path="/safety" element={<SafetyPage />} />
             <Route path="/colleges" element={<CollegesPage />} />
+            <Route path="/campuses" element={<Navigate to="/colleges" replace />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
