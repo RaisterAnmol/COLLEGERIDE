@@ -183,8 +183,8 @@ export function calculateMatchScore(
     ? haversineDistanceKm(driverRide.destination, passengerQuery.destination)
     : 0;
 
-  // Strict Corridor Match: If driver pickup or destination is > 1.2 km from passenger points, strictly disqualify
-  if (pickupDist > 1.2 || (passengerQuery.destination && destDist > 1.2)) {
+  // Strict Corridor Match: If driver pickup or destination is > 0.9 km from passenger points, strictly disqualify
+  if (pickupDist > 0.9 || (passengerQuery.destination && destDist > 0.9)) {
     return {
       isMatch: false,
       matchScore: 0,
@@ -199,6 +199,35 @@ export function calculateMatchScore(
         pickupDistanceKm: Math.round(pickupDist * 100) / 100,
       },
     };
+  }
+
+  // Directional Vector Check: Disqualify opposite-direction commutes (e.g. Premnagar -> Campus when searching Campus -> Premnagar)
+  if (passengerQuery.destination) {
+    const pDeltaLat = passengerQuery.destination.lat - passengerQuery.origin.lat;
+    const pDeltaLng = passengerQuery.destination.lng - passengerQuery.origin.lng;
+    const dDeltaLat = driverRide.destination.lat - driverRide.origin.lat;
+    const dDeltaLng = driverRide.destination.lng - driverRide.origin.lng;
+    const pMag = Math.sqrt(pDeltaLat * pDeltaLat + pDeltaLng * pDeltaLng);
+    const dMag = Math.sqrt(dDeltaLat * dDeltaLat + dDeltaLng * dDeltaLng);
+    if (pMag > 0.0001 && dMag > 0.0001) {
+      const cosSim = (pDeltaLat * dDeltaLat + pDeltaLng * dDeltaLng) / (pMag * dMag);
+      if (cosSim < 0.5) {
+        return {
+          isMatch: false,
+          matchScore: 0,
+          percentage: 0,
+          disqualificationReason: "Driver is traveling in opposite or divergent direction",
+          breakdown: {
+            routeOverlap: 0,
+            timeMatch: Math.round(timeMatch * 100) / 100,
+            pickupProximity: 0,
+            seatBonus: 0,
+            detourDistanceKm: Math.round(detourDist * 100) / 100,
+            pickupDistanceKm: Math.round(pickupDist * 100) / 100,
+          },
+        };
+      }
+    }
   }
 
   // If routes are completely divergent (zero route overlap), disqualify

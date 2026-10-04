@@ -366,11 +366,28 @@ export const SearchRidesPage: React.FC = () => {
         const dLat = r.destination?.lat ?? r.destination?.coordinates?.[1];
         const dLng = r.destination?.lng ?? r.destination?.coordinates?.[0];
         if (oLat === undefined || oLng === undefined) return false;
+
         const pDist = haversineDistanceKm(origin.lat, origin.lng, oLat, oLng);
-        if (pDist > 2.5) return false;
+        // Strict pickup proximity (max 0.9 km) - includes adjacent campus buildings, rejects Premnagar/Suddhowala
+        if (pDist > 0.9) return false;
+
+        // If destination is specified:
         if (dest && dLat !== undefined && dLng !== undefined) {
           const dDist = haversineDistanceKm(dest.lat, dest.lng, dLat, dLng);
-          if (dDist > 2.5) return false;
+          // Strict drop-off proximity (max 0.9 km)
+          if (dDist > 0.9) return false;
+
+          // Check directional vector alignment (strictly discard opposite direction commutes)
+          const pDeltaLat = dest.lat - origin.lat;
+          const pDeltaLng = dest.lng - origin.lng;
+          const dDeltaLat = dLat - oLat;
+          const dDeltaLng = dLng - oLng;
+          const pMag = Math.sqrt(pDeltaLat * pDeltaLat + pDeltaLng * pDeltaLng);
+          const dMag = Math.sqrt(dDeltaLat * dDeltaLat + dDeltaLng * dDeltaLng);
+          if (pMag > 0.0001 && dMag > 0.0001) {
+            const cosSim = (pDeltaLat * dDeltaLat + pDeltaLng * dDeltaLng) / (pMag * dMag);
+            if (cosSim < 0.5) return false; // Discard opposite or divergent directions
+          }
         }
         return true;
       };
@@ -392,11 +409,28 @@ export const SearchRidesPage: React.FC = () => {
         const dLat = r.destination?.lat ?? r.destination?.coordinates?.[1];
         const dLng = r.destination?.lng ?? r.destination?.coordinates?.[0];
         if (oLat === undefined || oLng === undefined) return false;
+
         const pDist = haversineDistanceKm(origin.lat, origin.lng, oLat, oLng);
-        if (pDist > 2.5) return false;
+        // Strict pickup proximity (max 0.9 km) - includes adjacent campus buildings, rejects Premnagar/Suddhowala
+        if (pDist > 0.9) return false;
+
+        // If destination is specified:
         if (dest && dLat !== undefined && dLng !== undefined) {
           const dDist = haversineDistanceKm(dest.lat, dest.lng, dLat, dLng);
-          if (dDist > 2.5) return false;
+          // Strict drop-off proximity (max 0.9 km)
+          if (dDist > 0.9) return false;
+
+          // Check directional vector alignment (strictly discard opposite direction commutes)
+          const pDeltaLat = dest.lat - origin.lat;
+          const pDeltaLng = dest.lng - origin.lng;
+          const dDeltaLat = dLat - oLat;
+          const dDeltaLng = dLng - oLng;
+          const pMag = Math.sqrt(pDeltaLat * pDeltaLat + pDeltaLng * pDeltaLng);
+          const dMag = Math.sqrt(dDeltaLat * dDeltaLat + dDeltaLng * dDeltaLng);
+          if (pMag > 0.0001 && dMag > 0.0001) {
+            const cosSim = (pDeltaLat * dDeltaLat + pDeltaLng * dDeltaLng) / (pMag * dMag);
+            if (cosSim < 0.5) return false; // Discard opposite or divergent directions
+          }
         }
         return true;
       };

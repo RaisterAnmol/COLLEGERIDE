@@ -698,13 +698,29 @@ export default async function handler(req: any, res: any) {
             if (destLat !== null && destLng !== null && r.destination?.lat && r.destination?.lng) {
               destDist = haversineKm({ lat: destLat, lng: destLng }, { lat: r.destination.lat, lng: r.destination.lng });
               totalCorridorDist = pickupDist + destDist;
-              // Corridor match threshold: pickup and dropoff within 2.5km of driver route
-              isDirectRouteMatch = pickupDist <= 2.5 && destDist <= 2.5;
+
+              // Check directional alignment (heading vector cosine similarity)
+              const pDeltaLat = destLat - originLat!;
+              const pDeltaLng = destLng - originLng!;
+              const dDeltaLat = r.destination.lat - r.origin.lat;
+              const dDeltaLng = r.destination.lng - r.origin.lng;
+              const pMag = Math.sqrt(pDeltaLat * pDeltaLat + pDeltaLng * pDeltaLng);
+              const dMag = Math.sqrt(dDeltaLat * dDeltaLat + dDeltaLng * dDeltaLng);
+              const directionCos = (pMag > 0.0001 && dMag > 0.0001)
+                ? (pDeltaLat * dDeltaLat + pDeltaLng * dDeltaLng) / (pMag * dMag)
+                : 1.0;
+
+              // Strict corridor match threshold:
+              // 1. Pickup must be strictly within 0.9km of passenger origin (covers campus hubs, rejects opposite towns/PG hubs)
+              // 2. Dropoff must be strictly within 0.9km of passenger destination
+              // 3. Driver must be traveling in the same general direction (directionCos >= 0.5, strictly rejects reverse trips)
+              isDirectRouteMatch = pickupDist <= 0.9 && destDist <= 0.9 && directionCos >= 0.5;
+
               const driverTripDist = Math.max(haversineKm({ lat: r.origin.lat, lng: r.origin.lng }, { lat: r.destination.lat, lng: r.destination.lng }), 1.0);
               routeOverlap = Math.max(0, 1 - (pickupDist + destDist) / driverTripDist);
             } else {
-              isDirectRouteMatch = pickupDist <= 3.0;
-              routeOverlap = Math.max(0, 1 - pickupDist / 3.0);
+              isDirectRouteMatch = pickupDist <= 0.9;
+              routeOverlap = Math.max(0, 1 - pickupDist / 0.9);
             }
           }
 
