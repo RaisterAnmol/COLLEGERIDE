@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Star, ArrowRight, Clock, Users, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, Star, ArrowRight, Clock } from 'lucide-react';
 import { DEMO_STUDENTS } from '../../data/mockData';
 import { PageHeroBanner } from '../common/PageHeroBanner';
 import communityImg from '../../assets/illustrations/community.jpg';
@@ -50,7 +50,7 @@ export const CommunitySection: React.FC = () => {
               key={student.id}
               onMouseEnter={() => setHoveredStudentId(student.id)}
               onMouseLeave={() => setHoveredStudentId(null)}
-              className="bg-white/95 rounded-2xl border border-emerald-100 p-6 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-md flex flex-col justify-between group"
+              className="bg-white/95 backdrop-blur-sm rounded-2xl border border-emerald-100 p-6 shadow-xs transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-500 hover:shadow-md flex flex-col justify-between group"
             >
               <div>
                 {/* Header: Departure & Fare */}
@@ -134,8 +134,5 @@ export const CommunitySection: React.FC = () => {
   );
 };
 
-
-
 // Backwards-compatible alias
 export const FindYourPeople = CommunitySection;
-

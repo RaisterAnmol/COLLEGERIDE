@@ -359,14 +359,25 @@ export const SearchRidesPage: React.FC = () => {
 
       
 
-      let matchingRides = res || [];
+      const isCorridorMatch = (r: any) => {
+        if (!origin) return true;
+        const oLat = r.origin?.lat ?? r.origin?.coordinates?.[1];
+        const oLng = r.origin?.lng ?? r.origin?.coordinates?.[0];
+        const dLat = r.destination?.lat ?? r.destination?.coordinates?.[1];
+        const dLng = r.destination?.lng ?? r.destination?.coordinates?.[0];
+        if (oLat === undefined || oLng === undefined) return false;
+        const pDist = haversineDistanceKm(origin.lat, origin.lng, oLat, oLng);
+        if (pDist > 2.5) return false;
+        if (dest && dLat !== undefined && dLng !== undefined) {
+          const dDist = haversineDistanceKm(dest.lat, dest.lng, dLat, dLng);
+          if (dDist > 2.5) return false;
+        }
+        return true;
+      };
+
+      let matchingRides = (res || []).filter(isCorridorMatch);
       if (matchingRides.length === 0) {
-        matchingRides = DEMO_FALLBACK_RIDES.filter((r: any) => {
-          if (!origin || !dest) return false;
-          const pDist = haversineDistanceKm(origin.lat, origin.lng, r.origin?.lat ?? 0, r.origin?.lng ?? 0);
-          const dDist = haversineDistanceKm(dest.lat, dest.lng, r.destination?.lat ?? 0, r.destination?.lng ?? 0);
-          return pDist <= 3.0 && dDist <= 3.0;
-        });
+        matchingRides = DEMO_FALLBACK_RIDES.filter(isCorridorMatch);
       }
       setRides(sortRidesByCorridor(matchingRides));
       setSearched(true);
@@ -374,15 +385,24 @@ export const SearchRidesPage: React.FC = () => {
       console.warn('[Search] Falling back to corridor matching:', err);
       const origin = PRESET_LOCATIONS[originIndex];
       const dest = PRESET_LOCATIONS[destIndex];
-      const matchingRides = DEMO_FALLBACK_RIDES.filter((r: any) => {
-        if (!origin || !dest) return false;
-        const pDist = haversineDistanceKm(origin.lat, origin.lng, r.origin?.lat ?? 0, r.origin?.lng ?? 0);
-        const dDist = haversineDistanceKm(dest.lat, dest.lng, r.destination?.lat ?? 0, r.destination?.lng ?? 0);
-        return pDist <= 3.0 && dDist <= 3.0;
-      });
+      const isCorridorMatch = (r: any) => {
+        if (!origin) return true;
+        const oLat = r.origin?.lat ?? r.origin?.coordinates?.[1];
+        const oLng = r.origin?.lng ?? r.origin?.coordinates?.[0];
+        const dLat = r.destination?.lat ?? r.destination?.coordinates?.[1];
+        const dLng = r.destination?.lng ?? r.destination?.coordinates?.[0];
+        if (oLat === undefined || oLng === undefined) return false;
+        const pDist = haversineDistanceKm(origin.lat, origin.lng, oLat, oLng);
+        if (pDist > 2.5) return false;
+        if (dest && dLat !== undefined && dLng !== undefined) {
+          const dDist = haversineDistanceKm(dest.lat, dest.lng, dLat, dLng);
+          if (dDist > 2.5) return false;
+        }
+        return true;
+      };
+      const matchingRides = DEMO_FALLBACK_RIDES.filter(isCorridorMatch);
       setRides(sortRidesByCorridor(matchingRides));
       setSearched(true);
-    
     } finally {
       setLoading(false);
     }

@@ -1869,6 +1869,54 @@ export async function seedDemoData() {
     },
   });
 
+  // Ride 22B: Aditya's Direct Premnagar Route (Ballupur Chowk -> Premnagar Chowk Market)
+  const adityaBallupurToPremnagarRide = await Ride.create({
+    creator: aditya._id,
+    origin: {
+      text: "Ballupur Chowk (City Entrance)",
+      lat: 30.3395,
+      lng: 78.0125,
+    },
+    destination: {
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
+    },
+    departureTime: new Date(now.getTime() + 1.8 * 60 * 60 * 1000),
+    availableSeats: 3,
+    pricePerSeat: 25,
+    vehicleId: adityaVehicle._id,
+    status: "active",
+    recurringSchedule: {
+      daysOfWeek: [1, 2, 3, 4, 5],
+      time: "08:15",
+    },
+  });
+
+  // Ride 22C: Sneha's Direct Premnagar Route (Ballupur Chowk -> Premnagar Chowk Market)
+  const snehaBallupurToPremnagarRide = await Ride.create({
+    creator: sneha._id,
+    origin: {
+      text: "Ballupur Chowk (City Entrance)",
+      lat: 30.3395,
+      lng: 78.0125,
+    },
+    destination: {
+      text: "Premnagar Chowk Market",
+      lat: 30.3340,
+      lng: 77.9620,
+    },
+    departureTime: new Date(now.getTime() + 2.5 * 60 * 60 * 1000),
+    availableSeats: 3,
+    pricePerSeat: 25,
+    vehicleId: snehaVehicle._id,
+    status: "active",
+    recurringSchedule: {
+      daysOfWeek: [1, 2, 3, 4, 5],
+      time: "08:45",
+    },
+  });
+
   // Ride 23: Kabir's City Center Link (Clock Tower -> UIT Building)
   const kabirClockTowerToUitRide = await Ride.create({
     creator: kabir._id,

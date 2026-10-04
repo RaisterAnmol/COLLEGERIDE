@@ -780,6 +780,7 @@ export default async function handler(req: any, res: any) {
           };
         })
         .filter((r: any) => {
+          if (hasRouteQuery && !r.isDirectRouteMatch) return false;
           if (r.availableSeats !== undefined && r.availableSeats < seats) return false;
           if (womenOnly && r.creator?.gender !== 'female') return false;
           if (college && college !== 'Any') {
