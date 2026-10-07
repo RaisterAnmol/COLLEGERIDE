@@ -218,7 +218,14 @@ export const DashboardPage: React.FC = () => {
         setMyOfferedRides(ridesRes.value || []);
       }
       if (reqsRes.status === 'fulfilled') {
-        setMyRequests(reqsRes.value || []);
+        if (user?.verificationStatus !== 'verified') {
+          setMyRequests([]);
+          try {
+            localStorage.removeItem("campusride_local_requests");
+          } catch {}
+        } else {
+          setMyRequests(reqsRes.value || []);
+        }
       }
       if (ridesRes.status === 'rejected' && reqsRes.status === 'rejected') {
         setDashboardError('Failed to load rides and requests. Please check your connection.');
@@ -243,8 +250,13 @@ export const DashboardPage: React.FC = () => {
   // Role & derived calculations
   const isDriver = (user as any)?.role === 'driver' || (user as any)?.accountType === 'DRIVER';
   const isPassenger = !isDriver;
-  const upcomingRequests = myRequests.filter((r) => r.status === 'pending' || r.status === 'accepted');
-  const previousRequests = myRequests.filter((r) => r.status === 'declined' || r.status === 'cancelled' || (r as any).status === 'completed');
+  const isUserVerified = user?.verificationStatus === 'verified';
+  const upcomingRequests = isUserVerified
+    ? myRequests.filter((r) => r.status === 'pending' || r.status === 'accepted')
+    : [];
+  const previousRequests = isUserVerified
+    ? myRequests.filter((r) => r.status === 'declined' || r.status === 'cancelled' || (r as any).status === 'completed')
+    : [];
 
   // Derived review calculations
   const driverReviews = reviews.filter((r) => (r.role || '').toLowerCase() === 'driver');
@@ -973,6 +985,23 @@ export const DashboardPage: React.FC = () => {
               {/* Bookings List */}
               {loading ? (
                 <div className="py-12 text-center text-slate-400 text-xs">Loading your commutes...</div>
+              ) : !isUserVerified ? (
+                <div className="py-10 text-center border-2 border-dashed border-amber-200/80 rounded-2xl p-8 bg-amber-50/40 space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto text-amber-600">
+                    <ShieldCheck className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-sm font-bold text-slate-900">Commutes Locked — Student ID Verification Pending</h3>
+                  <p className="text-xs text-slate-600 max-w-md mx-auto leading-relaxed">
+                    Your institutional student profile is currently undergoing verification. Once verified by campus administration, you'll be able to reserve seats, view upcoming commutes, and coordinate with verified drivers.
+                  </p>
+                  <Link
+                    to="/verification"
+                    className="mt-2 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-xs"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Check Verification Status</span>
+                  </Link>
+                </div>
               ) : passengerCommuteTab === 'upcoming' ? (
                 upcomingRequests.length === 0 ? (
                   <div className="py-12 text-center border-2 border-dashed border-slate-200 rounded-2xl p-8 bg-slate-50/50 space-y-2">

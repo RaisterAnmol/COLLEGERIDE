@@ -6,6 +6,7 @@ import { IdentityDocumentUpload } from "../components/verification/IdentityDocum
 import { SelfieCapture } from "../components/verification/SelfieCapture";
 import {
   ShieldCheck,
+  Search,
   AlertCircle,
   Clock,
   CheckCircle2,
@@ -448,118 +449,214 @@ export const VerificationStatusPage: React.FC = () => {
             </div>
           </div>
 
-          {/* RIGHT CARD: Daily Driver Check-in [Required Today] */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-                <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
-                  <Camera className="w-4 h-4 text-emerald-700" />
-                  <span>Daily Driver Check-in</span>
+          {/* RIGHT CARD: Daily Driver Check-in (Drivers) OR Student Passenger Verification (Passengers) */}
+          {isDriver ? (
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                  <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                    <Camera className="w-4 h-4 text-emerald-700" />
+                    <span>Daily Driver Check-in</span>
+                  </div>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    isDailyVerified
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                      : 'bg-amber-100 text-amber-800 border border-amber-200'
+                  }`}>
+                    {isDailyVerified ? 'Cleared Today' : 'Required Today'}
+                  </span>
                 </div>
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+
+                <p className="text-xs text-slate-600 leading-relaxed mb-5">
+                  Verify your physical student ID before your first ride each day. It only takes a minute!
+                </p>
+
+                {/* 3-Step Process Flow (Matches Image 3) */}
+                <div className="flex items-center justify-between max-w-md mx-auto py-2 px-1">
+                  {/* Step 1 */}
+                  <div className="flex flex-col items-center text-center space-y-1">
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 border-2 border-emerald-700 text-emerald-800 flex items-center justify-center font-bold text-xs shadow-xs">
+                      🪪 1
+                    </div>
+                    <span className="text-xs font-bold text-slate-800 leading-tight">Show ID</span>
+                    <span className="text-[10px] text-slate-400 leading-tight">Physical card</span>
+                  </div>
+
+                  <div className="text-slate-300 font-bold text-sm pb-4">→</div>
+
+                  {/* Step 2 */}
+                  <div className="flex flex-col items-center text-center space-y-1">
+                    <div className="w-10 h-10 rounded-full bg-emerald-50 border-2 border-emerald-700 text-emerald-800 flex items-center justify-center font-bold text-xs shadow-xs">
+                      📷 2
+                    </div>
+                    <span className="text-xs font-bold text-slate-800 leading-tight">Capture</span>
+                    <span className="text-[10px] text-slate-400 leading-tight">Photo</span>
+                  </div>
+
+                  <div className="text-slate-300 font-bold text-sm pb-4">→</div>
+
+                  {/* Step 3 */}
+                  <div className="flex flex-col items-center text-center space-y-1">
+                    <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                      ✓ 3
+                    </div>
+                    <span className="text-xs font-bold text-slate-800 leading-tight">Verify</span>
+                    <span className="text-[10px] text-slate-400 leading-tight">Get access</span>
+                  </div>
+                </div>
+
+                {/* Today's Status Box */}
+                <div className={`mt-5 p-3.5 rounded-2xl border ${
                   isDailyVerified
-                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                    : 'bg-amber-100 text-amber-800 border border-amber-200'
+                    ? 'bg-emerald-50/80 border-emerald-200'
+                    : 'bg-amber-50/90 border-amber-200'
                 }`}>
-                  {isDailyVerified ? 'Cleared Today' : 'Required Today'}
-                </span>
-              </div>
-
-              <p className="text-xs text-slate-600 leading-relaxed mb-5">
-                Verify your physical student ID before your first ride each day. It only takes a minute!
-              </p>
-
-              {/* 3-Step Process Flow (Matches Image 3) */}
-              <div className="flex items-center justify-between max-w-md mx-auto py-2 px-1">
-                {/* Step 1 */}
-                <div className="flex flex-col items-center text-center space-y-1">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 border-2 border-emerald-700 text-emerald-800 flex items-center justify-center font-bold text-xs shadow-xs">
-                    🪪 1
+                  <div className="flex items-start gap-2.5">
+                    {isDailyVerified ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    )}
+                    <div>
+                      <span className="text-[11px] font-bold text-slate-800 block">
+                        Today's Status: <strong className={isDailyVerified ? 'text-emerald-800 font-black' : 'text-amber-800 font-black'}>
+                          {isDailyVerified ? 'Verified' : 'Not verified'}
+                        </strong>
+                      </span>
+                      <span className="text-[11px] text-slate-600 block mt-0.5">
+                        {isDailyVerified
+                          ? 'Your daily check-in is complete! Driver privileges and ride publishing unlocked.'
+                          : 'Complete your daily check-in to unlock driver rides.'}
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-xs font-bold text-slate-800 leading-tight">Show ID</span>
-                  <span className="text-[10px] text-slate-400 leading-tight">Physical card</span>
-                </div>
-
-                <div className="text-slate-300 font-bold text-sm pb-4">→</div>
-
-                {/* Step 2 */}
-                <div className="flex flex-col items-center text-center space-y-1">
-                  <div className="w-10 h-10 rounded-full bg-emerald-50 border-2 border-emerald-700 text-emerald-800 flex items-center justify-center font-bold text-xs shadow-xs">
-                    📷 2
-                  </div>
-                  <span className="text-xs font-bold text-slate-800 leading-tight">Capture</span>
-                  <span className="text-[10px] text-slate-400 leading-tight">Photo</span>
-                </div>
-
-                <div className="text-slate-300 font-bold text-sm pb-4">→</div>
-
-                {/* Step 3 */}
-                <div className="flex flex-col items-center text-center space-y-1">
-                  <div className="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-xs shadow-xs">
-                    ✓ 3
-                  </div>
-                  <span className="text-xs font-bold text-slate-800 leading-tight">Verify</span>
-                  <span className="text-[10px] text-slate-400 leading-tight">Get access</span>
                 </div>
               </div>
 
-              {/* Today's Status Box */}
-              <div className={`mt-5 p-3.5 rounded-2xl border ${
-                isDailyVerified
-                  ? 'bg-emerald-50/80 border-emerald-200'
-                  : 'bg-amber-50/90 border-amber-200'
-              }`}>
-                <div className="flex items-start gap-2.5">
-                  {isDailyVerified ? (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                  ) : (
-                    <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                  )}
-                  <div>
-                    <span className="text-[11px] font-bold text-slate-800 block">
-                      Today's Status: <strong className={isDailyVerified ? 'text-emerald-800 font-black' : 'text-amber-800 font-black'}>
-                        {isDailyVerified ? 'Verified' : 'Not verified'}
-                      </strong>
-                    </span>
-                    <span className="text-[11px] text-slate-600 block mt-0.5">
-                      {isDailyVerified
-                        ? 'Your daily check-in is complete! Driver privileges and ride publishing unlocked.'
-                        : 'Complete your daily check-in to unlock driver rides.'}
-                    </span>
-                  </div>
+              {/* Check-in Action Button */}
+              <div className="mt-5 space-y-2">
+                <button
+                  type="button"
+                  onClick={() => setShowDailyModal(true)}
+                  className="w-full py-3 px-4 rounded-xl bg-[#143D32] hover:bg-[#0d2820] text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
+                >
+                  <Camera className="w-4 h-4" />
+                  <span>{isDailyVerified ? 'Re-verify Today\'s Driver ID' : 'Verify Today\'s Driver ID'}</span>
+                  <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                </button>
+
+                <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-400 text-center">
+                  <Clock className="w-3 h-3 text-slate-400" />
+                  <span>Valid until 11:59 PM today</span>
                 </div>
               </div>
             </div>
+          ) : (
+            /* PASSENGER SAFETY CARD */
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 sm:p-6 shadow-xs flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+                  <div className="flex items-center gap-2 text-slate-900 font-bold text-sm">
+                    <ShieldCheck className="w-4 h-4 text-emerald-700" />
+                    <span>Student Passenger Verification</span>
+                  </div>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    user.verificationStatus === 'verified'
+                      ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                      : 'bg-amber-100 text-amber-800 border border-amber-200'
+                  }`}>
+                    {user.verificationStatus === 'verified' ? 'Verified Passenger' : 'Pending Campus Review'}
+                  </span>
+                </div>
 
-            {/* Check-in Action Button */}
-            <div className="mt-5 space-y-2">
-              <button
-                type="button"
-                onClick={() => setShowDailyModal(true)}
-                className="w-full py-3 px-4 rounded-xl bg-[#143D32] hover:bg-[#0d2820] text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-xs transition-all cursor-pointer"
-              >
-                <Camera className="w-4 h-4" />
-                <span>{isDailyVerified ? 'Re-verify Today\'s Driver ID' : 'Verify Today\'s Driver ID'}</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1" />
-              </button>
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Institutional verification ensures that all carpool passengers are actively enrolled university students, keeping campus commutes safe and accountable.
+                </p>
 
-              <div className="flex items-center justify-center gap-1.5 text-[10px] text-slate-400 text-center">
-                <Clock className="w-3 h-3 text-slate-400" />
-                <span>Valid until 11:59 PM today</span>
+                {/* Passenger Verification Highlights */}
+                <div className="space-y-2.5 my-4">
+                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <GraduationCap className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block leading-tight">University Enrollment Record</span>
+                      <span className="text-[11px] text-slate-500 mt-0.5 block leading-snug">
+                        Linked with {user.college || 'your institution'} student roll number ({user.studentId || 'UU-2024-DRV-842'}).
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                      user.verificationStatus === 'verified' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                    }`}>
+                      <Lock className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block leading-tight">Seat Booking Authorization</span>
+                      <span className="text-[11px] text-slate-500 mt-0.5 block leading-snug">
+                        {user.verificationStatus === 'verified'
+                          ? 'Active — You are authorized to search and request seats on all carpools.'
+                          : 'On Hold — Seat requests unlock immediately once approved by administration.'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <Shield className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block leading-tight">Safety & Emergency SOS Protection</span>
+                      <span className="text-[11px] text-slate-500 mt-0.5 block leading-snug">
+                        Live trip GPS telemetry and emergency WhatsApp alerts enabled for every ride.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Passenger Action Button */}
+              <div className="mt-4 pt-3 border-t border-slate-100">
+                {user.verificationStatus === 'verified' ? (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/search')}
+                    className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                  >
+                    <Search className="w-4 h-4" />
+                    <span>Explore Available Rides</span>
+                  </button>
+                ) : (
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-amber-800 text-[11px] font-medium flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      Verification in review with Campus Safety Office
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => navigate('/dashboard')}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                      Dashboard
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
         </div>
 
-        {/* BOTTOM SECTION: Why CampusRide verifies drivers? (Matches Image 3) */}
+        {/* BOTTOM SECTION: Why CampusRide verifies drivers / students? */}
         <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             
             {/* Left Description */}
             <div className="lg:col-span-4 space-y-1.5">
               <h3 className="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">
-                Why CampusRide verifies drivers?
+                {isDriver ? 'Why CampusRide verifies drivers?' : 'Why CampusRide verifies students?'}
               </h3>
               <p className="text-xs text-slate-500 leading-relaxed">
                 Verification helps us keep CampusRide a trusted and secure network — because your safety and community come first.
@@ -586,9 +683,13 @@ export const VerificationStatusPage: React.FC = () => {
                   <UserCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 leading-tight">Daily Driver Check</h4>
+                  <h4 className="text-xs font-bold text-slate-900 leading-tight">
+                    {isDriver ? 'Daily Driver Check' : 'Peer Trust'}
+                  </h4>
                   <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">
-                    Drivers confirm they have their physical university ID before their first ride of the day.
+                    {isDriver
+                      ? 'Drivers confirm they have their physical university ID before their first ride of the day.'
+                      : 'Ride exclusively with verified classmates from your department and college.'}
                   </p>
                 </div>
               </div>

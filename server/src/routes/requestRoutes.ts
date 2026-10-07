@@ -125,6 +125,13 @@ router.get(
         return;
       }
 
+      // Unverified passengers cannot retrieve active bookings/requests
+      const userDoc = await User.findById(userId);
+      if (!userDoc || !isVerificationApproved(userDoc)) {
+        res.status(200).json([]);
+        return;
+      }
+
       const requests = await RideRequest.find({ passengerId: userId })
         .populate("rideId")
         .populate("passengerId", "name email college year avatarURL rating totalRides phone")

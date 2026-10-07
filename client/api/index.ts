@@ -1252,6 +1252,10 @@ export default async function handler(req: any, res: any) {
         };
       } else {
         // Default or passenger: strictly scope to passenger's own requests
+        const vStatus = String(authUser.verificationStatus || '').toLowerCase();
+        if (vStatus !== 'verified' && vStatus !== 'approved') {
+          return res.status(200).json([]);
+        }
         query = {
           $or: [
             { passengerId: authUser.id },

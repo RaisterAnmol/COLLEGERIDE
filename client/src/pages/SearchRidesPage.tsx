@@ -260,6 +260,14 @@ export const SearchRidesPage: React.FC = () => {
   // Sync requested ride IDs from API + local storage
   useEffect(() => {
     async function syncRequests() {
+      if (!user || user.verificationStatus !== 'verified') {
+        setRequestedRideIds(new Set());
+        try {
+          localStorage.removeItem("campusride_local_requests");
+        } catch {}
+        return;
+      }
+
       try {
         const reqs = await api.getRequests("passenger");
         const local = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
@@ -1337,12 +1345,7 @@ export const SearchRidesPage: React.FC = () => {
                       View Details
                     </button>
                     {!isCreator && (
-                      requestedRideIds.has(ride._id) ? (
-                        <span className="px-3.5 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-xs">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
-                          <span>Request Sent</span>
-                        </span>
-                      ) : !isUserVerified ? (
+                      !isUserVerified ? (
                         <button
                           type="button"
                           onClick={() => navigate('/verification')}
@@ -1352,6 +1355,11 @@ export const SearchRidesPage: React.FC = () => {
                           <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
                           <span>Verify ID to Request</span>
                         </button>
+                      ) : requestedRideIds.has(ride._id) ? (
+                        <span className="px-3.5 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Request Sent</span>
+                        </span>
                       ) : (
                         <button
                           type="button"
