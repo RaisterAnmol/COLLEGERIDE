@@ -1,4 +1,4 @@
-const CACHE_NAME = 'campusride-v1';
+const CACHE_NAME = 'campusride-v2';
 const STATIC_ASSETS = [
   '/',
   '/favicon.ico',
@@ -29,14 +29,36 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Let dynamic and API requests bypass cache
-  if (event.request.url.includes('/api/') || event.request.method !== 'GET') {
+  const url = new URL(event.request.url);
+
+  // Strictly bypass non-GET, API routes, Vite dev-server internals, and script modules
+  if (
+    event.request.method !== 'GET' ||
+    url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/socket.io') ||
+    url.pathname.startsWith('/@') ||
+    url.pathname.startsWith('/src/') ||
+    url.pathname.startsWith('/node_modules/') ||
+    url.pathname.includes('hot-update')
+  ) {
     return;
   }
+
+  // Only respond from cache if asset is explicitly cached, or for HTML navigation fallbacks
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      return cached || fetch(event.request);
+      if (cached) {
+        return cached;
+      }
+      return fetch(event.request).catch((err) => {
+        // Fall back to cached root ONLY for full-page HTML navigations, NEVER for module scripts
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
+        throw err;
+      });
     })
   );
 });
+
 

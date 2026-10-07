@@ -1,4 +1,6 @@
 import express, { Express, Request, Response, NextFunction } from "express";
+import path from "path";
+import fs from "fs";
 import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
@@ -236,8 +238,20 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/audit", auditRoutes);
 app.use("/api/admin", adminRoutes);
 
+// Production & Unified Client Asset Serving
+const clientDistPath = path.resolve(__dirname, "../../client/dist");
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+  app.get("*", (req: Request, res: Response, next: NextFunction) => {
+    // Exclude API routes, WebSockets, and any request that has a file extension (e.g. .js, .css, .webp)
+    if (req.path.startsWith("/api") || req.path.startsWith("/socket.io") || path.extname(req.path)) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, "index.html"));
+  });
+}
+
 // §2.5 Central 404 handler
-// Central 404 handler
 app.use((_req: Request, res: Response) => {
   res
     .status(404)

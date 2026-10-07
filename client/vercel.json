@@ -7,8 +7,8 @@
       "destination": "/api"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!assets/|favicon|manifest|sw\\.js|.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
   ]
-}
+}
