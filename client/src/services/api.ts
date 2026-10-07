@@ -169,6 +169,7 @@ class ApiService {
     year?: number;
     semester?: number;
     phone?: string;
+    upiId?: string;
     accountType?: string;
     vehicle?: any;
     avatarURL?: string;

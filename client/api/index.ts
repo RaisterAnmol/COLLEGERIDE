@@ -675,6 +675,8 @@ export default async function handler(req: any, res: any) {
       if (body.year) updateDoc.year = Number(body.year);
       if (body.semester) updateDoc.semester = Number(body.semester);
       if (body.phone) updateDoc.phone = body.phone;
+      if (body.upiId !== undefined) updateDoc.upiId = body.upiId;
+      if (body.enrolledIdCardUrl) updateDoc.enrolledIdCardUrl = body.enrolledIdCardUrl;
       if (body.avatarURL) updateDoc.avatarURL = body.avatarURL;
 
       let filter: any = { email: authUser.email };
@@ -966,6 +968,8 @@ export default async function handler(req: any, res: any) {
         availableSeats: Number(body.availableSeats) || 3,
         pricePerSeat: Number(body.pricePerSeat) || 30,
         status: 'active',
+        recurring: Boolean(body.recurring),
+        recurringSchedule: body.recurring ? { daysOfWeek: [1, 2, 3, 4, 5], time: body.departureTime } : undefined,
         createdAt: new Date(),
         updatedAt: new Date(),
       };

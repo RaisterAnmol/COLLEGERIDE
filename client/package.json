@@ -12,20 +12,20 @@
     "@types/leaflet": "^1.9.22",
     "@types/qrcode": "^1.5.6",
     "@vladmandic/human": "^3.3.6",
+    "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "framer-motion": "^13.4.0",
     "gsap": "^3.15.0",
+    "jsonwebtoken": "^9.0.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.475.0",
+    "mongoose": "^8.9.5",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.1.5",
     "socket.io-client": "^4.8.1",
-    "tailwind-merge": "^3.0.1",
-    "bcryptjs": "^2.4.3",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.9.5"
+    "tailwind-merge": "^3.0.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -36,6 +36,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.5.1",
+    "sharp": "^0.35.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
     "vite": "^6.1.0"

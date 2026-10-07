@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Car, Search, ShieldCheck, Wallet, Users, Leaf } from "lucide-react";
-import heroHome from "../../assets/illustrations/hero-home.jpg";
+import heroHome from "../../assets/illustrations/hero-home.webp";
 
 export const HeroIllustration: React.FC = () => {
   return (

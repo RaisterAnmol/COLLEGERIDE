@@ -28,7 +28,7 @@ import {
   Check,
 } from "lucide-react";
 import { ReviewModal } from "../components/ReviewModal";
-import reviewsTrustImg from "../assets/illustrations/campus-reviews-trust.jpg";
+import reviewsTrustImg from "../assets/illustrations/campus-reviews-trust.webp";
 import { sanitizeLocationText } from "../utils/sanitizeLocation";
 import RideRequestSuccessModal from "../components/RideRequestSuccessModal";
 
@@ -59,7 +59,9 @@ export const RideDetailPage: React.FC = () => {
     college?: string;
   } | null>(null);
 
-  const isDriver = ride?.creator?._id === user?._id;
+  const rideCreatorId = String(ride?.creator?._id || (typeof ride?.creator === 'string' ? ride.creator : '') || '');
+  const currentUserId = String(user?._id || (user as any)?.id || '');
+  const isDriver = Boolean(rideCreatorId && currentUserId && rideCreatorId === currentUserId);
 
   const loadData = async () => {
     if (!id) return;

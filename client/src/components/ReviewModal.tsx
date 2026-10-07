@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { api } from '../services/api';
 import { Star, X, ThumbsUp, ShieldCheck, Check, Sparkles, Car, UserCheck } from 'lucide-react';
-import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.jpg';
+import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.webp';
 
 interface ReviewModalProps {
   tripId: string;

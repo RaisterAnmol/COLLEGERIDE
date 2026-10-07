@@ -16,7 +16,7 @@ import {
 import gsap from "gsap";
 
 import { useAuth } from "../../context/AuthContext";
-import heroHome from "../../assets/illustrations/hero-home.jpg";
+import heroHome from "../../assets/illustrations/hero-home.webp";
 
 export const Hero: React.FC = () => {
   const { activePersona, user } = useAuth();

@@ -20,7 +20,7 @@ import {
   HeartHandshake,
   Sparkles,
 } from 'lucide-react';
-import safetyHeroImg from '../assets/illustrations/safety-hero.jpg';
+import safetyHeroImg from '../assets/illustrations/safety-hero.webp';
 
 export const SafetyPage: React.FC = () => {
   const [copiedLocation, setCopiedLocation] = useState(false);

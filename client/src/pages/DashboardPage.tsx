@@ -39,8 +39,8 @@ import {
 } from 'lucide-react';
 import { SearchableInput } from '../components/common/SearchableInput';
 import { ReviewModal } from '../components/ReviewModal';
-import dashboardHeroImg from '../assets/illustrations/dashboard-hero.jpg';
-import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.jpg';
+import dashboardHeroImg from '../assets/illustrations/dashboard-hero.webp';
+import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.webp';
 import {
   POPULAR_COLLEGES,
   POPULAR_DEPARTMENTS,
@@ -88,6 +88,7 @@ export const DashboardPage: React.FC = () => {
   const [editYear, setEditYear] = useState(1);
   const [editSemester, setEditSemester] = useState(1);
   const [editPhone, setEditPhone] = useState('');
+  const [editUpiId, setEditUpiId] = useState('');
   const [editAccountType, setEditAccountType] = useState<string>('PASSENGER');
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -150,6 +151,7 @@ export const DashboardPage: React.FC = () => {
       setEditAccountType(user.accountType || (user.role === 'driver' ? 'DRIVER' : 'PASSENGER'));
       const rawPhone = (user.phone || '').replace(/^\+91\s*/, '').replace(/\D/g, '').slice(0, 10);
       setEditPhone(rawPhone);
+      setEditUpiId((user as any)?.upiId || '');
       setProfileMsg(null);
       setOtpSent(false);
       setOtpInput('');
@@ -172,6 +174,7 @@ export const DashboardPage: React.FC = () => {
         year: Number(editYear),
         semester: Number(editSemester),
         phone: formattedPhone,
+        upiId: editUpiId.trim(),
         accountType: editAccountType,
       };
       if (updateProfile) {
@@ -581,6 +584,90 @@ export const DashboardPage: React.FC = () => {
                 </div>
               </div>
 
+            </div>
+
+            {/* SUSTAINABILITY & DEPARTMENT LEADERBOARD ROW */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+              {/* Left: Eco & Green Impact (lg:col-span-5) */}
+              <div className="lg:col-span-5 bg-gradient-to-br from-[#143D32] to-[#0A201A] text-white rounded-3xl p-6 shadow-md flex flex-col justify-between space-y-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="p-1 rounded-lg bg-emerald-400/20 text-emerald-300">
+                      <Sparkles className="w-4 h-4" />
+                    </span>
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">
+                      Campus Green Impact
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-black text-white tracking-tight">
+                    Together for Cleaner Air 🌱
+                  </h3>
+                  <p className="text-xs text-emerald-100/80 leading-relaxed">
+                    By carpooling together, students from {user?.college || 'our campus'} are directly curbing campus traffic and Dehradun air pollution.
+                  </p>
+                </div>
+
+                {/* 3 Green Metrics */}
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-emerald-500/20 text-center">
+                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-lg font-black text-emerald-300 block">48.6 kg</span>
+                    <span className="text-[10px] text-emerald-100/70 block mt-0.5">CO₂ Avoided</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-lg font-black text-emerald-300 block">₹4,200</span>
+                    <span className="text-[10px] text-emerald-100/70 block mt-0.5">Fuel Saved</span>
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
+                    <span className="text-lg font-black text-emerald-300 block">16 Cars</span>
+                    <span className="text-[10px] text-emerald-100/70 block mt-0.5">Off Roadways</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right: Department Carpool Leaderboard (lg:col-span-7) */}
+              <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-3.5">
+                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
+                      🏆
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                        Department Carpool Leaderboard
+                      </h3>
+                      <p className="text-[10px] text-slate-400">Weekly Top Green Commute Batches</p>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full font-bold">
+                    This Week
+                  </span>
+                </div>
+
+                <div className="space-y-2.5 text-xs">
+                  {[
+                    { rank: '🥇', dept: 'Computer Science & Engineering (UIT)', rides: 184, percent: 92 },
+                    { rank: '🥈', dept: 'Management Studies (UIM / BBA)', rides: 136, percent: 68 },
+                    { rank: '🥉', dept: 'Civil & Mechanical Engineering', rides: 112, percent: 56 },
+                    { rank: '4', dept: 'Law College Dehradun (LCD)', rides: 88, percent: 44 },
+                  ].map((entry, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex items-center justify-between text-slate-800 font-semibold">
+                        <span className="flex items-center gap-1.5 truncate">
+                          <span className="font-mono text-xs w-4 shrink-0">{entry.rank}</span>
+                          <span className="truncate">{entry.dept}</span>
+                        </span>
+                        <span className="font-mono text-emerald-700 text-xs shrink-0">{entry.rides} rides</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
+                          style={{ width: `${entry.percent}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* MIDDLE SECTION: Campus Peer Reviews & Trust [Mutual Ratings] (Matches Image 2) */}
@@ -1351,6 +1438,28 @@ export const DashboardPage: React.FC = () => {
                     )}
                   </div>
                 )}
+              </div>
+
+              {/* Direct UPI Fare ID Input */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  UPI ID for Direct Fare Settlement (Optional)
+                </label>
+                <div className="flex rounded-xl border border-slate-300 focus-within:ring-2 focus-within:ring-emerald-500 overflow-hidden bg-white shadow-xs">
+                  <div className="px-3 py-2 bg-slate-100 border-r border-slate-300 text-slate-700 text-xs font-bold shrink-0">
+                    UPI
+                  </div>
+                  <input
+                    type="text"
+                    value={editUpiId}
+                    onChange={(e) => setEditUpiId(e.target.value)}
+                    placeholder="e.g. driver@oksbi or 9876543210@paytm"
+                    className="w-full text-xs px-3 py-2 focus:outline-none bg-transparent font-medium text-slate-900"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 mt-1">
+                  Enables passengers to pay you directly via Google Pay, PhonePe, or Paytm with ₹0 platform deductions.
+                </p>
               </div>
 
               <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">

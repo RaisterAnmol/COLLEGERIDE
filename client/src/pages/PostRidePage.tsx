@@ -18,7 +18,7 @@ import {
 import { PickupAndRouteNavigationMap } from "../components/map/PickupAndRouteNavigationMap";
 import { PageHeroBanner } from "../components/common/PageHeroBanner";
 import { MorningDriverLivenessModal } from "../components/verification/MorningDriverLivenessModal";
-import offerRideImg from "../assets/illustrations/offer-ride.jpg";
+import offerRideImg from "../assets/illustrations/offer-ride.webp";
 
 const PRESET_LOCATIONS = [
   // Dehradun - Uttaranchal University Campus Buildings
@@ -126,6 +126,7 @@ export const PostRidePage: React.FC = () => {
         departureTime: new Date(departureDate).toISOString(),
         availableSeats,
         pricePerSeat: Math.max(10, pricePerSeat || 10),
+        recurring,
         routePolyline: selectedRoutePolyline.length > 0 ? JSON.stringify(selectedRoutePolyline) : undefined,
         vehicle: {
           type: vehicleType,
@@ -374,6 +375,45 @@ export const PostRidePage: React.FC = () => {
                 </h2>
               </div>
 
+              {/* Quick Campus Landmarks Chips */}
+              <div className="space-y-1.5 p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-900 font-bold block">
+                  Quick Campus Landmarks (Tap to set)
+                </span>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {[
+                    { label: "🏛️ Main Gate 1", index: 4 },
+                    { label: "💻 UIT Tech Block", index: 0 },
+                    { label: "📚 Central Library", index: 3 },
+                    { label: "🛒 Premnagar Chowk", index: 5 },
+                    { label: "🏡 Suddhowala Hub", index: 6 },
+                    { label: "🚌 ISBT Terminal", index: 10 },
+                  ].map((chip) => (
+                    <button
+                      key={chip.label}
+                      type="button"
+                      onClick={() => {
+                        if (originIndex !== chip.index) {
+                          setOriginIndex(chip.index);
+                        } else {
+                          setDestIndex(chip.index);
+                        }
+                      }}
+                      className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer font-medium ${
+                        originIndex === chip.index
+                          ? "bg-emerald-700 text-white border-emerald-700 shadow-2xs"
+                          : destIndex === chip.index
+                          ? "bg-blue-600 text-white border-blue-600 shadow-2xs"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50"
+                      }`}
+                    >
+                      {chip.label}
+                      {originIndex === chip.index ? " (Origin)" : destIndex === chip.index ? " (Dest)" : ""}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="text-xs font-mono text-[#646A67] uppercase block mb-2">
@@ -484,9 +524,21 @@ export const PostRidePage: React.FC = () => {
                   type="checkbox"
                   checked={recurring}
                   onChange={(e) => setRecurring(e.target.checked)}
-                  className="w-5 h-5 rounded accent-[#1769FF]"
+                  className="w-5 h-5 rounded accent-emerald-600 cursor-pointer"
                 />
               </div>
+
+              {recurring && (
+                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 space-y-1">
+                  <div className="font-bold flex items-center gap-1.5 text-emerald-800">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Active Mon–Fri Semester Schedule</span>
+                  </div>
+                  <p className="text-[11px] text-emerald-700">
+                    This ride will be scheduled across regular weekdays at {new Date(departureDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}, so classmates know they can rely on your daily commute without needing manual posts every day!
+                  </p>
+                </div>
+              )}
             </motion.div>
           )}
 

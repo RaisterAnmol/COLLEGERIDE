@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 import { PickupAndRouteNavigationMap } from '../components/map/PickupAndRouteNavigationMap';
 import { PageHeroBanner } from '../components/common/PageHeroBanner';
-import findRideImg from '../assets/illustrations/find-ride.jpg';
+import findRideImg from '../assets/illustrations/find-ride.webp';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
 import { sanitizeLocationText } from '../utils/sanitizeLocation';
 import RideRequestSuccessModal from '../components/RideRequestSuccessModal';
@@ -250,6 +250,7 @@ export const SearchRidesPage: React.FC = () => {
   // Track seat requests to immediately and persistently display "Request Sent"
   const [requestedRideIds, setRequestedRideIds] = useState<Set<string>>(() => {
     try {
+      if (!user || user.verificationStatus !== 'verified') return new Set();
       const local = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
       return new Set(local.map((r: any) => String(r.rideId)));
     } catch {
@@ -683,6 +684,44 @@ export const SearchRidesPage: React.FC = () => {
         </div>
 
         <form onSubmit={handleSearch} className="space-y-4">
+          {/* Quick Landmark Selection Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 p-2.5 rounded-2xl bg-emerald-50/70 border border-emerald-100">
+            <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-emerald-900 mr-1 flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-emerald-700" />
+              Quick Landmarks:
+            </span>
+            {[
+              { label: '🏛️ Gate 1 (Main Entrance)', idx: 4 },
+              { label: '💻 UIT Tech Block', idx: 0 },
+              { label: '📚 Central Library', idx: 3 },
+              { label: '🛒 Premnagar Chowk', idx: 5 },
+              { label: '🏡 Suddhowala Hub', idx: 6 },
+              { label: '🚌 ISBT Terminal', idx: 10 },
+            ].map((landmark) => (
+              <button
+                key={landmark.label}
+                type="button"
+                onClick={() => {
+                  if (originIndex !== landmark.idx) {
+                    setOriginIndex(landmark.idx);
+                  } else {
+                    setDestIndex(landmark.idx);
+                  }
+                }}
+                className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer font-medium ${
+                  originIndex === landmark.idx
+                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-2xs'
+                    : destIndex === landmark.idx
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-2xs'
+                    : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50'
+                }`}
+              >
+                {landmark.label}
+                {originIndex === landmark.idx ? ' (Pickup)' : destIndex === landmark.idx ? ' (Drop)' : ''}
+              </button>
+            ))}
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
@@ -1271,6 +1310,28 @@ export const SearchRidesPage: React.FC = () => {
                               🚗 {ride.vehicleId.model || 'Car'} ({ride.vehicleId.plateLast4})
                             </span>
                           </>
+                        )}
+                      </div>
+
+                      {/* Driver Trust & Campus Badges */}
+                      <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                        {user?.department && ride.creator?.department && user.department.toLowerCase() === ride.creator.department.toLowerCase() && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            🎓 Classmate / Same Dept
+                          </span>
+                        )}
+                        {((ride.creator?.rating || 5) >= 4.8 || (ride.creator?.totalRides || 0) >= 3) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                            ⚡ Top Punctual Driver
+                          </span>
+                        )}
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                          🌿 Eco Commuter
+                        </span>
+                        {(ride.recurring || (ride as any).isRecurring) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                            🔁 Mon–Fri Regular
+                          </span>
                         )}
                       </div>
                     </div>

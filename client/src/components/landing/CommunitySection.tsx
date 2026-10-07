@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ShieldCheck, Star, ArrowRight, Clock } from 'lucide-react';
 import { DEMO_STUDENTS } from '../../data/mockData';
 import { PageHeroBanner } from '../common/PageHeroBanner';
-import communityImg from '../../assets/illustrations/community.jpg';
+import communityImg from '../../assets/illustrations/community.webp';
 
 export const CommunitySection: React.FC = () => {
   const [hoveredStudentId, setHoveredStudentId] = useState<string | null>(null);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle2, ShieldCheck, MapPin, Users, Key, Sparkles, Navigation, Play, Pause } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageHeroBanner } from '../common/PageHeroBanner';
-import routeStoryImg from '../../assets/illustrations/route-story.jpg';
+import routeStoryImg from '../../assets/illustrations/route-story.webp';
 
 interface StepData {
   id: string;

@@ -21,6 +21,7 @@ export interface IUser {
   course?: string;
   semester?: number;
   phone?: string;
+  upiId?: string;
   avatarURL?: string;
   role?: 'student' | 'driver' | 'moderator' | 'campus_admin' | 'super_admin';
   accountType?: 'PASSENGER' | 'WOMEN_PASSENGER' | 'DRIVER' | 'ADMIN';
@@ -99,6 +100,9 @@ export interface IRide {
   destination: ILocation;
   departureTime: string;
   availableSeats: number;
+  pricePerSeat?: number;
+  recurring?: boolean;
+  isRecurring?: boolean;
   vehicleId?: IVehicle;
   status: 'active' | 'cancelled' | 'completed';
   match?: IMatchResult;

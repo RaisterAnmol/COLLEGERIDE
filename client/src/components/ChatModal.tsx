@@ -210,6 +210,27 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
           <div ref={messagesEndRef} />
         </div>
 
+        {/* Quick Commute Presets */}
+        <div className="px-3 py-2 bg-slate-50 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+          {[
+            "📍 I've arrived at the pickup gate",
+            "⏳ Running 3 mins late",
+            "📚 Waiting by library steps",
+            "🚗 Car hazard lights are on",
+            "🎒 Standing by the canteen",
+            "👍 On my way!",
+          ].map((preset, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setInputText(preset)}
+              className="text-[11px] whitespace-nowrap px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700 hover:border-emerald-500 hover:text-emerald-700 hover:bg-emerald-50 transition-all font-medium cursor-pointer shrink-0 shadow-2xs"
+            >
+              {preset}
+            </button>
+          ))}
+        </div>
+
         {/* Input Bar */}
         <form onSubmit={handleSend} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
           <input

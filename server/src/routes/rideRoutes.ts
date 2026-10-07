@@ -30,6 +30,7 @@ const createRideSchema = z.object({
   routeDistanceMeters: z.coerce.number().optional(),
   routeDurationSeconds: z.coerce.number().optional(),
   routeSummary: z.string().optional(),
+  recurring: z.boolean().optional(),
   recurringSchedule: z.any().optional(),
   vehicle: z.any().optional(),
   preferences: z.any().optional(),
@@ -454,6 +455,7 @@ router.post(
         routeDistanceMeters,
         routeDurationSeconds,
         routeSummary,
+        recurring,
         recurringSchedule,
       } = parseResult.data;
 
@@ -493,15 +495,22 @@ router.post(
         pricePerSeat: Math.max(10, pricePerSeat || 25),
         vehicleId: vehicle._id,
         status: "active",
-        recurring: true,
+        recurring: Boolean(recurring),
         routePolyline,
         routeDistanceMeters,
         routeDurationSeconds,
         routeSummary,
-        recurringSchedule: recurringSchedule || {
-          daysOfWeek: [1, 2, 3, 4, 5],
-          time: new Date(departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
+        recurringSchedule: recurring
+          ? (typeof recurringSchedule === 'object' && Array.isArray(recurringSchedule?.daysOfWeek)
+              ? {
+                  daysOfWeek: recurringSchedule.daysOfWeek,
+                  time: recurringSchedule.time || new Date(departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                }
+              : {
+                  daysOfWeek: [1, 2, 3, 4, 5],
+                  time: new Date(departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                })
+          : undefined,
       });
 
       const populatedRide = await Ride.findById(ride._id)

@@ -63,7 +63,9 @@ export const TripTrackingPage: React.FC = () => {
   const [sosTriggering, setSosTriggering] = useState(false);
   const [sosActiveIncident, setSosActiveIncident] = useState<any | null>(null);
 
-  const isDriver = trip?.driverId?._id === user?._id;
+  const tripDriverId = String(trip?.driverId?._id || (typeof trip?.driverId === 'string' ? trip.driverId : '') || '');
+  const currentUserId = String(user?._id || (user as any)?.id || '');
+  const isDriver = Boolean(tripDriverId && currentUserId && tripDriverId === currentUserId);
   const ride = typeof trip?.rideId === 'object' ? trip?.rideId : null;
   const rideIdStr = typeof trip?.rideId === 'object' ? trip?.rideId?._id : (trip?.rideId as string);
 
@@ -571,12 +573,69 @@ export const TripTrackingPage: React.FC = () => {
           /* ================= PASSENGER VIEW ================= */
           <div className="space-y-6">
             {otpVerified ? (
-              <div className="p-8 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
-                <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
-                <h3 className="font-bold text-emerald-900 text-lg">Pickup Verified Successfully</h3>
-                <p className="text-xs text-emerald-700 max-w-md mx-auto">
-                  Your identity and ride pickup have been verified with {trip.driverId?.name}. You are cleared for departure.
-                </p>
+              <div className="space-y-4">
+                <div className="p-8 bg-emerald-50 border border-emerald-200 rounded-2xl text-center space-y-2">
+                  <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
+                  <h3 className="font-bold text-emerald-900 text-lg">Pickup Verified Successfully</h3>
+                  <p className="text-xs text-emerald-700 max-w-md mx-auto">
+                    Your identity and ride pickup have been verified with {trip.driverId?.name}. You are cleared for departure.
+                  </p>
+                </div>
+
+                {/* Zero-Commission Direct UPI Fare Settlement */}
+                <div className="p-6 bg-gradient-to-br from-emerald-50/60 via-white to-slate-50 border border-emerald-200/90 rounded-3xl shadow-xs space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-black text-sm shadow-xs">
+                        ₹
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-slate-900 text-sm">Direct Fuel Contribution (Zero Commission)</h4>
+                        <p className="text-xs text-slate-500">Pay driver directly via Google Pay / PhonePe / Paytm</p>
+                      </div>
+                    </div>
+
+                    <div className="sm:text-right">
+                      <span className="text-[10px] font-mono text-slate-400 block uppercase">Total Fare</span>
+                      <span className="text-2xl font-black text-emerald-800">
+                        ₹{(typeof trip.rideId === 'object' ? (trip.rideId as any)?.pricePerSeat : null) || 30}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* UPI Intent Deep Link Button */}
+                  <div className="flex flex-wrap items-center gap-3 pt-1">
+                    <a
+                      href={`upi://pay?pa=${encodeURIComponent(
+                        trip.driverId?.upiId || (trip.driverId?.phone ? `${trip.driverId.phone.replace(/\D/g, '')}@upi` : 'driver@upi')
+                      )}&pn=${encodeURIComponent(trip.driverId?.name || 'Driver')}&am=${
+                        (typeof trip.rideId === 'object' ? (trip.rideId as any)?.pricePerSeat : null) || 30
+                      }&cu=INR&tn=CampusRide%20Carpool%20Fare`}
+                      className="flex-1 py-3 px-5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      <span>⚡ Pay ₹{(typeof trip.rideId === 'object' ? (trip.rideId as any)?.pricePerSeat : null) || 30} via UPI App</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const upi = trip.driverId?.upiId || (trip.driverId?.phone ? `${trip.driverId.phone.replace(/\D/g, '')}@upi` : 'driver@upi');
+                        navigator.clipboard.writeText(upi);
+                        alert(`Driver UPI ID copied: ${upi}`);
+                      }}
+                      className="px-4 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copy UPI ID</span>
+                    </button>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>100% of this contribution goes straight to your student driver with ₹0 platform deductions.</span>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">
@@ -676,6 +735,17 @@ export const TripTrackingPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
+          <a
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+              `🚨 *CAMPUSRIDE EMERGENCY SOS ALERT* 🚨\n\nI am on a CampusRide carpool and triggered an emergency distress alert.\n\n📍 *My Live GPS Location:*\nhttps://maps.google.com/?q=${liveLocation ? `${liveLocation.lat},${liveLocation.lng}` : '30.34,77.95'}\n\n• Driver: ${trip?.driverId?.name || 'Campus Driver'}\n• Route: ${typeof trip?.rideId === 'object' ? `${trip.rideId?.origin?.text} → ${trip.rideId?.destination?.text}` : 'Campus Commute'}\n\nPlease check on me immediately or alert campus security!`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-mono font-bold text-xs shadow-md transition-colors inline-flex items-center justify-center gap-1.5"
+          >
+            <span>📱 WhatsApp Live SOS</span>
+          </a>
+
           <button
             onClick={handleTriggerEmergencySos}
             disabled={sosTriggering}

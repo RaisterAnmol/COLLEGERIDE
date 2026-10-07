@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import './CampusBackground.css';
-import campusMapBgImg from '../../assets/illustrations/campus-map-bg.jpg';
-import bgHome from '../../assets/illustrations/bg-home.png';
-import bgAuth from '../../assets/illustrations/bg-auth.png';
-import bgDashboard from '../../assets/illustrations/bg-dashboard.png';
-import bgSearch from '../../assets/illustrations/bg-search.png';
-import bgPost from '../../assets/illustrations/bg-post.png';
-import bgRideDetail from '../../assets/illustrations/bg-ride-detail.png';
-import bgVerification from '../../assets/illustrations/bg-verification.png';
-import bgAdmin from '../../assets/illustrations/bg-admin.png';
-import bgSafety from '../../assets/illustrations/bg-safety.png';
-import bgColleges from '../../assets/illustrations/bg-colleges.png';
+import campusMapBgImg from '../../assets/illustrations/campus-map-bg.webp';
+import bgHome from '../../assets/illustrations/bg-home.webp';
+import bgAuth from '../../assets/illustrations/bg-auth.webp';
+import bgDashboard from '../../assets/illustrations/bg-dashboard.webp';
+import bgSearch from '../../assets/illustrations/bg-search.webp';
+import bgPost from '../../assets/illustrations/bg-post.webp';
+import bgRideDetail from '../../assets/illustrations/bg-ride-detail.webp';
+import bgVerification from '../../assets/illustrations/bg-verification.webp';
+import bgAdmin from '../../assets/illustrations/bg-admin.webp';
+import bgSafety from '../../assets/illustrations/bg-safety.webp';
+import bgColleges from '../../assets/illustrations/bg-colleges.webp';
 
 // ── SVG Route Paths (viewBox 0 0 1000 1000) ────────────────
 const PATHS = {

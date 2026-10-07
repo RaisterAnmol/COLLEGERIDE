@@ -4,8 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
 import { SelfieCapture, SelfieCaptureResult } from "../components/verification/SelfieCapture";
 import { StudentCharacter } from "../components/auth/StudentCharacter";
-import authStudentImg from "../assets/illustrations/auth-student.jpg";
-import safetyScrapbookImg from "../assets/illustrations/safety-scrapbook.png";
+import authStudentImg from "../assets/illustrations/auth-student.webp";
+import safetyScrapbookImg from "../assets/illustrations/safety-scrapbook.webp";
 import {
   ShieldCheck,
   Mail,

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
 import { useAuth } from '../context/AuthContext';
 import { PageHeroBanner } from '../components/common/PageHeroBanner';
-import campusesHeroImg from '../assets/illustrations/campuses-hero.jpg';
+import campusesHeroImg from '../assets/illustrations/campuses-hero.webp';
 
 export const CollegesPage: React.FC = () => {
   const { activePersona } = useAuth();

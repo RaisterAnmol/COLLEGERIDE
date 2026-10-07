@@ -25,6 +25,7 @@ export interface IRide extends Document {
   routeDistanceMeters?: number;
   routeDurationSeconds?: number;
   routeSummary?: string;
+  recurring?: boolean;
   recurringSchedule?: IRecurringSchedule;
   createdAt: Date;
   updatedAt: Date;
@@ -75,6 +76,7 @@ const RideSchema = new Schema<IRide>(
     routeDistanceMeters: { type: Number },
     routeDurationSeconds: { type: Number },
     routeSummary: { type: String },
+    recurring: { type: Boolean, default: false },
     recurringSchedule: { type: RecurringScheduleSchema },
   },
   { timestamps: true }
