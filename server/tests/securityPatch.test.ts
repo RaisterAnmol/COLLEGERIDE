@@ -245,16 +245,23 @@ describe("Checkpoint 1: Security Patch & Core Invariants (§2, §3.1, §3.2)", (
         status: "active",
       });
 
-      // First request from stranger
+      // Unverified stranger must be blocked from requesting seats
+      const blocked = await request(app)
+        .post(`/api/rides/${activeRide!._id}/request`)
+        .set("Authorization", `Bearer ${strangerToken}`);
+      expect(blocked.status).toBe(403);
+      expect(blocked.body.code).toBe("VERIFICATION_REQUIRED");
+
+      // First request from verified passenger
       const res1 = await request(app)
         .post(`/api/rides/${activeRide!._id}/request`)
-        .set("Authorization", `Bearer ${strangerToken}`);
+        .set("Authorization", `Bearer ${rahulToken}`);
       expect(res1.status).toBe(201);
 
-      // Duplicate request attempt from same stranger
+      // Duplicate request attempt from same passenger
       const res2 = await request(app)
         .post(`/api/rides/${activeRide!._id}/request`)
-        .set("Authorization", `Bearer ${strangerToken}`);
+        .set("Authorization", `Bearer ${rahulToken}`);
       expect(res2.status).toBe(409);
       expect(res2.body.code).toBe("DUPLICATE_REQUEST");
     });

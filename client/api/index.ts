@@ -939,6 +939,24 @@ export default async function handler(req: any, res: any) {
         return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
       }
 
+      // Institutional Verification & Role Guard
+      const vStatus = String(authUser.verificationStatus || '').toLowerCase();
+      if (vStatus !== 'verified' && vStatus !== 'approved') {
+        return res.status(403).json({
+          code: 'VERIFICATION_REQUIRED',
+          message: 'Institutional verification required to offer rides. Your verification status is: ' + (authUser.verificationStatus || 'unverified'),
+        });
+      }
+
+      const role = authUser.role || 'student';
+      const accType = authUser.accountType || 'PASSENGER';
+      if (role !== 'driver' && accType !== 'DRIVER' && role !== 'campus_admin' && role !== 'super_admin') {
+        return res.status(403).json({
+          code: 'FORBIDDEN',
+          message: 'Only registered drivers can offer rides. Please apply for driver verification.',
+        });
+      }
+
       const body = await parseBody(req);
       const newRide = {
         creator: authUser.id,
@@ -991,6 +1009,15 @@ export default async function handler(req: any, res: any) {
       const authUser = getAuthUser(req);
       if (!authUser) {
         return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
+      // Institutional Verification Guard for Passenger
+      const vStatus = String(authUser.verificationStatus || '').toLowerCase();
+      if (vStatus !== 'verified' && vStatus !== 'approved') {
+        return res.status(403).json({
+          code: 'VERIFICATION_REQUIRED',
+          message: 'Institutional verification required to request a seat. Your status: ' + (authUser.verificationStatus || 'unverified'),
+        });
       }
 
       const rideId = requestMatch[1];
@@ -1106,6 +1133,10 @@ export default async function handler(req: any, res: any) {
       } else {
         if (!isDriver) {
           return res.status(403).json({ code: 'FORBIDDEN', message: 'Unauthorized: Only the ride driver can accept or decline requests' });
+        }
+        const vStatus = String(authUser.verificationStatus || '').toLowerCase();
+        if (vStatus !== 'verified' && vStatus !== 'approved') {
+          return res.status(403).json({ code: 'VERIFICATION_REQUIRED', message: 'Institutional verification required to accept or decline requests' });
         }
       }
 

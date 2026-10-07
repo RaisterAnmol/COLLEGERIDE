@@ -156,6 +156,10 @@ export const PostRidePage: React.FC = () => {
   };
 
   const handlePublish = async () => {
+    if (user?.verificationStatus !== 'verified') {
+      setError("Institutional verification required. Your driver credentials must be verified before publishing rides.");
+      return;
+    }
     const todayStr = new Date().toISOString().slice(0, 10);
     const isVerifiedToday = user?.lastDailyIdCheckDate === todayStr;
     if (!isVerifiedToday) {

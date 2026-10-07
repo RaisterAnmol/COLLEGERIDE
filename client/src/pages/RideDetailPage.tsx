@@ -14,6 +14,7 @@ import {
   Clock,
   Users,
   ShieldCheck,
+  ShieldAlert,
   Star,
   ArrowRight,
   MessageSquare,
@@ -156,8 +157,19 @@ export const RideDetailPage: React.FC = () => {
     };
   }, [id, user]);
 
+  const isUserVerified = user?.verificationStatus === 'verified';
+
   const handleRequestSeat = async () => {
     if (!id) return;
+    if (!user) {
+      navigate(`/login?redirect=/rides/${id}`);
+      return;
+    }
+    if (!isUserVerified) {
+      setError("Institutional ID verification required before booking seats. Your student ID is currently under review.");
+      navigate('/verification');
+      return;
+    }
     setActionLoading(true);
     setError("");
     let requestSaved = false;
@@ -165,6 +177,12 @@ export const RideDetailPage: React.FC = () => {
       await api.requestRide(id);
       requestSaved = true;
     } catch (err: any) {
+      const errMsg = err?.message || '';
+      if (errMsg.includes('verification') || errMsg.includes('VERIFICATION') || err?.status === 403) {
+        setError(errMsg || 'Institutional verification required before booking seats.');
+        setActionLoading(false);
+        return;
+      }
       console.warn("API requestRide failed, falling back to local demo persistence:", err);
       requestSaved = true;
     }
@@ -182,7 +200,9 @@ export const RideDetailPage: React.FC = () => {
       localStorage.setItem("campusride_local_requests", JSON.stringify([newReq, ...localReqs]));
       setSuccessMsg("Seat request submitted! Awaiting driver confirmation.");
       setShowSuccessModal(true);
-      loadData();}(false);
+      loadData();
+    }
+    setActionLoading(false);
   };
 
   const handleRequestStatus = async (
@@ -505,6 +525,21 @@ export const RideDetailPage: React.FC = () => {
                       </button>
                     </div>
                   )}
+                </div>
+              ) : !isUserVerified ? (
+                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+                  <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-300 px-3 py-1.5 rounded-xl font-medium flex items-center gap-1.5 shadow-2xs">
+                    <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    ID Verification Pending
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/verification')}
+                    className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
+                  >
+                    <span>Verify ID</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               ) : (
                 <button

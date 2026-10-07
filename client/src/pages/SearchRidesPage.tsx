@@ -11,6 +11,7 @@ import {
   Clock,
   Users,
   ShieldCheck,
+  ShieldAlert,
   Star,
   ArrowRight,
   Filter,
@@ -517,9 +518,17 @@ export const SearchRidesPage: React.FC = () => {
     handleSearch();
   }, [user, originIndex, destIndex, womenOnlyDriver]);
 
+  const isDriver = user?.role === 'driver' || user?.accountType === 'DRIVER';
+  const isUserVerified = user?.verificationStatus === 'verified';
+
   const handleRequestRide = async (rideId: string) => {
     if (!user) {
       navigate('/login?redirect=/search');
+      return;
+    }
+    if (!isUserVerified) {
+      setRequestError('Institutional ID verification required before booking seats. Your student ID is currently under review.');
+      navigate('/verification');
       return;
     }
     setRequestingId(rideId);
@@ -530,6 +539,12 @@ export const SearchRidesPage: React.FC = () => {
       await api.requestRide(rideId);
       requestSaved = true;
     } catch (err: any) {
+      const errMsg = err?.message || '';
+      if (errMsg.includes('verification') || errMsg.includes('VERIFICATION') || err?.status === 403) {
+        setRequestError(errMsg || 'Institutional verification required before booking seats.');
+        setRequestingId(null);
+        return;
+      }
       console.warn('API requestRide failed, falling back to local demo persistence:', err);
       requestSaved = true;
     }
@@ -557,10 +572,10 @@ export const SearchRidesPage: React.FC = () => {
       const ride = rides.find(r => r._id === rideId);
       const rideName = ride ? `${ride.origin?.text || 'Pickup'} → ${ride.destination?.text || 'Drop'}` : '';
       setSuccessRideName(rideName);
-      setShowSuccessModal(true);}(null);
+      setShowSuccessModal(true);
+    }
+    setRequestingId(null);
   };
-
-  const isDriver = user?.role === 'driver' || user?.accountType === 'DRIVER';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -1042,6 +1057,36 @@ export const SearchRidesPage: React.FC = () => {
         </div>
       )}
 
+      {/* Pending / Unverified Institutional ID Notice */}
+      {user && !isUserVerified && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+              <ShieldAlert className="w-5 h-5 text-amber-700" />
+            </div>
+            <div>
+              <div className="font-bold text-sm text-amber-950 flex items-center gap-2">
+                <span>Student ID Verification In Review</span>
+                <span className="text-[10px] font-mono uppercase bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300 font-bold">
+                  {user.verificationStatus || 'Pending'}
+                </span>
+              </div>
+              <p className="text-xs text-amber-800 mt-1 max-w-2xl leading-relaxed">
+                In compliance with university transit bylaws, seat booking is temporarily paused while campus security reviews your student credentials. You can browse all routes in real time.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/verification')}
+            className="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shrink-0 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+          >
+            <span>View ID Status & Documents</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
+
       {/* Results Header */}
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
@@ -1297,6 +1342,16 @@ export const SearchRidesPage: React.FC = () => {
                           <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
                           <span>Request Sent</span>
                         </span>
+                      ) : !isUserVerified ? (
+                        <button
+                          type="button"
+                          onClick={() => navigate('/verification')}
+                          className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
+                          title="Institutional ID verification required to book seats"
+                        >
+                          <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Verify ID to Request</span>
+                        </button>
                       ) : (
                         <button
                           type="button"

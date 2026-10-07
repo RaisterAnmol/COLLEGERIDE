@@ -1,8 +1,9 @@
 import { Router, Response } from "express";
 import mongoose from "mongoose";
 import { z } from "zod";
-import { RideRequest, Ride, Conversation } from "../models";
-import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
+import { RideRequest, Ride, Conversation, User } from "../models";
+import { requireAuth, requireVerificationApproved, AuthenticatedRequest } from "../middleware/auth";
+import { isVerificationApproved } from "../models/User";
 import { getSocketIO } from "../sockets/socketHandler";
 import { logger } from "../utils/logger";
 
@@ -16,6 +17,7 @@ const updateRequestStatusSchema = z.object({
 router.post(
   "/rides/:id/request",
   requireAuth,
+  requireVerificationApproved,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
@@ -185,6 +187,15 @@ router.patch(
           res.status(403).json({
             code: "FORBIDDEN",
             message: "Unauthorized: Only the ride driver can accept or decline requests",
+          });
+          return;
+        }
+
+        const driverUser = await User.findById(req.user!.id).select("verificationStatus");
+        if (!driverUser || !isVerificationApproved(driverUser)) {
+          res.status(403).json({
+            code: "VERIFICATION_REQUIRED",
+            message: "Institutional verification required to accept or decline ride requests.",
           });
           return;
         }

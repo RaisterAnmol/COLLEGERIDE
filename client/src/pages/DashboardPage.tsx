@@ -8,6 +8,7 @@ import {
   Search,
   PlusCircle,
   ShieldCheck,
+  ShieldAlert,
   Star,
   Users,
   MapPin,
@@ -317,6 +318,37 @@ export const DashboardPage: React.FC = () => {
                 </button>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Institutional ID Verification Status Banner */}
+        {user && user.verificationStatus !== 'verified' && (
+          <div className="bg-amber-50 border border-amber-300 px-5 py-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs shadow-xs">
+            <div className="flex items-start sm:items-center gap-3 text-amber-950">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+                <ShieldAlert className="w-5 h-5 text-amber-700" />
+              </div>
+              <div>
+                <p className="font-bold text-amber-950 text-sm flex items-center gap-2">
+                  <span>Student ID Verification Under Review</span>
+                  <span className="text-[10px] font-mono uppercase bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300 font-bold">
+                    {user.verificationStatus || 'Pending'}
+                  </span>
+                </p>
+                <p className="text-amber-800 text-xs mt-0.5 max-w-2xl leading-relaxed">
+                  {isDriver
+                    ? 'Your driver license and vehicle documents are currently being processed by the Campus Safety Office. Once verified, you will be authorized to post rides.'
+                    : 'Your institutional ID credentials have been submitted for campus security review. Once verified, carpool seat bookings will be unlocked.'}
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/verification"
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold flex items-center justify-center gap-1.5 transition-colors shrink-0 shadow-xs"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Check Verification Status</span>
+            </Link>
           </div>
         )}
 
