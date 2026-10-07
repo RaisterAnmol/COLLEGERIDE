@@ -431,6 +431,96 @@ export default async function handler(req: any, res: any) {
       });
     }
 
+    // AUTH: GOOGLE OAUTH
+    if (pathname === '/api/auth/google' && method === 'POST') {
+      const body = await parseBody(req);
+      const credential = body.credential;
+      const requestedAccountType = body.accountType;
+
+      if (!credential) {
+        return res.status(400).json({ code: 'VALIDATION_ERROR', message: 'Google credential ID token is required' });
+      }
+
+      // Verify token with Google's official tokeninfo API
+      const googleRes = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+      if (!googleRes.ok) {
+        return res.status(401).json({ code: 'INVALID_GOOGLE_TOKEN', message: 'Failed to verify Google credential' });
+      }
+
+      const payload: any = await googleRes.json();
+      const email = (payload.email || '').toLowerCase().trim();
+      if (!email) {
+        return res.status(400).json({ code: 'NO_EMAIL', message: 'No email returned by Google account' });
+      }
+
+      let isNewUser = false;
+      let user = await usersCol.findOne({
+        $or: [{ googleId: payload.sub }, { email }],
+      });
+
+      if (user) {
+        const updateDoc: any = {};
+        if (!user.googleId) updateDoc.googleId = payload.sub;
+        if (payload.picture && !user.avatarURL) updateDoc.avatarURL = payload.picture;
+        if (!user.isEmailVerified) updateDoc.isEmailVerified = true;
+        if (user.accountStatus === 'EMAIL_VERIFICATION_PENDING' || user.accountStatus === 'REGISTERED') {
+          updateDoc.accountStatus = 'ACTIVE';
+        }
+        if (requestedAccountType && user.role !== 'campus_admin' && user.role !== 'super_admin') {
+          updateDoc.accountType = requestedAccountType;
+          updateDoc.role = (requestedAccountType === 'DRIVER' || requestedAccountType === 'WOMEN_DRIVER') ? 'driver' : 'student';
+        }
+        if (Object.keys(updateDoc).length > 0) {
+          await usersCol.updateOne({ _id: user._id }, { $set: updateDoc });
+          user = await usersCol.findOne({ _id: user._id });
+        }
+      } else {
+        isNewUser = true;
+        const initialAccountType = requestedAccountType || 'PASSENGER';
+        const initialRole = (initialAccountType === 'DRIVER' || initialAccountType === 'WOMEN_DRIVER') ? 'driver' : 'student';
+        const newUserDoc = {
+          name: payload.name || email.split('@')[0],
+          email,
+          googleId: payload.sub,
+          authProvider: 'google',
+          avatarURL: payload.picture || '',
+          role: initialRole,
+          accountType: initialAccountType,
+          college: 'CampusRide Partner University',
+          year: 1,
+          isEmailVerified: true,
+          accountStatus: 'ACTIVE',
+          verificationStatus: 'unverified',
+          rating: 5.0,
+          totalRides: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        const insertRes = await usersCol.insertOne(newUserDoc);
+        user = { ...newUserDoc, _id: insertRes.insertedId };
+      }
+
+      const token = jwt.sign(
+        {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.name,
+          college: user.college,
+          verificationStatus: user.verificationStatus,
+          role: user.role || 'student',
+          accountType: user.accountType || 'PASSENGER',
+        },
+        JWT_SECRET,
+        { expiresIn: '30d' }
+      );
+
+      return res.status(200).json({
+        token,
+        isNewUser,
+        user: sanitizeUser(user),
+      });
+    }
+
     // AUTH: LOGIN (Requires exact bcrypt match)
     if (pathname === '/api/auth/login' && method === 'POST') {
       const body = await parseBody(req);

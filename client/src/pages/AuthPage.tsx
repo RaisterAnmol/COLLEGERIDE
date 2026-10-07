@@ -156,10 +156,11 @@ export const AuthPage: React.FC = () => {
           const btnContainer = document.getElementById("googleSignInBtnContainer");
           if (btnContainer) {
             btnContainer.innerHTML = "";
+            const containerWidth = Math.min(400, Math.max(240, btnContainer.clientWidth || 360));
             (window as any).google.accounts.id.renderButton(btnContainer, {
               theme: "outline",
               size: "large",
-              width: "100%",
+              width: containerWidth,
               text: isRegister ? "signup_with" : "signin_with",
               shape: "pill",
               logo_alignment: "left",
