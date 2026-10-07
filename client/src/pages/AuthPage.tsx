@@ -120,8 +120,72 @@ export const AuthPage: React.FC = () => {
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [isEmailFocused, setIsEmailFocused] = useState(false);
 
-  const { login, register } = useAuth();
+  const { login, loginWithGoogle, register } = useAuth();
   const navigate = useNavigate();
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  useEffect(() => {
+    const clientId =
+      import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+      "366008999424-ea04cr6lh4tatub2f6if4rusme2nr0l2.apps.googleusercontent.com";
+    if (!clientId) return;
+
+    const handleGoogleCallback = async (response: any) => {
+      if (!response.credential) return;
+      setError("");
+      setGoogleLoading(true);
+      try {
+        await loginWithGoogle(response.credential, accountType);
+        navigate("/dashboard");
+      } catch (err: any) {
+        console.error("Google login failed:", err);
+        setError(err.message || "Failed to sign in with Google.");
+      } finally {
+        setGoogleLoading(false);
+      }
+    };
+
+    const initGoogle = () => {
+      if ((window as any).google?.accounts?.id) {
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleGoogleCallback,
+          });
+
+          const btnContainer = document.getElementById("googleSignInBtnContainer");
+          if (btnContainer) {
+            btnContainer.innerHTML = "";
+            (window as any).google.accounts.id.renderButton(btnContainer, {
+              theme: "outline",
+              size: "large",
+              width: "100%",
+              text: isRegister ? "signup_with" : "signin_with",
+              shape: "pill",
+              logo_alignment: "left",
+            });
+          }
+
+          // Trigger Google One Tap floating prompt for instant one-click login
+          (window as any).google.accounts.id.prompt();
+        } catch (e) {
+          console.warn("Failed to render Google button:", e);
+        }
+      }
+    };
+
+    if ((window as any).google?.accounts?.id) {
+      initGoogle();
+    } else {
+      const interval = setInterval(() => {
+        if ((window as any).google?.accounts?.id) {
+          clearInterval(interval);
+          initGoogle();
+        }
+      }, 300);
+      return () => clearInterval(interval);
+    }
+  }, [isRegister, accountType]);
 
   const handleAccountTypeChange = (type: AccountTypeOption) => {
     setAccountType(type);
@@ -880,7 +944,7 @@ export const AuthPage: React.FC = () => {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || googleLoading}
             className="w-full py-3.5 rounded-2xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-bold text-sm shadow-lg shadow-emerald-950/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading ? (
@@ -894,6 +958,29 @@ export const AuthPage: React.FC = () => {
               "Sign In to CampusRide"
             )}
           </button>
+
+          {/* Social Divider */}
+          <div className="relative flex items-center justify-center pt-2 pb-1">
+            <div className="border-t border-slate-200 w-full" />
+            <span className="bg-white px-3 text-xs text-slate-400 font-semibold uppercase tracking-wider relative">
+              Or continue with
+            </span>
+          </div>
+
+          {/* Google Sign-In Container */}
+          <div className="w-full flex flex-col items-center">
+            {googleLoading ? (
+              <div className="flex items-center gap-2 text-sm text-slate-600 py-2">
+                <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+                <span>Authenticating with Google...</span>
+              </div>
+            ) : (
+              <div
+                id="googleSignInBtnContainer"
+                className="w-full min-h-[44px] flex justify-center"
+              />
+            )}
+          </div>
         </form>
         </div>
       </div>

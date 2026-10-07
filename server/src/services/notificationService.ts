@@ -3,6 +3,8 @@ import { PushDevice } from "../models/PushDevice";
 import { env } from "../config/env";
 import { logger } from "../utils/logger";
 
+import { whatsappService } from "./whatsappService";
+
 export type DeliveryMode = "LIVE" | "MOCK_DEV" | "UNAVAILABLE";
 
 export interface DeliveryResult {
@@ -163,9 +165,61 @@ export class NotificationService {
   static async sendPhoneOtp(
     toPhone: string,
     otp: string,
-  ): Promise<DeliveryResult> {
+  ): Promise<DeliveryResult & { viaWhatsApp?: boolean }> {
+    // 1. Prioritize real-time WhatsApp delivery via Baileys bot
+    try {
+      const waResult = await whatsappService.sendOtp(toPhone, otp);
+      if (waResult.success && waResult.mode === "LIVE_WHATSAPP") {
+        return {
+          mode: "LIVE",
+          success: true,
+          messageId: waResult.messageId,
+          viaWhatsApp: true,
+        };
+      }
+    } catch (waErr) {
+      logger.warn({ waErr }, "WhatsApp delivery failed, falling back to SMS provider");
+    }
+
+    // 2. Fallback to SMS provider
     const message = `Your CampusRide verification code is: ${otp}. Valid for 10 minutes. Never share this code.`;
-    return await smsProvider.sendSms(toPhone, message);
+    const res = await smsProvider.sendSms(toPhone, message);
+    return { ...res, viaWhatsApp: false };
+  }
+
+  static async sendSosAlert(
+    toPhone: string,
+    data: {
+      studentName: string;
+      studentPhone?: string;
+      college?: string;
+      latitude: number;
+      longitude: number;
+      address?: string;
+      notes?: string;
+      incidentNumber: string;
+    }
+  ): Promise<DeliveryResult & { viaWhatsApp?: boolean }> {
+    // 1. Dispatch via high-priority WhatsApp message first (with Google Maps link & live coordinates)
+    try {
+      const waResult = await whatsappService.sendSosAlert(toPhone, data);
+      if (waResult.success && waResult.mode === "LIVE_WHATSAPP") {
+        return {
+          mode: "LIVE",
+          success: true,
+          messageId: waResult.messageId,
+          viaWhatsApp: true,
+        };
+      }
+    } catch (waErr) {
+      logger.warn({ waErr }, "WhatsApp SOS delivery failed, falling back to SMS provider");
+    }
+
+    // 2. Fallback to SMS provider
+    const mapsUrl = `https://maps.google.com/?q=${data.latitude},${data.longitude}`;
+    const smsMessage = `EMERGENCY SOS: ${data.studentName} triggered CampusRide SOS at (${data.latitude.toFixed(4)}, ${data.longitude.toFixed(4)}). Map: ${mapsUrl}. Ref: ${data.incidentNumber}.`;
+    const res = await smsProvider.sendSms(toPhone, smsMessage);
+    return { ...res, viaWhatsApp: false };
   }
 
   static async createPersistentNotification(params: {

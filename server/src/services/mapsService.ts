@@ -27,7 +27,7 @@ export interface RouteStep {
 
 export interface RouteResult {
   mode: "LIVE" | "MOCK_DEV";
-  provider: "OSRM" | "GOOGLE" | "MOCK";
+  provider: "OSRM" | "GOOGLE" | "OPENROUTESERVICE" | "MOCK" | "NONE";
   calculatedAt: string;
   distanceMeters: number;
   durationSeconds: number;
@@ -36,6 +36,7 @@ export interface RouteResult {
   alternatives: RouteAlternative[];
   steps?: RouteStep[];
   warnings?: string[];
+  noRouteFound?: boolean;
 }
 
 export interface PlaceSearchResult {
@@ -322,17 +323,69 @@ export class MapsService {
       } catch (err) {
         logger.warn(
           { err },
-          "[MapsService] Free OSRM road routing failed, falling back to mock fixtures",
+          "[MapsService] Free OSRM road routing failed, trying OpenRouteService fallback",
         );
+      }
+
+      // Secondary Fallback: OpenRouteService API (if configured or public endpoint)
+      try {
+        const orsKey = process.env.OPENROUTESERVICE_API_KEY;
+        if (orsKey) {
+          const orsUrl = `https://api.openrouteservice.org/v2/directions/driving-car?api_key=${orsKey}&start=${origin.lng},${origin.lat}&end=${destination.lng},${destination.lat}`;
+          const orsRes = await fetch(orsUrl, {
+            headers: { Accept: "application/json, application/geo+json" },
+          });
+          if (orsRes.ok) {
+            const orsData: any = await orsRes.json();
+            const feature = orsData.features?.[0];
+            if (feature?.geometry?.coordinates) {
+              const coords: Array<[number, number]> = feature.geometry.coordinates.map(
+                (c: [number, number]) => [c[1], c[0]],
+              );
+              const summary = feature.properties?.summary || {};
+              const polyline = this.encodePolyline(coords);
+              return {
+                mode: "LIVE",
+                provider: "OPENROUTESERVICE",
+                calculatedAt,
+                distanceMeters: Math.round(summary.distance || 1000),
+                durationSeconds: Math.round(summary.duration || 600),
+                encodedPolyline: polyline,
+                decodedPath: coords,
+                alternatives: [],
+              };
+            }
+          }
+        }
+      } catch (orsErr) {
+        logger.warn({ orsErr }, "[MapsService] OpenRouteService fallback also failed");
+      }
+
+      // Live mode without available routing: NEVER synthesize fake roads
+      if (process.env.MAPS_MODE !== "mock") {
+        return {
+          mode: "LIVE",
+          provider: "NONE",
+          calculatedAt,
+          distanceMeters: 0,
+          durationSeconds: 0,
+          encodedPolyline: "",
+          decodedPath: [],
+          alternatives: [],
+          steps: [],
+          noRouteFound: true,
+          warnings: [
+            "Live road geometry is temporarily unavailable from both routing providers. Pickup & destination locations remain accurate.",
+          ],
+        };
       }
     }
 
-    // 3. Deterministic Mock Provider
+    // 3. Deterministic Mock Provider (used ONLY during offline unit tests when MAPS_MODE=mock)
     const mock = getMockRoadDistanceAndDuration(origin, destination);
     const path = this.generateSyntheticRoadPath(origin, destination);
     const polyline = this.encodePolyline(path);
 
-    // Generate a second route alternative with slight distance/duration variation
     const altPath: Array<[number, number]> = path.map(([lat, lng], i) => [
       Number((lat + (i > 0 && i < path.length - 1 ? 0.001 : 0)).toFixed(6)),
       Number((lng + (i > 0 && i < path.length - 1 ? 0.0015 : 0)).toFixed(6)),
@@ -361,9 +414,6 @@ export class MapsService {
         { instruction: "Continue onto connecting corridor", distanceMeters: mock.distanceMeters - 800, durationSeconds: mock.durationSeconds - 120 },
         { instruction: "Arrive at designated drop hub", distanceMeters: 400, durationSeconds: 60 },
       ],
-      warnings: this.isLiveMode()
-        ? ["External routing service was temporarily unreachable. Displaying fallback campus road corridor."]
-        : undefined,
     };
   }
 

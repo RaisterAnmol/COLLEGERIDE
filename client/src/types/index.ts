@@ -24,10 +24,15 @@ export interface IUser {
   avatarURL?: string;
   role?: 'student' | 'driver' | 'moderator' | 'campus_admin' | 'super_admin';
   accountType?: 'PASSENGER' | 'WOMEN_PASSENGER' | 'DRIVER' | 'ADMIN';
+  googleId?: string;
+  authProvider?: 'local' | 'google';
   institutionId?: string;
   studentId?: string;
   campusId?: string;
   verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
+  isEmailVerified?: boolean;
+  isPhoneVerified?: boolean;
+  accountStatus?: string;
   enrolledIdCardUrl?: string;
   lastDailyIdCheckDate?: string;
   faceEnrollmentStatus?: 'NOT_STARTED' | 'PENDING' | 'ENROLLED' | 'DISABLED';

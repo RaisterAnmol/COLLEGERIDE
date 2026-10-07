@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { ArrowRight, Menu, X, ShieldAlert, LogOut, ShieldCheck, Car, Search, Shield, User, Clock } from 'lucide-react';
+import { NotificationBell } from './common/NotificationBell';
 
 export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -12,8 +13,15 @@ export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -26,11 +34,11 @@ export const Navbar: React.FC = () => {
   const isDriver = user?.role === 'driver' || user?.accountType === 'DRIVER';
   const isAdmin = user?.role === 'super_admin' || user?.role === 'campus_admin' || user?.role === 'moderator';
 
-  // Navigation Links: Only show AFTER user is logged in
+  // Navigation Links: Strictly role-aware (Drivers only see Offer a Ride; Passengers only see Find a Ride; Admins see neither)
   const navLinks = user
     ? [
-        { label: 'Find a Ride', href: '/search' },
-        { label: 'Offer a Ride', href: '/post' },
+        ...(isDriver ? [{ label: 'Offer a Ride', href: '/post' }] : []),
+        ...(!isDriver && !isAdmin ? [{ label: 'Find a Ride', href: '/search' }] : []),
         { label: 'Campuses', href: '/colleges' },
         { label: 'Safety', href: '/safety' },
         { label: 'Verification', href: '/verification' },
@@ -94,6 +102,16 @@ export const Navbar: React.FC = () => {
                 </Link>
               )}
 
+              {!isDriver && !isAdmin && (
+                <Link
+                  to="/search"
+                  className="px-3.5 py-1.5 text-xs font-semibold text-[#143D32] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors flex items-center gap-1.5 shadow-xs"
+                >
+                  <Search className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Find a Ride</span>
+                </Link>
+              )}
+
               {isAdmin && (
                 <Link
                   to="/admin"
@@ -103,6 +121,9 @@ export const Navbar: React.FC = () => {
                   <span>Admin Panel</span>
                 </Link>
               )}
+
+              {/* In-App Real-Time Notification Bell */}
+              <NotificationBell />
 
               {/* Profile Capsule */}
               <Link
@@ -204,13 +225,16 @@ export const Navbar: React.FC = () => {
               </Link>
             </div>
           ) : (
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-slate-800 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer"
-              aria-label="Toggle navigation menu"
-            >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <NotificationBell />
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-2 text-slate-800 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer"
+                aria-label="Toggle navigation menu"
+              >
+                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -269,6 +293,16 @@ export const Navbar: React.FC = () => {
                     >
                       <Car className="w-4 h-4" />
                       <span>Post a Ride</span>
+                    </Link>
+                  )}
+
+                  {!isDriver && !isAdmin && (
+                    <Link
+                      to="/search"
+                      className="w-full py-2.5 text-center text-sm font-semibold bg-emerald-700 text-white rounded-xl flex items-center justify-center gap-2 shadow-xs"
+                    >
+                      <Search className="w-4 h-4" />
+                      <span>Find a Ride</span>
                     </Link>
                   )}
 

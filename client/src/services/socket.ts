@@ -1,7 +1,20 @@
 import { io, Socket } from "socket.io-client";
  
-const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
-const SOCKET_URL = import.meta.env.VITE_API_URL || (isLocalhost ? "http://localhost:5000" : "");
+const isLocal =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+   window.location.hostname === "127.0.0.1" ||
+   window.location.hostname.startsWith("192.168.") ||
+   window.location.hostname.startsWith("10.") ||
+   window.location.hostname.startsWith("172."));
+
+const rawSocketUrl = import.meta.env.VITE_API_URL;
+const isLocalhostSocket = Boolean(rawSocketUrl && (rawSocketUrl.includes("localhost") || rawSocketUrl.includes("127.0.0.1")));
+
+const SOCKET_URL =
+  (rawSocketUrl && (!isLocalhostSocket || isLocal))
+    ? rawSocketUrl
+    : (isLocal ? `${window.location.protocol}//${window.location.hostname}:5000` : "");
 
 let socket: Socket | null = null;
 

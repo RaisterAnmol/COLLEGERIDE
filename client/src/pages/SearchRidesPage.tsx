@@ -26,6 +26,7 @@ import {
   ChevronUp,
   RotateCcw,
   Map,
+  Bell,
 } from 'lucide-react';
 import { PickupAndRouteNavigationMap } from '../components/map/PickupAndRouteNavigationMap';
 import { PageHeroBanner } from '../components/common/PageHeroBanner';
@@ -243,6 +244,7 @@ export const SearchRidesPage: React.FC = () => {
   const [requestError, setRequestError] = useState<string | null>(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successRideName, setSuccessRideName] = useState('');
+  const [routeAlertSet, setRouteAlertSet] = useState(false);
 
   // Track seat requests to immediately and persistently display "Request Sent"
   const [requestedRideIds, setRequestedRideIds] = useState<Set<string>>(() => {
@@ -392,10 +394,7 @@ export const SearchRidesPage: React.FC = () => {
         return true;
       };
 
-      let matchingRides = (res || []).filter(isCorridorMatch);
-      if (matchingRides.length === 0) {
-        matchingRides = DEMO_FALLBACK_RIDES.filter(isCorridorMatch);
-      }
+      const matchingRides = (res || []).filter(isCorridorMatch);
       setRides(sortRidesByCorridor(matchingRides));
       setSearched(true);
     } catch (err: any) {
@@ -434,7 +433,22 @@ export const SearchRidesPage: React.FC = () => {
         }
         return true;
       };
-      const matchingRides = DEMO_FALLBACK_RIDES.filter(isCorridorMatch);
+      let matchingRides = DEMO_FALLBACK_RIDES.filter(isCorridorMatch);
+      if (womenOnlyDriver) {
+        matchingRides = matchingRides.filter((r: any) =>
+          r.creator?.gender === 'female' || r.creator?.accountType === 'WOMEN_PASSENGER'
+        );
+      }
+      if (college && college !== 'Any') {
+        matchingRides = matchingRides.filter((r: any) =>
+          (r.creator?.college || '').toLowerCase().includes(college.toLowerCase())
+        );
+      }
+      if (department && department !== 'Any') {
+        matchingRides = matchingRides.filter((r: any) =>
+          (r.creator?.department || '').toLowerCase().includes(department.toLowerCase())
+        );
+      }
       setRides(sortRidesByCorridor(matchingRides));
       setSearched(true);
     } finally {
@@ -1055,6 +1069,34 @@ export const SearchRidesPage: React.FC = () => {
               : 'No rides match the selected route and academic filters. Try resetting the academic filters to "Any" or browse all active university carpools.'}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                const orig = PRESET_LOCATIONS[originIndex]?.text || '';
+                const dst = PRESET_LOCATIONS[destIndex]?.text || '';
+                navigate(`/post?from=${encodeURIComponent(orig)}&to=${encodeURIComponent(dst)}`);
+              }}
+              className="px-4 py-2 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-xs font-bold text-white shadow-sm transition-all flex items-center gap-1.5"
+            >
+              <Car className="w-3.5 h-3.5" />
+              <span>Offer a Ride for This Route</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setRouteAlertSet(true);
+                setRequestSuccess('Corridor alert activated! You will receive an instant notification when a verified classmate posts a ride along this route.');
+              }}
+              disabled={routeAlertSet}
+              className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 ${
+                routeAlertSet
+                  ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
+                  : 'border-slate-300 hover:bg-slate-50 text-slate-700'
+              }`}
+            >
+              <Bell className="w-3.5 h-3.5" />
+              <span>{routeAlertSet ? 'Route Alert Active' : 'Notify Me When a Ride Opens'}</span>
+            </button>
             <button
               type="button"
               onClick={handleShowAll}

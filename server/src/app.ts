@@ -36,8 +36,6 @@ app.use(correlationIdMiddleware);
 app.use(telemetryMiddleware);
 app.use(metricsRoutes);
 
-// §2.5 Baseline hardening middlewares
-app.use(helmet());
 // §2.5 Baseline hardening middlewares with explicit CSP
 app.use(
   helmet({
@@ -52,6 +50,7 @@ app.use(
           "https://maps.googleapis.com",
         ],
         scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrcAttr: ["'unsafe-inline'"],
         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: [
@@ -82,6 +81,7 @@ const isOriginAllowed = (origin: string | undefined): boolean => {
   if (!origin) return true; // Mobile apps, curl, or same-origin
   if (configuredOrigins.includes(origin)) return true;
   if (origin.includes("localhost") || origin.includes("127.0.0.1")) return true;
+  if (origin.includes("192.168.") || origin.includes("10.") || origin.includes("172.")) return true;
   if (origin.endsWith(".vercel.app") || origin.endsWith(".replit.app") || origin.endsWith(".repl.co")) return true;
   return false;
 };

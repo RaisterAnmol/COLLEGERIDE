@@ -5,6 +5,7 @@ import { initSocketIO } from './sockets/socketHandler';
 import { User } from './models';
 import { seedDemoData } from './seed';
 import { logger } from './utils/logger';
+import { whatsappService } from './services/whatsappService';
 
 const PORT = process.env.PORT || 5000;
 
@@ -36,6 +37,11 @@ async function bootstrap() {
       logger.info(`Socket.IO initialized for real-time events`);
       logger.info(`API Healthcheck: http://localhost:${PORT}/api/health`);
       logger.info(`API Readiness: http://localhost:${PORT}/api/ready`);
+
+      // 4. Initialize Baileys WhatsApp OTP Bot
+      whatsappService.initialize().catch((waErr) => {
+        logger.warn({ waErr }, '[WhatsApp] Auto-init failed, will retry on demand');
+      });
     });
 
     // 4. Graceful shutdown handler (§4.6)

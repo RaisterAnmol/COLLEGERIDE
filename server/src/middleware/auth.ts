@@ -59,7 +59,16 @@ export async function requireAuth(
   next: NextFunction,
 ): Promise<void> {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  const cookieToken = req.cookies?.accessToken;
+
+  let token: string | undefined;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (cookieToken) {
+    token = cookieToken;
+  }
+
+  if (!token) {
     res.status(401).json({
       code: "UNAUTHORIZED",
       message: "Authentication required. No token provided.",
@@ -67,7 +76,6 @@ export async function requireAuth(
     return;
   }
 
-  const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as AuthUserPayload;
 
@@ -108,11 +116,19 @@ export async function optionalAuth(
   next: NextFunction,
 ): Promise<void> {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  const cookieToken = req.cookies?.accessToken;
+
+  let token: string | undefined;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.split(" ")[1];
+  } else if (cookieToken) {
+    token = cookieToken;
+  }
+
+  if (!token) {
     return next();
   }
 
-  const token = authHeader.split(" ")[1];
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as AuthUserPayload;
     req.user = decoded;

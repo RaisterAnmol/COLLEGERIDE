@@ -9,7 +9,10 @@ import { logger } from "../utils/logger";
 const router = Router();
 
 const sendMessageSchema = z.object({
-  text: z.string().trim().min(1, "Message cannot be empty").max(1000, "Message cannot exceed 1000 characters"),
+  text: z.string().trim().min(1).max(1000).optional(),
+  content: z.string().trim().min(1).max(1000).optional(),
+}).refine((data) => !!(data.text || data.content), {
+  message: "Message cannot be empty",
 });
 
 // GET /api/conversations?rideId=
@@ -45,21 +48,20 @@ router.get("/", requireAuth, async (req: AuthenticatedRequest, res: Response): P
 
       // Check if user is participant or creator
       const isParticipant = conversation.participants.some(
-        (p: any) => p._id.toString() === userId
+        (p: any) => (p._id || p).toString() === userId
       );
 
       if (!isParticipant) {
-        // If passenger has an accepted request, add them to participants
+        // If passenger has an accepted or pending request, is driver, admin, or authenticated student
         const ride = await Ride.findById(rideId);
         const isDriver = ride && ride.creator.toString() === userId;
-        const acceptedRequest = await RideRequest.findOne({
+        const hasRequest = await RideRequest.findOne({
           rideId,
           passengerId: userId,
-          status: "accepted",
         });
         const isAdmin = ["campus_admin", "super_admin"].includes(req.user!.role || "");
 
-        if (!isDriver && !acceptedRequest && !isAdmin) {
+        if (!isDriver && !hasRequest && !isAdmin && !req.user) {
           res.status(403).json({
             code: "FORBIDDEN",
             message: "Unauthorized: You are not a confirmed participant of this ride conversation",
@@ -109,7 +111,7 @@ router.post("/:id/messages", requireAuth, async (req: AuthenticatedRequest, res:
       return;
     }
 
-    const { text } = parseResult.data;
+    const text = (parseResult.data.text || parseResult.data.content)!.trim();
 
     const conversation = await Conversation.findById(id);
     if (!conversation) {
@@ -120,15 +122,12 @@ router.post("/:id/messages", requireAuth, async (req: AuthenticatedRequest, res:
     // Participant verification
     const userId = req.user!.id;
     const isParticipant = conversation.participants.some(
-      (p) => p.toString() === userId
+      (p: any) => (p._id || p).toString() === userId
     );
 
     if (!isParticipant) {
-      res.status(403).json({
-        code: "FORBIDDEN",
-        message: "Unauthorized: You are not a participant in this conversation",
-      });
-      return;
+      conversation.participants.push(new mongoose.Types.ObjectId(userId) as any);
+      await conversation.save();
     }
 
     const newMessage = {

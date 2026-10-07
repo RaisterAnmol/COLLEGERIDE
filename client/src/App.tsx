@@ -18,6 +18,7 @@ const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage').then(
 const SafetyPage = lazy(() => import('./pages/SafetyPage').then(m => ({ default: m.SafetyPage })));
 const CollegesPage = lazy(() => import('./pages/CollegesPage').then(m => ({ default: m.CollegesPage })));
 const VerificationStatusPage = lazy(() => import('./pages/VerificationStatusPage').then(m => ({ default: m.VerificationStatusPage })));
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage').then(m => ({ default: m.VerifyEmailPage })));
 const FaceVerifyPage = lazy(() => import('./pages/FaceVerifyPage').then(m => ({ default: m.FaceVerifyPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
 
@@ -74,14 +75,14 @@ function useBackgroundVariant(): CampusBackgroundVariant {
   const { pathname } = useLocation();
   if (pathname === '/') return 'home';
   if (['/auth', '/login', '/signin', '/register', '/signup'].includes(pathname)) return 'auth';
-  if (pathname === '/verification' || pathname === '/face-verify') return 'verification';
+  if (pathname === '/verification' || pathname === '/face-verify' || pathname === '/verify-email') return 'verification';
   if (pathname === '/search' || pathname === '/rides') return 'search';
   if (pathname === '/post' || pathname === '/post-ride') return 'post';
   if (pathname.startsWith('/rides/')) return 'rideDetail';
   if (pathname.startsWith('/trips/')) return 'rideDetail';
   if (pathname === '/admin') return 'admin';
   if (pathname === '/safety') return 'safety';
-  if (pathname === '/colleges' || pathname === '/campuses') return 'colleges';
+  if (pathname === '/colleges') return 'colleges';
   if (pathname === '/dashboard') return 'dashboard';
   return 'dashboard';
 }
@@ -107,6 +108,7 @@ function AppLayout() {
             <Route path="/signup" element={<AuthPage />} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/verification" element={<ProtectedRoute><VerificationStatusPage /></ProtectedRoute>} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
             <Route path="/face-verify" element={<ProtectedRoute><FaceVerifyPage /></ProtectedRoute>} />
             <Route path="/post" element={<ProtectedRoute><PostRidePage /></ProtectedRoute>} />
             <Route path="/post-ride" element={<Navigate to="/post" replace />} />
@@ -117,7 +119,6 @@ function AppLayout() {
             <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
             <Route path="/safety" element={<SafetyPage />} />
             <Route path="/colleges" element={<CollegesPage />} />
-            <Route path="/campuses" element={<Navigate to="/colleges" replace />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>

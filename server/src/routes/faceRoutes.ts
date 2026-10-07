@@ -165,4 +165,44 @@ router.post(
   }
 );
 
+// POST /api/face/daily-liveness (Morning Driver Liveness Check)
+router.post(
+  "/daily-liveness",
+  requireAuth,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const user = await User.findById(req.user!.id);
+      if (!user) {
+        res.status(404).json({ code: "NOT_FOUND", message: "User not found" });
+        return;
+      }
+
+      const todayStr = new Date().toISOString().slice(0, 10);
+      user.lastDailyIdCheckDate = todayStr;
+      if (req.body.photo && (!user.avatarURL || user.avatarURL.includes('unsplash'))) {
+        user.avatarURL = req.body.photo;
+      }
+      await user.save();
+
+      await logAuditEvent({
+        actorId: user._id.toString(),
+        actorRole: user.role,
+        action: "DRIVER_DAILY_LIVENESS_CHECK_PASSED",
+        resourceType: "User",
+        resourceId: user._id.toString(),
+        metadata: { date: todayStr },
+        req,
+      });
+
+      res.status(200).json({
+        success: true,
+        verifiedDate: todayStr,
+        message: "Driver morning commute liveness check passed!",
+      });
+    } catch (err: any) {
+      res.status(500).json({ code: "SERVER_ERROR", message: "Failed to record daily liveness" });
+    }
+  }
+);
+
 export default router;

@@ -102,9 +102,16 @@ export class EmergencyService {
 
     for (const contact of contacts) {
       if (!contact.phone) continue;
-      const sosMessage = `EMERGENCY ALERT: ${user.name} triggered CampusRide SOS at location (${input.location.latitude.toFixed(4)}, ${input.location.longitude.toFixed(4)}). Campus security alerted. Call 112 if immediate response needed.`;
-      
-      const dispatch = await NotificationService.sendPhoneOtp(contact.phone, sosMessage);
+      const dispatch = await NotificationService.sendSosAlert(contact.phone, {
+        studentName: user.name,
+        studentPhone: user.phone,
+        college: user.college,
+        latitude: input.location.latitude,
+        longitude: input.location.longitude,
+        address: input.location.address,
+        notes: input.notes,
+        incidentNumber,
+      });
       const isOk = dispatch.success;
       if (isOk) successCount++;
 

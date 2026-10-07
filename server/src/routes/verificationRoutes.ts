@@ -5,6 +5,7 @@ import fs from "fs";
 import multer from "multer";
 import { VerificationRequest } from "../models/VerificationRequest";
 import { User } from "../models/User";
+import { Vehicle } from "../models/Vehicle";
 import { requireAuth, requireRole, AuthenticatedRequest } from "../middleware/auth";
 import { logAuditEvent } from "../services/auditService";
 import { NotificationService } from "../services/notificationService";
@@ -305,6 +306,7 @@ router.post(
           targetUser.faceVerificationEnabled = true;
         }
         await targetUser.save();
+        await Vehicle.updateMany({ ownerUserId: targetUser._id }, { verificationStatus: "verified" });
 
         await NotificationService.createPersistentNotification({
           userId: targetUser._id.toString(),
@@ -415,19 +417,50 @@ router.get(
       }
 
       let storageKey: string | undefined;
-      if (type === "id" || type === "student_id") {
+      if (type === "id" || type === "student_id" || type === "idDocument") {
         storageKey = vReq.idDocumentStorageKey || vReq.documentStorageKey;
-      } else if (type === "license" || type === "driving_license") {
+      } else if (type === "license" || type === "driving_license" || type === "drivingLicense") {
         storageKey = vReq.drivingLicenseStorageKey;
       } else if (type === "selfie") {
         storageKey = vReq.selfieStorageKey;
       } else {
-        res.status(400).json({ code: "INVALID_DOCUMENT_TYPE", message: "Supported types: id, license, selfie" });
+        res.status(400).json({ code: "INVALID_DOCUMENT_TYPE", message: "Supported types: idDocument, drivingLicense, selfie" });
         return;
       }
 
       if (!storageKey) {
+        // Fallback to User model fields if not explicitly on verification request
+        const userDoc = await User.findById(vReq.userId);
+        if (userDoc) {
+          if ((type === "id" || type === "student_id" || type === "idDocument") && userDoc.enrolledIdCardUrl) {
+            storageKey = userDoc.enrolledIdCardUrl;
+          } else if (type === "selfie" && userDoc.avatarURL) {
+            storageKey = userDoc.avatarURL;
+          }
+        }
+      }
+
+      if (!storageKey) {
         res.status(404).json({ code: "DOCUMENT_NOT_FOUND", message: `No ${type} document uploaded` });
+        return;
+      }
+
+      // If storageKey is a base64 Data URL, decode and serve directly
+      if (storageKey.startsWith("data:")) {
+        const matches = storageKey.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        if (matches && matches.length === 3) {
+          const contentType = matches[1];
+          const buffer = Buffer.from(matches[2], "base64");
+          res.setHeader("Content-Type", contentType);
+          res.setHeader("Cache-Control", "private, no-cache, no-store, must-revalidate");
+          res.send(buffer);
+          return;
+        }
+      }
+
+      // If storageKey is a remote HTTP URL, redirect
+      if (storageKey.startsWith("http://") || storageKey.startsWith("https://")) {
+        res.redirect(storageKey);
         return;
       }
 

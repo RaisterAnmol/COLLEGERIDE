@@ -23,6 +23,13 @@ export interface IReliabilityStats {
 
 export type UserRole = "student" | "driver" | "moderator" | "campus_admin" | "super_admin";
 export type AccountType = "PASSENGER" | "WOMEN_PASSENGER" | "DRIVER" | "ADMIN";
+export type AccountStatus =
+  | "REGISTERED"
+  | "EMAIL_VERIFICATION_PENDING"
+  | "ACTIVE"
+  | "SUSPENDED"
+  | "LOCKED"
+  | "DEACTIVATED";
 export type FaceEnrollmentStatus = "NOT_STARTED" | "PENDING" | "ENROLLED" | "DISABLED";
 export type VerificationStatus =
   | "unverified"
@@ -57,6 +64,8 @@ export interface IUser extends Document {
   name: string;
   email: string;
   passwordHash?: string;
+  googleId?: string;
+  authProvider?: "local" | "google";
   role: UserRole;
   accountType: AccountType;
   college: string;
@@ -68,6 +77,7 @@ export interface IUser extends Document {
   campusId?: mongoose.Types.ObjectId;
   phone?: string;
   avatarURL?: string;
+  accountStatus: AccountStatus;
   verificationStatus: VerificationStatus;
   enrolledIdCardUrl?: string;
   lastDailyIdCheckDate?: string;
@@ -108,7 +118,13 @@ const UserSchema = new Schema<IUser>(
       lowercase: true,
       trim: true,
     },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: false },
+    googleId: { type: String, sparse: true, index: true },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
     role: {
       type: String,
       enum: ["student", "driver", "moderator", "campus_admin", "super_admin"],
@@ -130,6 +146,19 @@ const UserSchema = new Schema<IUser>(
     campusId: { type: Schema.Types.ObjectId, ref: "Campus" },
     phone: { type: String, trim: true },
     avatarURL: { type: String, default: "" },
+    accountStatus: {
+      type: String,
+      enum: [
+        "REGISTERED",
+        "EMAIL_VERIFICATION_PENDING",
+        "ACTIVE",
+        "SUSPENDED",
+        "LOCKED",
+        "DEACTIVATED",
+      ],
+      default: "ACTIVE",
+      index: true,
+    },
     verificationStatus: {
       type: String,
       enum: [

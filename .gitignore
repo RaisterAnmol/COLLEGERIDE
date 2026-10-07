@@ -48,8 +48,11 @@ ACCOUNTS_CREDENTIALS.txt
 CAMPUSRIDE_SYSTEM_INFO.txt
 scratch/
 
-# Uploads
+# Uploads & WhatsApp sessions
 server/uploads/verification/
 server/uploads/verification/daily-*
 server/uploads/verification/temp-*
+server/data/whatsapp_auth/
+server/data/
+
 

@@ -1,8 +1,9 @@
 import { Router, Response } from "express";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
-import { User, Vehicle, Ride, RideRequest } from "../models";
+import { User, Vehicle, Ride, RideRequest, VerificationRequest } from "../models";
 import {
   requireAuth,
   requireRole,
@@ -17,9 +18,12 @@ import {
   hashOtp,
   generateSecureToken,
   hashToken,
+  hashPassword,
+  verifyPassword,
 } from "../utils/security";
 import { logAuditEvent } from "../services/auditService";
 import { NotificationService } from "../services/notificationService";
+import { sendEmail } from "../services/emailService";
 import { logger } from "../utils/logger";
 
 const router = Router();
@@ -140,13 +144,18 @@ router.post("/register", async (req, res): Promise<void> => {
       assignedRole = "campus_admin";
     }
 
-    // Cost factor raised to 12 (§2.6)
-    const passwordHash = await bcrypt.hash(password, 12);
+    // Argon2id password hash with recommended memory/time parameters (§3)
+    const passwordHash = await hashPassword(password);
+
+    // Create single-use email verification token
+    const rawEmailToken = generateSecureToken(32);
+    const emailVerificationTokenHash = hashToken(rawEmailToken);
+    const emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
     const initialAvatar = avatarURL || facePhoto || "";
     const hasFace = !!initialAvatar;
 
-    // Initial state is pending verification for all new accounts (§4.1)
+    // Initial state: EMAIL_VERIFICATION_PENDING until verified, driver verification pending (§4.1, §5)
     const user = await User.create({
       name,
       email,
@@ -160,6 +169,10 @@ router.post("/register", async (req, res): Promise<void> => {
       gender,
       role: assignedRole,
       accountType,
+      accountStatus: "EMAIL_VERIFICATION_PENDING",
+      isEmailVerified: false,
+      emailVerificationTokenHash,
+      emailVerificationExpires,
       avatarURL: initialAvatar,
       verificationStatus: "pending",
       enrolledIdCardUrl: enrolledIdCardUrl || "",
@@ -192,6 +205,33 @@ router.post("/register", async (req, res): Promise<void> => {
       req,
     });
 
+    const verifyUrl = `${process.env.CLIENT_URL || "http://localhost:5173"}/verify-email?token=${rawEmailToken}`;
+
+    // Send real verification email via Resend (with automatic dev fallback)
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your CampusRide Account",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+          <h2 style="color: #143D32; margin-top: 0;">Welcome to CampusRide!</h2>
+          <p style="color: #334155; font-size: 15px; line-height: 1.5;">Hi <strong>${user.name}</strong>,</p>
+          <p style="color: #334155; font-size: 15px; line-height: 1.5;">Thank you for registering. Please click the button below to verify your university email and activate your account:</p>
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${verifyUrl}" style="background-color: #143D32; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 15px;">Verify My Email Address</a>
+          </div>
+          <p style="color: #64748b; font-size: 13px;">Or copy and paste this link in your browser:</p>
+          <p style="color: #10B981; font-size: 12px; word-break: break-all;"><a href="${verifyUrl}">${verifyUrl}</a></p>
+          <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+          <p style="color: #94a3b8; font-size: 12px;">This single-use link expires in 24 hours. If you did not create this account, you can safely ignore this email.</p>
+        </div>
+      `,
+    });
+
+    console.log("\n===============================================================");
+    console.log(`[EMAIL SERVICE] Verification email dispatched to: ${user.email}`);
+    console.log(`Verification URL: ${verifyUrl}`);
+    console.log("===============================================================\n");
+
     const token = signToken({
       id: user._id.toString(),
       email: user.email,
@@ -210,6 +250,14 @@ router.post("/register", async (req, res): Promise<void> => {
       tokenVersion: user.tokenVersion,
     });
 
+    // Dual session: HTTP-only secure cookie + JSON bearer for API clients
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -221,6 +269,8 @@ router.post("/register", async (req, res): Promise<void> => {
       token,
       refreshToken,
       user,
+      devVerificationToken: process.env.NODE_ENV !== "production" ? rawEmailToken : undefined,
+      devVerificationUrl: process.env.NODE_ENV !== "production" ? verifyUrl : undefined,
     });
   } catch (err: any) {
     logger.error({ err }, "Register error");
@@ -253,7 +303,19 @@ router.post("/login", async (req, res): Promise<void> => {
       return;
     }
 
-    const isMatch = await bcrypt.compare(password, user.passwordHash || "");
+    if (
+      user.accountStatus === "SUSPENDED" ||
+      user.accountStatus === "LOCKED" ||
+      user.accountStatus === "DEACTIVATED"
+    ) {
+      res.status(403).json({
+        code: "ACCOUNT_INACTIVE",
+        message: `Account is currently ${user.accountStatus.toLowerCase()}. Please contact campus administration.`,
+      });
+      return;
+    }
+
+    const isMatch = await verifyPassword(user.passwordHash || "", password);
     if (!isMatch) {
       res.status(401).json({
         code: "INVALID_CREDENTIALS",
@@ -278,6 +340,14 @@ router.post("/login", async (req, res): Promise<void> => {
     const refreshToken = signRefreshToken({
       id: user._id.toString(),
       tokenVersion: user.tokenVersion ?? 0,
+    });
+
+    // Dual session: HTTP-only secure cookie + JSON bearer
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refreshToken", refreshToken, {
@@ -321,6 +391,174 @@ router.post("/login", async (req, res): Promise<void> => {
   } catch (err: any) {
     logger.error({ err }, "Login error");
     res.status(500).json({ code: "SERVER_ERROR", message: "Login failed" });
+  }
+});
+
+// POST /api/auth/google
+router.post("/google", async (req, res): Promise<void> => {
+  try {
+    const { credential, accountType: requestedAccountType } = req.body;
+    if (!credential || typeof credential !== "string") {
+      res.status(400).json({ code: "INVALID_CREDENTIAL", message: "Google credential token is required" });
+      return;
+    }
+
+    const isDriverRequest = requestedAccountType === "DRIVER";
+    const initialRole = isDriverRequest ? "driver" : "student";
+    const initialAccountType = requestedAccountType || "PASSENGER";
+
+    // Verify token with Google's official tokeninfo API
+    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+    if (!response.ok) {
+      const errBody = await response.text();
+      logger.warn({ errBody }, "[Google OAuth] Failed to verify token with Google");
+      res.status(401).json({ code: "INVALID_GOOGLE_TOKEN", message: "Failed to verify Google credential" });
+      return;
+    }
+
+    const payload: any = await response.json();
+
+    // Verify audience matches configured Google Client ID if set
+    const configuredClientId = process.env.GOOGLE_CLIENT_ID;
+    if (configuredClientId && payload.aud !== configuredClientId) {
+      logger.warn({ aud: payload.aud, expected: configuredClientId }, "[Google OAuth] Client ID audience mismatch");
+      res.status(401).json({ code: "GOOGLE_AUDIENCE_MISMATCH", message: "Google Client ID mismatch" });
+      return;
+    }
+
+    const email = payload.email?.toLowerCase().trim();
+    if (!email) {
+      res.status(400).json({ code: "NO_EMAIL", message: "No email returned by Google account" });
+      return;
+    }
+
+    let isNewUser = false;
+    // Find existing user by googleId or email
+    let user = await User.findOne({
+      $or: [{ googleId: payload.sub }, { email }],
+    });
+
+    if (user) {
+      if (!user.googleId) user.googleId = payload.sub;
+      if (payload.picture && !user.avatarURL) user.avatarURL = payload.picture;
+      if (!user.isEmailVerified) user.isEmailVerified = true;
+      if (user.accountStatus === "EMAIL_VERIFICATION_PENDING" || user.accountStatus === "REGISTERED") {
+        user.accountStatus = "ACTIVE";
+      }
+      // If user selected a specific role on the frontend signup screen, apply it
+      if (requestedAccountType && user.role !== "campus_admin" && user.role !== "super_admin") {
+        user.accountType = requestedAccountType;
+        user.role = isDriverRequest ? "driver" : "student";
+      }
+      await user.save();
+    } else {
+      isNewUser = true;
+      user = await User.create({
+        name: payload.name || email.split("@")[0],
+        email,
+        googleId: payload.sub,
+        authProvider: "google",
+        avatarURL: payload.picture || "",
+        role: initialRole,
+        accountType: initialAccountType,
+        college: "CampusRide Partner University",
+        year: 1,
+        isEmailVerified: true,
+        accountStatus: "ACTIVE",
+        verificationStatus: "unverified",
+      });
+    }
+
+    if (
+      user.accountStatus === "SUSPENDED" ||
+      user.accountStatus === "LOCKED" ||
+      user.accountStatus === "DEACTIVATED"
+    ) {
+      res.status(403).json({
+        code: "ACCOUNT_INACTIVE",
+        message: `Account is currently ${user.accountStatus.toLowerCase()}. Please contact campus administration.`,
+      });
+      return;
+    }
+
+    const vehicle = await Vehicle.findOne({ ownerUserId: user._id });
+
+    await logAuditEvent({
+      actorId: user._id.toString(),
+      actorRole: user.role,
+      action: "USER_LOGIN",
+      resourceType: "User",
+      resourceId: user._id.toString(),
+      metadata: { method: "google_oauth" },
+      req,
+    });
+
+    const token = signToken({
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      college: user.college,
+      verificationStatus: user.verificationStatus,
+      role: user.role,
+      accountType: user.accountType,
+      institutionId: user.institutionId?.toString(),
+      campusId: user.campusId?.toString(),
+      tokenVersion: user.tokenVersion ?? 0,
+    });
+
+    const refreshToken = signRefreshToken({
+      id: user._id.toString(),
+      tokenVersion: user.tokenVersion ?? 0,
+    });
+
+    // Dual session: HTTP-only secure cookie + JSON bearer
+    res.cookie("accessToken", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({
+      token,
+      refreshToken,
+      isNewUser,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        college: user.college,
+        year: user.year,
+        department: user.department,
+        course: user.course,
+        semester: user.semester,
+        avatarURL: user.avatarURL,
+        rating: user.rating,
+        totalRides: user.totalRides,
+        verificationStatus: user.verificationStatus,
+        accountType: user.accountType,
+        role: user.role,
+        faceEnrollmentStatus: user.faceEnrollmentStatus,
+        faceVerificationEnabled: user.faceVerificationEnabled,
+        institutionId: user.institutionId,
+        campusId: user.campusId,
+        enrolledIdCardUrl: user.enrolledIdCardUrl || "",
+        lastDailyIdCheckDate: user.lastDailyIdCheckDate || "",
+        isEmailVerified: user.isEmailVerified,
+        isPhoneVerified: user.isPhoneVerified,
+      },
+      vehicle,
+    });
+  } catch (err: any) {
+    logger.error({ err }, "Google OAuth error");
+    res.status(500).json({ code: "SERVER_ERROR", message: "Google authentication failed" });
   }
 });
 
@@ -402,6 +640,7 @@ router.post(
           $inc: { tokenVersion: 1 },
         });
       }
+      res.clearCookie("accessToken");
       res.clearCookie("refreshToken");
       res.status(200).json({ message: "Logged out successfully" });
     } catch (err: any) {
@@ -466,6 +705,22 @@ router.post("/forgot-password", async (req, res): Promise<void> => {
       req,
     });
 
+    await sendEmail({
+      to: user.email,
+      subject: "CampusRide Password Reset Code",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+          <h2 style="color: #143D32; margin-top: 0;">Password Reset Request</h2>
+          <p style="color: #334155; font-size: 15px;">Hi <strong>${user.name}</strong>,</p>
+          <p style="color: #334155; font-size: 15px;">Use the following 6-digit verification code to reset your password:</p>
+          <div style="margin: 24px 0; background: #F4F9F6; border: 1px dashed #10B981; padding: 16px; border-radius: 8px; text-align: center;">
+            <span style="font-size: 32px; font-weight: bold; letter-spacing: 6px; color: #143D32;">${resetOtp}</span>
+          </div>
+          <p style="color: #64748b; font-size: 13px;">This code is valid for 15 minutes. If you did not make this request, you can safely ignore this email.</p>
+        </div>
+      `,
+    });
+
     const isDev = process.env.NODE_ENV !== "production" || process.env.DEMO_MODE === "true";
     res.status(200).json({
       message: "Password reset instructions sent.",
@@ -473,6 +728,56 @@ router.post("/forgot-password", async (req, res): Promise<void> => {
     });
   } catch (err) {
     res.status(500).json({ code: "SERVER_ERROR", message: "Failed to process password reset" });
+  }
+});
+
+// POST /api/auth/resend-verification
+router.post("/resend-verification", async (req, res): Promise<void> => {
+  try {
+    const { email } = req.body;
+    if (!email || typeof email !== "string") {
+      res.status(400).json({ code: "BAD_REQUEST", message: "Email is required" });
+      return;
+    }
+
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
+    if (!user || user.isEmailVerified) {
+      res.status(200).json({
+        message: "If an unverified account exists for that email, a verification link has been sent.",
+      });
+      return;
+    }
+
+    const rawEmailToken = generateSecureToken(32);
+    user.emailVerificationTokenHash = hashToken(rawEmailToken);
+    user.emailVerificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await user.save();
+
+    const verifyUrl = `${process.env.CLIENT_URL || "http://localhost:5173"}/verify-email?token=${rawEmailToken}`;
+
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your CampusRide Account",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+          <h2 style="color: #143D32; margin-top: 0;">Verify your Email Address</h2>
+          <p style="color: #334155; font-size: 15px;">Hi <strong>${user.name}</strong>,</p>
+          <p style="color: #334155; font-size: 15px;">Click the button below to verify your university email:</p>
+          <div style="margin: 28px 0; text-align: center;">
+            <a href="${verifyUrl}" style="background-color: #143D32; color: #ffffff; padding: 12px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">Verify My Email Address</a>
+          </div>
+          <p style="color: #64748b; font-size: 12px; word-break: break-all;">${verifyUrl}</p>
+        </div>
+      `,
+    });
+
+    res.status(200).json({
+      message: "If an unverified account exists for that email, a verification link has been sent.",
+      ...(process.env.NODE_ENV !== "production" ? { devVerificationUrl: verifyUrl } : {}),
+    });
+  } catch (err: any) {
+    logger.error({ err }, "Resend verification error");
+    res.status(500).json({ code: "SERVER_ERROR", message: "Failed to resend verification email" });
   }
 });
 
@@ -526,7 +831,7 @@ router.post("/reset-password", async (req, res): Promise<void> => {
       return;
     }
 
-    user.passwordHash = await bcrypt.hash(newPassword, 12);
+    user.passwordHash = await hashPassword(newPassword);
     user.passwordResetTokenHash = undefined;
     user.passwordResetExpires = undefined;
     user.tokenVersion = (user.tokenVersion || 0) + 1;
@@ -816,6 +1121,7 @@ router.post("/email/verify", async (req, res): Promise<void> => {
     }
 
     user.isEmailVerified = true;
+    user.accountStatus = "ACTIVE";
     user.emailVerificationTokenHash = undefined;
     user.emailVerificationExpires = undefined;
     await user.save();
@@ -831,11 +1137,88 @@ router.post("/email/verify", async (req, res): Promise<void> => {
     res.status(200).json({
       message: "Email address verified successfully",
       isEmailVerified: true,
+      accountStatus: user.accountStatus,
     });
   } catch (err: any) {
     res
       .status(500)
       .json({ code: "SERVER_ERROR", message: "Failed to verify email token" });
+  }
+});
+
+// POST /api/auth/dev-verify-email - Instant dev-mode verification without email provider constraint
+router.post("/dev-verify-email", async (req, res): Promise<void> => {
+  try {
+    const isDev = process.env.NODE_ENV !== "production" || process.env.DEMO_MODE === "true";
+    if (!isDev) {
+      res.status(403).json({ code: "FORBIDDEN", message: "Dev verify only allowed in development mode" });
+      return;
+    }
+
+    const { email, userId } = req.body;
+    let targetUser: any = null;
+
+    if (userId) {
+      targetUser = await User.findById(userId);
+    } else if (email) {
+      targetUser = await User.findOne({ email: email.trim().toLowerCase() });
+    }
+
+    // If still null, try finding current user via token cookie/header if present
+    if (!targetUser) {
+      const authHeader = req.headers.authorization;
+      const cookieToken = req.cookies?.accessToken;
+      const rawToken = authHeader ? authHeader.replace("Bearer ", "") : cookieToken;
+      if (rawToken) {
+        try {
+          const decoded: any = jwt.verify(
+            rawToken,
+            process.env.JWT_SECRET || "campusride_jwt_secret_dev_key_2026",
+          );
+          if (decoded?.id) {
+            targetUser = await User.findById(decoded.id);
+          }
+        } catch {
+          // ignore
+        }
+      }
+    }
+
+    if (!targetUser) {
+      res.status(404).json({ code: "NOT_FOUND", message: "User to verify not found" });
+      return;
+    }
+
+    targetUser.isEmailVerified = true;
+    targetUser.accountStatus = "ACTIVE";
+    targetUser.emailVerificationTokenHash = undefined;
+    targetUser.emailVerificationExpires = undefined;
+    await targetUser.save();
+
+    await logAuditEvent({
+      actorId: targetUser._id.toString(),
+      actorRole: targetUser.role,
+      action: "EMAIL_VERIFIED_DEV_BYPASS",
+      resourceType: "User",
+      resourceId: targetUser._id.toString(),
+      req,
+    });
+
+    res.status(200).json({
+      message: "Account email verified successfully via Dev Bypass",
+      isEmailVerified: true,
+      accountStatus: targetUser.accountStatus,
+      user: {
+        _id: targetUser._id,
+        name: targetUser.name,
+        email: targetUser.email,
+        isEmailVerified: true,
+        accountStatus: targetUser.accountStatus,
+      },
+    });
+  } catch (err: any) {
+    logger.error({ err }, "Dev email verify error");
+    res.status(500).json({ code: "SERVER_ERROR", message: "Failed to dev-verify email" });
   }
 });
 
@@ -902,7 +1285,19 @@ router.put(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user!.id;
-      const { name, college, department, course, year, semester, phone } = req.body;
+      const {
+        name,
+        college,
+        department,
+        course,
+        year,
+        semester,
+        phone,
+        enrolledIdCardUrl,
+        avatarURL,
+        facePhoto,
+        faceEmbedding,
+      } = req.body;
 
       const updateData: any = {};
       if (name && typeof name === "string") updateData.name = name.trim();
@@ -912,11 +1307,76 @@ router.put(
       if (year !== undefined && !isNaN(Number(year))) updateData.year = Number(year);
       if (semester !== undefined && !isNaN(Number(semester))) updateData.semester = Number(semester);
       if (phone !== undefined && typeof phone === "string") updateData.phone = phone.trim();
+      if (req.body.accountType && ["PASSENGER", "WOMEN_PASSENGER", "DRIVER"].includes(req.body.accountType)) {
+        updateData.accountType = req.body.accountType;
+        if (req.body.accountType === "DRIVER") {
+          updateData.role = "driver";
+        } else if (req.user?.role !== "campus_admin" && req.user?.role !== "super_admin") {
+          updateData.role = "student";
+        }
+      }
+
+      if (enrolledIdCardUrl && typeof enrolledIdCardUrl === "string") {
+        updateData.enrolledIdCardUrl = enrolledIdCardUrl.trim();
+        // If user was unverified or not yet approved, set to pending for institutional review
+        if (!req.user?.verificationStatus || req.user.verificationStatus === "unverified") {
+          updateData.verificationStatus = "pending";
+        }
+      }
+
+      const photo = avatarURL || facePhoto;
+      if (photo && typeof photo === "string") {
+        updateData.avatarURL = photo.trim();
+      }
+
+      if (faceEmbedding && Array.isArray(faceEmbedding) && faceEmbedding.length >= 64) {
+        updateData.faceEmbedding = faceEmbedding;
+        updateData.faceEnrollmentStatus = "ENROLLED";
+        updateData.faceVerificationEnabled = true;
+      }
 
       const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
       if (!user) {
         res.status(404).json({ code: "NOT_FOUND", message: "User not found" });
         return;
+      }
+
+      // If ID card provided, upsert VerificationRequest so campus admin sees it immediately
+      if (enrolledIdCardUrl && typeof enrolledIdCardUrl === "string") {
+        try {
+          await VerificationRequest.findOneAndUpdate(
+            { userId: user._id },
+            {
+              userId: user._id,
+              studentIdentifier: user.email ? user.email.split("@")[0] : "STUDENT-ID",
+              accountType: user.accountType || "PASSENGER",
+              role: user.role || "student",
+              documentType: "student_id",
+              idDocumentStorageKey: enrolledIdCardUrl.trim(),
+              status: "pending",
+              submittedAt: new Date(),
+            },
+            { upsert: true, new: true }
+          );
+        } catch (vErr) {
+          logger.warn({ vErr }, "Failed to upsert VerificationRequest during profile update");
+        }
+      }
+
+      let vehicle = null;
+      if (req.body.vehicle && (req.body.vehicle.model || req.body.vehicle.plateLast4)) {
+        vehicle = await Vehicle.findOneAndUpdate(
+          { ownerUserId: user._id },
+          {
+            ownerUserId: user._id,
+            type: req.body.vehicle.type || "car",
+            model: req.body.vehicle.model || "Standard Car",
+            capacity: Number(req.body.vehicle.capacity) || 4,
+            plateLast4: req.body.vehicle.plateLast4 || "0000",
+            verificationStatus: "verified",
+          },
+          { upsert: true, new: true }
+        );
       }
 
       await logAuditEvent({
@@ -933,6 +1393,7 @@ router.put(
         success: true,
         message: "Academic profile updated successfully",
         user,
+        vehicle,
       });
     } catch (err: any) {
       logger.error({ err }, "Update profile error");

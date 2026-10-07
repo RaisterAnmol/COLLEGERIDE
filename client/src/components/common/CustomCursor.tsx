@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export const CustomCursor: React.FC = () => {
-  const [position, setPosition] = useState({ x: -100, y: -100 });
+  const cursorRef = useRef<HTMLDivElement>(null);
   const [cursorText, setCursorText] = useState<string | null>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -11,8 +11,22 @@ export const CustomCursor: React.FC = () => {
     if (window.matchMedia('(pointer: coarse)').matches) return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+    let rafId: number;
+    let mouseX = -100;
+    let mouseY = -100;
+
+    const render = () => {
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%, -50%)`;
+      }
+    };
+
     const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(render);
+
       if (!isVisible) setIsVisible(true);
 
       const target = e.target as HTMLElement | null;
@@ -32,11 +46,12 @@ export const CustomCursor: React.FC = () => {
     const handleMouseLeave = () => setIsVisible(false);
     const handleMouseEnter = () => setIsVisible(true);
 
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeave);
     document.addEventListener('mouseenter', handleMouseEnter);
 
     return () => {
+      cancelAnimationFrame(rafId);
       window.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseenter', handleMouseEnter);
@@ -47,11 +62,10 @@ export const CustomCursor: React.FC = () => {
 
   return (
     <div
-      className="fixed pointer-events-none z-50 transition-transform duration-75 ease-out hidden lg:block"
+      ref={cursorRef}
+      className="fixed pointer-events-none z-50 top-0 left-0 will-change-transform hidden lg:block"
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        transform: 'translate(-50%, -50%)',
+        transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)',
       }}
     >
       <div
@@ -59,7 +73,7 @@ export const CustomCursor: React.FC = () => {
           cursorText
             ? 'px-3 py-1.5 bg-[#143D32] text-white text-[11px] font-mono tracking-wider shadow-lg'
             : isHovered
-            ? 'w-8 h-8 bg-[#1769FF]/20 border border-[#1769FF] scale-125 backdrop-blur-[1px]'
+            ? 'w-8 h-8 bg-[#1769FF]/20 border border-[#1769FF] scale-125'
             : 'w-3 h-3 bg-[#143D32] shadow-sm'
         }`}
       >

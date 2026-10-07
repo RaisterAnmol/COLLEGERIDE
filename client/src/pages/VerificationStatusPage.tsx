@@ -260,18 +260,35 @@ export const VerificationStatusPage: React.FC = () => {
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
-                  {user.name || "Mitsuha Miyamizu"}
+                  {user.name || "Student"}
                 </h2>
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                  Verified Student
-                </span>
+                {user.verificationStatus === 'verified' ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                    Verified {isDriver ? 'Driver' : 'Student'}
+                  </span>
+                ) : user.verificationStatus === 'pending' ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                    <Clock className="w-3 h-3 text-amber-600" />
+                    ID Verification Pending
+                  </span>
+                ) : user.verificationStatus === 'rejected' ? (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-800 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                    <AlertCircle className="w-3 h-3 text-rose-600" />
+                    Verification Rejected
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                    <AlertCircle className="w-3 h-3 text-slate-500" />
+                    Verification Required
+                  </span>
+                )}
               </div>
               <p className="text-xs text-slate-600 mt-0.5">
-                {user.college || "DIT University"} • {user.department || user.course || "Computer Applications"}
+                {user.college || "University"} • {user.department || user.course || "General Studies"}
               </p>
               <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
-                <span>Roll No: <strong className="text-slate-700 font-mono">{user.studentId || user.institutionId || "UU-2024-DRV-842"}</strong></span>
+                <span>Roll No: <strong className="text-slate-700 font-mono">{user.studentId || (user as any).studentIdentifier || `${(user.college || 'CR').slice(0, 3).toUpperCase()}-${user._id?.slice(-6).toUpperCase() || 'STD'}`}</strong></span>
                 <span>•</span>
                 <span>Role: <strong className="text-slate-700">{isDriver ? "Driver & Passenger" : "Passenger"}</strong></span>
               </div>
@@ -282,15 +299,15 @@ export const VerificationStatusPage: React.FC = () => {
           <div className="flex items-center gap-6 sm:border-l sm:border-slate-200 sm:pl-6 text-xs">
             <div>
               <span className="text-[10px] text-slate-400 font-medium block">Rides Completed</span>
-              <span className="text-lg font-black text-slate-900 leading-tight">12</span>
+              <span className="text-lg font-black text-slate-900 leading-tight">{user.totalRides ?? 0}</span>
             </div>
             <Link to="/dashboard" className="group flex items-center gap-1.5 hover:text-emerald-700 transition-colors">
               <div>
                 <span className="text-[10px] text-slate-400 font-medium block">Rating</span>
                 <div className="flex items-center gap-1 text-slate-900 font-bold text-sm">
                   <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  <span>4.8</span>
-                  <span className="text-[11px] text-slate-400 font-normal">(12)</span>
+                  <span>{user.rating ? user.rating.toFixed(1) : '5.0'}</span>
+                  <span className="text-[11px] text-slate-400 font-normal">({user.totalRides ?? 0})</span>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-slate-400 group-hover:translate-x-0.5 transition-transform" />

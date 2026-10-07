@@ -52,6 +52,23 @@ router.patch(
   }
 );
 
+// PATCH /api/notifications/mark-all-read
+router.patch(
+  "/mark-all-read",
+  requireAuth,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      await Notification.updateMany(
+        { userId: req.user!.id, readAt: { $exists: false } },
+        { readAt: new Date() }
+      );
+      res.status(200).json({ success: true, message: "All notifications marked as read" });
+    } catch (err: any) {
+      res.status(500).json({ code: "SERVER_ERROR", message: "Failed to mark all as read" });
+    }
+  }
+);
+
 // POST /api/notifications/devices (Register device for Web Push / FCM)
 router.post(
   "/devices",

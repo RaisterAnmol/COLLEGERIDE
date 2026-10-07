@@ -1,8 +1,18 @@
+const isLocal =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+   window.location.hostname === "127.0.0.1" ||
+   window.location.hostname.startsWith("192.168.") ||
+   window.location.hostname.startsWith("10.") ||
+   window.location.hostname.startsWith("172."));
+
+const rawApiUrl = import.meta.env.VITE_API_URL;
+const isLocalhostUrl = Boolean(rawApiUrl && (rawApiUrl.includes("localhost") || rawApiUrl.includes("127.0.0.1")));
+
 const API_BASE =
-  import.meta.env.VITE_API_URL ||
-  (typeof window !== "undefined" && window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "");
+  (rawApiUrl && (!isLocalhostUrl || isLocal))
+    ? rawApiUrl
+    : (isLocal ? `${window.location.protocol}//${window.location.hostname}:5000` : "");
 
 class ApiService {
   private getToken(): string | null {
@@ -75,6 +85,13 @@ class ApiService {
     });
   }
 
+  async googleLogin(credential: string, accountType?: string) {
+    return this.request<{ token: string; refreshToken?: string; user: any }>("/api/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ credential, accountType }),
+    });
+  }
+
   async forgotPassword(email: string) {
     return this.request<{ message: string }>("/api/auth/forgot-password", {
       method: "POST",
@@ -86,6 +103,57 @@ class ApiService {
     return this.request<{ message: string }>("/api/auth/reset-password", {
       method: "POST",
       body: JSON.stringify({ token, newPassword }),
+    });
+  }
+
+  async verifyEmail(token: string) {
+    return this.request<{ message: string; isEmailVerified: boolean; accountStatus?: string }>(
+      "/api/auth/email/verify",
+      {
+        method: "POST",
+        body: JSON.stringify({ token }),
+      }
+    );
+  }
+
+  async sendEmailVerification() {
+    return this.request<{ message: string; devVerificationToken?: string }>(
+      "/api/auth/email/send-verification",
+      {
+        method: "POST",
+      }
+    );
+  }
+
+  async devVerifyEmail(email?: string, userId?: string) {
+    return this.request<{ message: string; isEmailVerified: boolean; user?: any }>(
+      "/api/auth/dev-verify-email",
+      {
+        method: "POST",
+        body: JSON.stringify({ email, userId }),
+      }
+    );
+  }
+
+  async sendPhoneOtp(phone: string) {
+    return this.request<{
+      message: string;
+      dispatchMode: string;
+      expiresInSeconds: number;
+      devOtpHint?: string;
+    }>("/api/auth/phone/send-otp", {
+      method: "POST",
+      body: JSON.stringify({ phone }),
+    });
+  }
+
+  async verifyPhoneOtp(otp: string) {
+    return this.request<{
+      message: string;
+      isPhoneVerified: boolean;
+    }>("/api/auth/phone/verify-otp", {
+      method: "POST",
+      body: JSON.stringify({ otp }),
     });
   }
 
@@ -101,6 +169,12 @@ class ApiService {
     year?: number;
     semester?: number;
     phone?: string;
+    accountType?: string;
+    vehicle?: any;
+    avatarURL?: string;
+    facePhoto?: string;
+    faceEmbedding?: number[];
+    enrolledIdCardUrl?: string;
   }) {
     return this.request<{ success: boolean; message: string; user: any }>(
       "/api/auth/profile",
@@ -279,7 +353,7 @@ class ApiService {
   async sendMessage(conversationId: string, text: string) {
     return this.request<any>(`/api/conversations/${conversationId}/messages`, {
       method: "POST",
-      body: JSON.stringify({ content: text }),
+      body: JSON.stringify({ text, content: text }),
     });
   }
 
@@ -339,6 +413,22 @@ class ApiService {
   }
 
   // Student & Institutional Verification
+  async getNotifications() {
+    return this.request<{ notifications: any[]; unreadCount: number }>("/api/notifications");
+  }
+
+  async markNotificationRead(id: string) {
+    return this.request<{ notification: any }>(`/api/notifications/${id}/read`, {
+      method: "PATCH",
+    });
+  }
+
+  async markAllNotificationsRead() {
+    return this.request<{ success: boolean; message: string }>("/api/notifications/mark-all-read", {
+      method: "PATCH",
+    });
+  }
+
   async submitVerificationRequest(data: FormData | Record<string, any>) {
     return this.request<any>("/api/verification/request", {
       method: "POST",
@@ -532,6 +622,32 @@ class ApiService {
     return this.request<any>("/api/admin/pricing", {
       method: "PUT",
       body: JSON.stringify(data),
+    });
+  }
+
+  async recordDailyDriverLiveness(data: { photo?: string; descriptor?: number[] } = {}) {
+    return this.request<{
+      success: boolean;
+      verifiedDate: string;
+      message: string;
+    }>("/api/face/daily-liveness", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async getAdminUsers(role?: string, status?: string, search?: string) {
+    const params = new URLSearchParams();
+    if (role && role !== "all") params.set("role", role);
+    if (status && status !== "all") params.set("status", status);
+    if (search) params.set("search", search);
+    const qs = params.toString();
+    return this.request<{ users: any[] }>(`/api/admin/users${qs ? `?${qs}` : ""}`);
+  }
+
+  async adminVerifyUser(userId: string) {
+    return this.request<{ message: string; user: any }>(`/api/admin/users/${userId}/verify`, {
+      method: "PATCH",
     });
   }
 }

@@ -3,6 +3,7 @@ import { User, Ride, Trip, RideRequest, SystemPricing } from '../models';
 import { requireAuth, AuthenticatedRequest } from '../middleware/auth';
 import { logger } from '../utils/logger';
 import { seedDemoData } from '../seed';
+import { whatsappService } from '../services/whatsappService';
 
 const router = Router();
 
@@ -316,6 +317,410 @@ router.post('/reseed', async (_req: Request, res: Response): Promise<void> => {
   } catch (err: any) {
     logger.error({ err }, 'Failed to re-seed demo data');
     res.status(500).json({ error: err.message || 'Failed to re-seed demo data' });
+  }
+});
+
+// HTML view for visual QR Code scanning
+function renderScanPageHtml(status: { status: string; isConnected: boolean; qrDataUrl: string | null; botNumber?: string | null }): string {
+  const connectedHtml = `
+    <div style="padding: 12px 0;">
+      <div style="font-size: 52px; margin-bottom: 8px;">✅</div>
+      <span class="badge badge-connected">Active & Ready</span>
+      <h1>WhatsApp Connected!</h1>
+      <p class="subtitle">CampusRide is linked to WhatsApp. Automatic OTP messages will be delivered to student mobile numbers for free.</p>
+      ${status.botNumber ? `<p style="font-size: 11px; color: #065F46; background: #D1FAE5; display: inline-block; padding: 4px 10px; border-radius: 8px; margin: 0 0 12px 0;">Bot Sender: <strong>${status.botNumber}</strong></p>` : ''}
+      
+      <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 18px; padding: 20px; margin-top: 10px; text-align: left;">
+        <h3 style="margin: 0 0 6px 0; font-size: 14px; font-weight: 800; color: #143D32;">🧪 Send a Test WhatsApp OTP</h3>
+        <p style="margin: 0 0 14px 0; font-size: 12px; color: #64748B;">Enter your 10-digit mobile number below to receive an instant verification message on your WhatsApp:</p>
+        
+        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+          <span style="background: #E2E8F0; border-radius: 10px; padding: 10px 12px; font-weight: 700; font-size: 13px; color: #334155;">+91</span>
+          <input type="tel" id="test-phone-input" placeholder="9876543210" maxlength="10" style="flex: 1; padding: 10px 14px; border: 1.5px solid #CBD5E1; border-radius: 10px; font-size: 14px; font-weight: 600; outline: none;" />
+        </div>
+
+        <button id="send-test-btn" type="button" class="btn" style="margin-bottom: 8px;">Send Test OTP to WhatsApp</button>
+        <div id="test-result" style="display: none; font-size: 12px; border-radius: 10px; padding: 10px 12px; margin-top: 10px;"></div>
+      </div>
+
+      <div style="margin-top: 20px; font-size: 12px; color: #475569; background: #F1F5F9; border-radius: 14px; padding: 14px; text-align: left; line-height: 1.6;">
+        <strong style="color: #0F172A; display: block; margin-bottom: 4px;">🎯 What to do next:</strong>
+        1. Send a test OTP above to confirm WhatsApp delivery to your phone.<br>
+        2. Open CampusRide at <a href="http://localhost:5173" target="_blank" style="color: #059669; font-weight: 700; text-decoration: underline;">localhost:5173</a>.<br>
+        3. Any driver or student phone verification will now automatically send a real WhatsApp OTP at ₹0 cost!
+      </div>
+    </div>
+  `;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CampusRide WhatsApp Bot - Link Device</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #0B1E19;
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+    }
+    .card {
+      background: #FFFFFF;
+      color: #0F172A;
+      border-radius: 28px;
+      padding: 36px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .badge-scan { background: #FEF3C7; color: #92400E; }
+    .badge-connected { background: #D1FAE5; color: #065F46; }
+    h1 { font-size: 22px; font-weight: 900; margin: 0 0 6px 0; color: #143D32; }
+    p.subtitle { font-size: 12px; color: #64748B; margin: 0 0 20px 0; line-height: 1.5; }
+    .qr-box {
+      background: #F8FAFC;
+      border: 2px dashed #10B981;
+      border-radius: 20px;
+      padding: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      min-width: 270px;
+      min-height: 270px;
+    }
+    .qr-box img {
+      width: 256px;
+      height: 256px;
+      display: block;
+      border-radius: 12px;
+      image-rendering: pixelated;
+    }
+    ol {
+      text-align: left;
+      font-size: 12px;
+      color: #334155;
+      padding-left: 20px;
+      margin: 0 0 20px 0;
+      line-height: 1.8;
+      background: #F8FAFC;
+      border-radius: 16px;
+      padding: 14px 16px 14px 34px;
+    }
+    ol li strong { color: #0F172A; }
+    .btn {
+      background: #143D32;
+      color: #FFFFFF;
+      border: none;
+      padding: 13px 24px;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 14px;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #0E2C24; }
+    .btn:disabled { background: #94A3B8; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="card" id="main-card">
+    <div id="status-container">
+      ${
+        status.isConnected
+          ? connectedHtml
+          : `
+          <span class="badge badge-scan">Scan QR Code</span>
+          <h1>Link WhatsApp Bot</h1>
+          <p class="subtitle">Scan this QR code using WhatsApp on your phone to activate automated OTP delivery.</p>
+
+          <div class="qr-box">
+            ${
+              status.qrDataUrl
+                ? `<img id="qr-image" src="${status.qrDataUrl}" alt="WhatsApp QR Code" />`
+                : `<div style="font-size: 12px; color: #64748B;">Generating live QR code...</div>`
+            }
+          </div>
+
+          <ol>
+            <li>Open <strong>WhatsApp</strong> on your phone</li>
+            <li>Tap <strong>Settings</strong> (or 3-dots) &rarr; <strong>Linked Devices</strong></li>
+            <li>Tap <strong>Link a Device</strong> and point camera here</li>
+          </ol>
+
+          <button id="refresh-qr-btn" type="button" class="btn">Refresh QR Code</button>
+        `
+      }
+    </div>
+  </div>
+
+  <script>
+    const connectedTemplate = ${JSON.stringify(connectedHtml)};
+
+    async function checkStatus() {
+      try {
+        const res = await fetch('/api/admin/whatsapp/status', {
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.isConnected) {
+          if (!document.getElementById('test-phone-input')) {
+            document.getElementById('status-container').innerHTML = connectedTemplate;
+          }
+        } else if (data.qrDataUrl) {
+          const img = document.getElementById('qr-image');
+          if (img) {
+            img.src = data.qrDataUrl;
+          }
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    async function refreshQr() {
+      try {
+        await fetch('/api/admin/whatsapp/reconnect', { method: 'POST' });
+        setTimeout(checkStatus, 1000);
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    async function sendTestOtp() {
+      const input = document.getElementById('test-phone-input');
+      const btn = document.getElementById('send-test-btn');
+      const resDiv = document.getElementById('test-result');
+      const phone = input ? input.value.trim() : '';
+      if (!phone || phone.length < 10) {
+        alert('Please enter a valid 10-digit mobile number');
+        return;
+      }
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Sending message...';
+      }
+      if (resDiv) {
+        resDiv.style.display = 'block';
+        resDiv.style.background = '#EFF6FF';
+        resDiv.style.color = '#1D4ED8';
+        resDiv.innerHTML = 'Connecting to WhatsApp Baileys socket...';
+      }
+      try {
+        const res = await fetch('/api/admin/whatsapp/test-send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone })
+        });
+        const data = await res.json();
+        if (data.success) {
+          if (resDiv) {
+            resDiv.style.background = '#ECFDF5';
+            resDiv.style.color = '#047857';
+            let extra = '';
+            if (data.isSelf) {
+              extra = '<div style="margin-top: 8px; padding: 8px 10px; background: #FEF3C7; color: #92400E; border-radius: 8px; font-size: 11px; line-height: 1.5;"><strong>📍 Check "Message yourself" / "You":</strong> This number belongs to the WhatsApp account you linked! In WhatsApp on your phone, open your own chat (named <strong>"Message yourself"</strong> or <strong>"You"</strong>) to find the code.</div>';
+            }
+            resDiv.innerHTML = '<strong>✅ OTP Dispatched via WhatsApp!</strong><br>A private 6-digit verification code was sent to <strong>' + (data.recipientJid || ('+91 ' + phone)) + '</strong>. Check your WhatsApp to read it.' + extra;
+          }
+        } else {
+          if (resDiv) {
+            resDiv.style.background = '#FEF2F2';
+            resDiv.style.color = '#B91C1C';
+            resDiv.innerHTML = '<strong>❌ Failed:</strong> ' + (data.error || 'Could not deliver message');
+          }
+        }
+      } catch (err) {
+        if (resDiv) {
+          resDiv.style.background = '#FEF2F2';
+          resDiv.style.color = '#B91C1C';
+          resDiv.innerHTML = '<strong>❌ Network Error:</strong> ' + err.message;
+        }
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Send Test OTP to WhatsApp';
+        }
+      }
+    }
+
+    // Unobtrusive event delegation - adheres strictly to CSP script-src-attr
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      if (!target) return;
+      if (target.id === 'send-test-btn' || (target.closest && target.closest('#send-test-btn'))) {
+        e.preventDefault();
+        sendTestOtp();
+      }
+      if (target.id === 'refresh-qr-btn' || (target.closest && target.closest('#refresh-qr-btn'))) {
+        e.preventDefault();
+        refreshQr();
+      }
+    });
+
+    setInterval(checkStatus, 2500);
+  </script>
+</body>
+</html>`;
+}
+
+// GET /api/admin/whatsapp/scan - Direct visual scan page for browser
+router.get('/whatsapp/scan', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const status = whatsappService.getStatus();
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' data:; connect-src 'self' ws: wss:; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
+    res.send(renderScanPageHtml(status));
+  } catch (err: any) {
+    res.status(500).send(`Error: ${err.message}`);
+  }
+});
+
+// GET /api/admin/whatsapp/status - View WhatsApp bot connection state & QR code
+router.get('/whatsapp/status', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const status = whatsappService.getStatus();
+    // If request comes from a web browser directly, show the visual scan page!
+    if (req.headers.accept?.includes('text/html')) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.setHeader('Content-Security-Policy', "default-src 'self' 'unsafe-inline' data:; connect-src 'self' ws: wss:; script-src 'self' 'unsafe-inline'; script-src-attr 'unsafe-inline'; style-src 'self' 'unsafe-inline';");
+      res.send(renderScanPageHtml(status));
+      return;
+    }
+    res.status(200).json(status);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to fetch WhatsApp status' });
+  }
+});
+
+// POST /api/admin/whatsapp/reconnect - Trigger WhatsApp reconnect / QR refresh
+router.post('/whatsapp/reconnect', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    await whatsappService.initialize();
+    const status = whatsappService.getStatus();
+    res.status(200).json({ message: 'WhatsApp reconnect triggered', status });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Failed to reconnect WhatsApp' });
+  }
+});
+
+// POST /api/admin/whatsapp/test-send - Test sending a live WhatsApp message
+router.post('/whatsapp/test-send', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { phone } = req.body;
+    if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
+      res.status(400).json({ error: 'Valid phone number required (e.g. 9876543210 or +919876543210)' });
+      return;
+    }
+    const testOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    const result = await whatsappService.sendOtp(phone.trim(), testOtp);
+    res.status(200).json({
+      success: result.success,
+      mode: result.mode,
+      messageId: result.messageId,
+      isSelf: result.isSelf,
+      botNumber: result.botNumber,
+      recipientJid: result.recipientJid,
+      error: result.error,
+    });
+  } catch (err: any) {
+    logger.error({ err }, 'Failed to send test WhatsApp message');
+    res.status(500).json({ error: err.message || 'Failed to send test WhatsApp message' });
+  }
+});
+
+// GET /api/admin/users - List all registered users for admin gatekeeper
+router.get('/users', requireAuth, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const { role, status, search } = req.query;
+    const filter: any = {};
+
+    if (role && role !== 'all') {
+      if (role === 'students') {
+        filter.role = { $in: ['student', 'passenger'] };
+      } else if (role === 'drivers') {
+        filter.role = 'driver';
+      } else if (role === 'admins') {
+        filter.role = { $in: ['campus_admin', 'super_admin'] };
+      } else {
+        filter.role = role;
+      }
+    }
+
+    if (status && status !== 'all') {
+      filter.verificationStatus = status;
+    }
+
+    let users = await User.find(filter)
+      .select('-passwordHash')
+      .sort({ createdAt: -1 })
+      .limit(200);
+
+    if (search && typeof search === 'string' && search.trim()) {
+      const q = search.trim().toLowerCase();
+      users = users.filter((u: any) =>
+        (u.name || '').toLowerCase().includes(q) ||
+        (u.email || '').toLowerCase().includes(q) ||
+        (u.college || '').toLowerCase().includes(q)
+      );
+    }
+
+    res.status(200).json({ users });
+  } catch (err: any) {
+    logger.error({ err }, 'Failed to fetch admin users');
+    res.status(500).json({ error: err.message || 'Failed to fetch users' });
+  }
+});
+
+// PATCH /api/admin/users/:id/verify - 1-Click user verification by Admin
+router.patch('/users/:id/verify', requireAuth, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    user.verificationStatus = 'verified';
+    if (user.faceEnrollmentStatus === 'PENDING') {
+      user.faceEnrollmentStatus = 'ENROLLED';
+      user.faceVerificationEnabled = true;
+    }
+    await user.save();
+
+    res.status(200).json({
+      message: `${user.name} has been verified successfully by Admin.`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        verificationStatus: user.verificationStatus,
+      },
+    });
+  } catch (err: any) {
+    logger.error({ err }, 'Failed to verify user by admin');
+    res.status(500).json({ error: err.message || 'Failed to verify user' });
   }
 });
 

@@ -54,6 +54,18 @@ const envSchema = z.object({
             ? val.trim()
             : "CampusRide_Special_Admin_Secret_2025_Root!"
         ),
+  AUTH_PROVIDER: z.enum(["jwt_local", "google_oauth"]).default("jwt_local"),
+  GOOGLE_CLIENT_ID: z.string().optional(),
+  GOOGLE_CLIENT_SECRET: z.string().optional(),
+  EMAIL_PROVIDER: z.enum(["mock", "smtp", "resend"]).default("mock"),
+  RESEND_API_KEY: z.string().optional(),
+  SMS_PROVIDER: z.enum(["mock", "twilio", "msg91"]).default("mock"),
+  MAP_PRIMARY: z.enum(["osrm", "openrouteservice", "google_maps"]).default("osrm"),
+  MAP_FALLBACK: z.enum(["openrouteservice", "osrm", "none"]).default("openrouteservice"),
+  STORAGE_PROVIDER: z.enum(["local", "cloudinary", "supabase"]).default("local"),
+  STORAGE_LOCAL_DIR: z.string().default("./uploads/private"),
+  ML_PROVIDER: z.enum(["local", "fastapi"]).default("local"),
+  REALTIME_PROVIDER: z.enum(["socket_io"]).default("socket_io"),
 });
 
 const parsed = envSchema.safeParse(process.env);

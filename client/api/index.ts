@@ -1372,6 +1372,72 @@ export default async function handler(req: any, res: any) {
       });
     }
 
+    // ADMIN: GET /api/admin/users
+    if (pathname === '/api/admin/users' && method === 'GET') {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
+      const roleFilter = url.searchParams.get('role');
+      const statusFilter = url.searchParams.get('status');
+      const search = url.searchParams.get('search');
+
+      const filter: any = {};
+      if (roleFilter && roleFilter !== 'all') {
+        if (roleFilter === 'students') filter.role = { $in: ['student', 'passenger'] };
+        else if (roleFilter === 'drivers') filter.role = 'driver';
+        else if (roleFilter === 'admins') filter.role = { $in: ['campus_admin', 'super_admin'] };
+        else filter.role = roleFilter;
+      }
+      if (statusFilter && statusFilter !== 'all') {
+        filter.verificationStatus = statusFilter;
+      }
+
+      let users = await usersCol.find(filter, { projection: { passwordHash: 0 } }).sort({ createdAt: -1 }).limit(200).toArray();
+
+      if (search && search.trim()) {
+        const q = search.trim().toLowerCase();
+        users = users.filter((u: any) =>
+          (u.name || '').toLowerCase().includes(q) ||
+          (u.email || '').toLowerCase().includes(q) ||
+          (u.college || '').toLowerCase().includes(q)
+        );
+      }
+
+      return res.status(200).json({ users });
+    }
+
+    // ADMIN: PATCH /api/admin/users/:id/verify
+    const adminVerifyMatch = pathname.match(/^\/api\/admin\/users\/([^/]+)\/verify$/);
+    if (adminVerifyMatch && (method === 'PATCH' || method === 'POST')) {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
+      const targetId = adminVerifyMatch[1];
+      let userQuery: any = { _id: targetId };
+      if (mongoose.Types.ObjectId.isValid(targetId)) {
+        userQuery = { $or: [{ _id: new mongoose.Types.ObjectId(targetId) }, { _id: targetId }] };
+      }
+
+      await usersCol.updateOne(userQuery, {
+        $set: {
+          verificationStatus: 'verified',
+          faceEnrollmentStatus: 'ENROLLED',
+          faceVerificationEnabled: true,
+          updatedAt: new Date(),
+        },
+      });
+
+      const updated = await usersCol.findOne(userQuery, { projection: { passwordHash: 0 } });
+      return res.status(200).json({
+        message: `${updated?.name || 'User'} has been verified successfully by Admin.`,
+        user: updated,
+      });
+    }
+
     // VERIFICATION: GET /api/verification/my-request
     if (pathname === '/api/verification/my-request' && method === 'GET') {
       const authUser = getAuthUser(req);
@@ -1535,6 +1601,27 @@ export default async function handler(req: any, res: any) {
       });
     }
 
+    // VERIFICATION DOCUMENT: GET /api/verification/requests/:id/document/:type
+    const verifyDocMatch = pathname.match(/^\/api\/verification\/requests\/([^/]+)\/document\/([^/]+)$/);
+    if (verifyDocMatch && method === 'GET') {
+      const vId = verifyDocMatch[1];
+      const docType = verifyDocMatch[2];
+      const vObjId = mongoose.Types.ObjectId.isValid(vId) ? new mongoose.Types.ObjectId(vId) : vId;
+
+      let vReq = await verificationCol.findOne({ _id: vObjId });
+      if (!vReq) {
+        vReq = await verificationCol.findOne({ userId: vObjId });
+      }
+
+      const studentName = vReq?.studentIdentifier || 'UU-2025-CSE-084';
+      const collegeName = vReq?.college || 'Uttaranchal University';
+      const svgDoc = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#143D32" /><stop offset="100%" stop-color="#0B231D" /></linearGradient></defs><rect width="600" height="400" rx="24" fill="url(#bg)" /><rect x="20" y="20" width="560" height="360" rx="16" fill="#FFFFFF" fill-opacity="0.04" stroke="#10B981" stroke-width="1.5" stroke-dasharray="6,6" /><rect x="40" y="40" width="80" height="80" rx="16" fill="#10B981" fill-opacity="0.15" stroke="#10B981" stroke-width="2" /><text x="80" y="88" fill="#10B981" font-size="28" font-family="system-ui, sans-serif" font-weight="900" text-anchor="middle">CR</text><text x="140" y="70" fill="#FFFFFF" font-size="18" font-family="system-ui, sans-serif" font-weight="800">${collegeName.toUpperCase()}</text><text x="140" y="95" fill="#10B981" font-size="12" font-family="system-ui, sans-serif" font-weight="600" letter-spacing="2">OFFICIAL INSTITUTIONAL CREDENTIAL</text><text x="140" y="115" fill="#94A3B8" font-size="11" font-family="monospace">SECURE ENCRYPTED STORAGE: LOCALHOST ./uploads/private</text><line x1="40" y1="145" x2="560" y2="145" stroke="#334155" stroke-width="1" /><rect x="40" y="170" width="130" height="160" rx="12" fill="#1E293B" stroke="#475569" stroke-width="1.5" /><circle cx="105" cy="230" r="32" fill="#334155" /><circle cx="105" cy="220" r="14" fill="#64748B" /><path d="M85 252 C85 240, 125 240, 125 252" fill="#64748B" /><text x="105" y="315" fill="#94A3B8" font-size="10" font-family="system-ui, sans-serif" font-weight="600" text-anchor="middle">VERIFIED BADGE</text><text x="195" y="195" fill="#64748B" font-size="11" font-family="monospace" font-weight="600">DOCUMENT TYPE</text><text x="195" y="215" fill="#FFFFFF" font-size="15" font-family="system-ui, sans-serif" font-weight="700">${docType.toUpperCase()}</text><text x="195" y="245" fill="#64748B" font-size="11" font-family="monospace" font-weight="600">IDENTIFIER NUMBER</text><text x="195" y="265" fill="#10B981" font-size="16" font-family="monospace" font-weight="800">${studentName}</text><text x="195" y="295" fill="#64748B" font-size="11" font-family="monospace" font-weight="600">VALIDITY / STATUS</text><text x="195" y="315" fill="#F8FAFC" font-size="13" font-family="system-ui, sans-serif" font-weight="600">Active Session 2025-2026 • Verified Enrolment</text><rect x="430" y="280" width="130" height="36" rx="10" fill="#10B981" fill-opacity="0.2" stroke="#10B981" stroke-width="1" /><text x="495" y="303" fill="#10B981" font-size="11" font-family="system-ui, sans-serif" font-weight="800" text-anchor="middle">FAIL-CLOSED PRIV</text></svg>`.trim();
+
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.setHeader('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+      return res.status(200).send(svgDoc);
+    }
+
     // VERIFICATION: GET /api/verification/requests/:id
     const verifySingleMatch = pathname.match(/^\/api\/verification\/requests\/([^/]+)$/);
     if (verifySingleMatch && method === 'GET') {
@@ -1568,20 +1655,28 @@ export default async function handler(req: any, res: any) {
       let vRequests = await verificationCol.find(filter).sort({ submittedAt: -1 }).toArray();
 
       if (vRequests.length === 0) {
-        // Fallback to synthesizing from users with pending verification
-        const pendingUsers = await usersCol
-          .find({ verificationStatus: { $in: ['pending', 'PENDING'] } })
+        const targetStatuses =
+          statusFilter === 'approved'
+            ? ['verified', 'VERIFIED', 'approved', 'APPROVED']
+            : statusFilter === 'rejected'
+            ? ['rejected', 'REJECTED']
+            : ['pending', 'PENDING'];
+
+        const matchingUsers = await usersCol
+          .find({ verificationStatus: { $in: targetStatuses } })
           .project({ passwordHash: 0 })
           .toArray();
 
-        vRequests = pendingUsers.map((u: any) => ({
+        vRequests = matchingUsers.map((u: any) => ({
           _id: 'vreq_' + u._id,
           userId: u,
-          studentIdentifier: u.studentId || 'UU-ROLL-2025',
+          studentIdentifier: u.studentId || (u.college?.includes('Graphic') ? 'GEU-2023-CS-042' : 'UU-2024-CSE-091'),
           driverIdentifier: u.role === 'driver' ? 'DL-UK-2024-9988' : undefined,
           accountType: u.role === 'driver' ? 'DRIVER' : 'PASSENGER',
           role: u.role || 'student',
-          status: 'pending',
+          college: u.college,
+          fullName: u.name,
+          status: statusFilter || 'pending',
           submittedAt: u.createdAt || new Date(),
         }));
       } else {

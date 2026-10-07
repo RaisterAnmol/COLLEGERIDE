@@ -25,6 +25,7 @@ export function initSocketIO(httpServer: HttpServer): SocketIOServer {
     if (!origin) return true;
     if (configuredOrigins.includes(origin)) return true;
     if (origin.includes("localhost") || origin.includes("127.0.0.1")) return true;
+    if (origin.includes("192.168.") || origin.includes("10.") || origin.includes("172.")) return true;
     if (origin.endsWith(".vercel.app") || origin.endsWith(".replit.app") || origin.endsWith(".repl.co")) return true;
     return false;
   };

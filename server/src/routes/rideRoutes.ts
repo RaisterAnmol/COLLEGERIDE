@@ -427,11 +427,12 @@ router.get(
   },
 );
 
-// POST /api/rides (Driver creates a ride offer §31)
+// POST /api/rides (Driver creates a ride offer §31, §4.1)
 router.post(
   "/",
   requireAuth,
-  requireRole("driver", "student", "campus_admin", "super_admin"),
+  requireRole("driver", "campus_admin", "super_admin"),
+  requireVerificationApproved,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const parseResult = createRideSchema.safeParse(req.body);

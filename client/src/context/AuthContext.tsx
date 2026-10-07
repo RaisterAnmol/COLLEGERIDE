@@ -12,6 +12,7 @@ interface AuthContextType {
   activePersona: PersonaRole;
   setActivePersona: (role: PersonaRole) => void;
   login: (email: string, password?: string) => Promise<IUser>;
+  loginWithGoogle: (credential: string, accountType?: string) => Promise<IUser>;
   register: (userData: any) => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
   logout: () => void;
@@ -161,6 +162,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return resolvedUser;
   };
 
+  const loginWithGoogle = async (credential: string, accountType?: string): Promise<IUser> => {
+    setLoading(true);
+    let resolvedUser: IUser;
+    try {
+      const res = await api.googleLogin(credential, accountType);
+      localStorage.setItem("campusride_auth_v2", "true");
+      localStorage.setItem("campusride_token", res.token);
+      localStorage.setItem("campusride_user", JSON.stringify(res.user));
+      setToken(res.token);
+      setUser(res.user);
+      joinUserRoom(res.user._id);
+      resolvedUser = res.user;
+    } finally {
+      if (resolvedUser!?.role === 'super_admin' || resolvedUser!?.role === 'campus_admin' || resolvedUser!?.role === 'moderator') {
+        setActivePersona('admin');
+      } else if (resolvedUser!?.role === 'driver' || resolvedUser!?.accountType === 'DRIVER') {
+        setActivePersona('driver');
+      } else {
+        setActivePersona('passenger');
+      }
+      setLoading(false);
+    }
+    return resolvedUser;
+  };
+
   const register = async (userData: any) => {
     setLoading(true);
     try {
@@ -221,6 +247,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         activePersona,
         setActivePersona,
         login,
+        loginWithGoogle,
         register,
         updateProfile,
         logout,

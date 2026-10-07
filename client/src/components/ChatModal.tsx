@@ -61,8 +61,18 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
     loadChat();
 
     const socket = getSocket();
-    const handleNewMessage = (msg: IMessage) => {
-      setMessages((prev) => [...prev, msg]);
+    const handleNewMessage = (payload: any) => {
+      const actualMsg = payload?.message || payload;
+      if (!actualMsg || (!actualMsg.text && !actualMsg.content)) return;
+
+      if (payload?.conversationId && conversation?._id && payload.conversationId.toString() !== conversation._id.toString()) {
+        return;
+      }
+
+      setMessages((prev) => {
+        if (actualMsg._id && prev.some((m) => m._id === actualMsg._id)) return prev;
+        return [...prev, actualMsg];
+      });
     };
 
     socket.on('chatMessage', handleNewMessage);
@@ -77,7 +87,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
       socket.off('chatMessage', handleNewMessage);
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [rideId, onClose]);
+  }, [rideId, onClose, conversation?._id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -96,19 +106,20 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
       const newMsg = res?.message || res;
       if (newMsg) {
         setMessages((prev) => {
-          if (prev.some(m => m._id === newMsg._id)) return prev;
+          if (prev.some((m) => m._id === newMsg._id)) return prev;
           return [...prev, newMsg];
         });
       }
-      // Socket event will automatically broadcast and append message to list
     } catch (err) {
       console.warn('[ChatModal] Send message offline fallback:', err);
       const localMsg: IMessage = {
         _id: 'msg_' + Date.now(),
-        senderId: user?._id || 'usr_current',
+        senderId: user?._id || (user as any)?.id || 'usr_current',
         content: textToSend,
+        text: textToSend,
         type: 'text',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        time: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, localMsg]);
     } finally {
@@ -163,9 +174,12 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
             </div>
           ) : (
             messages.map((msg, idx) => {
-              const senderId = typeof msg.senderId === 'string' ? msg.senderId : msg.senderId?._id;
-              const senderName = typeof msg.senderId === 'object' ? msg.senderId?.name : 'Member';
-              const isMe = senderId === user?._id;
+              const senderId = typeof msg.senderId === 'string'
+                ? msg.senderId
+                : (msg.senderId?._id || (msg.senderId as any)?.id || '');
+              const senderName = typeof msg.senderId === 'object' ? (msg.senderId?.name || 'Member') : 'Member';
+              const currentUserId = user?._id || (user as any)?.id || '';
+              const isMe = Boolean(senderId && currentUserId && (senderId.toString() === currentUserId.toString()));
 
               return (
                 <div key={msg._id || idx} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>

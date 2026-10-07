@@ -78,10 +78,35 @@ export const VerificationReviewModal: React.FC<VerificationReviewModalProps> = (
 
       const fetchDoc = async (type: DocType) => {
         try {
+          if (type === "idDocument") {
+            const directId = request.idDocumentStorageKey || request.documentStorageKey || user.enrolledIdCardUrl;
+            if (directId && (directId.startsWith("data:") || directId.startsWith("http") || directId.startsWith("/"))) {
+              urls[type] = directId;
+              return;
+            }
+          } else if (type === "selfie") {
+            const directSelfie = request.selfieStorageKey || user.avatarURL;
+            if (directSelfie && (directSelfie.startsWith("data:") || directSelfie.startsWith("http") || directSelfie.startsWith("/"))) {
+              urls[type] = directSelfie;
+              return;
+            }
+          } else if (type === "drivingLicense") {
+            const directDl = request.drivingLicenseStorageKey;
+            if (directDl && (directDl.startsWith("data:") || directDl.startsWith("http") || directDl.startsWith("/"))) {
+              urls[type] = directDl;
+              return;
+            }
+          }
+
           const blobUrl = await api.getDocumentBlobUrl(request._id, type);
           urls[type] = blobUrl;
         } catch (_) {
-          // If file not available or not required, skip silently
+          // Fallback to user profile assets
+          if (type === "idDocument" && user.enrolledIdCardUrl) {
+            urls[type] = user.enrolledIdCardUrl;
+          } else if (type === "selfie" && user.avatarURL) {
+            urls[type] = user.avatarURL;
+          }
         }
       };
 

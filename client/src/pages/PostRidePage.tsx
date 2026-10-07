@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { PickupAndRouteNavigationMap } from "../components/map/PickupAndRouteNavigationMap";
 import { PageHeroBanner } from "../components/common/PageHeroBanner";
+import { MorningDriverLivenessModal } from "../components/verification/MorningDriverLivenessModal";
 import offerRideImg from "../assets/illustrations/offer-ride.jpg";
 
 const PRESET_LOCATIONS = [
@@ -70,6 +71,7 @@ export const PostRidePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showLivenessModal, setShowLivenessModal] = useState(false);
   const [publishedDetails, setPublishedDetails] = useState<{
     originText: string;
     destText: string;
@@ -110,7 +112,7 @@ export const PostRidePage: React.FC = () => {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handlePublish = async () => {
+  const executePublish = async () => {
     setError("");
     setLoading(true);
 
@@ -151,6 +153,16 @@ export const PostRidePage: React.FC = () => {
       setError(err.message || "Failed to post ride");
       setLoading(false);
     }
+  };
+
+  const handlePublish = async () => {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const isVerifiedToday = user?.lastDailyIdCheckDate === todayStr;
+    if (!isVerifiedToday) {
+      setShowLivenessModal(true);
+      return;
+    }
+    await executePublish();
   };
 
   const stepsList = [
@@ -836,6 +848,17 @@ export const PostRidePage: React.FC = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* 5-Second Morning Driver Liveness Check */}
+      <MorningDriverLivenessModal
+        isOpen={showLivenessModal}
+        onClose={() => setShowLivenessModal(false)}
+        onVerified={() => {
+          setShowLivenessModal(false);
+          executePublish();
+        }}
+        actionTitle="Offering Campus Ride"
+      />
     </div>
   );
 };

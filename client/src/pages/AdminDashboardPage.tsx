@@ -186,6 +186,25 @@ export const AdminDashboardPage: React.FC = () => {
     loadAnalytics();
     loadHubs();
     loadAuditLogs();
+    loadAdminUsers();
+  }
+
+  const [realUsers, setRealUsers] = useState<any[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [verifyingUserId, setVerifyingUserId] = useState<string | null>(null);
+
+  async function loadAdminUsers() {
+    try {
+      setUsersLoading(true);
+      const res = await api.getAdminUsers(userRoleFilter, 'all', globalSearchQuery);
+      if (res && res.users) {
+        setRealUsers(res.users);
+      }
+    } catch (err) {
+      console.warn('[AdminDashboard] Failed to fetch real users:', err);
+    } finally {
+      setUsersLoading(false);
+    }
   }
 
   async function loadAdminOperations() {
@@ -325,11 +344,45 @@ export const AdminDashboardPage: React.FC = () => {
     { id: 'u8', name: 'Dean Sharma', email: 'admin@campusride.edu', role: 'admin', college: 'Uttaranchal University', roll: 'FACULTY-DIR-01', status: 'verified', rides: 120, vehicle: 'Campus Fleet' },
   ];
 
+  const handleVerifyUserDirectly = async (userId: string, userName: string) => {
+    try {
+      setVerifyingUserId(userId);
+      await api.adminVerifyUser(userId);
+      setRealUsers(prev =>
+        prev.map(u => (u._id === userId || u.id === userId) ? { ...u, verificationStatus: 'verified', status: 'verified' } : u)
+      );
+      loadVerifications();
+      alert(`✓ Verified: ${userName} has been granted verified student credentials!`);
+    } catch (err: any) {
+      alert(`Failed to verify: ${err.message || 'Unknown error'}`);
+    } finally {
+      setVerifyingUserId(null);
+    }
+  };
+
+  const displayUsers = useMemo(() => {
+    if (realUsers && realUsers.length > 0) {
+      return realUsers.map((u: any) => ({
+        id: u._id || u.id,
+        _id: u._id || u.id,
+        name: u.name || 'Student',
+        email: u.email || '',
+        role: u.role || 'student',
+        college: u.college || 'Campus Member',
+        roll: u.driverIdentifier || u.phone || 'STUDENT-ID',
+        status: u.verificationStatus || 'unverified',
+        rides: u.totalRides || 0,
+        vehicle: u.role === 'driver' ? 'Verified Driver' : '-',
+      }));
+    }
+    return mockUsers;
+  }, [realUsers, mockUsers]);
+
   const filteredUsers = useMemo(() => {
-    return mockUsers.filter(u => {
-      if (userRoleFilter === 'students' && u.role !== 'passenger' && u.role !== 'driver') return false;
+    return displayUsers.filter(u => {
+      if (userRoleFilter === 'students' && u.role !== 'passenger' && u.role !== 'student') return false;
       if (userRoleFilter === 'drivers' && u.role !== 'driver') return false;
-      if (userRoleFilter === 'admins' && u.role !== 'admin') return false;
+      if (userRoleFilter === 'admins' && u.role !== 'campus_admin' && u.role !== 'super_admin' && u.role !== 'admin') return false;
       if (globalSearchQuery) {
         const q = globalSearchQuery.toLowerCase();
         return (
@@ -341,7 +394,7 @@ export const AdminDashboardPage: React.FC = () => {
       }
       return true;
     });
-  }, [mockUsers, userRoleFilter, globalSearchQuery]);
+  }, [displayUsers, userRoleFilter, globalSearchQuery]);
 
   // Mock and ongoing rides list for Rides Tab & Overview
   const ongoingRides = opsData?.ongoingRides || [];
@@ -1002,12 +1055,26 @@ export const AdminDashboardPage: React.FC = () => {
                             </span>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <button
-                              onClick={() => alert(`Viewing full institutional file for ${u.name}`)}
-                              className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#143D32] hover:text-white text-slate-700 text-xs font-semibold transition-all cursor-pointer"
-                            >
-                              View Profile
-                            </button>
+                            <div className="flex items-center justify-end gap-2">
+                              {u.status !== 'verified' && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleVerifyUserDirectly(u.id, u.name)}
+                                  disabled={verifyingUserId === u.id}
+                                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>{verifyingUserId === u.id ? 'Verifying...' : 'Verify Student'}</span>
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => alert(`Institutional Record for ${u.name}:\nEmail: ${u.email}\nCollege: ${u.college}\nRole: ${u.role}\nStatus: ${u.status}`)}
+                                className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-[#143D32] hover:text-white text-slate-700 text-xs font-semibold transition-all cursor-pointer"
+                              >
+                                View Profile
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
