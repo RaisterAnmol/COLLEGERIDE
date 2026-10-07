@@ -725,6 +725,34 @@ export async function seedDemoData() {
     },
   });
 
+  // 12b. RaistarPhp (Passenger - Pending Campus Review from Screenshot)
+  const raistar = await User.create({
+    name: "RaistarPhp",
+    email: "raistarphp@gmail.com",
+    passwordHash,
+    role: "student",
+    accountType: "PASSENGER",
+    studentIdentifier: "UTT-318E82",
+    college: "Uttaranchal University",
+    course: "B.Tech",
+    department: "CSE",
+    year: 1,
+    semester: 1,
+    phone: "+91 98765 31882",
+    avatarURL: "/test_uploads/profile_photo.jpg",
+    enrolledIdCardUrl: "/test_uploads/id_card.jpg",
+    verificationStatus: "pending",
+    rating: 5.0,
+    totalRides: 0,
+    gender: "male",
+    preferences: {
+      womenOnlyDriver: false,
+      musicAllowed: true,
+      smokingAllowed: false,
+      petsAllowed: true,
+    },
+  });
+
   // 13. Riya Rawat (Graphic Era University - Female Driver)
   const riya = await User.create({
     name: "Riya Rawat",
@@ -2745,7 +2773,22 @@ export async function seedDemoData() {
       reviewedAt: new Date(now.getTime() - 48 * 60 * 60 * 1000),
       submittedAt: new Date(now.getTime() - 50 * 60 * 60 * 1000),
     },
-    {
+        {
+      userId: raistar._id,
+      institutionId: uuInstitution._id,
+      campusId: uuCampus._id,
+      accountType: "PASSENGER",
+      role: "student",
+      studentIdentifier: "UTT-318E82",
+      documentType: "student_id",
+      idDocumentStorageKey: "sample_student_id.png",
+      selfieStorageKey: "sample_selfie.png",
+      documentMimeType: "image/png",
+      documentSizeBytes: 420000,
+      status: "pending",
+      submittedAt: new Date(now.getTime() - 15 * 60 * 1000),
+    },
+{
       userId: zoya._id,
       institutionId: geuInstitution._id,
       campusId: geuCampus._id,
@@ -2848,6 +2891,7 @@ export async function seedDemoData() {
     meera,
     arjun,
     zoya,
+    raistar,
     adityaRide,
     adityaReturnRide,
     ananyaRide,

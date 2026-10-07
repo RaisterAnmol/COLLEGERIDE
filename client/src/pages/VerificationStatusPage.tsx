@@ -136,12 +136,15 @@ export const VerificationStatusPage: React.FC = () => {
       const formData = new FormData();
       formData.append("studentIdentifier", studentId.trim());
       formData.append("idCardPhoto", idFile);
+      formData.append("idDocument", idFile);
       formData.append("facePhoto", selfieData.file);
+      formData.append("selfie", selfieData.file);
 
       if (isDriver) {
         formData.append("driverIdentifier", driverId.trim());
         if (licenseFile) {
           formData.append("licensePhoto", licenseFile);
+          formData.append("drivingLicense", licenseFile);
         }
       }
 

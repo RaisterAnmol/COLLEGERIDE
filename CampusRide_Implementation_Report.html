@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CampusRide — Comprehensive Technical & Implementation Report</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #1E2922;
+      background-color: #FFFFFF;
+      line-height: 1.55;
+      font-size: 10pt;
+    }
+
+    /* Print Break Utilities */
+    .page-break {
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .avoid-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Header & Branding */
+    .doc-header {
+      border-bottom: 2px solid #143D32;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .brand-title {
+      font-size: 22pt;
+      font-weight: 900;
+      color: #143D32;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-badge {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      background: #E8F5EE;
+      color: #143D32;
+      border: 1px solid #10B981;
+      padding: 3px 8px;
+      border-radius: 999px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .doc-meta {
+      text-align: right;
+      font-size: 8pt;
+      color: #64748B;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1.4;
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 18pt;
+      font-weight: 800;
+      color: #143D32;
+      margin-bottom: 12px;
+      letter-spacing: -0.3px;
+    }
+
+    h2 {
+      font-size: 13pt;
+      font-weight: 800;
+      color: #0F172A;
+      margin-top: 18px;
+      margin-bottom: 10px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 700;
+      color: #143D32;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 10px;
+      color: #334155;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    /* Callout & Cards */
+    .callout {
+      background: #F8FAF9;
+      border-left: 4px solid #143D32;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 9.5pt;
+    }
+
+    .callout-success {
+      background: #F0FDF4;
+      border-left-color: #16A34A;
+      color: #166534;
+    }
+
+    .callout-warning {
+      background: #FFFBEB;
+      border-left-color: #F59E0B;
+      color: #92400E;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .metric-card {
+      background: #F8FAF9;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .metric-val {
+      font-size: 16pt;
+      font-weight: 900;
+      color: #143D32;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric-label {
+      font-size: 7.5pt;
+      text-transform: uppercase;
+      color: #64748B;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 8.5pt;
+    }
+
+    th {
+      background: #143D32;
+      color: #FFFFFF;
+      font-weight: 700;
+      text-align: left;
+      padding: 7px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8pt;
+    }
+
+    td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #E2E8F0;
+      color: #334155;
+    }
+
+    tr:nth-child(even) td {
+      background: #F8FAF9;
+    }
+
+    /* Code blocks & chips */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #F1F5F9;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 8pt;
+      color: #0F172A;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 7pt;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .pill-green { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
+    .pill-blue { background: #DBEAFE; color: #1E40AF; border: 1px solid #93C5FD; }
+    .pill-amber { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+
+    .tag-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 8px 0;
+    }
+
+    .tag {
+      background: #F1F5F9;
+      border: 1px solid #CBD5E1;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= PAGE 1 ================= -->
+  <div class="doc-header">
+    <div>
+      <div class="brand-title">
+        <span>🚗 CampusRide</span>
+        <span class="brand-badge">v2.4 Production</span>
+      </div>
+      <div style="font-size: 9.5pt; color: #475569; font-weight: 500; margin-top: 2px;">
+        Institutional Mobility & Campus Commute Engineering Report
+      </div>
+    </div>
+    <div class="doc-meta">
+      <div><strong>Deployment:</strong> Uttarakhand Academic Cluster</div>
+      <div><strong>Universities:</strong> UU, UPES, Graphic Era</div>
+      <div><strong>Date:</strong> October 2026</div>
+      <div><strong>Commit:</strong> <span style="color:#10B981">9513df7</span> (origin/main)</div>
+    </div>
+  </div>
+
+  <div class="metric-grid avoid-break">
+    <div class="metric-card">
+      <div class="metric-val">59 / 59</div>
+      <div class="metric-label">Backend Tests Passing</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">83.4%</div>
+      <div class="metric-label">Asset Payload Reduction</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">100%</div>
+      <div class="metric-label">Verified Student Gating</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-val">₹0</div>
+      <div class="metric-label">Platform Deduction (UPI)</div>
+    </div>
+  </div>
+
+  <h2>1. Executive Summary & Problem Context</h2>
+  <p>
+    <strong>CampusRide</strong> is an enterprise-grade university carpooling and student mobility network built to address the critical transport bottleneck experienced daily by university students across Dehradun, Uttarakhand (Uttaranchal University, UPES, Graphic Era).
+  </p>
+  <p>
+    Prior to CampusRide, students relied on informal WhatsApp groups with unverified strangers, unsafe vehicle overloading, predatory auto-rickshaw fares, and zero digital safety oversight. CampusRide solves this with a verified academic trust framework: strict institutional email and ID card validation, real-time road corridor matching, daily driver liveness checks, and instant WhatsApp emergency dispatch.
+  </p>
+
+  <h2>2. Architectural & Technical Stack</h2>
+  <div class="avoid-break">
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Technology</th>
+          <th>Implementation Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frontend Architecture</strong></td>
+          <td>React 18, TypeScript, Vite, Tailwind CSS</td>
+          <td>Fully typed SPAs, component-driven modular structure, responsive mobile-first UI.</td>
+        </tr>
+        <tr>
+          <td><strong>Animation & Motion</strong></td>
+          <td>Framer Motion v13 & GSAP 3.12</td>
+          <td>Physics-based modals, confetti feedback, animated SVG checkmarks, and page transitions.</td>
+        </tr>
+        <tr>
+          <td><strong>Mapping & Navigation</strong></td>
+          <td>OSRM Road Engine, Leaflet, CARTO Voyager</td>
+          <td>Polyline route rendering, multi-stop corridor snapping, and campus gate markers.</td>
+        </tr>
+        <tr>
+          <td><strong>Backend API Server</strong></td>
+          <td>Node.js, Express, TypeScript</td>
+          <td>RESTful micro-routes, Zod schema validation, Helmet CSP, Express Rate Limit, HPP.</td>
+        </tr>
+        <tr>
+          <td><strong>Database Engine</strong></td>
+          <td>MongoDB & Mongoose (Atlas / Embedded)</td>
+          <td>Geospatial 2dsphere indexes, compound indexes, atomic seat decrement transactions.</td>
+        </tr>
+        <tr>
+          <td><strong>Real-Time Communications</strong></td>
+          <td>Socket.IO & Baileys WhatsApp Engine</td>
+          <td>Bidirectional chat synchronization, live driver GPS coordinates, and WhatsApp OTP alerts.</td>
+        </tr>
+        <tr>
+          <td><strong>Client Mobile Experience</strong></td>
+          <td>Progressive Web App (PWA)</td>
+          <td>W3C Web Manifest, Service Worker offline caching, home-screen installation.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>3. High-Impact Daily Commute Upgrades</h2>
+  <p>
+    To eliminate friction from repetitive manual actions and ensure high student driver retention, the following daily commute features were designed and deployed:
+  </p>
+  <ul>
+    <li>
+      <strong>Recurring Weekday Commutes (Mon–Fri Schedules):</strong> Drivers can toggle a semester-long recurring schedule. The ride engine automatically surfaces the ride for regular morning slots (e.g. 08:30 AM), eliminating the need to post manually every day. Handled through embedded Mongoose schema subdocuments (<code>daysOfWeek: [1,2,3,4,5]</code>, <code>time: string</code>).
+    </li>
+    <li>
+      <strong>Zero-Commission Direct UPI Fare Settlement:</strong> Drivers store their UPI VPA (e.g., <code>driver@okhdfcbank</code>). When a trip finishes, passengers receive a direct settlement modal with standard <code>upi://pay?pa=...&am=...</code> deep links for Google Pay, PhonePe, and Paytm, accompanied by an instant copy-to-clipboard action. Zero payment gateway commissions are deducted.
+    </li>
+    <li>
+      <strong>Quick Commute Chat Presets:</strong> Pre-programmed one-tap coordination chips embedded in the in-ride coordination chat modal (<em>"📍 I've arrived at pickup gate"</em>, <em>"⏳ Running 3 mins late"</em>, <em>"📚 Waiting by library steps"</em>) allow instantaneous communication without typing while walking or driving.
+    </li>
+    <li>
+      <strong>Campus Landmark Selection:</strong> Rapid one-tap selector pills for all major campus hubs: UIT Engineering Porch, USCS Computing Quad, Central Library, Premnagar Chowk Market, and Suddhowala PG hub.
+    </li>
+  </ul>
+
+  <!-- PAGE BREAK -->
+  <div class="page-break"></div>
+
+  <!-- ================= PAGE 2 ================= -->
+  <div class="doc-header">
+    <div>
+      <div class="brand-title">
+        <span>🚗 CampusRide</span>
+        <span class="brand-badge">Engineering Deep-Dive</span>
+      </div>
+    </div>
+    <div class="doc-meta">
+      <div><strong>Section:</strong> Verification, Security & Performance</div>
+      <div><strong>Status:</strong> Validated & Production Ready</div>
+    </div>
+  </div>
+
+  <h2>4. Trust, Safety & Verification Architecture</h2>
+  <div class="callout callout-success avoid-break">
+    <strong>Zero-Trust Academic Verification Gating:</strong><br>
+    Unverified or pending accounts are strictly barred on both frontend UI layers and backend server endpoints. Unverified students cannot create rides (<code>403 FORBIDDEN</code>) or send seat requests (<code>VERIFICATION_REQUIRED</code>).
+  </div>
+
+  <h3>A. Client-Side Student ID Card OCR Pre-Screening</h3>
+  <p>
+    An intelligent client-side OCR pre-screening parser was integrated directly into the verification submission workflow. When a student uploads their college ID card image, the system inspects the image buffer, automatically extracting student roll numbers, college names, and academic branches, pre-populating fields and accelerating administrative review.
+  </p>
+
+  <h3>B. Live WhatsApp Emergency SOS Integration</h3>
+  <p>
+    During an active trip, passengers and drivers have access to a one-tap SOS safety system. Triggering the emergency action automatically records an <code>EmergencyIncident</code> in MongoDB, idempotently prevents duplicated alarms, and dispatches a pre-formatted WhatsApp alert containing real-time Google Maps GPS coordinates directly to the user's designated emergency contacts.
+  </p>
+
+  <h3>C. Daily Physical Driver ID Check</h3>
+  <p>
+    Before starting the first trip of each day, drivers must complete a physical student ID verification step via <code>DailyDriverIdCheckModal</code>. This ensures the driver operating the vehicle matches the registered student credentials on file.
+  </p>
+
+  <h3>D. Verified Driver Badges & Academic Affinity</h3>
+  <p>
+    Ride cards now render visual trust badges so passengers can make informed decisions before requesting:
+  </p>
+  <div class="tag-grid avoid-break">
+    <span class="tag">🎓 Classmate / Same Dept</span>
+    <span class="tag">⚡ Top Punctual Driver (10+ rides)</span>
+    <span class="tag">🌿 Eco Commuter (50+ kg CO₂ saved)</span>
+    <span class="tag">🔁 Mon–Fri Regular Commute</span>
+  </div>
+
+  <h2>5. Asset Optimization & Performance (WebP Conversion)</h2>
+  <p>
+    Initial audits revealed that full-screen illustrated backgrounds in PNG and high-resolution JPEG formats consumed over <strong>25.80 MB</strong> in aggregate, causing noticeable load latency on 4G/5G mobile connections.
+  </p>
+  <p>
+    Using an automated pipeline powered by <code>sharp</code>, all 33 illustration assets were converted to modern WebP with smart subsampling and high-fidelity compression (quality 82, effort 6).
+  </p>
+
+  <div class="avoid-break">
+    <table>
+      <thead>
+        <tr>
+          <th>Illustration Asset</th>
+          <th>Original Format & Size</th>
+          <th>WebP Size</th>
+          <th>Bandwidth Reduction</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>bg-auth.webp</code></td>
+          <td>PNG — 1,977 KB</td>
+          <td><strong>136 KB</strong></td>
+          <td><span class="pill pill-green">-93.1%</span></td>
+        </tr>
+        <tr>
+          <td><code>safety-scrapbook.webp</code></td>
+          <td>PNG — 451 KB</td>
+          <td><strong>35 KB</strong></td>
+          <td><span class="pill pill-green">-92.3%</span></td>
+        </tr>
+        <tr>
+          <td><code>admin-analytics-bg.webp</code></td>
+          <td>PNG — 737 KB</td>
+          <td><strong>95 KB</strong></td>
+          <td><span class="pill pill-green">-87.1%</span></td>
+        </tr>
+        <tr>
+          <td><code>bg-home.webp</code></td>
+          <td>PNG — 685 KB</td>
+          <td><strong>98 KB</strong></td>
+          <td><span class="pill pill-green">-85.8%</span></td>
+        </tr>
+        <tr>
+          <td><code>bg-dashboard.webp</code></td>
+          <td>PNG — 759 KB</td>
+          <td><strong>109 KB</strong></td>
+          <td><span class="pill pill-green">-85.6%</span></td>
+        </tr>
+        <tr>
+          <td><code>verification-hero.webp</code></td>
+          <td>JPG — 659 KB</td>
+          <td><strong>100 KB</strong></td>
+          <td><span class="pill pill-green">-84.8%</span></td>
+        </tr>
+        <tr>
+          <td><code>campus-reviews-trust.webp</code></td>
+          <td>JPG — 808 KB</td>
+          <td><strong>125 KB</strong></td>
+          <td><span class="pill pill-green">-84.6%</span></td>
+        </tr>
+        <tr>
+          <td><code>find-ride.webp</code></td>
+          <td>JPG — 798 KB</td>
+          <td><strong>154 KB</strong></td>
+          <td><span class="pill pill-green">-80.8%</span></td>
+        </tr>
+        <tr>
+          <td><code>offer-ride.webp</code></td>
+          <td>JPG — 815 KB</td>
+          <td><strong>162 KB</strong></td>
+          <td><span class="pill pill-green">-80.1%</span></td>
+        </tr>
+        <tr>
+          <td><code>auth-student.webp</code></td>
+          <td>JPG — 1,037 KB</td>
+          <td><strong>209 KB</strong></td>
+          <td><span class="pill pill-green">-79.8%</span></td>
+        </tr>
+        <tr>
+          <td><strong>Total Across All 33 Assets</strong></td>
+          <td><strong>25.80 MB</strong></td>
+          <td><strong>4.28 MB</strong></td>
+          <td><span class="pill pill-green">83.4% Total Reduction</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>6. Progressive Web App (PWA) Integration</h2>
+  <p>
+    CampusRide is now an installable PWA on Android, iOS, and desktop browsers:
+  </p>
+  <ul>
+    <li><strong>Web App Manifest:</strong> Configured at <code>client/public/manifest.json</code> with dark forest green theme (<code>#143D32</code>), standalone display mode, and high-resolution icons.</li>
+    <li><strong>Service Worker:</strong> Implemented at <code>client/public/sw.js</code> with cache-first static asset delivery, network-first API dispatch, and full offline resilience. Registered in <code>main.tsx</code>.</li>
+  </ul>
+
+  <!-- PAGE BREAK -->
+  <div class="page-break"></div>
+
+  <!-- ================= PAGE 3 ================= -->
+  <div class="doc-header">
+    <div>
+      <div class="brand-title">
+        <span>🚗 CampusRide</span>
+        <span class="brand-badge">Verification & Quality Assurance</span>
+      </div>
+    </div>
+    <div class="doc-meta">
+      <div><strong>Section:</strong> Test Suite, Bug Fixes & API Reference</div>
+      <div><strong>Status:</strong> Clean Working Tree</div>
+    </div>
+  </div>
+
+  <h2>7. Critical Bug Fixes & Code Hardening</h2>
+  <div class="avoid-break">
+    <table>
+      <thead>
+        <tr>
+          <th>Component / Module</th>
+          <th>Root Cause</th>
+          <th>Surgical Resolution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Recurring Commute Mongoose Schema</strong></td>
+          <td><code>recurringSchedule</code> was passed as a string or unstructured object, throwing Mongoose cast error <code>ObjectExpectedError</code> on ride creation.</td>
+          <td>Added <code>recurring: { type: Boolean, default: false }</code> to <code>RideSchema</code> and sanitized <code>recurringSchedule</code> into structured <code>{ daysOfWeek: [1,2,3,4,5], time }</code> in <code>rideRoutes.ts</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>False-Positive Driver Check-In for Passengers</strong></td>
+          <td>In <code>RideDetailPage.tsx</code> and <code>TripTrackingPage.tsx</code>, <code>isDriver</code> was computed as <code>ride?.creator?._id === user?._id</code>. On initial load, both were <code>undefined</code>, causing <code>undefined === undefined</code> to evaluate to <code>true</code> and flash driver actions to passengers.</td>
+          <td>Hardened with safe ID extraction and boolean validation: <code>Boolean(rideCreatorId && currentUserId && rideCreatorId === currentUserId)</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Stale Request Cache on Unverified Users</strong></td>
+          <td>Search page read stale <code>campusride_local_requests</code> from localStorage during initial render state initialization, briefly showing "Request Sent" before verification sync.</td>
+          <td>Added verification check in initial <code>useState</code> initializer: if user is not verified, returns an empty set immediately.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>8. Quality Assurance & Test Suite Results</h2>
+  <p>
+    The backend test suite runs with Jest against isolated in-memory MongoDB instances, validating core security guardrails, role boundaries, cryptographic CSPRNG OTP generation, and end-to-end user workflows:
+  </p>
+  <div class="avoid-break">
+    <table>
+      <thead>
+        <tr>
+          <th>Test Suite</th>
+          <th>Scope & Guardrails Verified</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>securityPatch.test.ts</code></td>
+          <td>Guardrail #1-4: Seed endpoint admin keys, PII sanitization, compound unique request indexes, atomic seat decrement, CSPRNG OTP generation & 5-attempt lockout.</td>
+          <td><span class="pill pill-green">PASS (10 Tests)</span></td>
+        </tr>
+        <tr>
+          <td><code>e2eVerification.test.ts</code></td>
+          <td>Full 10-step E2E flow: Healthcheck, driver/passenger login, ride offer, matching score breakdown, seat request/accept, real-time chat, OTP trip completion, ratings, admin analytics.</td>
+          <td><span class="pill pill-green">PASS (10 Tests)</span></td>
+        </tr>
+        <tr>
+          <td><code>securityAndIntegrations.test.ts</code></td>
+          <td>RBAC self-verification prevention, admin audit log protection, SOS incident idempotency, unauthorized OTP rejection, invalid trip state machine transition rejection.</td>
+          <td><span class="pill pill-green">PASS (11 Tests)</span></td>
+        </tr>
+        <tr>
+          <td><code>realUserRegistrationAndBiometrics.test.ts</code></td>
+          <td>Registration with custom academic profiles, profile updates, driver avatar biometrics, email dispatch simulation.</td>
+          <td><span class="pill pill-green">PASS (4 Tests)</span></td>
+        </tr>
+        <tr>
+          <td><code>authorizationBypass.test.ts</code></td>
+          <td>Broken Object Level Auth (BOLA): User B blocked from deleting or accepting requests on User A's rides; missing or tampered JWT signatures rejected.</td>
+          <td><span class="pill pill-green">PASS (7 Tests)</span></td>
+        </tr>
+        <tr>
+          <td><code>matchingEngine.test.ts</code></td>
+          <td>Matching algorithm accuracy, directional alignment, seat availability filter, time window clamping, detour calculations.</td>
+          <td><span class="pill pill-green">PASS (6 Tests)</span></td>
+        </tr>
+        <tr>
+          <td><code>corridorDirectionAndQA.test.ts</code></td>
+          <td>Reverse route disqualification, campus hub proximity boundaries, academic affinity hierarchy (Classmate Rank 1, Department Rank 2), women-only driver gating.</td>
+          <td><span class="pill pill-green">PASS (11 Tests)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Total Across 7 Suites</strong></td>
+          <td><strong>Comprehensive End-to-End & Security Regression Coverage</strong></td>
+          <td><span class="pill pill-green">59 / 59 PASSED (100%)</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>9. Production Build & Deployment Status</h2>
+  <div class="callout callout-success avoid-break">
+    <strong>Build Status:</strong> Both <code>npm --prefix client run build</code> and <code>npm --prefix server run build</code> compile with <strong>0 TypeScript errors</strong>. Production assets are minified, gzip-optimized, and deployed to <code>origin/main</code> at commit <code>9513df7</code>.
+  </div>
+
+  <div style="margin-top: 24px; padding-top: 12px; border-top: 1px solid #CBD5E1; display: flex; justify-content: space-between; font-size: 8pt; color: #64748B; font-family: 'JetBrains Mono', monospace;">
+    <div>CampusRide System Documentation · Confidential & Proprietary</div>
+    <div>Document Ref: CR-ENG-2026-V2.4</div>
+  </div>
+
+</body>
+</html>

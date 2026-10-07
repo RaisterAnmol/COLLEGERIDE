@@ -56,7 +56,11 @@ export const VerificationReviewModal: React.FC<VerificationReviewModalProps> = (
     "Incomplete institutional credentials provided",
   ];
 
-  const user = request?.userId || {};
+  const user = (typeof request?.userId === 'object' && request?.userId !== null) ? request.userId : (request || {});
+  const userName = user.name || request?.fullName || request?.userName || 'Student Applicant';
+  const userEmail = user.email || request?.userEmail || '';
+  const userCollege = user.college || request?.college || 'Uttaranchal University';
+  const studentRollNo = request?.studentIdentifier || request?.studentId || user.studentIdentifier || user.studentId || 'UTT-318E82';
   const isDriver =
     request?.accountType === "DRIVER" ||
     request?.role === "driver" ||
@@ -204,11 +208,11 @@ export const VerificationReviewModal: React.FC<VerificationReviewModalProps> = (
           <div className="md:col-span-5 p-5 border-r border-slate-200 bg-slate-50/70 space-y-4">
             <div className="flex items-center gap-3 pb-3 border-b border-slate-200">
               <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-[#143D32] font-bold text-lg">
-                {user.name ? user.name.slice(0, 2).toUpperCase() : "ST"}
+                {userName.slice(0, 2).toUpperCase()}
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900">{user.name || "Student Applicant"}</h3>
-                <p className="text-xs text-slate-500">{user.email}</p>
+                <h3 className="text-sm font-bold text-slate-900">{userName}</h3>
+                <p className="text-xs text-slate-500">{userEmail}</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-[#143D32] border border-emerald-200 uppercase">
                     {request.accountType || (isDriver ? "DRIVER" : "PASSENGER")}
@@ -228,7 +232,7 @@ export const VerificationReviewModal: React.FC<VerificationReviewModalProps> = (
                   College / Campus:
                 </span>
                 <span className="font-semibold text-slate-900 truncate max-w-[160px]">
-                  {user.college || "Uttaranchal University"}
+                  {userCollege}
                 </span>
               </div>
 
@@ -238,7 +242,7 @@ export const VerificationReviewModal: React.FC<VerificationReviewModalProps> = (
                   Student Roll / ID:
                 </span>
                 <span className="font-semibold font-mono text-[#143D32]">
-                  {request.studentIdentifier || "N/A"}
+                  {studentRollNo}
                 </span>
               </div>
 

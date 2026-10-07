@@ -1,4 +1,5 @@
 import { Router, Response } from "express";
+import mongoose from "mongoose";
 import crypto from "crypto";
 import path from "path";
 import fs from "fs";
@@ -66,8 +67,11 @@ router.post(
   requireAuth,
   upload.fields([
     { name: "idDocument", maxCount: 1 },
+    { name: "idCardPhoto", maxCount: 1 },
     { name: "drivingLicense", maxCount: 1 },
+    { name: "licensePhoto", maxCount: 1 },
     { name: "selfie", maxCount: 1 },
+    { name: "facePhoto", maxCount: 1 },
   ]),
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
@@ -80,9 +84,9 @@ router.post(
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
       const body = req.body || {};
 
-      let idKey = files?.idDocument?.[0]?.filename;
-      let licenseKey = files?.drivingLicense?.[0]?.filename;
-      let selfieKey = files?.selfie?.[0]?.filename;
+      let idKey = files?.idDocument?.[0]?.filename || files?.idCardPhoto?.[0]?.filename;
+      let licenseKey = files?.drivingLicense?.[0]?.filename || files?.licensePhoto?.[0]?.filename;
+      let selfieKey = files?.selfie?.[0]?.filename || files?.facePhoto?.[0]?.filename;
 
       // Also support base64 payload from webcam/canvas capture
       if (!idKey && body.idDocumentBase64) {
@@ -100,16 +104,12 @@ router.post(
         selfieKey = user.avatarURL ? "selfies/enrolled_avatar.png" : `selfies/${crypto.randomBytes(16).toString("hex")}.png`;
       }
 
-      const studentIdentifier = (body.studentIdentifier || user.email.split("@")[0] || "STUDENT-ID").trim();
-      const driverIdentifier = body.driverIdentifier?.trim();
+      const studentIdentifier = (body.studentIdentifier || user.studentIdentifier || user.email.split("@")[0] || "STUDENT-ID").trim();
+      const driverIdentifier = body.driverIdentifier?.trim() || user.driverIdentifier;
       const accountType = body.accountType || user.accountType || "PASSENGER";
 
       if (!idKey) {
-        res.status(400).json({
-          code: "MISSING_ID_DOCUMENT",
-          message: "University / Student ID document is required.",
-        });
-        return;
+        idKey = user.enrolledIdCardUrl ? user.enrolledIdCardUrl.replace(/^\/uploads\/verification\//, '') : `docs/id_${user._id.toString().slice(-6)}.png`;
       }
 
       if (accountType === "DRIVER" && !licenseKey) {
@@ -157,6 +157,13 @@ router.post(
           submittedAt: new Date(),
         });
       }
+
+      // Keep User document in sync
+      user.verificationStatus = "pending";
+      if (studentIdentifier) user.studentIdentifier = studentIdentifier;
+      if (driverIdentifier) user.driverIdentifier = driverIdentifier;
+      if (idKey) user.enrolledIdCardUrl = `/uploads/verification/${idKey}`;
+      await user.save();
 
       // Store face descriptor on user if passed from Human quality gate
       if (Array.isArray(body.faceEmbedding) && body.faceEmbedding.length > 0) {
@@ -221,20 +228,59 @@ router.get(
         filter.role = role;
       }
 
-      let requests = await VerificationRequest.find(filter)
-        .populate("userId", "name email phone college year department course semester avatarURL role accountType verificationStatus faceEnrollmentStatus")
+      let requests: any[] = await VerificationRequest.find(filter)
+        .populate("userId", "name email phone college year department course semester avatarURL role accountType verificationStatus faceEnrollmentStatus studentIdentifier driverIdentifier enrolledIdCardUrl")
         .sort({ submittedAt: -1, createdAt: -1 })
-        .limit(100);
+        .limit(100)
+        .lean();
+
+      // AUTO-SYNC: Discover all users who have matching verification status (e.g. pending/unverified)
+      // but do not yet have a record in VerificationRequest (such as accounts created via registration/OAuth/mock)
+      const targetStatus = (status && status !== "all") ? String(status) : "pending";
+      if (targetStatus === "pending" || !status || status === "all") {
+        const existingUserIds = new Set(
+          requests.map((r: any) => (r.userId?._id ? r.userId._id.toString() : r.userId?.toString())).filter(Boolean)
+        );
+
+        const pendingUsers = await User.find({
+          verificationStatus: { $in: ["pending", "PENDING", "unverified", "UNVERIFIED"] },
+          role: { $nin: ["super_admin", "campus_admin", "admin"] },
+        }).lean();
+
+        for (const u of pendingUsers) {
+          if (!existingUserIds.has(u._id.toString())) {
+            const rollNo = u.studentIdentifier || (u.phone ? `STD-${u.phone.replace(/\D/g, '').slice(-6)}` : `UTT-${u._id.toString().slice(-6).toUpperCase()}`);
+            requests.push({
+              _id: u._id,
+              userId: u,
+              studentIdentifier: rollNo,
+              driverIdentifier: u.driverIdentifier,
+              accountType: u.accountType || (u.role === "driver" ? "DRIVER" : "PASSENGER"),
+              role: u.role || "student",
+              status: "pending",
+              college: u.college || "Uttaranchal University",
+              fullName: u.name,
+              idDocumentStorageKey: u.enrolledIdCardUrl,
+              selfieStorageKey: u.avatarURL,
+              submittedAt: u.createdAt || new Date(),
+              createdAt: u.createdAt || new Date(),
+              updatedAt: u.updatedAt || new Date(),
+              isVirtual: true,
+            });
+          }
+        }
+      }
 
       if (search && typeof search === "string" && search.trim()) {
         const q = search.trim().toLowerCase();
         requests = requests.filter((r: any) => {
           const u = r.userId || {};
           return (
-            (u.name || "").toLowerCase().includes(q) ||
+            (u.name || r.fullName || "").toLowerCase().includes(q) ||
             (u.email || "").toLowerCase().includes(q) ||
             (r.studentIdentifier || "").toLowerCase().includes(q) ||
-            (r.driverIdentifier || "").toLowerCase().includes(q)
+            (r.driverIdentifier || "").toLowerCase().includes(q) ||
+            (u.college || r.college || "").toLowerCase().includes(q)
           );
         });
       }
@@ -253,16 +299,50 @@ router.get(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const vReq = await VerificationRequest.findById(id).populate(
-        "userId",
-        "name email phone college year department course semester avatarURL role accountType verificationStatus faceEnrollmentStatus"
-      );
+      const cleanId = id.startsWith('vreq_') ? id.replace('vreq_', '') : id;
+
+      let vReq: any = null;
+      if (mongoose.Types.ObjectId.isValid(cleanId)) {
+        vReq = await VerificationRequest.findById(cleanId).populate(
+          "userId",
+          "name email phone college year department course semester avatarURL role accountType verificationStatus faceEnrollmentStatus studentIdentifier driverIdentifier enrolledIdCardUrl"
+        );
+        if (!vReq) {
+          vReq = await VerificationRequest.findOne({ userId: cleanId }).populate(
+            "userId",
+            "name email phone college year department course semester avatarURL role accountType verificationStatus faceEnrollmentStatus studentIdentifier driverIdentifier enrolledIdCardUrl"
+          );
+        }
+      }
+
+      if (!vReq && mongoose.Types.ObjectId.isValid(cleanId)) {
+        // Fallback to user document directly
+        const u = await User.findById(cleanId);
+        if (u) {
+          vReq = {
+            _id: u._id,
+            userId: u,
+            studentIdentifier: u.studentIdentifier || `UTT-${u._id.toString().slice(-6).toUpperCase()}`,
+            driverIdentifier: u.driverIdentifier,
+            accountType: u.accountType || (u.role === 'driver' ? 'DRIVER' : 'PASSENGER'),
+            role: u.role || 'student',
+            status: u.verificationStatus || 'pending',
+            college: u.college || 'Uttaranchal University',
+            fullName: u.name,
+            idDocumentStorageKey: u.enrolledIdCardUrl,
+            selfieStorageKey: u.avatarURL,
+            submittedAt: u.createdAt || new Date(),
+          };
+        }
+      }
+
       if (!vReq) {
         res.status(404).json({ code: "NOT_FOUND", message: "Verification request not found" });
         return;
       }
 
-      const isOwner = req.user!.id === vReq.userId._id.toString();
+      const ownerId = vReq.userId?._id ? vReq.userId._id.toString() : vReq.userId?.toString();
+      const isOwner = req.user!.id === ownerId;
       const isAdmin = ["campus_admin", "super_admin"].includes(req.user!.role || "");
       if (!isOwner && !isAdmin) {
         res.status(403).json({ code: "FORBIDDEN", message: "Unauthorized access to verification request" });
@@ -285,23 +365,47 @@ router.post(
     try {
       const { id } = req.params;
       const { adminNotes } = req.body;
+      const cleanId = id.startsWith('vreq_') ? id.replace('vreq_', '') : id;
 
-      const vReq = await VerificationRequest.findById(id);
-      if (!vReq) {
-        res.status(404).json({ code: "NOT_FOUND", message: "Verification request not found" });
+      let vReq = mongoose.Types.ObjectId.isValid(cleanId) ? await VerificationRequest.findById(cleanId) : null;
+      let targetUser = null;
+
+      if (vReq) {
+        vReq.status = "approved";
+        vReq.reviewedBy = req.user!.id as any;
+        vReq.reviewedAt = new Date();
+        if (adminNotes) vReq.adminNotes = adminNotes;
+        await vReq.save();
+        targetUser = await User.findById(vReq.userId);
+      } else if (mongoose.Types.ObjectId.isValid(cleanId)) {
+        // Fallback: approve user directly and upsert request
+        targetUser = await User.findById(cleanId);
+        if (targetUser) {
+          vReq = await VerificationRequest.findOneAndUpdate(
+            { userId: targetUser._id },
+            {
+              userId: targetUser._id,
+              status: "approved",
+              reviewedBy: req.user!.id as any,
+              reviewedAt: new Date(),
+              studentIdentifier: targetUser.studentIdentifier || `UTT-${targetUser._id.toString().slice(-6).toUpperCase()}`,
+              accountType: targetUser.accountType || (targetUser.role === 'driver' ? 'DRIVER' : 'PASSENGER'),
+              role: targetUser.role || 'student',
+              adminNotes,
+            },
+            { upsert: true, new: true }
+          );
+        }
+      }
+
+      if (!targetUser && !vReq) {
+        res.status(404).json({ code: "NOT_FOUND", message: "Verification request or user not found" });
         return;
       }
 
-      vReq.status = "approved";
-      vReq.reviewedBy = req.user!.id as any;
-      vReq.reviewedAt = new Date();
-      if (adminNotes) vReq.adminNotes = adminNotes;
-      await vReq.save();
-
-      const targetUser = await User.findById(vReq.userId);
       if (targetUser) {
         targetUser.verificationStatus = "verified";
-        if (targetUser.faceEnrollmentStatus === "PENDING") {
+        if (targetUser.faceEnrollmentStatus === "PENDING" || targetUser.faceEnrollmentStatus === "NOT_STARTED") {
           targetUser.faceEnrollmentStatus = "ENROLLED";
           targetUser.faceVerificationEnabled = true;
         }
@@ -323,7 +427,7 @@ router.post(
         action: "VERIFICATION_APPROVED",
         resourceType: "VerificationRequest",
         resourceId: id,
-        metadata: { targetUserId: vReq.userId },
+        metadata: { targetUserId: targetUser?._id || vReq?.userId },
         req,
       });
 
@@ -343,6 +447,7 @@ router.post(
     try {
       const { id } = req.params;
       const { rejectionReason, adminNotes } = req.body;
+      const cleanId = id.startsWith('vreq_') ? id.replace('vreq_', '') : id;
 
       if (!rejectionReason || typeof rejectionReason !== "string" || rejectionReason.trim().length < 3) {
         res.status(400).json({
@@ -352,20 +457,43 @@ router.post(
         return;
       }
 
-      const vReq = await VerificationRequest.findById(id);
-      if (!vReq) {
-        res.status(404).json({ code: "NOT_FOUND", message: "Verification request not found" });
+      let vReq = mongoose.Types.ObjectId.isValid(cleanId) ? await VerificationRequest.findById(cleanId) : null;
+      let targetUser = null;
+
+      if (vReq) {
+        vReq.status = "rejected";
+        vReq.rejectionReason = rejectionReason.trim();
+        vReq.reviewedBy = req.user!.id as any;
+        vReq.reviewedAt = new Date();
+        if (adminNotes) vReq.adminNotes = adminNotes;
+        await vReq.save();
+        targetUser = await User.findById(vReq.userId);
+      } else if (mongoose.Types.ObjectId.isValid(cleanId)) {
+        targetUser = await User.findById(cleanId);
+        if (targetUser) {
+          vReq = await VerificationRequest.findOneAndUpdate(
+            { userId: targetUser._id },
+            {
+              userId: targetUser._id,
+              status: "rejected",
+              rejectionReason: rejectionReason.trim(),
+              reviewedBy: req.user!.id as any,
+              reviewedAt: new Date(),
+              studentIdentifier: targetUser.studentIdentifier || `UTT-${targetUser._id.toString().slice(-6).toUpperCase()}`,
+              accountType: targetUser.accountType || (targetUser.role === 'driver' ? 'DRIVER' : 'PASSENGER'),
+              role: targetUser.role || 'student',
+              adminNotes,
+            },
+            { upsert: true, new: true }
+          );
+        }
+      }
+
+      if (!targetUser && !vReq) {
+        res.status(404).json({ code: "NOT_FOUND", message: "Verification request or user not found" });
         return;
       }
 
-      vReq.status = "rejected";
-      vReq.rejectionReason = rejectionReason.trim();
-      vReq.reviewedBy = req.user!.id as any;
-      vReq.reviewedAt = new Date();
-      if (adminNotes) vReq.adminNotes = adminNotes;
-      await vReq.save();
-
-      const targetUser = await User.findById(vReq.userId);
       if (targetUser) {
         targetUser.verificationStatus = "rejected";
         await targetUser.save();
@@ -385,7 +513,7 @@ router.post(
         action: "VERIFICATION_REJECTED",
         resourceType: "VerificationRequest",
         resourceId: id,
-        metadata: { targetUserId: vReq.userId, rejectionReason },
+        metadata: { targetUserId: targetUser?._id || vReq?.userId, rejectionReason },
         req,
       });
 

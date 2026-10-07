@@ -1660,23 +1660,38 @@ export default async function handler(req: any, res: any) {
       }
 
       const vId = verifyApproveMatch[1];
+      const cleanId = vId.startsWith('vreq_') ? vId.replace('vreq_', '') : vId;
       const body = await parseBody(req);
-      const vObjId = mongoose.Types.ObjectId.isValid(vId) ? new mongoose.Types.ObjectId(vId) : vId;
+      const vObjId = mongoose.Types.ObjectId.isValid(cleanId) ? new mongoose.Types.ObjectId(cleanId) : cleanId;
 
-      let vReq = await verificationCol.findOne({ _id: vObjId });
-      if (!vReq) {
-        vReq = await verificationCol.findOne({ userId: vObjId });
-      }
+      let vReq = await verificationCol.findOne({ $or: [{ _id: vObjId }, { _id: vId }, { userId: vObjId }, { userId: cleanId }] });
 
-      const targetUserId = vReq?.userId || vId;
-      const tUserObjId = mongoose.Types.ObjectId.isValid(String(targetUserId))
+      let targetUserId = vReq?.userId || cleanId;
+      let tUserObjId = mongoose.Types.ObjectId.isValid(String(targetUserId))
         ? new mongoose.Types.ObjectId(String(targetUserId))
         : targetUserId;
 
+      let userDoc = await usersCol.findOne({ $or: [{ _id: targetUserId }, { _id: tUserObjId }, { _id: vObjId }] });
+      if (userDoc) {
+        targetUserId = userDoc._id;
+        tUserObjId = userDoc._id;
+      }
+
       await verificationCol.updateOne(
-        { $or: [{ _id: vObjId }, { userId: targetUserId }, { userId: tUserObjId }] },
-        { $set: { status: 'approved', reviewedAt: new Date(), adminNotes: body.adminNotes } },
-        { upsert: false }
+        { $or: [{ _id: vObjId }, { _id: vId }, { userId: targetUserId }, { userId: tUserObjId }] },
+        {
+          $set: {
+            userId: targetUserId,
+            status: 'approved',
+            reviewedAt: new Date(),
+            adminNotes: body.adminNotes,
+            studentIdentifier: userDoc?.studentIdentifier || vReq?.studentIdentifier || 'UTT-STD',
+            role: userDoc?.role || vReq?.role || 'student',
+            accountType: userDoc?.accountType || vReq?.accountType || 'PASSENGER',
+            updatedAt: new Date(),
+          },
+        },
+        { upsert: true }
       );
 
       await usersCol.updateOne(
@@ -1699,24 +1714,37 @@ export default async function handler(req: any, res: any) {
       }
 
       const vId = verifyRejectMatch[1];
+      const cleanId = vId.startsWith('vreq_') ? vId.replace('vreq_', '') : vId;
       const body = await parseBody(req);
       const rejectionReason = body.rejectionReason || 'Documentation could not be verified.';
-      const vObjId = mongoose.Types.ObjectId.isValid(vId) ? new mongoose.Types.ObjectId(vId) : vId;
+      const vObjId = mongoose.Types.ObjectId.isValid(cleanId) ? new mongoose.Types.ObjectId(cleanId) : cleanId;
 
-      let vReq = await verificationCol.findOne({ _id: vObjId });
-      if (!vReq) {
-        vReq = await verificationCol.findOne({ userId: vObjId });
-      }
+      let vReq = await verificationCol.findOne({ $or: [{ _id: vObjId }, { _id: vId }, { userId: vObjId }, { userId: cleanId }] });
 
-      const targetUserId = vReq?.userId || vId;
-      const tUserObjId = mongoose.Types.ObjectId.isValid(String(targetUserId))
+      let targetUserId = vReq?.userId || cleanId;
+      let tUserObjId = mongoose.Types.ObjectId.isValid(String(targetUserId))
         ? new mongoose.Types.ObjectId(String(targetUserId))
         : targetUserId;
 
+      let userDoc = await usersCol.findOne({ $or: [{ _id: targetUserId }, { _id: tUserObjId }, { _id: vObjId }] });
+      if (userDoc) {
+        targetUserId = userDoc._id;
+        tUserObjId = userDoc._id;
+      }
+
       await verificationCol.updateOne(
-        { $or: [{ _id: vObjId }, { userId: targetUserId }, { userId: tUserObjId }] },
-        { $set: { status: 'rejected', rejectionReason, reviewedAt: new Date(), adminNotes: body.adminNotes } },
-        { upsert: false }
+        { $or: [{ _id: vObjId }, { _id: vId }, { userId: targetUserId }, { userId: tUserObjId }] },
+        {
+          $set: {
+            userId: targetUserId,
+            status: 'rejected',
+            rejectionReason,
+            reviewedAt: new Date(),
+            adminNotes: body.adminNotes,
+            updatedAt: new Date(),
+          },
+        },
+        { upsert: true }
       );
 
       await usersCol.updateOne(
@@ -1783,45 +1811,68 @@ export default async function handler(req: any, res: any) {
 
       let vRequests = await verificationCol.find(filter).sort({ submittedAt: -1 }).toArray();
 
-      if (vRequests.length === 0) {
-        const targetStatuses =
-          statusFilter === 'approved'
-            ? ['verified', 'VERIFIED', 'approved', 'APPROVED']
-            : statusFilter === 'rejected'
-            ? ['rejected', 'REJECTED']
-            : ['pending', 'PENDING'];
+      // Populate user documents for existing verification requests
+      vRequests = await Promise.all(
+        vRequests.map(async (vr: any) => {
+          if (vr.userId) {
+            const uId = mongoose.Types.ObjectId.isValid(String(vr.userId))
+              ? new mongoose.Types.ObjectId(String(vr.userId))
+              : vr.userId;
+            const userDoc = await usersCol.findOne(
+              { $or: [{ _id: uId }, { _id: String(vr.userId) }] },
+              { projection: { passwordHash: 0 } }
+            );
+            return {
+              ...vr,
+              userId: userDoc || vr.userId,
+              fullName: vr.fullName || userDoc?.name,
+              college: vr.college || userDoc?.college,
+              studentIdentifier: vr.studentIdentifier || userDoc?.studentIdentifier,
+            };
+          }
+          return vr;
+        })
+      );
 
-        const matchingUsers = await usersCol
-          .find({ verificationStatus: { $in: targetStatuses } })
-          .project({ passwordHash: 0 })
-          .toArray();
+      // AUTO-SYNC: Also discover users whose verificationStatus matches (or pending/unverified)
+      const targetStatuses =
+        statusFilter === 'approved'
+          ? ['verified', 'VERIFIED', 'approved', 'APPROVED']
+          : statusFilter === 'rejected'
+          ? ['rejected', 'REJECTED']
+          : ['pending', 'PENDING', 'unverified', 'UNVERIFIED'];
 
-        vRequests = matchingUsers.map((u: any) => ({
-          _id: 'vreq_' + u._id,
-          userId: u,
-          studentIdentifier: u.studentId || (u.college?.includes('Graphic') ? 'GEU-2023-CS-042' : 'UU-2024-CSE-091'),
-          driverIdentifier: u.role === 'driver' ? 'DL-UK-2024-9988' : undefined,
-          accountType: u.role === 'driver' ? 'DRIVER' : 'PASSENGER',
-          role: u.role || 'student',
-          college: u.college,
-          fullName: u.name,
-          status: statusFilter || 'pending',
-          submittedAt: u.createdAt || new Date(),
-        }));
-      } else {
-        // Populate user documents
-        vRequests = await Promise.all(
-          vRequests.map(async (vr: any) => {
-            if (vr.userId && typeof vr.userId !== 'object') {
-              const uId = mongoose.Types.ObjectId.isValid(String(vr.userId))
-                ? new mongoose.Types.ObjectId(String(vr.userId))
-                : vr.userId;
-              const userDoc = await usersCol.findOne({ _id: uId }, { projection: { passwordHash: 0 } });
-              return { ...vr, userId: userDoc || vr.userId };
-            }
-            return vr;
-          })
-        );
+      const existingUserIds = new Set(
+        vRequests.map((vr: any) => {
+          const uid = vr.userId?._id ? String(vr.userId._id) : String(vr.userId || '');
+          return uid;
+        }).filter(Boolean)
+      );
+
+      const matchingUsers = await usersCol
+        .find({
+          verificationStatus: { $in: targetStatuses },
+          role: { $nin: ['super_admin', 'campus_admin', 'admin'] },
+        })
+        .project({ passwordHash: 0 })
+        .toArray();
+
+      for (const u of matchingUsers) {
+        if (!existingUserIds.has(String(u._id))) {
+          const rollNumber = u.studentIdentifier || (u.phone ? `STD-${String(u.phone).slice(-6)}` : `UTT-${String(u._id).slice(-6).toUpperCase()}`);
+          vRequests.push({
+            _id: 'vreq_' + u._id,
+            userId: u,
+            studentIdentifier: rollNumber,
+            driverIdentifier: u.driverIdentifier,
+            accountType: u.accountType || (u.role === 'driver' ? 'DRIVER' : 'PASSENGER'),
+            role: u.role || 'student',
+            college: u.college || 'Uttaranchal University',
+            fullName: u.name,
+            status: (statusFilter && statusFilter !== 'all') ? statusFilter : (u.verificationStatus === 'unverified' ? 'pending' : u.verificationStatus || 'pending'),
+            submittedAt: u.createdAt || new Date(),
+          });
+        }
       }
 
       return res.status(200).json({ requests: vRequests });

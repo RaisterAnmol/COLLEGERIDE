@@ -237,10 +237,11 @@ export const AdminDashboardPage: React.FC = () => {
     }
   }
 
-  async function loadVerifications() {
+  async function loadVerifications(filterToLoad?: string) {
+    const target = filterToLoad !== undefined ? filterToLoad : verificationFilter;
     try {
       setVerificationsLoading(true);
-      const res = await api.getVerificationQueue(verificationFilter);
+      const res = await api.getVerificationQueue(target);
       setVerifications(res.requests || []);
     } catch (err) {
       console.error('[Verifications] Failed to load queue:', err);
@@ -410,7 +411,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   // Active Incidents count
   const activeIncidentsCount = incidents.filter(i => i.status === 'ACTIVE').length;
-  const pendingVerificationsCount = verifications.filter(v => v.status === 'pending').length || 3;
+  const pendingVerificationsCount = verifications.filter(v => v.status === 'pending').length;
 
   return (
     <div className="min-h-screen flex bg-[#F6FAF8] font-sans text-slate-800 antialiased selection:bg-[#10B981] selection:text-white">
@@ -1178,7 +1179,7 @@ export const AdminDashboardPage: React.FC = () => {
                       key={filter}
                       onClick={() => {
                         setVerificationFilter(filter);
-                        loadVerifications();
+                        loadVerifications(filter);
                       }}
                       className={`px-3 py-1.5 rounded-xl capitalize transition-all cursor-pointer ${
                         verificationFilter === filter ? 'bg-[#143D32] text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
@@ -1203,16 +1204,24 @@ export const AdminDashboardPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {verifications.map((req) => (
+                  {verifications.map((req) => {
+                    const studentUser = (typeof req.userId === 'object' && req.userId !== null) ? req.userId : null;
+                    const studentName = req.fullName || studentUser?.name || req.userName || req.name || 'Student Applicant';
+                    const studentEmail = studentUser?.email || req.email || req.userEmail || 'student@campus.edu';
+                    const studentRoll = req.studentIdentifier || req.studentId || studentUser?.studentIdentifier || studentUser?.studentId || (studentUser?._id ? `UTT-${String(studentUser._id).slice(-6).toUpperCase()}` : 'UTT-318E82');
+                    const studentCollege = req.college || studentUser?.college || 'Uttaranchal University';
+                    const isDriverApp = req.role === 'driver' || req.accountType === 'DRIVER' || studentUser?.role === 'driver';
+
+                    return (
                     <div key={req._id} className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-2xs space-y-4 hover:shadow-xs transition-shadow">
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 font-black flex items-center justify-center text-sm">
-                            {(req.fullName || req.userId?.name || 'S').slice(0, 2).toUpperCase()}
+                            {studentName.slice(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-bold text-slate-900 text-sm">{req.fullName || req.userId?.name || 'Student Applicant'}</div>
-                            <div className="text-[11px] text-slate-400 font-mono">{req.userId?.email || 'student@campus.edu'}</div>
+                            <div className="font-bold text-slate-900 text-sm">{studentName}</div>
+                            <div className="text-[11px] text-slate-400 font-mono">{studentEmail}</div>
                           </div>
                         </div>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -1226,21 +1235,28 @@ export const AdminDashboardPage: React.FC = () => {
                       <div className="p-3 bg-slate-50 rounded-2xl text-xs space-y-1">
                         <div className="flex justify-between text-slate-600">
                           <span>College:</span>
-                          <span className="font-bold text-slate-900">{req.college || req.userId?.college || 'Uttaranchal University'}</span>
+                          <span className="font-bold text-slate-900">{studentCollege}</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
                           <span>Roll / Student ID:</span>
-                          <span className="font-mono font-bold text-slate-900">{req.studentId || 'UU-2024-CSE-091'}</span>
+                          <span className="font-mono font-bold text-slate-900">{studentRoll}</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
                           <span>Applied For:</span>
-                          <span className="font-bold text-emerald-700">{req.role === 'driver' ? 'Driver Authorization' : 'Student Commuter'}</span>
+                          <span className="font-bold text-emerald-700">{isDriverApp ? 'Driver Authorization' : 'Student Commuter'}</span>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-2 pt-2">
                         <button
-                          onClick={() => setReviewModalRequest(req)}
+                          onClick={() => setReviewModalRequest({
+                            ...req,
+                            fullName: studentName,
+                            studentIdentifier: studentRoll,
+                            college: studentCollege,
+                            userEmail: studentEmail,
+                            userId: studentUser || { name: studentName, email: studentEmail, college: studentCollege, studentIdentifier: studentRoll },
+                          })}
                           className="flex-1 py-2 px-3 rounded-xl bg-[#143D32] hover:bg-[#10483B] text-white text-xs font-bold transition-colors cursor-pointer"
                         >
                           Review & Approve
@@ -1253,7 +1269,8 @@ export const AdminDashboardPage: React.FC = () => {
                         </button>
                       </div>
                     </div>
-                  ))}
+                  );
+                  })}
                 </div>
               )}
             </div>

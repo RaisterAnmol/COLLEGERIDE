@@ -76,6 +76,8 @@ export interface IUser extends Document {
   institutionId?: mongoose.Types.ObjectId;
   campusId?: mongoose.Types.ObjectId;
   phone?: string;
+  studentIdentifier?: string;
+  driverIdentifier?: string;
   upiId?: string;
   avatarURL?: string;
   accountStatus: AccountStatus;
@@ -146,6 +148,8 @@ const UserSchema = new Schema<IUser>(
     institutionId: { type: Schema.Types.ObjectId, ref: "Institution" },
     campusId: { type: Schema.Types.ObjectId, ref: "Campus" },
     phone: { type: String, trim: true },
+    studentIdentifier: { type: String, trim: true },
+    driverIdentifier: { type: String, trim: true },
     upiId: { type: String, trim: true },
     avatarURL: { type: String, default: "" },
     accountStatus: {
