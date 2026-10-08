@@ -115,10 +115,8 @@ export const DashboardPage: React.FC = () => {
       const formatted = `+91 ${editPhone.trim()}`;
       const res = await api.sendPhoneOtp(formatted);
       setOtpSent(true);
+      setOtpInput('');
       setOtpSuccessMsg(res.message || 'Verification code sent to your WhatsApp!');
-      if (res.devOtpHint) {
-        setOtpInput(res.devOtpHint);
-      }
     } catch (err: any) {
       setOtpErrorMsg(err?.message || 'Failed to dispatch WhatsApp OTP');
     } finally {
