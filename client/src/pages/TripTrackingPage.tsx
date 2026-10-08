@@ -31,6 +31,8 @@ import {
   ExternalLink,
   ShieldCheck,
   Activity,
+  XCircle,
+  AlertCircle,
 } from 'lucide-react';
 
 export const TripTrackingPage: React.FC = () => {
@@ -274,6 +276,42 @@ export const TripTrackingPage: React.FC = () => {
     }
   };
 
+  const handleCancelTrip = async () => {
+    if (!id) return;
+    const reason = window.prompt("Reason for cancelling/aborting this trip (e.g. vehicle issue, passenger no-show):");
+    if (reason === null) return;
+    setActionLoading(true);
+    setError('');
+    try {
+      await api.cancelTrip(id, reason || 'Driver cancelled trip');
+      setSuccessMsg('Trip has been aborted/cancelled.');
+      await loadTrip();
+    } catch (err: any) {
+      setError(err?.message || 'Failed to cancel trip');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handlePassengerWithdraw = async () => {
+    if (!id) return;
+    if (!window.confirm("Are you sure you want to cancel your booking for this trip?")) return;
+    setActionLoading(true);
+    setError('');
+    try {
+      const myReqs = await api.getRequests('passenger', rideIdStr).catch(() => []);
+      if (myReqs && myReqs.length > 0) {
+        await api.updateRequestStatus(myReqs[0]._id, 'cancelled');
+      }
+      setSuccessMsg('You have cancelled your ride booking.');
+      setTimeout(() => navigate('/dashboard'), 1200);
+    } catch (err: any) {
+      setError(err?.message || 'Failed to withdraw from trip');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="py-24 text-center font-mono text-xs text-[#646A67]">
@@ -330,6 +368,27 @@ export const TripTrackingPage: React.FC = () => {
             className="px-3 py-1 bg-emerald-950/20 hover:bg-emerald-950/30 rounded text-xs uppercase tracking-wider font-mono shrink-0"
           >
             Acknowledge
+          </button>
+        </div>
+      )}
+
+      {/* Trip Cancelled Banner */}
+      {trip.status === 'cancelled' && (
+        <div className="p-4 bg-rose-50 border border-rose-300 text-rose-900 rounded-2xl flex items-center justify-between shadow-xs">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            <div>
+              <span className="font-bold text-sm block">Trip Aborted / Cancelled</span>
+              <span className="text-xs text-rose-700">
+                This trip session was cancelled. Real-time telemetry is terminated.
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="px-3.5 py-1.5 bg-white hover:bg-rose-100 border border-rose-300 text-rose-800 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+          >
+            Dashboard →
           </button>
         </div>
       )}
@@ -639,6 +698,22 @@ export const TripTrackingPage: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-6">
+                <div className="flex items-center justify-between pb-1">
+                  <span className="text-xs font-mono text-slate-500 font-bold uppercase tracking-wider">
+                    Step 1: Boarding Verification
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handlePassengerWithdraw}
+                    disabled={actionLoading}
+                    className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                    title="Cancel your seat on this trip"
+                  >
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Cancel / Withdraw Booking</span>
+                  </button>
+                </div>
+
                 {/* Primary Action: QR Scanner */}
                 <div className="p-6 bg-[#F7F5F0] border border-[#DDE1DE] rounded-2xl text-center space-y-4">
                   <div>
@@ -699,21 +774,33 @@ export const TripTrackingPage: React.FC = () => {
           </div>
         )}
 
-        {/* Driver Trip Completion Action */}
-        {isDriver && trip.status !== 'completed' && (
+        {/* Driver Trip Actions */}
+        {isDriver && trip.status !== 'completed' && trip.status !== 'cancelled' && (
           <div className="mt-8 pt-6 border-t border-[#DDE1DE] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <span className="text-xs text-[#646A67]">
               Arrived safely? Complete the trip to credit verified campus distance and carbon offsets.
             </span>
-            <button
-              type="button"
-              onClick={handleCompleteTrip}
-              disabled={actionLoading}
-              className="px-5 py-2.5 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] disabled:opacity-50 text-white font-mono font-semibold text-xs shadow-md transition-colors flex items-center justify-center gap-2"
-            >
-              <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-              <span>Complete Trip & Request Ratings</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleCancelTrip}
+                disabled={actionLoading}
+                className="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 font-mono font-semibold text-xs transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                title="Abort / Cancel this trip"
+              >
+                <XCircle className="w-4 h-4" />
+                <span>Abort Trip</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCompleteTrip}
+                disabled={actionLoading}
+                className="px-5 py-2.5 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] disabled:opacity-50 text-white font-mono font-semibold text-xs shadow-md transition-colors flex items-center justify-center gap-2"
+              >
+                <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                <span>Complete Trip & Request Ratings</span>
+              </button>
+            </div>
           </div>
         )}
       </div>

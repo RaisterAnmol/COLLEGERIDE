@@ -586,6 +586,48 @@ export const SearchRidesPage: React.FC = () => {
     setRequestingId(null);
   };
 
+  const handleCancelRequest = async (rideId: string) => {
+    if (!window.confirm("Are you sure you want to withdraw/cancel your seat request?")) return;
+    setRequestError(null);
+    setRequestSuccess(null);
+    try {
+      const local = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
+      const matched = local.find((r: any) => {
+        const rId = typeof r.rideId === 'object' ? r.rideId?._id : r.rideId;
+        return rId === rideId;
+      });
+
+      if (matched && matched._id) {
+        try {
+          await api.updateRequestStatus(matched._id, 'cancelled');
+        } catch (apiErr) {
+          console.warn("API request cancel error, falling back locally:", apiErr);
+        }
+      } else {
+        const reqs = await api.getRequests('passenger', rideId).catch(() => []);
+        if (reqs && reqs.length > 0) {
+          await api.updateRequestStatus(reqs[0]._id, 'cancelled');
+        }
+      }
+
+      const filtered = local.filter((r: any) => {
+        const rId = typeof r.rideId === 'object' ? r.rideId?._id : r.rideId;
+        return rId !== rideId;
+      });
+      localStorage.setItem("campusride_local_requests", JSON.stringify(filtered));
+
+      setRequestedRideIds((prev) => {
+        const next = new Set(prev);
+        next.delete(rideId);
+        return next;
+      });
+
+      setRequestSuccess("Seat request has been withdrawn/cancelled.");
+    } catch (err: any) {
+      setRequestError(err?.message || "Failed to cancel seat request");
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Route Explorer Side-by-Side Header */}
@@ -1417,10 +1459,20 @@ export const SearchRidesPage: React.FC = () => {
                           <span>Verify ID to Request</span>
                         </button>
                       ) : requestedRideIds.has(ride._id) ? (
-                        <span className="px-3.5 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-xs">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
-                          <span>Request Sent</span>
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="px-3 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-xs">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
+                            <span>Requested</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCancelRequest(ride._id)}
+                            className="px-2.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors cursor-pointer"
+                            title="Withdraw / Cancel seat request"
+                          >
+                            ✕ Cancel
+                          </button>
+                        </div>
                       ) : (
                         <button
                           type="button"

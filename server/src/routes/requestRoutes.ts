@@ -42,54 +42,64 @@ router.post(
         return;
       }
 
-      // Check for existing request
-      const existingReq = await RideRequest.findOne({
+      // Check for existing request from this passenger for this ride
+      let rideRequest = await RideRequest.findOne({
         rideId: ride._id,
         passengerId: req.user!.id,
-        status: { $in: ["pending", "accepted"] },
       });
 
-      if (existingReq) {
-        res.status(409).json({
-          code: "DUPLICATE_REQUEST",
-          message: "You already have an active request for this ride",
-        });
-        return;
-      }
-
-      try {
-        const rideRequest = await RideRequest.create({
-          rideId: ride._id,
-          passengerId: req.user!.id,
-          status: "pending",
-        });
-
-        const populatedReq = await RideRequest.findById(rideRequest._id)
-          .populate("passengerId", "name email college year avatarURL rating totalRides phone")
-          .populate("rideId");
-
-        // Real-time socket notification to driver
-        const io = getSocketIO();
-        if (io) {
-          io.to(`user_${ride.creator.toString()}`).emit("newRequest", {
-            request: populatedReq,
-            rideId: ride._id,
-          });
-        }
-
-        res.status(201).json(populatedReq);
-      } catch (err: any) {
-        // MongoDB duplicate key error on compound index { rideId, passengerId }
-        if (err.code === 11000) {
+      if (rideRequest) {
+        if (rideRequest.status === "pending" || rideRequest.status === "accepted") {
           res.status(409).json({
             code: "DUPLICATE_REQUEST",
-            message: "Duplicate ride request detected",
+            message: "You already have an active request for this ride",
           });
           return;
         }
-        throw err;
+        // Reactivate previously cancelled or declined request
+        rideRequest.status = "pending";
+        await rideRequest.save();
+      } else {
+        try {
+          rideRequest = await RideRequest.create({
+            rideId: ride._id,
+            passengerId: req.user!.id,
+            status: "pending",
+          });
+        } catch (err: any) {
+          if (err.code === 11000) {
+            res.status(409).json({
+              code: "DUPLICATE_REQUEST",
+              message: "Duplicate ride request detected",
+            });
+            return;
+          }
+          throw err;
+        }
       }
+
+      const populatedReq = await RideRequest.findById(rideRequest._id)
+        .populate("passengerId", "name email college year avatarURL rating totalRides phone")
+        .populate("rideId");
+
+      // Real-time socket notification to driver
+      const io = getSocketIO();
+      if (io) {
+        io.to(`user_${ride.creator.toString()}`).emit("newRequest", {
+          request: populatedReq,
+          rideId: ride._id,
+        });
+      }
+
+      res.status(201).json(populatedReq);
     } catch (err: any) {
+      if (err.code === 11000) {
+        res.status(409).json({
+          code: "DUPLICATE_REQUEST",
+          message: "Duplicate ride request detected",
+        });
+        return;
+      }
       logger.error({ err }, "Create request error");
       res.status(500).json({ code: "SERVER_ERROR", message: err.message || "Failed to submit ride request" });
     }

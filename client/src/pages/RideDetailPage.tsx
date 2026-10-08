@@ -209,7 +209,7 @@ export const RideDetailPage: React.FC = () => {
 
   const handleRequestStatus = async (
     reqId: string,
-    status: "accepted" | "declined",
+    status: "accepted" | "declined" | "cancelled",
   ) => {
     setActionLoading(true);
     setError("");
@@ -219,6 +219,43 @@ export const RideDetailPage: React.FC = () => {
       loadData();
     } catch (err: any) {
       setError(err.message || "Failed to update request");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancelMyRequest = async () => {
+    if (!myRequest) return;
+    if (!window.confirm("Are you sure you want to cancel your seat request?")) return;
+    setActionLoading(true);
+    setError("");
+    try {
+      await api.updateRequestStatus(myRequest._id, "cancelled");
+      try {
+        const localReqs = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
+        const filtered = localReqs.filter((r: any) => r._id !== myRequest._id && r.rideId !== id);
+        localStorage.setItem("campusride_local_requests", JSON.stringify(filtered));
+      } catch {}
+      setSuccessMsg("Seat request successfully cancelled.");
+      await loadData();
+    } catch (err: any) {
+      setError(err?.message || "Failed to cancel request");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleCancelRide = async () => {
+    if (!id) return;
+    if (!window.confirm("Are you sure you want to cancel this entire offered ride? All passengers will be notified.")) return;
+    setActionLoading(true);
+    setError("");
+    try {
+      await api.cancelRide(id);
+      setSuccessMsg("Ride cancelled successfully.");
+      await loadData();
+    } catch (err: any) {
+      setError(err?.message || "Failed to cancel ride");
     } finally {
       setActionLoading(false);
     }
@@ -467,11 +504,22 @@ export const RideDetailPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={handleStartTrip}
-                  disabled={actionLoading}
+                  disabled={actionLoading || ride.status === 'cancelled' || ride.status === 'completed'}
                   className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
                 >
                   <Key className="w-4 h-4" />
                   Start Trip & Show Pickup QR
+                </button>
+              )}
+              {ride.status !== 'cancelled' && ride.status !== 'completed' && !activeTrip && (
+                <button
+                  type="button"
+                  onClick={handleCancelRide}
+                  disabled={actionLoading}
+                  className="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors cursor-pointer"
+                  title="Cancel this offered ride"
+                >
+                  Cancel Ride
                 </button>
               )}
             </div>
@@ -481,7 +529,7 @@ export const RideDetailPage: React.FC = () => {
           {!isDriver && (
             <div>
               {myRequest ? (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`px-3.5 py-2 rounded-xl text-xs font-bold uppercase flex items-center gap-1.5 ${
                       myRequest.status === "accepted"
@@ -494,6 +542,19 @@ export const RideDetailPage: React.FC = () => {
                     <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
                     <span>Request Sent ({myRequest.status})</span>
                   </span>
+
+                  {(myRequest.status === "pending" || myRequest.status === "accepted") && (
+                    <button
+                      type="button"
+                      disabled={actionLoading}
+                      onClick={handleCancelMyRequest}
+                      className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                      title="Cancel seat request"
+                    >
+                      <XCircle className="w-3.5 h-3.5" />
+                      <span>Cancel Request</span>
+                    </button>
+                  )}
                   {myRequest.status === "accepted" && (
                     <div className="flex items-center gap-2">
                       <button
@@ -783,6 +844,19 @@ export const RideDetailPage: React.FC = () => {
                         >
                           {req.status}
                         </span>
+                        {req.status === "accepted" && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleRequestStatus(req._id, "declined")
+                            }
+                            disabled={actionLoading}
+                            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                            title="Remove Passenger / Mark No-show (frees up seat)"
+                          >
+                            Remove / No-show
+                          </button>
+                        )}
                         {req.status === "accepted" && req.passengerId && (
                           <button
                             type="button"

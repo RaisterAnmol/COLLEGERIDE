@@ -36,6 +36,8 @@ import {
   Compass,
   Mail,
   Zap,
+  XCircle,
+  Trash2,
 } from 'lucide-react';
 import { SearchableInput } from '../components/common/SearchableInput';
 import { ReviewModal } from '../components/ReviewModal';
@@ -249,6 +251,58 @@ export const DashboardPage: React.FC = () => {
   }, [user]);
 
   const [passengerCommuteTab, setPassengerCommuteTab] = useState<'upcoming' | 'previous'>('upcoming');
+  const [cancellingReqId, setCancellingReqId] = useState<string | null>(null);
+  const [cancellingRideId, setCancellingRideId] = useState<string | null>(null);
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
+
+  const handleCancelPassengerRequest = async (e: React.MouseEvent, reqId: string) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to cancel this seat request?")) return;
+    try {
+      setCancellingReqId(reqId);
+      await api.updateRequestStatus(reqId, 'cancelled');
+      try {
+        const local = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
+        const filtered = local.filter((r: any) => r._id !== reqId && r.rideId?._id !== reqId);
+        localStorage.setItem("campusride_local_requests", JSON.stringify(filtered));
+      } catch {}
+      setActionFeedback("Seat request successfully cancelled.");
+      setTimeout(() => setActionFeedback(null), 4000);
+      await loadDashboardData();
+    } catch (err: any) {
+      alert(err?.message || "Failed to cancel request");
+    } finally {
+      setCancellingReqId(null);
+    }
+  };
+
+  const handleCancelDriverRide = async (e: React.MouseEvent, rideId: string) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to cancel this offered ride? All seat bookings will be notified.")) return;
+    try {
+      setCancellingRideId(rideId);
+      await api.cancelRide(rideId);
+      setActionFeedback("Offered ride cancelled successfully.");
+      setTimeout(() => setActionFeedback(null), 4000);
+      await loadDashboardData();
+    } catch (err: any) {
+      alert(err?.message || "Failed to cancel ride");
+    } finally {
+      setCancellingRideId(null);
+    }
+  };
+
+  const handleDriverUpdateRequest = async (e: React.MouseEvent, reqId: string, status: 'accepted' | 'declined') => {
+    e.stopPropagation();
+    try {
+      await api.updateRequestStatus(reqId, status);
+      setActionFeedback(status === 'accepted' ? "Passenger request accepted!" : "Passenger request declined/removed.");
+      setTimeout(() => setActionFeedback(null), 4000);
+      await loadDashboardData();
+    } catch (err: any) {
+      alert(err?.message || `Failed to update request status to ${status}`);
+    }
+  };
 
   // Role & derived calculations
   const isDriver = (user as any)?.role === 'driver' || (user as any)?.accountType === 'DRIVER';
@@ -364,6 +418,23 @@ export const DashboardPage: React.FC = () => {
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Check Verification Status</span>
             </Link>
+          </div>
+        )}
+
+        {/* Action Feedback Banner */}
+        {actionFeedback && (
+          <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center justify-between shadow-xs animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{actionFeedback}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActionFeedback(null)}
+              className="text-emerald-700 hover:text-emerald-900 text-xs font-bold"
+            >
+              ✕
+            </button>
           </div>
         )}
 
@@ -849,12 +920,33 @@ export const DashboardPage: React.FC = () => {
                                 <span className="font-bold text-emerald-700">
                                   ₹{(ride as any).pricing?.costPerSeat ?? (ride as any).pricePerSeat ?? 25}
                                 </span>
+                                {ride.status === 'cancelled' && (
+                                  <>
+                                    <span>•</span>
+                                    <span className="px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 font-bold uppercase text-[9px]">
+                                      Cancelled
+                                    </span>
+                                  </>
+                                )}
                               </div>
                             </div>
 
-                            <span className="text-xs font-bold text-slate-400 hover:text-emerald-700 shrink-0">
-                              View Details →
-                            </span>
+                            <div className="flex items-center gap-2 shrink-0">
+                              {ride.status !== 'cancelled' && ride.status !== 'completed' && (
+                                <button
+                                  type="button"
+                                  disabled={cancellingRideId === ride._id}
+                                  onClick={(e) => handleCancelDriverRide(e, ride._id)}
+                                  className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-[11px] font-bold transition-colors cursor-pointer"
+                                  title="Cancel this offered ride"
+                                >
+                                  {cancellingRideId === ride._id ? 'Cancelling...' : 'Cancel Ride'}
+                                </button>
+                              )}
+                              <span className="text-xs font-bold text-slate-400 hover:text-emerald-700">
+                                Details →
+                              </span>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -928,15 +1020,46 @@ export const DashboardPage: React.FC = () => {
                                 </div>
                               </div>
 
-                              {req.status === 'accepted' ? (
-                                <span className="px-2.5 py-1 bg-emerald-700 text-white rounded-lg text-[10px] font-bold shadow-2xs shrink-0">
-                                  Trip Ready →
-                                </span>
-                              ) : (
-                                <span className="text-xs font-bold text-slate-400 hover:text-blue-600 shrink-0">
-                                  Details →
-                                </span>
-                              )}
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {req.status === 'pending' ? (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleDriverUpdateRequest(e, req._id, 'accepted')}
+                                      className="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-[10px] font-bold shadow-2xs transition-colors cursor-pointer"
+                                      title="Accept passenger & reserve seat"
+                                    >
+                                      Accept
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleDriverUpdateRequest(e, req._id, 'declined')}
+                                      className="px-2 py-1 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-[10px] font-bold transition-colors cursor-pointer"
+                                      title="Decline request"
+                                    >
+                                      Decline
+                                    </button>
+                                  </>
+                                ) : req.status === 'accepted' ? (
+                                  <>
+                                    <button
+                                      type="button"
+                                      onClick={(e) => handleDriverUpdateRequest(e, req._id, 'declined')}
+                                      className="px-2 py-1 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 rounded-lg text-[10px] font-bold transition-colors cursor-pointer"
+                                      title="Remove Passenger / Mark No-show"
+                                    >
+                                      Remove
+                                    </button>
+                                    <span className="px-2.5 py-1 bg-emerald-700 text-white rounded-lg text-[10px] font-bold shadow-2xs">
+                                      Trip Ready →
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-xs font-bold text-slate-400 hover:text-blue-600">
+                                    Details →
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         );
@@ -1127,11 +1250,22 @@ export const DashboardPage: React.FC = () => {
                                 <span>{sanitizeLocationText(ride?.destination?.text) || 'Destination'}</span>
                               </div>
                             </div>
-                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                              isAccepted ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-                            }`}>
-                              {isAccepted ? 'Confirmed' : 'Pending'}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                                isAccepted ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {isAccepted ? 'Confirmed' : 'Pending'}
+                              </span>
+                              <button
+                                type="button"
+                                disabled={cancellingReqId === req._id}
+                                onClick={(e) => handleCancelPassengerRequest(e, req._id)}
+                                className="px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-bold transition-colors cursor-pointer"
+                                title="Cancel this seat reservation"
+                              >
+                                {cancellingReqId === req._id ? 'Cancelling...' : 'Cancel Request'}
+                              </button>
+                            </div>
                           </div>
 
                           <div className="flex items-center justify-between text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl">

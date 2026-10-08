@@ -344,6 +344,13 @@ class ApiService {
     });
   }
 
+  async cancelTrip(tripId: string, reason?: string) {
+    return this.request<any>(`/api/trips/${tripId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "cancelled", reason }),
+    });
+  }
+
   // Chat / Conversations
   async getConversation(rideId?: string) {
     return this.request<any>(

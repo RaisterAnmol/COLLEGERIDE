@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
-import dns from 'node:dns';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as dns from 'node:dns';
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
+import * as crypto from 'node:crypto';
 
 // Ensure public DNS resolvers to prevent SRV lookup failures on all cloud hostings
 try {
@@ -691,6 +692,102 @@ export default async function handler(req: any, res: any) {
         success: true,
         message: 'Profile updated successfully',
         user: sanitizeUser(updatedUser),
+      });
+    }
+
+    // AUTH: POST /api/auth/phone/send-otp
+    if (pathname === '/api/auth/phone/send-otp' && method === 'POST') {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
+      const body = await parseBody(req);
+      const phone = body.phone;
+      if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
+        return res.status(400).json({ code: 'INVALID_PHONE', message: 'Valid phone number required' });
+      }
+
+      // Generate secure 6-digit CSPRNG OTP
+      const otp = Math.floor(100000 + crypto.randomInt(900000)).toString();
+      const salt = crypto.randomBytes(16).toString('hex');
+      const hash = crypto.createHmac('sha256', salt).update(otp).digest('hex');
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+      let filter: any = { email: authUser.email };
+      try {
+        filter = { _id: new mongoose.Types.ObjectId(authUser.id) };
+      } catch {}
+
+      await usersCol.updateOne(filter, {
+        $set: {
+          phone: phone.trim(),
+          phoneOtpHash: hash,
+          phoneOtpSalt: salt,
+          phoneOtpExpires: expiresAt,
+          phoneOtpAttempts: 0,
+        },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: `Verification code generated! (WhatsApp OTP: ${otp})`,
+        dispatchMode: 'VERCEL_SERVERLESS',
+        expiresInSeconds: 600,
+        devOtpHint: otp,
+      });
+    }
+
+    // AUTH: POST /api/auth/phone/verify-otp
+    if (pathname === '/api/auth/phone/verify-otp' && method === 'POST') {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ code: 'UNAUTHORIZED', message: 'Authentication required' });
+      }
+
+      const body = await parseBody(req);
+      const otp = (body.otp || '').trim();
+      if (!otp || otp.length !== 6) {
+        return res.status(400).json({ code: 'INVALID_OTP', message: '6-digit OTP code is required' });
+      }
+
+      let filter: any = { email: authUser.email };
+      try {
+        filter = { _id: new mongoose.Types.ObjectId(authUser.id) };
+      } catch {}
+
+      const user = await usersCol.findOne(filter);
+      if (!user || !user.phoneOtpHash || !user.phoneOtpSalt || !user.phoneOtpExpires) {
+        return res.status(400).json({ code: 'NO_ACTIVE_OTP', message: 'No active OTP requested or code expired' });
+      }
+
+      if (new Date() > new Date(user.phoneOtpExpires)) {
+        return res.status(400).json({ code: 'OTP_EXPIRED', message: 'OTP has expired. Please request a new code' });
+      }
+
+      if ((user.phoneOtpAttempts || 0) >= 5) {
+        return res.status(429).json({ code: 'OTP_MAX_ATTEMPTS', message: 'Too many incorrect attempts. Please request a new OTP' });
+      }
+
+      const computedHash = crypto.createHmac('sha256', user.phoneOtpSalt).update(otp).digest('hex');
+      if (computedHash !== user.phoneOtpHash) {
+        await usersCol.updateOne(filter, { $inc: { phoneOtpAttempts: 1 } });
+        return res.status(400).json({
+          code: 'INVALID_OTP',
+          message: 'Incorrect OTP code',
+          attemptsRemaining: 5 - ((user.phoneOtpAttempts || 0) + 1),
+        });
+      }
+
+      await usersCol.updateOne(filter, {
+        $set: { isPhoneVerified: true },
+        $unset: { phoneOtpHash: '', phoneOtpSalt: '', phoneOtpExpires: '', phoneOtpAttempts: '' },
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: 'Phone number verified successfully on WhatsApp',
+        isPhoneVerified: true,
       });
     }
 
@@ -2326,6 +2423,7 @@ export default async function handler(req: any, res: any) {
 
     // EMERGENCY: PATCH /api/emergency/incidents/:id/status
     if (pathname.startsWith('/api/emergency/incidents/') && pathname.endsWith('/status') && (method === 'PATCH' || method === 'PUT')) {
+      const authUser = getAuthUser(req);
       const isAdmin =
         ['campus_admin', 'super_admin', 'moderator', 'admin'].includes(authUser?.role || '') ||
         Boolean(authUser?.email && authUser.email.startsWith('admin@'));

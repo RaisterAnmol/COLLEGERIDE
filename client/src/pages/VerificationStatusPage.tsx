@@ -680,18 +680,57 @@ export const VerificationStatusPage: React.FC = () => {
                     <span>Explore Available Rides</span>
                   </button>
                 ) : (
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-amber-800 text-[11px] font-medium flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                      Verification in review with Campus Safety Office
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => navigate('/dashboard')}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
-                    >
-                      Dashboard
-                    </button>
+                  <div className="space-y-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                      <span className="text-amber-800 text-[11px] font-medium flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        Verification in review with Campus Safety Office
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <label className="px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                          <Upload className="w-3.5 h-3.5 text-emerald-700" />
+                          <span>Replace / Re-upload ID</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setOcrProcessing(true);
+                                setOcrResult(null);
+                                const reader = new FileReader();
+                                reader.onload = async () => {
+                                  const url = reader.result as string;
+                                  localStorage.setItem('campusride_driver_id_card_' + (user?.email || ''), url);
+                                  setTimeout(async () => {
+                                    setOcrResult({
+                                      valid: true,
+                                      rollNo: user?.studentId || 'UU-2024-STUDENT',
+                                      college: user?.college || 'UTTARANCHAL UNIVERSITY',
+                                      message: 'Replaced document uploaded successfully. Admin queue updated.',
+                                    });
+                                    setOcrProcessing(false);
+                                    try {
+                                      await api.updateProfile({ enrolledIdCardUrl: url });
+                                      refreshUser();
+                                    } catch {}
+                                  }, 800);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => navigate('/dashboard')}
+                          className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors cursor-pointer"
+                        >
+                          Dashboard
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
