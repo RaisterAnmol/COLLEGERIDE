@@ -97,7 +97,7 @@ function AppLayout() {
       <CampusBackground variant={variant} />
       <CustomCursor />
       {!isAdminRoute && <Navbar />}
-      <main className="flex-1 relative z-[1]">
+      <main className="flex-1 relative">
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<LandingPage />} />

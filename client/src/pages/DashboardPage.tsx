@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -1334,9 +1335,9 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       {/* EDIT PROFILE MODAL */}
-      {isEditingProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-6 overflow-hidden">
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+      {isEditingProfile && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-6 overflow-hidden">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
@@ -1616,11 +1617,12 @@ export const DashboardPage: React.FC = () => {
             </div>
           </form>
         </div>
-      </div>
+      </div>,
+      document.body
     )}
 
       {/* Review Modal Dialog */}
-      {activeReviewModal && (
+      {activeReviewModal && typeof document !== 'undefined' && createPortal(
         <ReviewModal
           tripId={activeReviewModal.tripId}
           toUserId={activeReviewModal.toUserId}
@@ -1632,7 +1634,8 @@ export const DashboardPage: React.FC = () => {
             if (user) loadReviews(user._id);
             setActiveReviewModal(null);
           }}
-        />
+        />,
+        document.body
       )}
 
       {/* Google Onboarding Modal for First-Time Google Users */}

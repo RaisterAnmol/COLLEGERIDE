@@ -1,4 +1,4 @@
-const CACHE_NAME = 'campusride-v3';
+const CACHE_NAME = 'campusride-v4';
 const STATIC_ASSETS = [
   '/',
   '/favicon.ico',
@@ -7,22 +7,13 @@ const STATIC_ASSETS = [
 ];
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
-  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      )
+      Promise.all(keys.map((key) => caches.delete(key)))
     )
   );
   self.clients.claim();
@@ -44,7 +35,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Network-First for page navigations (ensures user always gets the latest deployed HTML and asset hashes)
+  // Always fetch dynamic Vite build chunks (/assets/) directly from network
+  if (url.pathname.startsWith('/assets/')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // Network-First for navigations
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => caches.match('/'))
@@ -52,16 +49,8 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-First with safe network fallback for static assets
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      return (
-        cached ||
-        fetch(event.request).catch(() => {
-          return new Response('', { status: 404, statusText: 'Not Found' });
-        })
-      );
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
 
