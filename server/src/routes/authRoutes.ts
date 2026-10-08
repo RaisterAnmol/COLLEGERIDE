@@ -55,6 +55,7 @@ const registerSchema = z.object({
     .optional()
     .default(1),
   phone: z.string().trim().optional(),
+  phoneVerificationToken: z.string().optional(),
   gender: z.enum(["male", "female", "other"]).default("other"),
   accountType: z
     .enum(["PASSENGER", "WOMEN_PASSENGER", "DRIVER", "ADMIN"])
@@ -97,6 +98,116 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+// Temporary in-memory store for guest registration OTPs
+const preRegisterOtps = new Map<
+  string,
+  { hash: string; salt: string; expiresAt: Date; attempts: number }
+>();
+
+// POST /api/auth/phone/send-registration-otp (Public for guest registration)
+router.post("/phone/send-registration-otp", async (req, res): Promise<void> => {
+  try {
+    const { phone } = req.body;
+    if (!phone || typeof phone !== "string") {
+      res.status(400).json({ code: "BAD_REQUEST", message: "Valid mobile number is required" });
+      return;
+    }
+
+    const cleanDigits = phone.replace(/\D/g, "").slice(-10);
+    if (cleanDigits.length !== 10) {
+      res.status(400).json({ code: "BAD_REQUEST", message: "Please provide a valid 10-digit mobile number" });
+      return;
+    }
+
+    const formattedPhone = `+91 ${cleanDigits}`;
+    const otp = generateSecureOtp(6);
+    const salt = generateSalt();
+    const hash = hashOtp(otp, salt);
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    preRegisterOtps.set(formattedPhone, {
+      hash,
+      salt,
+      expiresAt,
+      attempts: 0,
+    });
+
+    const dispatchResult = await NotificationService.sendPhoneOtp(formattedPhone, otp);
+
+    logger.info({ phone: formattedPhone, mode: dispatchResult.mode }, "Registration OTP dispatched");
+
+    res.status(200).json({
+      success: true,
+      message: "Verification code sent to your WhatsApp!",
+      dispatchMode: dispatchResult.mode,
+      formattedPhone,
+      expiresInSeconds: 600,
+      ...(process.env.NODE_ENV !== "production" ? { devOtpHint: otp } : {}),
+    });
+  } catch (err: any) {
+    logger.error({ err }, "Failed to send registration phone OTP");
+    res.status(500).json({ code: "SERVER_ERROR", message: "Failed to dispatch registration phone OTP" });
+  }
+});
+
+// POST /api/auth/phone/verify-registration-otp (Public for guest registration)
+router.post("/phone/verify-registration-otp", async (req, res): Promise<void> => {
+  try {
+    const { phone, otp } = req.body;
+    if (!phone || !otp) {
+      res.status(400).json({ code: "BAD_REQUEST", message: "Phone number and 6-digit OTP code are required" });
+      return;
+    }
+
+    const cleanDigits = phone.replace(/\D/g, "").slice(-10);
+    const formattedPhone = `+91 ${cleanDigits}`;
+    const entry = preRegisterOtps.get(formattedPhone);
+
+    if (!entry) {
+      res.status(400).json({ code: "NO_ACTIVE_OTP", message: "No active verification code found for this phone number. Please request a new code." });
+      return;
+    }
+
+    if (new Date() > entry.expiresAt) {
+      preRegisterOtps.delete(formattedPhone);
+      res.status(400).json({ code: "OTP_EXPIRED", message: "Verification code has expired. Please request a new code." });
+      return;
+    }
+
+    if (entry.attempts >= 5) {
+      preRegisterOtps.delete(formattedPhone);
+      res.status(429).json({ code: "OTP_MAX_ATTEMPTS", message: "Too many failed attempts. Please request a new code." });
+      return;
+    }
+
+    const computedHash = hashOtp(otp.trim(), entry.salt);
+    if (computedHash !== entry.hash) {
+      entry.attempts += 1;
+      res.status(400).json({ code: "INVALID_OTP", message: "Incorrect verification code.", attemptsRemaining: 5 - entry.attempts });
+      return;
+    }
+
+    // OTP matched! Generate signed verification token
+    preRegisterOtps.delete(formattedPhone);
+    const phoneVerificationToken = jwt.sign(
+      { phone: formattedPhone, verified: true },
+      process.env.JWT_SECRET || "fallback_campusride_secret",
+      { expiresIn: "1h" }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Phone verified successfully via WhatsApp OTP!",
+      formattedPhone,
+      phoneVerificationToken,
+      isPhoneVerified: true,
+    });
+  } catch (err: any) {
+    logger.error({ err }, "Failed to verify registration phone OTP");
+    res.status(500).json({ code: "SERVER_ERROR", message: "Failed to verify OTP" });
+  }
+});
+
 // POST /api/auth/register
 router.post("/register", async (req, res): Promise<void> => {
   try {
@@ -131,7 +242,25 @@ router.post("/register", async (req, res): Promise<void> => {
       vehicle,
       emergencyContact,
       emergencyContacts,
+      phoneVerificationToken,
     } = parseResult.data;
+
+    let isPhoneVerified = false;
+    if (phoneVerificationToken && phone) {
+      try {
+        const decoded: any = jwt.verify(
+          phoneVerificationToken,
+          process.env.JWT_SECRET || "fallback_campusride_secret"
+        );
+        const cleanReqPhone = phone.replace(/\D/g, "").slice(-10);
+        const cleanDecodedPhone = String(decoded?.phone || "").replace(/\D/g, "").slice(-10);
+        if (decoded?.verified && cleanReqPhone === cleanDecodedPhone) {
+          isPhoneVerified = true;
+        }
+      } catch (e) {
+        logger.warn({ e }, "Invalid phoneVerificationToken passed during registration");
+      }
+    }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -185,6 +314,7 @@ router.post("/register", async (req, res): Promise<void> => {
       semester: Number(semester),
       phone,
       gender,
+      isPhoneVerified,
       emergencyContact: emergencyContact && emergencyContact.phone ? emergencyContact : undefined,
       emergencyContacts: emergencyContacts && emergencyContacts.length > 0 ? emergencyContacts : (emergencyContact && emergencyContact.phone ? [emergencyContact] : []),
       role: assignedRole,
@@ -204,6 +334,22 @@ router.post("/register", async (req, res): Promise<void> => {
       totalRides: 0,
       tokenVersion: 0,
     });
+
+    // Auto-dispatch verification OTP to user's phone if unverified
+    if (phone && !isPhoneVerified) {
+      try {
+        const otp = generateSecureOtp(6);
+        const salt = generateSalt();
+        user.phoneOtpHash = hashOtp(otp, salt);
+        user.phoneOtpSalt = salt;
+        user.phoneOtpExpires = new Date(Date.now() + 10 * 60 * 1000);
+        user.phoneOtpAttempts = 0;
+        await user.save();
+        await NotificationService.sendPhoneOtp(phone, otp);
+      } catch (otpErr) {
+        logger.warn({ otpErr }, "Failed to auto-dispatch phone verification OTP upon registration");
+      }
+    }
 
     if (vehicle && (vehicle.model || vehicle.plateLast4)) {
       await Vehicle.create({

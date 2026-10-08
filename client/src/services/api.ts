@@ -157,6 +157,33 @@ class ApiService {
     });
   }
 
+  async sendRegistrationPhoneOtp(phone: string) {
+    return this.request<{
+      success: boolean;
+      message: string;
+      formattedPhone: string;
+      dispatchMode: string;
+      expiresInSeconds: number;
+      devOtpHint?: string;
+    }>("/api/auth/phone/send-registration-otp", {
+      method: "POST",
+      body: JSON.stringify({ phone }),
+    });
+  }
+
+  async verifyRegistrationPhoneOtp(phone: string, otp: string) {
+    return this.request<{
+      success: boolean;
+      message: string;
+      formattedPhone: string;
+      phoneVerificationToken: string;
+      isPhoneVerified: boolean;
+    }>("/api/auth/phone/verify-registration-otp", {
+      method: "POST",
+      body: JSON.stringify({ phone, otp }),
+    });
+  }
+
   async getMe() {
     return this.request<{ user: any; vehicle?: any }>("/api/auth/me");
   }

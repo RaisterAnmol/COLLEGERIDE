@@ -29,6 +29,7 @@ import {
   Camera,
   ScanFace,
   BookOpen,
+  Zap,
 } from "lucide-react";
 import { SearchableInput } from "../components/common/SearchableInput";
 import {
@@ -76,6 +77,52 @@ export const AuthPage: React.FC = () => {
   const [year, setYear] = useState(1);
   const [gender, setGender] = useState<"male" | "female" | "other">("male");
   const [phone, setPhone] = useState("");
+
+  // Phone OTP Verification State for Registration
+  const [isPhoneVerified, setIsPhoneVerified] = useState(false);
+  const [phoneVerificationToken, setPhoneVerificationToken] = useState<string | null>(null);
+  const [isSendingRegOtp, setIsSendingRegOtp] = useState(false);
+  const [regOtpSent, setRegOtpSent] = useState(false);
+  const [regOtpInput, setRegOtpInput] = useState("");
+  const [isVerifyingRegOtp, setIsVerifyingRegOtp] = useState(false);
+  const [regOtpMsg, setRegOtpMsg] = useState<{ text: string; isError: boolean } | null>(null);
+
+  const handleSendRegistrationOtp = async () => {
+    if (!phone || phone.length < 10) {
+      setRegOtpMsg({ text: "Please enter a complete 10-digit mobile number first.", isError: true });
+      return;
+    }
+    setIsSendingRegOtp(true);
+    setRegOtpMsg(null);
+    try {
+      const res = await api.sendRegistrationPhoneOtp(phone);
+      setRegOtpSent(true);
+      setRegOtpMsg({ text: res.message || "OTP code sent to your WhatsApp!", isError: false });
+    } catch (err: any) {
+      setRegOtpMsg({ text: err?.message || "Failed to dispatch WhatsApp OTP. Ensure number is valid.", isError: true });
+    } finally {
+      setIsSendingRegOtp(false);
+    }
+  };
+
+  const handleVerifyRegistrationOtp = async () => {
+    if (!regOtpInput || regOtpInput.trim().length !== 6) {
+      setRegOtpMsg({ text: "Please enter the 6-digit code received on WhatsApp.", isError: true });
+      return;
+    }
+    setIsVerifyingRegOtp(true);
+    setRegOtpMsg(null);
+    try {
+      const res = await api.verifyRegistrationPhoneOtp(phone, regOtpInput.trim());
+      setIsPhoneVerified(true);
+      setPhoneVerificationToken(res.phoneVerificationToken);
+      setRegOtpMsg({ text: "✓ Phone number verified successfully!", isError: false });
+    } catch (err: any) {
+      setRegOtpMsg({ text: err?.message || "Invalid or expired OTP code.", isError: true });
+    } finally {
+      setIsVerifyingRegOtp(false);
+    }
+  };
 
   // Emergency Contact fields (Safety / SOS)
   const [emergencyName, setEmergencyName] = useState("");
@@ -218,6 +265,12 @@ export const AuthPage: React.FC = () => {
           return;
         }
 
+        if (phone.trim() && !isPhoneVerified) {
+          setError("Mobile OTP verification is required to complete registration. Please click 'Send WhatsApp OTP' and enter your 6-digit verification code.");
+          setLoading(false);
+          return;
+        }
+
         const formattedPhone = phone.trim()
           ? phone.startsWith("+91")
             ? phone.trim()
@@ -241,6 +294,7 @@ export const AuthPage: React.FC = () => {
           gender: accountType === "WOMEN_PASSENGER" ? "female" : gender,
           phone: formattedPhone,
           accountType,
+          phoneVerificationToken: phoneVerificationToken || undefined,
         };
 
         if (formattedEmergencyPhone) {
@@ -731,6 +785,13 @@ export const AuthPage: React.FC = () => {
                         onChange={(e) => {
                           const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
                           setPhone(digits);
+                          if (isPhoneVerified) {
+                            setIsPhoneVerified(false);
+                            setPhoneVerificationToken(null);
+                            setRegOtpSent(false);
+                            setRegOtpInput("");
+                            setRegOtpMsg(null);
+                          }
                         }}
                         placeholder="98765 43210"
                         maxLength={10}
@@ -740,6 +801,80 @@ export const AuthPage: React.FC = () => {
                     <p className="text-[10px] text-slate-400 mt-1">
                       Enter 10-digit mobile number (+91 included automatically)
                     </p>
+
+                    {/* WhatsApp OTP Verification Box for New Account Registration */}
+                    <div className="mt-2.5">
+                      {isPhoneVerified ? (
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold shadow-2xs">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Mobile Verified via WhatsApp OTP (+91 {phone})</span>
+                        </div>
+                      ) : (
+                        <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/90 space-y-2">
+                          {!regOtpSent ? (
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                              <span className="text-[11px] text-slate-500 font-medium">
+                                🔐 WhatsApp OTP verification required to activate account
+                              </span>
+                              <button
+                                type="button"
+                                onClick={handleSendRegistrationOtp}
+                                disabled={isSendingRegOtp || phone.length < 10}
+                                className="px-3 py-1.5 rounded-lg bg-[#143D32] hover:bg-[#0d2820] text-white text-[11px] font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1 shrink-0 cursor-pointer shadow-xs"
+                              >
+                                <Zap className="w-3 h-3 text-emerald-400" />
+                                <span>{isSendingRegOtp ? "Sending..." : "Send WhatsApp OTP"}</span>
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[11px] text-slate-600 font-medium">
+                                  Enter 6-digit WhatsApp OTP:
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={handleSendRegistrationOtp}
+                                  disabled={isSendingRegOtp}
+                                  className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer"
+                                >
+                                  Resend Code
+                                </button>
+                              </div>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  value={regOtpInput}
+                                  onChange={(e) => setRegOtpInput(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                                  placeholder="Enter 6-digit OTP"
+                                  maxLength={6}
+                                  className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold tracking-widest text-center bg-white"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={handleVerifyRegistrationOtp}
+                                  disabled={isVerifyingRegOtp || regOtpInput.length !== 6}
+                                  className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-xs"
+                                >
+                                  {isVerifyingRegOtp ? "Verifying..." : "Verify"}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+
+                          {regOtpMsg && (
+                            <div className={`text-[11px] font-semibold flex items-center gap-1 ${regOtpMsg.isError ? "text-rose-600" : "text-emerald-700"}`}>
+                              {regOtpMsg.isError ? (
+                                <AlertCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                              ) : (
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                              )}
+                              <span>{regOtpMsg.text}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
 

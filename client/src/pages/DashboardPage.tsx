@@ -487,6 +487,45 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
 
+        {/* Unverified Phone OTP Advisory Banner for Older and New Accounts */}
+        {!user?.isPhoneVerified && (
+          <div className="rounded-3xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 animate-in fade-in">
+            <div className="flex items-start gap-3.5">
+              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-md">
+                🔐
+              </div>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <h4 className="font-black text-amber-950 text-sm sm:text-base">
+                    Action Required: Verify Mobile Number with WhatsApp OTP
+                  </h4>
+                  <span className="text-[10px] font-mono uppercase bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold">
+                    OTP Required
+                  </span>
+                </div>
+                <p className="text-xs text-amber-900/80 max-w-2xl leading-relaxed">
+                  Your mobile number <strong>{user?.phone || 'not configured'}</strong> is currently unverified. WhatsApp OTP verification is required to unlock ride booking, driver coordination, and 24/7 SOS safety alerts.
+                </p>
+                <div className="text-[11px] text-slate-700 bg-white/80 rounded-xl p-2.5 border border-amber-200 mt-1 space-y-0.5">
+                  <p>1. Click <strong>"Verify Phone OTP"</strong> on the right.</p>
+                  <p>2. In the modal, click <strong>"Send WhatsApp OTP"</strong> to receive your 6-digit code.</p>
+                  <p>3. Enter the 6-digit code and tap <strong>"Verify"</strong> to activate your verified badge!</p>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0 md:min-w-[190px]">
+              <button
+                type="button"
+                onClick={openEditModal}
+                className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <Zap className="w-3.5 h-3.5" />
+                <span>Verify Phone OTP</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Action Feedback Banner */}
         {actionFeedback && (
           <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-xs font-bold flex items-center justify-between shadow-xs animate-in fade-in">

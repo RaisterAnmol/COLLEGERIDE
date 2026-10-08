@@ -37,6 +37,30 @@ router.get(
         }
       }
 
+      // Ensure phone OTP verification advisory exists if user's phone is unverified
+      if (user && user.isPhoneVerified !== true) {
+        const existingOtpAdvisory = await Notification.findOne({
+          userId: user._id,
+          type: "SECURITY_ALERT",
+          title: { $regex: /Complete Mobile OTP Verification|Verify Mobile Number/i },
+        });
+        if (!existingOtpAdvisory) {
+          await Notification.create({
+            userId: user._id,
+            type: "SECURITY_ALERT",
+            title: "🔐 Action Required: Complete Mobile OTP Verification",
+            body: `CampusRide Safety Notice: Your mobile number (${user.phone || 'not configured'}) is currently unverified. Please verify your phone number using the WhatsApp OTP to enable ride bookings, ride coordination, and instant 24/7 SOS safety dispatch.\n\nHow to verify:\n1. Click 'Edit Profile' on your Dashboard.\n2. Under Mobile Number, click 'Send WhatsApp OTP'.\n3. Enter the 6-digit verification code received on WhatsApp and tap 'Verify'.`,
+            data: {
+              action: "VERIFY_PHONE_OTP",
+              url: "/dashboard",
+            },
+            deliveryChannels: ["in_app", "socket"],
+            deliveryStatus: { in_app: "sent" },
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          });
+        }
+      }
+
       const notifications = await Notification.find({ userId: req.user!.id })
         .sort({ createdAt: -1 })
         .limit(40);

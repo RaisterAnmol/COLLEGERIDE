@@ -781,6 +781,55 @@ router.post('/broadcast-emergency-setup', async (_req: Request, res: Response): 
   }
 });
 
+// POST /api/admin/broadcast-unverified-phone-otp - Check and send OTP verification notification to unverified older accounts only
+router.post('/broadcast-unverified-phone-otp', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const unverifiedUsers = await User.find({
+      isPhoneVerified: { $ne: true },
+    });
+
+    let createdCount = 0;
+    const notifiedUserList: string[] = [];
+
+    for (const u of unverifiedUsers) {
+      const existing = await Notification.findOne({
+        userId: u._id,
+        type: "SECURITY_ALERT",
+        title: { $regex: /Complete Mobile OTP Verification|Verify Mobile Number/i },
+      });
+
+      if (!existing) {
+        await Notification.create({
+          userId: u._id,
+          type: "SECURITY_ALERT",
+          title: "🔐 Action Required: Complete Mobile OTP Verification",
+          body: `Hi ${u.name.split(' ')[0]}, your CampusRide mobile number is currently unverified. WhatsApp OTP verification is required to unlock ride booking, ride coordination, and 24/7 SOS emergency alerts.\n\nHow to verify your number:\n1. Click "Edit Profile" on your Dashboard.\n2. Under Mobile Number, click "Send WhatsApp OTP".\n3. Enter the 6-digit verification code received on WhatsApp and tap "Verify" — your account will be fully verified!`,
+          data: {
+            action: "VERIFY_PHONE_OTP",
+            url: "/dashboard",
+          },
+          deliveryChannels: ["in_app", "socket"],
+          deliveryStatus: { in_app: "sent" },
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        });
+        createdCount++;
+        notifiedUserList.push(`${u.name} (${u.email}) - Phone: ${u.phone || 'not set'}`);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Mobile OTP verification advisory dispatched to ${createdCount} unverified accounts.`,
+      totalUnverifiedUsers: unverifiedUsers.length,
+      notificationsCreated: createdCount,
+      notifiedUserList,
+    });
+  } catch (err: any) {
+    logger.error({ err }, 'Failed to broadcast unverified phone OTP advisory');
+    res.status(500).json({ error: err.message || 'Failed to broadcast unverified phone OTP advisory' });
+  }
+});
+
 // GET /api/admin/users - List all registered users for admin gatekeeper
 router.get('/users', requireAuth, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
