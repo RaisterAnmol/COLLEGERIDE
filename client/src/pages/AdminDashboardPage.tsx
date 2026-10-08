@@ -171,11 +171,15 @@ export const AdminDashboardPage: React.FC = () => {
     };
 
     socket.on('sos:alert', handleSosAlert);
+    socket.on('emergency:incident:new', handleSosAlert);
     socket.on('sos:status', handleSosStatus);
+    socket.on('emergency:incident:updated', handleSosStatus);
 
     return () => {
       socket.off('sos:alert', handleSosAlert);
+      socket.off('emergency:incident:new', handleSosAlert);
       socket.off('sos:status', handleSosStatus);
+      socket.off('emergency:incident:updated', handleSosStatus);
     };
   }, []);
 

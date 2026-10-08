@@ -100,9 +100,34 @@ export class EmergencyService {
     const contactResults: any[] = [];
     let successCount = 0;
 
-    for (const contact of contacts) {
-      if (!contact.phone) continue;
-      const dispatch = await NotificationService.sendSosAlert(contact.phone, {
+    if (contacts.length > 0) {
+      for (const contact of contacts) {
+        if (!contact.phone) continue;
+        const dispatch = await NotificationService.sendSosAlert(contact.phone, {
+          studentName: user.name,
+          studentPhone: user.phone,
+          college: user.college,
+          latitude: input.location.latitude,
+          longitude: input.location.longitude,
+          address: input.location.address,
+          notes: input.notes,
+          incidentNumber,
+        });
+        const isOk = dispatch.success;
+        if (isOk) successCount++;
+
+        contactResults.push({
+          name: contact.name || "Emergency Contact",
+          phone: contact.phone,
+          relationship: (contact as any).relation || (contact as any).relationship || "Emergency Contact",
+          dispatchStatus: isOk ? (dispatch.mode === "MOCK_DEV" ? "MOCK_DEV_DISPATCHED" : "SENT") : "FAILED",
+          sentAt: new Date(),
+          error: dispatch.error,
+        });
+      }
+    } else if (user.phone) {
+      // Direct confirmation dispatch to student's phone via WhatsApp
+      const dispatch = await NotificationService.sendSosAlert(user.phone, {
         studentName: user.name,
         studentPhone: user.phone,
         college: user.college,
@@ -112,14 +137,12 @@ export class EmergencyService {
         notes: input.notes,
         incidentNumber,
       });
-      const isOk = dispatch.success;
-      if (isOk) successCount++;
-
+      if (dispatch.success) successCount++;
       contactResults.push({
-        name: contact.name || "Emergency Contact",
-        phone: contact.phone,
-        relationship: (contact as any).relation || (contact as any).relationship || "Emergency Contact",
-        dispatchStatus: isOk ? (dispatch.mode === "MOCK_DEV" ? "MOCK_DEV_DISPATCHED" : "SENT") : "FAILED",
+        name: user.name,
+        phone: user.phone,
+        relationship: "Student (Self Alert Confirmation)",
+        dispatchStatus: dispatch.success ? (dispatch.mode === "MOCK_DEV" ? "MOCK_DEV_DISPATCHED" : "SENT") : "FAILED",
         sentAt: new Date(),
         error: dispatch.error,
       });
@@ -143,6 +166,16 @@ export class EmergencyService {
         location: incident.location,
         status: incident.status,
         createdAt: incident.createdAt,
+      });
+
+      // Emit sos:alert and sos:status for admin compatibility
+      io.to("security_operations_room").emit("sos:alert", {
+        incidentId: incident.incidentNumber || incident._id,
+        incidentNumber: incident.incidentNumber,
+      });
+      io.to("security_operations_room").emit("sos:status", {
+        incidentId: incident._id,
+        status: incident.status,
       });
 
       if (input.tripId) {

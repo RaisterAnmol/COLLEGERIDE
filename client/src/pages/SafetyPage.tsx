@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 import {
   ShieldCheck,
   ShieldAlert,
@@ -23,9 +26,12 @@ import {
 import safetyHeroImg from '../assets/illustrations/safety-hero.webp';
 
 export const SafetyPage: React.FC = () => {
+  const { user } = useAuth();
   const [copiedLocation, setCopiedLocation] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
   const [sosDispatched, setSosDispatched] = useState(false);
+  const [sosLoading, setSosLoading] = useState(false);
+  const [sosError, setSosError] = useState<string | null>(null);
 
   const handleShareLocation = () => {
     if (navigator.share) {
@@ -41,12 +47,44 @@ export const SafetyPage: React.FC = () => {
     }
   };
 
-  const handleTriggerSos = () => {
-    setSosDispatched(true);
-    setTimeout(() => {
-      setSosModalOpen(false);
-      setSosDispatched(false);
-    }, 2500);
+  const handleTriggerSos = async () => {
+    if (!user) {
+      setSosError('Please log in to dispatch an emergency alert linked to your student profile, or call 112 directly.');
+      return;
+    }
+    setSosLoading(true);
+    setSosError(null);
+
+    const sendSos = async (latitude: number, longitude: number, accuracy?: number) => {
+      try {
+        await api.triggerSos({
+          latitude,
+          longitude,
+          accuracy: accuracy || 15,
+          address: 'Campus Perimeter (Safety Center)',
+          notes: 'Emergency SOS button triggered from Safety & Protection Hub.',
+        });
+        setSosDispatched(true);
+        setTimeout(() => {
+          setSosModalOpen(false);
+          setSosDispatched(false);
+        }, 3500);
+      } catch (err: any) {
+        setSosError(err?.message || 'Failed to dispatch SOS alert. Please call 112 immediately.');
+      } finally {
+        setSosLoading(false);
+      }
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => sendSos(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
+        () => sendSos(30.3415, 77.9540),
+        { timeout: 5000, enableHighAccuracy: true }
+      );
+    } else {
+      sendSos(30.3415, 77.9540);
+    }
   };
 
   return (
@@ -545,8 +583,8 @@ export const SafetyPage: React.FC = () => {
       </div>
 
       {/* SOS CONFIRMATION MODAL */}
-      {sosModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+      {sosModalOpen && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-rose-300 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
             <div className="w-16 h-16 rounded-2xl bg-rose-100 text-rose-600 mx-auto flex items-center justify-center shadow-inner">
               <ShieldAlert className="w-9 h-9 animate-bounce" />
@@ -558,33 +596,45 @@ export const SafetyPage: React.FC = () => {
 
             <p className="text-xs text-slate-600 leading-relaxed">
               {sosDispatched
-                ? 'Your live vehicle coordinates and trip telemetry have been sent to Campus Security (+91 12345 67890) and your emergency ICE circle.'
-                : 'This will immediately broadcast your real-time GPS location and student identity to the Uttaranchal University Security Control Room and your linked ICE contacts.'}
+                ? 'Your live vehicle coordinates and trip telemetry have been sent to Campus Security and your emergency contacts.'
+                : 'This will immediately broadcast your real-time GPS location and student identity to the University Security Operations Center and send live GPS tracking alerts to your emergency contacts.'}
             </p>
+
+            {sosError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-semibold text-left">
+                ⚠️ {sosError}
+              </div>
+            )}
 
             {!sosDispatched ? (
               <div className="flex gap-3 pt-2">
                 <button
+                  type="button"
+                  disabled={sosLoading}
                   onClick={() => setSosModalOpen(false)}
-                  className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors"
+                  className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
+                  disabled={sosLoading}
                   onClick={handleTriggerSos}
-                  className="flex-1 py-3 rounded-xl bg-[#E14949] hover:bg-[#c93b3b] text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 rounded-xl bg-[#E14949] hover:bg-[#c93b3b] text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
                 >
                   <PhoneCall className="w-4 h-4" />
-                  <span>Confirm SOS</span>
+                  <span>{sosLoading ? 'Dispatching SOS...' : 'Confirm SOS'}</span>
                 </button>
               </div>
             ) : (
-              <div className="py-2 text-xs font-bold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200">
-                ✓ Security Alert Active (Closing...)
+              <div className="py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <span>Security Alert Active (Closing...)</span>
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
