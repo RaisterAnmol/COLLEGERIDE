@@ -33,6 +33,9 @@ import { telemetryMiddleware } from "./middleware/telemetry";
 
 const app: Express = express();
 
+// Trust reverse proxies (Render, Vercel, Cloudflare) for accurate client IP in rate limiting
+app.set("trust proxy", 1);
+
 // Request correlation ID tracking & Prometheus metrics observation
 app.use(correlationIdMiddleware);
 app.use(telemetryMiddleware);
@@ -118,7 +121,7 @@ app.use(express.urlencoded({ extended: true, limit: "15mb" }));
 // Rate limiters
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 3000,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -130,7 +133,7 @@ const globalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: env.NODE_ENV === "production" ? 10 : 5000,
+  max: 100,
   keyGenerator: (req) => `${req.ip}_${req.body?.email || ""}`,
   standardHeaders: true,
   legacyHeaders: false,
@@ -144,7 +147,7 @@ const authLimiter = rateLimit({
 
 const otpLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: env.NODE_ENV === "production" ? 5 : 100,
+  max: 50,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -156,7 +159,7 @@ const otpLimiter = rateLimit({
 
 const sosLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
-  max: env.NODE_ENV === "production" ? 10 : 100,
+  max: env.NODE_ENV === "production" ? 20 : 100,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -168,7 +171,15 @@ const sosLimiter = rateLimit({
 });
 
 app.use("/api", (req: Request, res: Response, next: NextFunction) => {
-  if (req.path.startsWith("/admin")) return next();
+  if (
+    req.path.startsWith("/admin") ||
+    req.path.startsWith("/notifications") ||
+    req.path.startsWith("/health") ||
+    req.path.startsWith("/ready") ||
+    req.path.startsWith("/auth/phone")
+  ) {
+    return next();
+  }
   return globalLimiter(req, res, next);
 });
 app.use("/api/auth/login", authLimiter);

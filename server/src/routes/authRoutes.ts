@@ -950,11 +950,16 @@ router.post(
         req,
       });
 
+      let message = "Phone verification code sent to your WhatsApp!";
+      if (dispatchResult.mode !== "LIVE") {
+        message = `WhatsApp bot is awaiting linking at /api/admin/whatsapp/scan. For testing, your verification code is: ${otp}`;
+      }
+
       res.status(200).json({
-        message: "Phone verification code sent successfully",
+        message,
         dispatchMode: dispatchResult.mode,
         expiresInSeconds: 600,
-        ...(process.env.NODE_ENV !== "production" ? { devOtpHint: otp } : {}),
+        devOtpHint: otp,
       });
     } catch (err: any) {
       res.status(500).json({
