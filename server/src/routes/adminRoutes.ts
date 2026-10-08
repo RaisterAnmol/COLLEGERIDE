@@ -547,7 +547,8 @@ function renderScanPageHtml(status: { status: string; isConnected: boolean; qrDa
           if (resDiv) {
             resDiv.style.background = '#FEF2F2';
             resDiv.style.color = '#B91C1C';
-            resDiv.innerHTML = '<strong>❌ Failed:</strong> ' + (data.error || 'Could not deliver message');
+            const errMsg = typeof data.error === 'object' ? (data.error?.message || JSON.stringify(data.error)) : (data.error || 'Could not deliver message');
+            resDiv.innerHTML = '<strong>❌ Failed:</strong> ' + errMsg;
           }
         }
       } catch (err) {
@@ -645,7 +646,8 @@ router.post('/whatsapp/test-send', async (req: Request, res: Response): Promise<
     });
   } catch (err: any) {
     logger.error({ err }, 'Failed to send test WhatsApp message');
-    res.status(500).json({ error: err.message || 'Failed to send test WhatsApp message' });
+    const errMsg = err?.message || (typeof err === 'string' ? err : JSON.stringify(err)) || 'Failed to send test WhatsApp message';
+    res.status(500).json({ error: errMsg });
   }
 });
 

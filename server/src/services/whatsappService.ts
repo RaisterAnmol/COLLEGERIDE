@@ -190,8 +190,16 @@ class WhatsAppService {
         let jid = `${formattedPhone}@s.whatsapp.net`;
         try {
           const onWa = await this.sock.onWhatsApp(jid);
-          if (Array.isArray(onWa) && onWa.length > 0 && onWa[0]?.exists) {
-            jid = onWa[0].jid;
+          if (Array.isArray(onWa) && onWa.length > 0) {
+            if (onWa[0]?.exists) {
+              jid = onWa[0].jid;
+            } else {
+              return {
+                success: false,
+                mode: "FAILED",
+                error: `Number +${formattedPhone} is not registered on WhatsApp. Please check the number.`,
+              };
+            }
           }
         } catch (_) {}
 
@@ -214,10 +222,11 @@ class WhatsAppService {
         };
       } catch (err: any) {
         logger.error({ err }, "[WhatsApp Service] Failed to send message via Baileys");
+        const errMsg = err?.message || (typeof err === "string" ? err : JSON.stringify(err)) || "Failed to deliver WhatsApp message";
         return {
           success: false,
           mode: "FAILED",
-          error: err.message || "Failed to deliver WhatsApp message",
+          error: errMsg,
         };
       }
     }
