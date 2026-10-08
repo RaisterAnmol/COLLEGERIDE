@@ -589,22 +589,44 @@ export const SafetyPage: React.FC = () => {
                       👤
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 leading-tight">Your Emergency Contact</p>
-                      <p className="text-[10px] text-slate-500">+91 98765 43210</p>
+                      <p className="font-bold text-slate-900 leading-tight">
+                        {user?.emergencyContact?.name || (user?.emergencyContacts && user.emergencyContacts[0]?.name) || 'Your Emergency Contact'}
+                        {((user?.emergencyContact as any)?.relation || (user?.emergencyContacts && (user.emergencyContacts[0] as any)?.relation)) ? (
+                          <span className="text-[10px] text-slate-500 font-normal ml-1">
+                            ({(user?.emergencyContact as any)?.relation || (user?.emergencyContacts && (user.emergencyContacts[0] as any)?.relation)})
+                          </span>
+                        ) : null}
+                      </p>
+                      <p className="text-[10px] text-slate-500">
+                        {user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone || 'Not configured yet'}
+                      </p>
                     </div>
                   </div>
-                  <a href="tel:+919876543210" className="p-1.5 rounded-lg bg-white border border-slate-200 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors">
-                    <Phone className="w-3 h-3" />
-                  </a>
+                  {(user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone) ? (
+                    <a
+                      href={`tel:${(user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone || '').replace(/\s+/g, '')}`}
+                      className="p-1.5 rounded-lg bg-white border border-slate-200 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors"
+                      title="Direct Call"
+                    >
+                      <Phone className="w-3 h-3" />
+                    </a>
+                  ) : (
+                    <Link
+                      to="/dashboard"
+                      className="px-2 py-1 rounded-lg bg-rose-100 text-rose-700 text-[10px] font-bold hover:bg-rose-200 transition-colors"
+                    >
+                      + Add
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
 
             <Link
-              to="/verification"
+              to="/dashboard"
               className="mt-4 w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition-colors"
             >
-              <span>Manage Contacts</span>
+              <span>Manage Contacts in Profile</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

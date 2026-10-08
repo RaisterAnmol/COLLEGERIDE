@@ -59,6 +59,22 @@ const registerSchema = z.object({
   accountType: z
     .enum(["PASSENGER", "WOMEN_PASSENGER", "DRIVER", "ADMIN"])
     .default("PASSENGER"),
+  emergencyContact: z
+    .object({
+      name: z.string().default("Emergency Contact"),
+      phone: z.string().default(""),
+      relation: z.string().default("Parent/Guardian"),
+    })
+    .optional(),
+  emergencyContacts: z
+    .array(
+      z.object({
+        name: z.string().default("Emergency Contact"),
+        phone: z.string().default(""),
+        relation: z.string().default("Parent/Guardian"),
+      })
+    )
+    .optional(),
   studentIdentifier: z.string().trim().optional(),
   driverIdentifier: z.string().trim().optional(),
   enrolledIdCardUrl: z.string().optional(),
@@ -113,6 +129,8 @@ router.post("/register", async (req, res): Promise<void> => {
       faceDescriptor,
       adminInvitationToken,
       vehicle,
+      emergencyContact,
+      emergencyContacts,
     } = parseResult.data;
 
     const existingUser = await User.findOne({ email });
@@ -167,6 +185,8 @@ router.post("/register", async (req, res): Promise<void> => {
       semester: Number(semester),
       phone,
       gender,
+      emergencyContact: emergencyContact && emergencyContact.phone ? emergencyContact : undefined,
+      emergencyContacts: emergencyContacts && emergencyContacts.length > 0 ? emergencyContacts : (emergencyContact && emergencyContact.phone ? [emergencyContact] : []),
       role: assignedRole,
       accountType,
       accountStatus: "EMAIL_VERIFICATION_PENDING",

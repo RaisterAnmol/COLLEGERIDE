@@ -77,6 +77,11 @@ export const AuthPage: React.FC = () => {
   const [gender, setGender] = useState<"male" | "female" | "other">("male");
   const [phone, setPhone] = useState("");
 
+  // Emergency Contact fields (Safety / SOS)
+  const [emergencyName, setEmergencyName] = useState("");
+  const [emergencyPhone, setEmergencyPhone] = useState("");
+  const [emergencyRelation, setEmergencyRelation] = useState("Parent/Guardian");
+
   // Driver-specific fields
   const [driverIdentifier, setDriverIdentifier] = useState("");
   const [vehicleType, setVehicleType] = useState<"car" | "bike">("car");
@@ -219,6 +224,12 @@ export const AuthPage: React.FC = () => {
             : `+91 ${phone.trim()}`
           : "";
 
+        const formattedEmergencyPhone = emergencyPhone.trim()
+          ? emergencyPhone.startsWith("+91")
+            ? emergencyPhone.trim()
+            : `+91 ${emergencyPhone.trim()}`
+          : "";
+
         const payload: any = {
           name,
           email,
@@ -231,6 +242,15 @@ export const AuthPage: React.FC = () => {
           phone: formattedPhone,
           accountType,
         };
+
+        if (formattedEmergencyPhone) {
+          payload.emergencyContact = {
+            name: emergencyName.trim() || "Emergency Contact",
+            phone: formattedEmergencyPhone,
+            relation: emergencyRelation || "Parent/Guardian",
+          };
+          payload.emergencyContacts = [payload.emergencyContact];
+        }
 
         const finalAvatar = selfieResult?.previewUrl || idCardPreview || "";
         if (finalAvatar) {
@@ -719,6 +739,81 @@ export const AuthPage: React.FC = () => {
                     </div>
                     <p className="text-[10px] text-slate-400 mt-1">
                       Enter 10-digit mobile number (+91 included automatically)
+                    </p>
+                  </div>
+                </div>
+
+                {/* Emergency Contact Block (For 24/7 SOS Distress Alerts) */}
+                <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200/90 space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-xs shrink-0">
+                      🚨
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-rose-950 uppercase tracking-wide">
+                        Emergency SOS Contact (For 24/7 Campus Safety)
+                      </h4>
+                      <p className="text-[11px] text-rose-800/80">
+                        When you trigger an Emergency SOS during a ride, live GPS coordinates & map link will be dispatched to this WhatsApp contact.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Contact Name
+                      </label>
+                      <input
+                        type="text"
+                        value={emergencyName}
+                        onChange={(e) => setEmergencyName(e.target.value)}
+                        placeholder="e.g. Dad / Mom / Guardian"
+                        className="w-full text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 focus:outline-none bg-white font-medium text-slate-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-700 mb-1">
+                        Relationship
+                      </label>
+                      <select
+                        value={emergencyRelation}
+                        onChange={(e) => setEmergencyRelation(e.target.value)}
+                        className="w-full text-sm px-3 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-rose-500 focus:outline-none bg-white font-medium text-slate-900"
+                      >
+                        <option value="Parent/Guardian">Parent / Guardian</option>
+                        <option value="Sibling">Brother / Sister</option>
+                        <option value="Campus Friend">Campus Friend / Roommate</option>
+                        <option value="Relative">Relative</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Emergency Contact Mobile Number
+                    </label>
+                    <div className="flex rounded-xl border border-slate-300 focus-within:ring-2 focus-within:ring-rose-500 focus-within:border-rose-500 overflow-hidden bg-white shadow-xs transition-all">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-2.5 bg-slate-100 border-r border-slate-300 text-slate-800 select-none text-xs font-bold shrink-0">
+                        <span className="text-sm leading-none" role="img" aria-label="India flag">🇮🇳</span>
+                        <span>+91</span>
+                      </div>
+                      <input
+                        type="tel"
+                        value={emergencyPhone}
+                        onChange={(e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                          setEmergencyPhone(digits);
+                        }}
+                        placeholder="98765 43210"
+                        maxLength={10}
+                        className="w-full text-sm px-3 py-2.5 focus:outline-none bg-transparent font-medium text-slate-900 tracking-wide placeholder:text-slate-400 placeholder:font-normal"
+                      />
+                    </div>
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Enter 10-digit mobile number (+91 added automatically). Can be modified anytime in Profile.
                     </p>
                   </div>
                 </div>

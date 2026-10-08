@@ -46,7 +46,8 @@ export interface IUser {
   emergencyContacts?: Array<{
     name: string;
     phone: string;
-    relationship: string;
+    relation?: string;
+    relationship?: string;
     isVerified?: boolean;
   }>;
 }

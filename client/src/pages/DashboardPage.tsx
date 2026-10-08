@@ -1640,6 +1640,82 @@ export const DashboardPage: React.FC = () => {
                 )}
               </div>
 
+              {/* Emergency Contact Setup Section (Prominently placed directly after Mobile Number) */}
+              <div className="p-4 rounded-2xl bg-rose-50/80 border-2 border-rose-200 space-y-3 shadow-xs">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
+                    🚨
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-rose-950 uppercase tracking-wide flex items-center gap-1.5">
+                      <span>24/7 SOS Emergency Contact</span>
+                      <span className="text-[9px] font-mono px-2 py-0.5 rounded-full bg-rose-200/70 text-rose-900 font-bold">Recommended</span>
+                    </h4>
+                    <p className="text-[11px] text-rose-800/90 leading-tight mt-0.5">
+                      When you trigger Emergency SOS, live Google Maps coordinates and SOS alerts will be automatically dispatched to this WhatsApp contact.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Contact Name
+                    </label>
+                    <input
+                      type="text"
+                      value={editEmergencyName}
+                      onChange={(e) => setEditEmergencyName(e.target.value)}
+                      placeholder="e.g. Dad / Mom / Guardian"
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white font-medium text-slate-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Relationship
+                    </label>
+                    <select
+                      value={editEmergencyRelation}
+                      onChange={(e) => setEditEmergencyRelation(e.target.value)}
+                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white font-medium text-slate-900"
+                    >
+                      <option value="Parent/Guardian">Parent / Guardian</option>
+                      <option value="Sibling">Brother / Sister</option>
+                      <option value="Campus Friend">Campus Friend / Roommate</option>
+                      <option value="Relative">Relative</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Emergency Contact Mobile Number
+                  </label>
+                  <div className="flex rounded-xl border border-slate-300 focus-within:ring-2 focus-within:ring-rose-500 overflow-hidden bg-white shadow-2xs">
+                    <div className="inline-flex items-center gap-1 px-3.5 py-2.5 bg-slate-100 border-r border-slate-300 text-slate-800 text-xs font-bold shrink-0">
+                      <span className="text-sm leading-none" role="img" aria-label="India flag">🇮🇳</span>
+                      <span>+91</span>
+                    </div>
+                    <input
+                      type="tel"
+                      value={editEmergencyPhone}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setEditEmergencyPhone(digits);
+                      }}
+                      placeholder="98765 43210"
+                      maxLength={10}
+                      className="w-full text-xs px-3 py-2.5 focus:outline-none bg-transparent font-medium text-slate-900"
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Enter 10-digit phone (+91 added automatically).
+                  </p>
+                </div>
+              </div>
+
               {/* Direct UPI Fare ID Input */}
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -1660,77 +1736,6 @@ export const DashboardPage: React.FC = () => {
                 <p className="text-[10px] text-slate-500 mt-1">
                   Enables passengers to pay you directly via Google Pay, PhonePe, or Paytm with ₹0 platform deductions.
                 </p>
-              </div>
-
-              {/* Emergency Contact Setup Section */}
-              <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200/90 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-xs">
-                    🚨
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-rose-950 uppercase tracking-wide">
-                      Emergency Contact (For 24/7 SOS Distress Alerts)
-                    </h4>
-                    <p className="text-[10px] text-rose-800/80">
-                      When you click Emergency SOS, live Google Maps coordinates will be dispatched to this contact via WhatsApp.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Contact Name
-                    </label>
-                    <input
-                      type="text"
-                      value={editEmergencyName}
-                      onChange={(e) => setEditEmergencyName(e.target.value)}
-                      placeholder="e.g. Dad / Mom / Guardian"
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white font-medium text-slate-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">
-                      Relationship
-                    </label>
-                    <select
-                      value={editEmergencyRelation}
-                      onChange={(e) => setEditEmergencyRelation(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white font-medium text-slate-900"
-                    >
-                      <option value="Parent/Guardian">Parent / Guardian</option>
-                      <option value="Sibling">Brother / Sister</option>
-                      <option value="Campus Friend">Campus Friend / Roommate</option>
-                      <option value="Relative">Relative</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Emergency Contact Mobile Number
-                  </label>
-                  <div className="flex rounded-xl border border-slate-300 focus-within:ring-2 focus-within:ring-rose-500 overflow-hidden bg-white shadow-2xs">
-                    <div className="px-3 py-2 bg-slate-100 border-r border-slate-300 text-slate-800 text-xs font-bold shrink-0">
-                      +91
-                    </div>
-                    <input
-                      type="tel"
-                      value={editEmergencyPhone}
-                      onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-                        setEditEmergencyPhone(digits);
-                      }}
-                      placeholder="98765 43210"
-                      maxLength={10}
-                      className="w-full text-xs px-3 py-2 focus:outline-none bg-transparent font-medium text-slate-900"
-                    />
-                  </div>
-                </div>
               </div>
             </div>
 
