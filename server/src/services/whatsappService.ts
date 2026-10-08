@@ -43,7 +43,7 @@ class WhatsAppService {
     botNumber: string | null;
   } {
     let botNumber: string | null = null;
-    if (this.sock?.user?.id) {
+    if (this.sock?.user?.id && this.isConnected()) {
       const rawId = this.sock.user.id.split(':')[0].replace(/\D/g, '');
       botNumber = rawId ? `+${rawId}` : null;
     }
@@ -58,6 +58,38 @@ class WhatsAppService {
 
   public isConnected(): boolean {
     return this.status === "CONNECTED" && this.sock !== null;
+  }
+
+  public clearAuthFiles(): void {
+    try {
+      if (fs.existsSync(this.authDir)) {
+        fs.rmSync(this.authDir, { recursive: true, force: true });
+      }
+      fs.mkdirSync(this.authDir, { recursive: true });
+    } catch (e) {
+      logger.warn({ e }, "[WhatsApp Service] Failed to clear auth files directory");
+    }
+  }
+
+  public async clearAuthAndRestart(): Promise<void> {
+    try {
+      this.isInitializing = false;
+      this.reconnectAttempts = 0;
+      if (this.sock) {
+        try {
+          this.sock.ev.removeAllListeners();
+          this.sock.end();
+        } catch (_) {}
+        this.sock = null;
+      }
+      this.status = "DISCONNECTED";
+      this.rawQr = null;
+      this.qrDataUrl = null;
+      this.clearAuthFiles();
+      await this.initialize();
+    } catch (err: any) {
+      logger.error({ err }, "[WhatsApp Service] Failed to clear auth and restart");
+    }
   }
 
   public async initialize(): Promise<void> {
@@ -76,6 +108,14 @@ class WhatsAppService {
     try {
       if (!fs.existsSync(this.authDir)) {
         fs.mkdirSync(this.authDir, { recursive: true });
+      }
+
+      if (this.sock) {
+        try {
+          this.sock.ev.removeAllListeners();
+          this.sock.end();
+        } catch (_) {}
+        this.sock = null;
       }
 
       // Dynamic import to prevent CommonJS/Jest test runner collisions
@@ -137,7 +177,17 @@ class WhatsAppService {
             "[WhatsApp Service] Connection closed"
           );
 
-          if (shouldReconnect && this.reconnectAttempts < 5) {
+          if (!shouldReconnect) {
+            console.log(
+              "[WhatsApp Service] Session logged out or expired. Auto-clearing data/whatsapp_auth directory to generate fresh QR..."
+            );
+            this.clearAuthFiles();
+            this.reconnectAttempts = 0;
+            setTimeout(() => {
+              this.isInitializing = false;
+              this.initialize();
+            }, 1000);
+          } else if (this.reconnectAttempts < 5) {
             this.reconnectAttempts++;
             const delay = Math.min(3000 * this.reconnectAttempts, 15000);
             console.log(
@@ -147,10 +197,16 @@ class WhatsAppService {
               this.isInitializing = false;
               this.initialize();
             }, delay);
-          } else if (!shouldReconnect) {
+          } else {
             console.log(
-              "[WhatsApp Service] Logged out from WhatsApp. Clear data/whatsapp_auth directory to re-scan."
+              "[WhatsApp Service] Max reconnect attempts reached without active session. Auto-clearing session to allow new QR pairing..."
             );
+            this.clearAuthFiles();
+            this.reconnectAttempts = 0;
+            setTimeout(() => {
+              this.isInitializing = false;
+              this.initialize();
+            }, 1000);
           }
         } else if (connection === "open") {
           this.status = "CONNECTED";

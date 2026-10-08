@@ -455,11 +455,11 @@ function renderScanPageHtml(status: { status: string; isConnected: boolean; qrDa
           <h1>Link WhatsApp Bot</h1>
           <p class="subtitle">Scan this QR code using WhatsApp on your phone to activate automated OTP delivery.</p>
 
-          <div class="qr-box">
+          <div class="qr-box" id="qr-box">
             ${
               status.qrDataUrl
                 ? `<img id="qr-image" src="${status.qrDataUrl}" alt="WhatsApp QR Code" />`
-                : `<div style="font-size: 12px; color: #64748B;">Generating live QR code...</div>`
+                : `<div id="qr-placeholder" style="font-size: 13px; color: #64748B; font-weight: 500; padding: 24px;">Generating live QR code...</div>`
             }
           </div>
 
@@ -493,9 +493,21 @@ function renderScanPageHtml(status: { status: string; isConnected: boolean; qrDa
             window._statusPoll = null;
           }
         } else if (data.qrDataUrl) {
-          const img = document.getElementById('qr-image');
-          if (img) {
-            img.src = data.qrDataUrl;
+          const box = document.getElementById('qr-box');
+          if (box) {
+            const currentImg = document.getElementById('qr-image');
+            if (currentImg) {
+              if (currentImg.src !== data.qrDataUrl) {
+                currentImg.src = data.qrDataUrl;
+              }
+            } else {
+              box.innerHTML = '<img id="qr-image" src="' + data.qrDataUrl + '" alt="WhatsApp QR Code" />';
+            }
+          }
+        } else {
+          const placeholder = document.getElementById('qr-placeholder');
+          if (placeholder) {
+            placeholder.innerText = 'Initializing session (' + (data.status || 'CONNECTING') + ')...';
           }
         }
       } catch (err) {
@@ -504,11 +516,25 @@ function renderScanPageHtml(status: { status: string; isConnected: boolean; qrDa
     }
 
     async function refreshQr() {
+      const btn = document.getElementById('refresh-qr-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Generating Fresh QR...';
+      }
+      const box = document.getElementById('qr-box');
+      if (box) {
+        box.innerHTML = '<div id="qr-placeholder" style="font-size: 13px; color: #64748B; font-weight: 500; padding: 24px;">Resetting session and creating QR...</div>';
+      }
       try {
-        await fetch('/api/admin/whatsapp/reconnect', { method: 'POST' });
-        setTimeout(checkStatus, 1000);
+        await fetch('/api/admin/whatsapp/reconnect?reset=true', { method: 'POST' });
+        setTimeout(checkStatus, 1500);
       } catch (err) {
         console.warn(err);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = 'Refresh QR Code';
+        }
       }
     }
 
@@ -620,9 +646,14 @@ router.get('/whatsapp/status', async (req: Request, res: Response): Promise<void
 });
 
 // POST /api/admin/whatsapp/reconnect - Trigger WhatsApp reconnect / QR refresh
-router.post('/whatsapp/reconnect', async (_req: Request, res: Response): Promise<void> => {
+router.post('/whatsapp/reconnect', async (req: Request, res: Response): Promise<void> => {
   try {
-    await whatsappService.initialize();
+    const forceReset = req.query.reset === 'true' || req.body?.reset === true;
+    if (forceReset || !whatsappService.isConnected()) {
+      await whatsappService.clearAuthAndRestart();
+    } else {
+      await whatsappService.initialize();
+    }
     const status = whatsappService.getStatus();
     res.status(200).json({ message: 'WhatsApp reconnect triggered', status });
   } catch (err: any) {
