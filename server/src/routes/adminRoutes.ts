@@ -487,6 +487,10 @@ function renderScanPageHtml(status: { status: string; isConnected: boolean; qrDa
           if (!document.getElementById('test-phone-input')) {
             document.getElementById('status-container').innerHTML = connectedTemplate;
           }
+          if (window._statusPoll) {
+            clearInterval(window._statusPoll);
+            window._statusPoll = null;
+          }
         } else if (data.qrDataUrl) {
           const img = document.getElementById('qr-image');
           if (img) {
@@ -579,7 +583,7 @@ function renderScanPageHtml(status: { status: string; isConnected: boolean; qrDa
       }
     });
 
-    setInterval(checkStatus, 2500);
+    window._statusPoll = setInterval(checkStatus, 3000);
   </script>
 </body>
 </html>`;

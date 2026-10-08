@@ -81,10 +81,18 @@ const configuredOrigins = (env.CLIENT_URL || "")
 
 const isOriginAllowed = (origin: string | undefined): boolean => {
   if (!origin) return true; // Mobile apps, curl, or same-origin
-  if (configuredOrigins.includes(origin)) return true;
+  if (configuredOrigins.includes(origin) || configuredOrigins.includes("*")) return true;
   if (origin.includes("localhost") || origin.includes("127.0.0.1")) return true;
   if (origin.includes("192.168.") || origin.includes("10.") || origin.includes("172.")) return true;
-  if (origin.endsWith(".vercel.app") || origin.endsWith(".replit.app") || origin.endsWith(".repl.co")) return true;
+  if (
+    origin.endsWith(".vercel.app") ||
+    origin.endsWith(".onrender.com") ||
+    origin.endsWith(".render.com") ||
+    origin.endsWith(".replit.app") ||
+    origin.endsWith(".repl.co")
+  ) {
+    return true;
+  }
   return false;
 };
 
@@ -96,7 +104,7 @@ app.use(
         callback(null, true);
       } else {
         logger.warn({ origin }, "Blocked CORS origin request");
-        callback(new Error("CORS policy violation: origin not allowed"));
+        callback(null, false);
       }
     },
     credentials: true,
@@ -159,7 +167,10 @@ const sosLimiter = rateLimit({
   skip: () => env.NODE_ENV === "test",
 });
 
-app.use("/api", globalLimiter);
+app.use("/api", (req: Request, res: Response, next: NextFunction) => {
+  if (req.path.startsWith("/admin")) return next();
+  return globalLimiter(req, res, next);
+});
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 app.use("/api/trips/:id/verify-pickup", otpLimiter);
