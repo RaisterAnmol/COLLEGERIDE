@@ -1335,9 +1335,9 @@ export const DashboardPage: React.FC = () => {
 
       {/* EDIT PROFILE MODAL */}
       {isEditingProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-5 animate-in fade-in zoom-in-95 duration-200 my-8">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-6 overflow-hidden">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[92vh] flex flex-col shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0 bg-white">
               <div className="flex items-center gap-2.5">
                 <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
                   <School className="w-4 h-4" />
@@ -1347,30 +1347,30 @@ export const DashboardPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsEditingProfile(false)}
-                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {profileMsg && (
-              <div
-                className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${
-                  profileMsg.type === 'success'
-                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                    : 'bg-rose-50 text-rose-800 border border-rose-200'
-                }`}
-              >
-                {profileMsg.type === 'success' ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 text-rose-600" />
+            <form onSubmit={handleSaveProfile} className="flex flex-col flex-1 overflow-hidden">
+              <div className="overflow-y-auto px-6 py-4 space-y-4 flex-1">
+                {profileMsg && (
+                  <div
+                    className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                      profileMsg.type === 'success'
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-800 border border-rose-200'
+                    }`}
+                  >
+                    {profileMsg.type === 'success' ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    ) : (
+                      <AlertCircle className="w-4 h-4 text-rose-600" />
+                    )}
+                    <span>{profileMsg.text}</span>
+                  </div>
                 )}
-                <span>{profileMsg.text}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSaveProfile} className="space-y-4">
               {/* Role / Account Type Selection */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
@@ -1596,27 +1596,28 @@ export const DashboardPage: React.FC = () => {
                   Enables passengers to pay you directly via Google Pay, PhonePe, or Paytm with ₹0 platform deductions.
                 </p>
               </div>
+            </div>
 
-              <div className="pt-3 flex items-center justify-end gap-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsEditingProfile(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSavingProfile}
-                  className="px-5 py-2 rounded-xl bg-[#143D32] hover:bg-[#0d2820] text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50"
-                >
-                  {isSavingProfile ? 'Saving...' : 'Save Changes'}
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50/80 flex items-center justify-end gap-3 shrink-0 rounded-b-3xl">
+              <button
+                type="button"
+                onClick={() => setIsEditingProfile(false)}
+                className="px-4 py-2 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isSavingProfile}
+                className="px-5 py-2 rounded-xl bg-[#143D32] hover:bg-[#0d2820] text-white text-xs font-bold transition-all shadow-xs disabled:opacity-50 cursor-pointer"
+              >
+                {isSavingProfile ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
+    )}
 
       {/* Review Modal Dialog */}
       {activeReviewModal && (
