@@ -420,6 +420,12 @@ class ApiService {
     });
   }
 
+  async resolveMyEmergencyIncidents() {
+    return this.request<{ message: string; modifiedCount: number }>("/api/emergency/incidents/resolve-mine", {
+      method: "POST",
+    });
+  }
+
   // Student & Institutional Verification
   async getNotifications() {
     return this.request<{ notifications: any[]; unreadCount: number }>("/api/notifications");

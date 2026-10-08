@@ -37,7 +37,7 @@ export class EmergencyService {
       throw new Error("User not found for SOS trigger");
     }
 
-    // 1. Idempotency Check: Verify if user already has an active emergency
+    // 1. Check if user already has an active emergency incident
     const query: any = {
       triggeredBy: input.userId,
       status: { $in: ["ACTIVE", "ACKNOWLEDGED", "RESPONDING"] },
@@ -50,60 +50,118 @@ export class EmergencyService {
       .populate("triggeredBy", "name email phone emergencyContacts")
       .populate("tripId");
 
+    let incident: any;
+    let incidentNumber: string;
+    let isExisting = false;
+
     if (existingIncident) {
-      // Idempotent: return existing active incident
-      return {
-        incident: existingIncident,
-        isExisting: true,
-        dispatchSummary: {
-          contactsAttempted: existingIncident.emergencyContactsNotified.length,
-          contactsSucceeded: existingIncident.emergencyContactsNotified.filter(
-            (c) => c.dispatchStatus === "SENT" || c.dispatchStatus === "MOCK_DEV_DISPATCHED"
-          ).length,
-          securityNotified: existingIncident.campusSecurityNotified,
-          smsMode: NotificationService.getSmsMode(),
-        },
-      };
-    }
-
-    // 2. Generate Human-Readable Unique Incident ID (INC-YYYYMMDD-XXXX)
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-    const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const incidentNumber = `INC-${dateStr}-${randomSuffix}`;
-
-    // 3. Primary Source of Truth: Create Database Record FIRST
-    const incident = await EmergencyIncident.create({
-      incidentNumber,
-      tripId: input.tripId ? new mongoose.Types.ObjectId(input.tripId) : undefined,
-      triggeredBy: user._id,
-      institutionId: user.institutionId,
-      campusId: user.campusId,
-      location: {
+      // Re-triggering or updating location of active incident
+      isExisting = true;
+      incident = existingIncident;
+      incidentNumber = existingIncident.incidentNumber;
+      // Update location and append security notes
+      incident.location = {
         latitude: input.location.latitude,
         longitude: input.location.longitude,
-        accuracy: input.location.accuracy,
-        address: input.location.address || "Campus Perimeter",
-      },
-      status: "ACTIVE",
-      emergencyContactsNotified: [],
-      campusSecurityNotified: true,
-      securityNotes: input.notes,
-    });
+        accuracy: input.location.accuracy || 10,
+        address: input.location.address || incident.location?.address || "Campus Perimeter",
+      };
+      if (input.notes) {
+        incident.securityNotes = incident.securityNotes
+          ? `${incident.securityNotes} | [Re-triggered]: ${input.notes}`
+          : input.notes;
+      }
+    } else {
+      // Generate Human-Readable Unique Incident ID (INC-YYYYMMDD-XXXX)
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+      const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+      incidentNumber = `INC-${dateStr}-${randomSuffix}`;
 
-    // 4. Dispatch Notifications to User's Registered Emergency Contacts
-    const contacts =
-      (user.emergencyContacts && user.emergencyContacts.length > 0)
-        ? user.emergencyContacts
-        : user.emergencyContact?.phone
-        ? [user.emergencyContact]
-        : [];
+      incident = new EmergencyIncident({
+        incidentNumber,
+        tripId: input.tripId ? new mongoose.Types.ObjectId(input.tripId) : undefined,
+        triggeredBy: user._id,
+        institutionId: user.institutionId,
+        campusId: user.campusId,
+        location: {
+          latitude: input.location.latitude,
+          longitude: input.location.longitude,
+          accuracy: input.location.accuracy || 10,
+          address: input.location.address || "Campus Perimeter",
+        },
+        status: "ACTIVE",
+        emergencyContactsNotified: [],
+        campusSecurityNotified: true,
+        securityNotes: input.notes,
+      });
+    }
+
+    // 2. Build complete list of recipients to notify:
+    // ALWAYS notify:
+    // a) The student themselves (immediate confirmation on student's WhatsApp)
+    // b) All registered emergency contacts (parents, guardians, friends)
+    interface RecipientTarget {
+      name: string;
+      phone: string;
+      relationship: string;
+    }
+    const recipients: RecipientTarget[] = [];
+    const seenPhones = new Set<string>();
+
+    const normalizePhone = (p?: string): string => {
+      if (!p) return "";
+      return p.replace(/\D/g, "");
+    };
+
+    // a) Student's own registered phone (self confirmation)
+    if (user.phone && user.phone.trim()) {
+      const cleanPhone = normalizePhone(user.phone);
+      if (cleanPhone.length >= 10) {
+        recipients.push({
+          name: user.name || "Student",
+          phone: user.phone.trim(),
+          relationship: "Student (Self Alert Confirmation)",
+        });
+        seenPhones.add(cleanPhone.slice(-10));
+      }
+    }
+
+    // b) Registered Emergency Contacts array
+    if (Array.isArray(user.emergencyContacts)) {
+      for (const contact of user.emergencyContacts) {
+        if (!contact || !contact.phone) continue;
+        const clean = normalizePhone(contact.phone);
+        if (clean.length >= 10 && !seenPhones.has(clean.slice(-10))) {
+          seenPhones.add(clean.slice(-10));
+          recipients.push({
+            name: contact.name || "Emergency Contact",
+            phone: contact.phone.trim(),
+            relationship: (contact as any).relation || (contact as any).relationship || "Emergency Contact",
+          });
+        }
+      }
+    }
+
+    // c) Legacy single emergencyContact object
+    if (user.emergencyContact && user.emergencyContact.phone) {
+      const clean = normalizePhone(user.emergencyContact.phone);
+      if (clean.length >= 10 && !seenPhones.has(clean.slice(-10))) {
+        seenPhones.add(clean.slice(-10));
+        recipients.push({
+          name: user.emergencyContact.name || "Primary Contact",
+          phone: user.emergencyContact.phone.trim(),
+          relationship: (user.emergencyContact as any).relation || (user.emergencyContact as any).relationship || "Parent/Guardian",
+        });
+      }
+    }
+
+    // 3. Dispatch Live Notifications to ALL recipients
     const contactResults: any[] = [];
     let successCount = 0;
 
-    if (contacts.length > 0) {
-      for (const contact of contacts) {
-        if (!contact.phone) continue;
-        const dispatch = await NotificationService.sendSosAlert(contact.phone, {
+    for (const target of recipients) {
+      try {
+        const dispatch = await NotificationService.sendSosAlert(target.phone, {
           studentName: user.name,
           studentPhone: user.phone,
           college: user.college,
@@ -113,45 +171,35 @@ export class EmergencyService {
           notes: input.notes,
           incidentNumber,
         });
+
         const isOk = dispatch.success;
         if (isOk) successCount++;
 
         contactResults.push({
-          name: contact.name || "Emergency Contact",
-          phone: contact.phone,
-          relationship: (contact as any).relation || (contact as any).relationship || "Emergency Contact",
+          name: target.name,
+          phone: target.phone,
+          relationship: target.relationship,
           dispatchStatus: isOk ? (dispatch.mode === "MOCK_DEV" ? "MOCK_DEV_DISPATCHED" : "SENT") : "FAILED",
           sentAt: new Date(),
           error: dispatch.error,
         });
+      } catch (err: any) {
+        contactResults.push({
+          name: target.name,
+          phone: target.phone,
+          relationship: target.relationship,
+          dispatchStatus: "FAILED",
+          sentAt: new Date(),
+          error: err?.message || "Delivery error",
+        });
       }
-    } else if (user.phone) {
-      // Direct confirmation dispatch to student's phone via WhatsApp
-      const dispatch = await NotificationService.sendSosAlert(user.phone, {
-        studentName: user.name,
-        studentPhone: user.phone,
-        college: user.college,
-        latitude: input.location.latitude,
-        longitude: input.location.longitude,
-        address: input.location.address,
-        notes: input.notes,
-        incidentNumber,
-      });
-      if (dispatch.success) successCount++;
-      contactResults.push({
-        name: user.name,
-        phone: user.phone,
-        relationship: "Student (Self Alert Confirmation)",
-        dispatchStatus: dispatch.success ? (dispatch.mode === "MOCK_DEV" ? "MOCK_DEV_DISPATCHED" : "SENT") : "FAILED",
-        sentAt: new Date(),
-        error: dispatch.error,
-      });
     }
 
+    // Update incident emergency contacts notified record
     incident.emergencyContactsNotified = contactResults;
     await incident.save();
 
-    // 5. Broadcast to Campus Security Operations Room via Socket.IO
+    // 4. Broadcast to Campus Security Operations Room via Socket.IO
     const io = getSocketIO();
     if (io) {
       io.to("security_operations_room").emit("emergency:incident:new", {
@@ -166,12 +214,14 @@ export class EmergencyService {
         location: incident.location,
         status: incident.status,
         createdAt: incident.createdAt,
+        isExisting,
       });
 
       // Emit sos:alert and sos:status for admin compatibility
       io.to("security_operations_room").emit("sos:alert", {
         incidentId: incident.incidentNumber || incident._id,
         incidentNumber: incident.incidentNumber,
+        isExisting,
       });
       io.to("security_operations_room").emit("sos:status", {
         incidentId: incident._id,
@@ -188,26 +238,27 @@ export class EmergencyService {
       }
     }
 
-    // 6. Record Immutable Audit Log
+    // 5. Record Immutable Audit Log
     await logAuditEvent({
       actorId: user._id.toString(),
       actorRole: user.role,
-      action: "SOS_TRIGGERED",
+      action: isExisting ? "SOS_RETRIGGERED" : "SOS_TRIGGERED",
       resourceType: "EmergencyIncident",
       resourceId: incident._id.toString(),
       metadata: {
         incidentNumber,
         tripId: input.tripId,
         coords: [input.location.latitude, input.location.longitude],
-        contactsCount: contacts.length,
+        recipientsCount: recipients.length,
+        isExisting,
       },
     });
 
     return {
       incident,
-      isExisting: false,
+      isExisting,
       dispatchSummary: {
-        contactsAttempted: contacts.length,
+        contactsAttempted: recipients.length,
         contactsSucceeded: successCount,
         securityNotified: true,
         smsMode: NotificationService.getSmsMode(),

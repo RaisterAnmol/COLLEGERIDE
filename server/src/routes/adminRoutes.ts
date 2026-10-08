@@ -4,6 +4,7 @@ import { requireAuth, AuthenticatedRequest } from '../middleware/auth';
 import { logger } from '../utils/logger';
 import { seedDemoData } from '../seed';
 import { whatsappService } from '../services/whatsappService';
+import { NotificationService } from '../services/notificationService';
 
 const router = Router();
 
@@ -651,6 +652,32 @@ router.post('/whatsapp/test-send', async (req: Request, res: Response): Promise<
   } catch (err: any) {
     logger.error({ err }, 'Failed to send test WhatsApp message');
     const errMsg = err?.message || (typeof err === 'string' ? err : JSON.stringify(err)) || 'Failed to send test WhatsApp message';
+    res.status(500).json({ error: errMsg });
+  }
+});
+
+// POST /api/admin/whatsapp/test-sos - Test sending an SOS distress alert via WhatsApp
+router.post('/whatsapp/test-sos', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { phone, studentName, college, latitude, longitude, address, notes } = req.body;
+    if (!phone || typeof phone !== 'string' || phone.trim().length < 8) {
+      res.status(400).json({ error: 'Valid phone number required (e.g. 6398977027 or +916398977027)' });
+      return;
+    }
+    const result = await NotificationService.sendSosAlert(phone.trim(), {
+      studentName: studentName || 'RaistarPhp (Verified Student)',
+      studentPhone: phone.trim(),
+      college: college || 'Uttaranchal University',
+      latitude: Number(latitude) || 30.3415,
+      longitude: Number(longitude) || 77.9540,
+      address: address || 'Campus Main Gate / Safety Hub',
+      notes: notes || 'Live Emergency SOS verification test triggered from admin command center.',
+      incidentNumber: `INC-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+    });
+    res.status(200).json(result);
+  } catch (err: any) {
+    logger.error({ err }, 'Failed to dispatch test SOS alert');
+    const errMsg = err?.message || (typeof err === 'string' ? err : JSON.stringify(err)) || 'Failed to dispatch test SOS alert';
     res.status(500).json({ error: errMsg });
   }
 });

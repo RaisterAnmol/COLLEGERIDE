@@ -265,14 +265,20 @@ class WhatsAppService {
           }
         } catch (_) {}
 
+        const botRaw = this.sock.user?.id ? this.sock.user.id.split(':')[0].replace(/\D/g, '') : '';
+        const targetRaw = formattedPhone.replace(/\D/g, '');
+        const isSelf = Boolean(botRaw && targetRaw && (botRaw === targetRaw || targetRaw.endsWith(botRaw) || botRaw.endsWith(targetRaw)));
+
         const result = await this.sock.sendMessage(jid, { text: message });
-        console.log(`[WhatsApp Service: LIVE SOS] Dispatched SOS broadcast for ${data.studentName} to ${jid}`);
-        logger.info({ recipient: formattedPhone, incident: data.incidentNumber }, "[WhatsApp Service] SOS Alert dispatched successfully");
+        console.log(`[WhatsApp Service: LIVE SOS] Dispatched SOS broadcast for ${data.studentName} to ${jid} (isSelf=${isSelf}, botNumber=+${botRaw})`);
+        logger.info({ recipient: formattedPhone, incident: data.incidentNumber, isSelf, botRaw }, "[WhatsApp Service] SOS Alert dispatched successfully");
 
         return {
           success: true,
           mode: "LIVE_WHATSAPP",
           messageId: result?.key?.id || undefined,
+          isSelf,
+          botNumber: botRaw ? `+${botRaw}` : undefined,
           recipientJid: jid,
         };
       } catch (err: any) {

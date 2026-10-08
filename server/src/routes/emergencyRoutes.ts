@@ -101,6 +101,35 @@ router.get(
   }
 );
 
+// POST /api/emergency/incidents/resolve-mine (Student clears/resolves their own active SOS incidents)
+router.post(
+  "/incidents/resolve-mine",
+  requireAuth,
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const result = await EmergencyIncident.updateMany(
+        {
+          triggeredBy: req.user!.id,
+          status: { $in: ["ACTIVE", "ACKNOWLEDGED", "RESPONDING"] },
+        },
+        {
+          $set: {
+            status: "RESOLVED",
+            resolvedAt: new Date(),
+            securityNotes: "Resolved by student from Safety & Protection Hub",
+          },
+        }
+      );
+      res.status(200).json({
+        message: "Active emergency incidents marked as RESOLVED",
+        modifiedCount: result.modifiedCount,
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message || "Failed to resolve active incidents" });
+    }
+  }
+);
+
 // PATCH /api/emergency/incidents/:id/status (Security team acknowledges / resolves incident)
 router.patch(
   "/incidents/:id/status",
