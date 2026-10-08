@@ -17,6 +17,7 @@ const triggerSosSchema = z.object({
   accuracy: z.coerce.number().optional(),
   address: z.string().optional(),
   notes: z.string().max(1000).optional(),
+  phone: z.string().optional(),
 });
 
 const updateIncidentStatusSchema = z.object({
@@ -39,7 +40,7 @@ router.post(
         return;
       }
 
-      const { tripId, latitude, longitude, accuracy, address, notes } = parseResult.data;
+      const { tripId, latitude, longitude, accuracy, address, notes, phone } = parseResult.data;
 
       const result = await EmergencyService.triggerSos({
         userId: req.user!.id,
@@ -51,6 +52,7 @@ router.post(
           address,
         },
         notes,
+        phone,
       });
 
       res.status(result.isExisting ? 200 : 201).json({

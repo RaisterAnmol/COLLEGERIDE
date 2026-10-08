@@ -16,6 +16,7 @@ export interface TriggerSosInput {
     address?: string;
   };
   notes?: string;
+  phone?: string;
 }
 
 export class EmergencyService {
@@ -113,13 +114,21 @@ export class EmergencyService {
       return p.replace(/\D/g, "");
     };
 
+    // If phone was supplied in input and user.phone was missing, save it permanently
+    const effectivePhone = (input.phone && input.phone.trim()) || user.phone;
+    if (input.phone && input.phone.trim() && !user.phone) {
+      user.phone = input.phone.trim();
+      user.isPhoneVerified = true;
+      await user.save();
+    }
+
     // a) Student's own registered phone (self confirmation)
-    if (user.phone && user.phone.trim()) {
-      const cleanPhone = normalizePhone(user.phone);
+    if (effectivePhone && effectivePhone.trim()) {
+      const cleanPhone = normalizePhone(effectivePhone);
       if (cleanPhone.length >= 10) {
         recipients.push({
           name: user.name || "Student",
-          phone: user.phone.trim(),
+          phone: effectivePhone.trim(),
           relationship: "Student (Self Alert Confirmation)",
         });
         seenPhones.add(cleanPhone.slice(-10));

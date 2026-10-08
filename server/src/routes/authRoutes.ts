@@ -1311,6 +1311,12 @@ router.put(
       if (year !== undefined && !isNaN(Number(year))) updateData.year = Number(year);
       if (semester !== undefined && !isNaN(Number(semester))) updateData.semester = Number(semester);
       if (phone !== undefined && typeof phone === "string") updateData.phone = phone.trim();
+      if (req.body.emergencyContact && typeof req.body.emergencyContact === "object") {
+        updateData.emergencyContact = req.body.emergencyContact;
+      }
+      if (Array.isArray(req.body.emergencyContacts)) {
+        updateData.emergencyContacts = req.body.emergencyContacts;
+      }
       if (req.body.upiId !== undefined && typeof req.body.upiId === "string") updateData.upiId = req.body.upiId.trim();
       if (req.body.accountType && ["PASSENGER", "WOMEN_PASSENGER", "DRIVER"].includes(req.body.accountType)) {
         updateData.accountType = req.body.accountType;

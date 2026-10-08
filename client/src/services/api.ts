@@ -398,6 +398,7 @@ class ApiService {
     accuracy?: number;
     address?: string;
     notes?: string;
+    phone?: string;
   }) {
     return this.request<any>("/api/emergency/sos", {
       method: "POST",

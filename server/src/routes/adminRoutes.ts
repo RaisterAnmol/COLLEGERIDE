@@ -682,6 +682,53 @@ router.post('/whatsapp/test-sos', async (req: Request, res: Response): Promise<v
   }
 });
 
+// POST /api/admin/users/assign-phone - Assign / bind mobile phone & emergency contact to user profile
+router.post('/users/assign-phone', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { emailOrName, phone, emergencyPhone, emergencyName } = req.body;
+    if (!emailOrName || !phone) {
+      res.status(400).json({ error: 'emailOrName and phone are required' });
+      return;
+    }
+    const cleanPhone = String(phone).trim();
+    const user = await User.findOne({
+      $or: [
+        { email: new RegExp(emailOrName.trim(), 'i') },
+        { name: new RegExp(emailOrName.trim(), 'i') },
+      ],
+    });
+    if (!user) {
+      res.status(404).json({ error: `User matching '${emailOrName}' was not found in the database.` });
+      return;
+    }
+    user.phone = cleanPhone.startsWith('+91') ? cleanPhone : `+91 ${cleanPhone.replace(/\D/g, '').slice(-10)}`;
+    user.isPhoneVerified = true;
+    if (emergencyPhone) {
+      user.emergencyContact = {
+        name: emergencyName || 'Emergency Contact',
+        phone: String(emergencyPhone).trim(),
+        relation: 'Parent/Guardian',
+      };
+      user.emergencyContacts = [user.emergencyContact];
+    }
+    await user.save();
+    res.status(200).json({
+      success: true,
+      message: `Assigned phone ${user.phone} to ${user.name} (${user.email}) successfully.`,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        emergencyContact: user.emergencyContact,
+      },
+    });
+  } catch (err: any) {
+    logger.error({ err }, 'Failed to assign phone to user');
+    res.status(500).json({ error: err.message || 'Failed to assign phone' });
+  }
+});
+
 // GET /api/admin/users - List all registered users for admin gatekeeper
 router.get('/users', requireAuth, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {

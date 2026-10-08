@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +32,15 @@ export const SafetyPage: React.FC = () => {
   const [sosDispatched, setSosDispatched] = useState(false);
   const [sosLoading, setSosLoading] = useState(false);
   const [sosError, setSosError] = useState<string | null>(null);
+  const [sosPhoneInput, setSosPhoneInput] = useState(() =>
+    (user?.phone || '').replace(/^\+91\s*/, '').replace(/\D/g, '').slice(0, 10)
+  );
+
+  useEffect(() => {
+    if (user?.phone) {
+      setSosPhoneInput(user.phone.replace(/^\+91\s*/, '').replace(/\D/g, '').slice(0, 10));
+    }
+  }, [user?.phone]);
 
   const handleShareLocation = () => {
     if (navigator.share) {
@@ -52,6 +61,12 @@ export const SafetyPage: React.FC = () => {
       setSosError('Please log in to dispatch an emergency alert linked to your student profile, or call 112 directly.');
       return;
     }
+    const finalPhone = sosPhoneInput.trim() ? `+91 ${sosPhoneInput.trim()}` : (user.phone || '');
+    if (!finalPhone || finalPhone.replace(/\D/g, '').length < 10) {
+      setSosError('Please enter a valid 10-digit mobile number so WhatsApp SOS distress alerts can reach you.');
+      return;
+    }
+
     setSosLoading(true);
     setSosError(null);
 
@@ -63,6 +78,7 @@ export const SafetyPage: React.FC = () => {
           accuracy: accuracy || 15,
           address: 'Campus Perimeter (Safety Center)',
           notes: 'Emergency SOS button triggered from Safety & Protection Hub.',
+          phone: finalPhone,
         });
         setSosDispatched(true);
         setTimeout(() => {
@@ -601,6 +617,34 @@ export const SafetyPage: React.FC = () => {
                 ? 'Your live vehicle coordinates and trip telemetry have been sent to Campus Security and your emergency contacts.'
                 : 'This will immediately broadcast your real-time GPS location and student identity to the University Security Operations Center and send live GPS tracking alerts to your emergency contacts.'}
             </p>
+
+            {/* WhatsApp SOS Phone Input & Display */}
+            {!sosDispatched && (
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-left space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-600 font-semibold">WhatsApp SOS Phone:</span>
+                  <span className="font-mono font-bold text-emerald-800 text-xs">
+                    {sosPhoneInput ? `+91 ${sosPhoneInput}` : (user?.phone || 'Not added yet')}
+                  </span>
+                </div>
+                <div className="flex rounded-xl border border-slate-300 focus-within:ring-2 focus-within:ring-emerald-500 overflow-hidden bg-white shadow-2xs">
+                  <div className="px-2.5 py-1.5 bg-slate-100 border-r border-slate-300 text-slate-800 text-xs font-bold shrink-0">
+                    +91
+                  </div>
+                  <input
+                    type="tel"
+                    value={sosPhoneInput}
+                    onChange={(e) => setSosPhoneInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="Enter 10-digit mobile number"
+                    maxLength={10}
+                    className="w-full text-xs px-2.5 py-1.5 focus:outline-none bg-transparent font-medium text-slate-900"
+                  />
+                </div>
+                <p className="text-[10px] text-slate-500 leading-tight">
+                  Emergency Google Maps tracking and distress alerts will be sent to this WhatsApp number.
+                </p>
+              </div>
+            )}
 
             {sosError && (
               <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-semibold text-left">
