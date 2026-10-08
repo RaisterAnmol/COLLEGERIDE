@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { User, Ride, Trip, RideRequest, SystemPricing } from '../models';
+import { User, Ride, Trip, RideRequest, SystemPricing, Notification } from '../models';
 import { requireAuth, AuthenticatedRequest } from '../middleware/auth';
 import { logger } from '../utils/logger';
 import { seedDemoData } from '../seed';
@@ -726,6 +726,58 @@ router.post('/users/assign-phone', async (req: Request, res: Response): Promise<
   } catch (err: any) {
     logger.error({ err }, 'Failed to assign phone to user');
     res.status(500).json({ error: err.message || 'Failed to assign phone' });
+  }
+});
+
+// POST /api/admin/broadcast-emergency-setup - Send emergency number guidance notification to all students missing contacts
+router.post('/broadcast-emergency-setup', async (_req: Request, res: Response): Promise<void> => {
+  try {
+    const usersWithoutContacts = await User.find({
+      $or: [
+        { phone: { $exists: false } },
+        { phone: "" },
+        { phone: null },
+        { emergencyContact: { $exists: false } },
+        { emergencyContact: null },
+        { "emergencyContact.phone": { $exists: false } },
+        { "emergencyContact.phone": "" },
+      ],
+    });
+
+    let createdCount = 0;
+    for (const u of usersWithoutContacts) {
+      const existing = await Notification.findOne({
+        userId: u._id,
+        type: "SECURITY_ALERT",
+        title: { $regex: /Emergency Contact/i },
+      });
+      if (!existing) {
+        await Notification.create({
+          userId: u._id,
+          type: "SECURITY_ALERT",
+          title: "🚨 Action Required: Add Emergency Contact & WhatsApp Number",
+          body: "CampusRide Safety Notice: Please add your emergency contact and WhatsApp mobile number to enable 24/7 instant SOS distress dispatch with live Google Maps tracking during university commutes.\n\nHow to add in 10 seconds:\n1. Click 'Edit Profile' on your Dashboard.\n2. Enter your 10-digit mobile number for WhatsApp SOS confirmation.\n3. Enter your Emergency Contact Name, Phone & Relationship (Parent / Guardian).\n4. Click 'Save Changes' — your SOS protection is immediately active 24/7!",
+          data: {
+            action: "EDIT_PROFILE",
+            url: "/dashboard",
+          },
+          deliveryChannels: ["in_app", "socket"],
+          deliveryStatus: { in_app: "sent" },
+          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        });
+        createdCount++;
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Emergency setup advisory dispatched to ${createdCount} accounts.`,
+      usersEvaluated: usersWithoutContacts.length,
+      notificationsCreated: createdCount,
+    });
+  } catch (err: any) {
+    logger.error({ err }, 'Failed to broadcast emergency setup advisory');
+    res.status(500).json({ error: err.message || 'Failed to broadcast emergency setup advisory' });
   }
 });
 

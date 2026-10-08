@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +22,7 @@ import {
   AlertTriangle,
   HeartHandshake,
   Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import safetyHeroImg from '../assets/illustrations/safety-hero.webp';
 
@@ -36,11 +37,92 @@ export const SafetyPage: React.FC = () => {
     (user?.phone || '').replace(/^\+91\s*/, '').replace(/\D/g, '').slice(0, 10)
   );
 
+  // Live GPS telemetry & reverse geocode state
+  const [liveCoords, setLiveCoords] = useState<{ lat: number; lng: number; accuracy?: number } | null>(null);
+  const [liveAddress, setLiveAddress] = useState<string>('');
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [sosNotesInput, setSosNotesInput] = useState<string>('');
+
   useEffect(() => {
     if (user?.phone) {
       setSosPhoneInput(user.phone.replace(/^\+91\s*/, '').replace(/\D/g, '').slice(0, 10));
     }
   }, [user?.phone]);
+
+  const fetchIpLocation = useCallback(async () => {
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.latitude && data.longitude) {
+          setLiveCoords({
+            lat: data.latitude,
+            lng: data.longitude,
+            accuracy: 1000,
+          });
+          setLiveAddress(`${data.city || 'Campus Area'}, ${data.region || 'Uttarakhand'}`);
+          setLocationLoading(false);
+          return;
+        }
+      }
+    } catch (_) {}
+    setLiveCoords({ lat: 30.3415, lng: 77.9540, accuracy: 50 });
+    setLiveAddress('Uttaranchal University Campus Perimeter');
+    setLocationLoading(false);
+  }, []);
+
+  const acquireLocation = useCallback(() => {
+    setLocationLoading(true);
+    if (!navigator.geolocation) {
+      fetchIpLocation();
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const accuracy = Math.round(pos.coords.accuracy);
+        setLiveCoords({ lat, lng, accuracy });
+        setLocationLoading(false);
+
+        // Reverse geocode via OpenStreetMap Nominatim for accurate local street/campus landmark
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`, {
+            headers: { Accept: 'application/json' },
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.display_name) {
+              setLiveAddress(data.display_name.split(',').slice(0, 3).join(', '));
+            }
+          }
+        } catch (_) {}
+      },
+      (err) => {
+        console.warn('[SafetyPage] High accuracy GPS timed out, falling back to network triangulation:', err);
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setLiveCoords({
+              lat: pos.coords.latitude,
+              lng: pos.coords.longitude,
+              accuracy: Math.round(pos.coords.accuracy),
+            });
+            setLocationLoading(false);
+          },
+          () => {
+            fetchIpLocation();
+          },
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+        );
+      },
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
+    );
+  }, [fetchIpLocation]);
+
+  useEffect(() => {
+    acquireLocation();
+  }, [acquireLocation]);
 
   const handleShareLocation = () => {
     if (navigator.share) {
@@ -70,36 +152,32 @@ export const SafetyPage: React.FC = () => {
     setSosLoading(true);
     setSosError(null);
 
-    const sendSos = async (latitude: number, longitude: number, accuracy?: number) => {
-      try {
-        await api.triggerSos({
-          latitude,
-          longitude,
-          accuracy: accuracy || 15,
-          address: 'Campus Perimeter (Safety Center)',
-          notes: 'Emergency SOS button triggered from Safety & Protection Hub.',
-          phone: finalPhone,
-        });
-        setSosDispatched(true);
-        setTimeout(() => {
-          setSosModalOpen(false);
-          setSosDispatched(false);
-        }, 3500);
-      } catch (err: any) {
-        setSosError(err?.message || 'Failed to dispatch SOS alert. Please call 112 immediately.');
-      } finally {
-        setSosLoading(false);
-      }
-    };
+    const targetLat = liveCoords?.lat || 30.3415;
+    const targetLng = liveCoords?.lng || 77.9540;
+    const targetAcc = liveCoords?.accuracy || 15;
+    const targetAddress = liveAddress || 'Campus Perimeter (Safety Center)';
+    const targetNotes = sosNotesInput.trim()
+      ? `Emergency distress note: ${sosNotesInput.trim()}`
+      : 'Emergency SOS button triggered from Safety & Protection Hub.';
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => sendSos(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy),
-        () => sendSos(30.3415, 77.9540),
-        { timeout: 5000, enableHighAccuracy: true }
-      );
-    } else {
-      sendSos(30.3415, 77.9540);
+    try {
+      await api.triggerSos({
+        latitude: targetLat,
+        longitude: targetLng,
+        accuracy: targetAcc,
+        address: targetAddress,
+        notes: targetNotes,
+        phone: finalPhone,
+      });
+      setSosDispatched(true);
+      setTimeout(() => {
+        setSosModalOpen(false);
+        setSosDispatched(false);
+      }, 3500);
+    } catch (err: any) {
+      setSosError(err?.message || 'Failed to dispatch SOS alert. Please call 112 immediately.');
+    } finally {
+      setSosLoading(false);
     }
   };
 
@@ -617,6 +695,70 @@ export const SafetyPage: React.FC = () => {
                 ? 'Your live vehicle coordinates and trip telemetry have been sent to Campus Security and your emergency contacts.'
                 : 'This will immediately broadcast your real-time GPS location and student identity to the University Security Operations Center and send live GPS tracking alerts to your emergency contacts.'}
             </p>
+
+            {/* Live GPS Telemetry Card */}
+            {!sosDispatched && (
+              <div className="bg-emerald-50/70 border border-emerald-200/90 rounded-2xl p-3 text-left space-y-1.5">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-emerald-950 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Real-Time GPS Telemetry</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={acquireLocation}
+                    disabled={locationLoading}
+                    className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer hover:underline"
+                  >
+                    <RotateCcw className={`w-3 h-3 ${locationLoading ? 'animate-spin' : ''}`} />
+                    <span>{locationLoading ? 'Acquiring...' : 'Refresh GPS'}</span>
+                  </button>
+                </div>
+
+                {liveCoords ? (
+                  <div className="space-y-0.5">
+                    <div className="font-mono text-xs font-bold text-slate-800 flex items-center justify-between">
+                      <span>{liveCoords.lat.toFixed(5)}, {liveCoords.lng.toFixed(5)}</span>
+                      {liveCoords.accuracy && (
+                        <span className="text-[10px] font-medium text-emerald-800 bg-emerald-100/90 px-1.5 py-0.5 rounded font-sans">
+                          ±{liveCoords.accuracy}m accuracy
+                        </span>
+                      )}
+                    </div>
+                    {liveAddress && (
+                      <p className="text-[11px] text-slate-600 truncate">{liveAddress}</p>
+                    )}
+                    <a
+                      href={`https://maps.google.com/?q=${liveCoords.lat},${liveCoords.lng}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] font-semibold text-emerald-700 hover:underline inline-flex items-center gap-0.5 mt-0.5"
+                    >
+                      <span>Preview in Google Maps</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-slate-500">Detecting your exact GPS coordinates...</p>
+                )}
+              </div>
+            )}
+
+            {/* Optional Distress Note */}
+            {!sosDispatched && (
+              <div className="text-left space-y-1">
+                <label className="text-[11px] font-bold text-slate-700 block">
+                  Location Note / Landmark (Optional):
+                </label>
+                <input
+                  type="text"
+                  value={sosNotesInput}
+                  onChange={(e) => setSosNotesInput(e.target.value)}
+                  placeholder="e.g. Near UIT main gate, library cafe"
+                  className="w-full text-xs px-3 py-1.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+            )}
 
             {/* WhatsApp SOS Phone Input & Display */}
             {!sosDispatched && (

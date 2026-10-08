@@ -1,6 +1,7 @@
 import { Router, Response } from "express";
 import { Notification } from "../models/Notification";
 import { PushDevice } from "../models/PushDevice";
+import { User } from "../models/User";
 import { requireAuth, AuthenticatedRequest } from "../middleware/auth";
 
 const router = Router();
@@ -11,6 +12,31 @@ router.get(
   requireAuth,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
+      // Ensure emergency setup advisory notification exists if user is missing phone or emergency contact
+      const user = await User.findById(req.user!.id);
+      if (user && (!user.phone || !user.emergencyContact?.phone)) {
+        const existingAdvisory = await Notification.findOne({
+          userId: user._id,
+          type: "SECURITY_ALERT",
+          title: { $regex: /Emergency Contact/i },
+        });
+        if (!existingAdvisory) {
+          await Notification.create({
+            userId: user._id,
+            type: "SECURITY_ALERT",
+            title: "🚨 Action Required: Add Emergency Contact & WhatsApp Number",
+            body: "CampusRide Safety Notice: Please add your emergency contact and WhatsApp mobile number to enable 24/7 instant SOS distress dispatch with live Google Maps tracking during university commutes.\n\nHow to add in 10 seconds:\n1. Click 'Edit Profile' on your Dashboard.\n2. Enter your 10-digit mobile number for WhatsApp SOS confirmation.\n3. Enter your Emergency Contact Name, Phone & Relationship (Parent / Guardian).\n4. Click 'Save Changes' — your SOS protection is immediately active 24/7!",
+            data: {
+              action: "EDIT_PROFILE",
+              url: "/dashboard",
+            },
+            deliveryChannels: ["in_app", "socket"],
+            deliveryStatus: { in_app: "sent" },
+            expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          });
+        }
+      }
+
       const notifications = await Notification.find({ userId: req.user!.id })
         .sort({ createdAt: -1 })
         .limit(40);
