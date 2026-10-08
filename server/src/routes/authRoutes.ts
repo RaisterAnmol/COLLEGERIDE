@@ -980,7 +980,9 @@ router.post(
         return;
       }
 
-      const user = await User.findById(req.user!.id);
+      const user = await User.findById(req.user!.id).select(
+        "+phoneOtpHash +phoneOtpSalt +phoneOtpExpires +phoneOtpAttempts",
+      );
       if (
         !user ||
         !user.phoneOtpHash ||
