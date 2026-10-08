@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
@@ -176,40 +176,55 @@ export const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  const accountTypeRef = useRef<AccountTypeOption>(accountType);
+  accountTypeRef.current = accountType;
+  const isGoogleInitializedRef = useRef<boolean>(false);
+
   useEffect(() => {
     const clientId =
       import.meta.env.VITE_GOOGLE_CLIENT_ID ||
       "366008999424-ea04cr6lh4tatub2f6if4rusme2nr0l2.apps.googleusercontent.com";
     if (!clientId) return;
 
+    let isSubscribed = true;
+
     const handleGoogleCallback = async (response: any) => {
-      if (!response.credential) return;
+      if (!response.credential || !isSubscribed) return;
       setError("");
       setGoogleLoading(true);
       try {
-        await loginWithGoogle(response.credential, accountType);
+        await loginWithGoogle(response.credential, accountTypeRef.current);
         navigate("/dashboard");
       } catch (err: any) {
         console.error("Google login failed:", err);
         setError(err.message || "Failed to sign in with Google.");
       } finally {
-        setGoogleLoading(false);
+        if (isSubscribed) {
+          setGoogleLoading(false);
+        }
       }
     };
 
     const initGoogle = () => {
-      if ((window as any).google?.accounts?.id) {
+      if (!isSubscribed) return;
+      const google = (window as any).google;
+      if (google?.accounts?.id) {
         try {
-          (window as any).google.accounts.id.initialize({
-            client_id: clientId,
-            callback: handleGoogleCallback,
-          });
+          if (!isGoogleInitializedRef.current) {
+            google.accounts.id.initialize({
+              client_id: clientId,
+              callback: handleGoogleCallback,
+              auto_select: false,
+              cancel_on_tap_outside: true,
+            });
+            isGoogleInitializedRef.current = true;
+          }
 
           const btnContainer = document.getElementById("googleSignInBtnContainer");
           if (btnContainer) {
             btnContainer.innerHTML = "";
             const containerWidth = Math.min(400, Math.max(240, btnContainer.clientWidth || 360));
-            (window as any).google.accounts.id.renderButton(btnContainer, {
+            google.accounts.id.renderButton(btnContainer, {
               theme: "outline",
               size: "large",
               width: containerWidth,
@@ -219,26 +234,38 @@ export const AuthPage: React.FC = () => {
             });
           }
 
-          // Trigger Google One Tap floating prompt for instant one-click login
-          (window as any).google.accounts.id.prompt();
+          // Trigger Google One Tap floating prompt with safe dismissal handler
+          google.accounts.id.prompt((notification: any) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+              // Gracefully handle dismissed / skipped prompt
+            }
+          });
         } catch (e) {
           console.warn("Failed to render Google button:", e);
         }
       }
     };
 
+    let interval: ReturnType<typeof setInterval> | null = null;
     if ((window as any).google?.accounts?.id) {
       initGoogle();
     } else {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         if ((window as any).google?.accounts?.id) {
-          clearInterval(interval);
+          if (interval) clearInterval(interval);
           initGoogle();
         }
       }, 300);
-      return () => clearInterval(interval);
     }
-  }, [isRegister, accountType]);
+
+    return () => {
+      isSubscribed = false;
+      if (interval) clearInterval(interval);
+      try {
+        (window as any).google?.accounts?.id?.cancel();
+      } catch (_) {}
+    };
+  }, [isRegister]);
 
   const handleAccountTypeChange = (type: AccountTypeOption) => {
     setAccountType(type);

@@ -184,14 +184,15 @@ export const StudentCharacter: React.FC<StudentCharacterProps> = ({
 
           {/* Ground Shadow */}
           <motion.ellipse
+            rx={44}
+            ry={7}
+            cx="80"
+            cy="198"
             animate={{
               rx: isPasswordFocused ? 42 : isHovered ? 46 : 44,
               opacity: isHovered ? 0.22 : 0.16,
             }}
             transition={{ duration: 0.3 }}
-            cx="80"
-            cy="198"
-            ry="7"
             fill="#0F172A"
           />
 

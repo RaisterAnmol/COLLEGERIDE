@@ -87,32 +87,37 @@ const BuildingSilhouette: React.FC<{
   height: number;
   variant?: 'classical' | 'modern' | 'tower';
   opacity?: number;
-}> = ({ x, y, width, height, variant = 'classical', opacity = 0.08 }) => {
+}> = ({ x = 0, y = 0, width = 60, height = 40, variant = 'classical', opacity = 0.08 }) => {
+  const safeWidth = Number(width) || 60;
+  const safeHeight = Number(height) || 40;
+  const safeX = Number(x) || 0;
+  const safeY = Number(y) || 0;
+
   if (variant === 'classical') {
     // Classical building with columns and pediment
     return (
       <g opacity={opacity}>
-        <rect x={x} y={y} width={width} height={height} rx={2} fill="#2D6B56" />
+        <rect x={safeX} y={safeY} width={safeWidth} height={safeHeight} rx={2} fill="#2D6B56" />
         {/* Pediment (triangle roof) */}
         <polygon
-          points={`${x - 5},${y} ${x + width / 2},${y - height * 0.35} ${x + width + 5},${y}`}
+          points={`${safeX - 5},${safeY} ${safeX + safeWidth / 2},${safeY - safeHeight * 0.35} ${safeX + safeWidth + 5},${safeY}`}
           fill="#2D6B56"
         />
         {/* Columns */}
         {[0.2, 0.4, 0.6, 0.8].map((pct, i) => (
           <rect
             key={i}
-            x={x + width * pct - 1.5}
-            y={y + 4}
+            x={safeX + safeWidth * pct - 1.5}
+            y={safeY + 4}
             width={3}
-            height={height - 8}
+            height={safeHeight - 8}
             rx={1}
             fill="#E8F5EE"
             opacity={0.5}
           />
         ))}
         {/* Dome on top */}
-        <ellipse cx={x + width / 2} cy={y - height * 0.3} rx={width * 0.15} ry={height * 0.12} fill="#2D6B56" />
+        <ellipse cx={safeX + safeWidth / 2} cy={safeY - safeHeight * 0.3} rx={Math.max(1, safeWidth * 0.15)} ry={Math.max(1, safeHeight * 0.12)} fill="#2D6B56" />
       </g>
     );
   }
