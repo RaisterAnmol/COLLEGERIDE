@@ -37,6 +37,7 @@ export const Navbar: React.FC = () => {
   // Navigation Links: Strictly role-aware (Drivers only see Offer a Ride; Passengers only see Find a Ride; Admins see neither)
   const navLinks = user
     ? [
+        { label: 'Dashboard', href: '/dashboard' },
         ...(isDriver ? [{ label: 'Offer a Ride', href: '/post' }] : []),
         ...(!isDriver && !isAdmin ? [{ label: 'Find a Ride', href: '/search' }] : []),
         { label: 'Campuses', href: '/colleges' },
@@ -127,9 +128,9 @@ export const Navbar: React.FC = () => {
 
               {/* Profile Capsule */}
               <Link
-                to="/verification"
+                to="/dashboard"
                 className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all shadow-xs group"
-                title="Manage ID Verification"
+                title="View Dashboard & Profile"
               >
                 <img
                   src={
