@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api"
+      "destination": "https://collegeride.onrender.com/api/$1"
     },
     {
       "source": "/((?!assets/|favicon|manifest|sw\\.js|.*\\.[a-zA-Z0-9]+$).*)",
