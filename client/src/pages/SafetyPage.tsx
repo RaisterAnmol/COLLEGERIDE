@@ -240,19 +240,21 @@ export const SafetyPage: React.FC = () => {
                 <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
                   <ShieldAlert className="w-4 h-4 animate-pulse" />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900">Emergency</h3>
+                <h3 className="text-sm font-bold text-slate-900">Emergency SOS</h3>
+                <span className="ml-auto text-[9px] font-mono font-bold bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-md">24/7 LIVE</span>
               </div>
-              <p className="text-[11px] text-slate-500 mb-3.5 leading-snug">
-                Need immediate help? Use the SOS button or contact campus security.
+              <p className="text-[11px] text-slate-500 mb-3 leading-snug">
+                Broadcast live GPS tracking to university security and your ICE emergency circle.
               </p>
 
-              {/* Call Emergency Red Button */}
+              {/* Trigger Emergency SOS Red Button */}
               <button
+                type="button"
                 onClick={() => setSosModalOpen(true)}
-                className="w-full py-2.5 px-3 rounded-xl bg-[#E14949] hover:bg-[#c93b3b] text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-sm transition-all transform hover:scale-[1.02]"
+                className="w-full py-3 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all transform hover:scale-[1.02] cursor-pointer"
               >
-                <PhoneCall className="w-4 h-4" />
-                <span>Call Emergency</span>
+                <ShieldAlert className="w-4 h-4 animate-pulse" />
+                <span>Trigger Emergency SOS</span>
                 <ArrowRight className="w-3.5 h-3.5 ml-auto" />
               </button>
 
