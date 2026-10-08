@@ -1,4 +1,4 @@
-const CACHE_NAME = 'campusride-v2';
+const CACHE_NAME = 'campusride-v3';
 const STATIC_ASSETS = [
   '/',
   '/favicon.ico',
@@ -31,7 +31,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Strictly bypass non-GET, API routes, Vite dev-server internals, and script modules
+  // Strictly bypass non-GET, API routes, Vite dev-server internals, and socket
   if (
     event.request.method !== 'GET' ||
     url.pathname.startsWith('/api') ||
@@ -44,19 +44,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Only respond from cache if asset is explicitly cached, or for HTML navigation fallbacks
+  // Network-First for page navigations (ensures user always gets the latest deployed HTML and asset hashes)
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match('/'))
+    );
+    return;
+  }
+
+  // Cache-First with safe network fallback for static assets
   event.respondWith(
     caches.match(event.request).then((cached) => {
-      if (cached) {
-        return cached;
-      }
-      return fetch(event.request).catch((err) => {
-        // Fall back to cached root ONLY for full-page HTML navigations, NEVER for module scripts
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
-        throw err;
-      });
+      return (
+        cached ||
+        fetch(event.request).catch(() => {
+          return new Response('', { status: 404, statusText: 'Not Found' });
+        })
+      );
     })
   );
 });
