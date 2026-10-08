@@ -19,6 +19,8 @@ import {
   CreditCard,
   Camera,
   FileCheck2,
+  Zap,
+  Phone,
 } from 'lucide-react';
 import { SearchableInput } from '../common/SearchableInput';
 import {
@@ -44,7 +46,55 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
   const [year, setYear] = useState(1);
   const [semester, setSemester] = useState(1);
   const [accountType, setAccountType] = useState<'PASSENGER' | 'DRIVER'>('PASSENGER');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(() => (user?.phone || '').replace(/^\+91\s*/, '').replace(/\D/g, '').slice(0, 10));
+
+  // Phone OTP Verification State (Mandatory for Activation)
+  const [isPhoneVerified, setIsPhoneVerified] = useState(!!user?.isPhoneVerified);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpInput, setOtpInput] = useState('');
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [otpMsg, setOtpMsg] = useState<{ text: string; isError: boolean } | null>(null);
+
+  const handleSendPhoneOtp = async () => {
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
+    if (cleanDigits.length !== 10) {
+      setOtpMsg({ text: 'Please enter a complete 10-digit mobile number.', isError: true });
+      return;
+    }
+    setIsSendingOtp(true);
+    setOtpMsg(null);
+    try {
+      const formatted = `+91 ${cleanDigits}`;
+      const res = await api.sendPhoneOtp(formatted).catch(() => api.sendRegistrationPhoneOtp(cleanDigits));
+      setOtpSent(true);
+      setOtpMsg({ text: (res as any)?.message || 'Verification code sent to your WhatsApp!', isError: false });
+    } catch (err: any) {
+      setOtpMsg({ text: err?.message || 'Failed to dispatch WhatsApp OTP. Ensure number is valid.', isError: true });
+    } finally {
+      setIsSendingOtp(false);
+    }
+  };
+
+  const handleVerifyPhoneOtp = async () => {
+    if (!otpInput || otpInput.trim().length !== 6) {
+      setOtpMsg({ text: 'Please enter the 6-digit code received on WhatsApp.', isError: true });
+      return;
+    }
+    setIsVerifyingOtp(true);
+    setOtpMsg(null);
+    try {
+      const cleanDigits = phone.replace(/\D/g, '').slice(-10);
+      await api.verifyPhoneOtp(otpInput.trim()).catch(() => api.verifyRegistrationPhoneOtp(cleanDigits, otpInput.trim()));
+      setIsPhoneVerified(true);
+      setOtpMsg({ text: '✓ Mobile number verified successfully via WhatsApp!', isError: false });
+      if (refreshUser) await refreshUser();
+    } catch (err: any) {
+      setOtpMsg({ text: err?.message || 'Invalid or expired OTP code.', isError: true });
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
 
   // Emergency Contact State (Safety / SOS)
   const [emergencyName, setEmergencyName] = useState('');
@@ -113,14 +163,15 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
   // Dynamic profile completion progress (0% - 100%)
   const calculateProgress = () => {
     let score = 20; // Base Google account
-    if (accountType) score += 15;
+    if (accountType) score += 10;
     if (college.trim()) score += 20;
+    if (isPhoneVerified) score += 20;
     if (idCardPreview) score += 20;
     if (accountType === 'DRIVER') {
       if (vehicleModel.trim() && plateLast4.trim().length === 4) score += 10;
-      if (selfieResult?.previewUrl) score += 15;
+      if (selfieResult?.previewUrl) score += 20;
     } else {
-      if (department.trim() || course.trim()) score += 25;
+      if (department.trim() || course.trim()) score += 10;
     }
     return Math.min(100, score);
   };
@@ -133,6 +184,17 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
     e.preventDefault();
     if (!college.trim()) {
       setError('Please select or enter your college/university.');
+      return;
+    }
+
+    const cleanDigits = phone.replace(/\D/g, '').slice(-10);
+    if (!cleanDigits || cleanDigits.length !== 10) {
+      setError('Please enter a valid 10-digit mobile number (*Required).');
+      return;
+    }
+
+    if (!isPhoneVerified) {
+      setError('Mobile OTP verification is required to complete your account setup. Please click "Send WhatsApp OTP" and enter the 6-digit code.');
       return;
     }
 
@@ -160,11 +222,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
     setError(null);
 
     try {
-      const formattedPhone = phone.trim()
-        ? phone.startsWith('+91')
-          ? phone.trim()
-          : `+91 ${phone.trim()}`
-        : '';
+      const formattedPhone = `+91 ${cleanDigits}`;
 
       const formattedEmergencyPhone = emergencyPhone.trim()
         ? emergencyPhone.startsWith('+91')
@@ -179,6 +237,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
         year: Number(year),
         semester: Number(semester),
         phone: formattedPhone,
+        isPhoneVerified: true,
         accountType,
         enrolledIdCardUrl: idCardPreview || undefined,
       };
@@ -428,17 +487,111 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Phone (Optional)
-                  </label>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="98765 43210"
-                    className="w-full text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-[#143D32]/20 focus:border-[#143D32] transition-all outline-none"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-700">
+                      Mobile Number *
+                    </label>
+                    <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
+                      Required
+                    </span>
+                  </div>
+                  <div className="flex rounded-xl border border-slate-200 focus-within:ring-2 focus-within:ring-[#143D32]/20 focus-within:border-[#143D32] overflow-hidden bg-white shadow-2xs transition-all">
+                    <div className="inline-flex items-center gap-1 px-3 py-2 bg-slate-100 border-r border-slate-200 text-slate-800 text-xs font-bold shrink-0 select-none">
+                      <span>🇮🇳 +91</span>
+                    </div>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => {
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setPhone(digits);
+                        if (isPhoneVerified) {
+                          setIsPhoneVerified(false);
+                          setOtpSent(false);
+                          setOtpInput('');
+                          setOtpMsg(null);
+                        }
+                      }}
+                      placeholder="98765 43210"
+                      maxLength={10}
+                      className="w-full text-xs font-semibold px-3 py-2 focus:outline-none bg-transparent text-slate-900"
+                    />
+                  </div>
                 </div>
+              </motion.div>
+
+              {/* WhatsApp OTP Verification Box for Google Onboarding */}
+              <motion.div variants={itemVariants}>
+                {isPhoneVerified ? (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-bold shadow-2xs">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Mobile Verified via WhatsApp OTP (+91 {phone.replace(/\D/g, '').slice(-10)})</span>
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/90 space-y-2">
+                    {!otpSent ? (
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <span className="text-[11px] text-slate-500 font-medium">
+                          🔐 WhatsApp OTP verification required to activate account
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleSendPhoneOtp}
+                          disabled={isSendingOtp || phone.replace(/\D/g, '').length < 10}
+                          className="px-3 py-1.5 rounded-lg bg-[#143D32] hover:bg-[#0d2820] text-white text-[11px] font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-1 shrink-0 cursor-pointer shadow-xs"
+                        >
+                          <Zap className="w-3 h-3 text-emerald-400" />
+                          <span>{isSendingOtp ? 'Sending...' : 'Send WhatsApp OTP'}</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] text-slate-600 font-medium">
+                            Enter 6-digit WhatsApp OTP:
+                          </span>
+                          <button
+                            type="button"
+                            onClick={handleSendPhoneOtp}
+                            disabled={isSendingOtp}
+                            className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer"
+                          >
+                            Resend Code
+                          </button>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={otpInput}
+                            onChange={(e) => setOtpInput(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                            placeholder="Enter 6-digit OTP"
+                            maxLength={6}
+                            className="flex-1 text-xs px-3 py-2 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold tracking-widest text-center bg-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleVerifyPhoneOtp}
+                            disabled={isVerifyingOtp || otpInput.length !== 6}
+                            className="px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-xs"
+                          >
+                            {isVerifyingOtp ? 'Verifying...' : 'Verify'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {otpMsg && (
+                      <div className={`text-[11px] font-semibold flex items-center gap-1 ${otpMsg.isError ? 'text-rose-600' : 'text-emerald-700'}`}>
+                        {otpMsg.isError ? (
+                          <AlertCircle className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                        ) : (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        )}
+                        <span>{otpMsg.text}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </motion.div>
 
               {/* Emergency Contact Block (Safety / SOS) */}
