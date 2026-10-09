@@ -84,6 +84,7 @@ export const AuthPage: React.FC = () => {
   const [isSendingRegOtp, setIsSendingRegOtp] = useState(false);
   const [regOtpSent, setRegOtpSent] = useState(false);
   const [regOtpInput, setRegOtpInput] = useState("");
+  const [devRegOtpHint, setDevRegOtpHint] = useState<string | null>(null);
   const [isVerifyingRegOtp, setIsVerifyingRegOtp] = useState(false);
   const [regOtpMsg, setRegOtpMsg] = useState<{ text: string; isError: boolean } | null>(null);
 
@@ -95,9 +96,14 @@ export const AuthPage: React.FC = () => {
     setIsSendingRegOtp(true);
     setRegOtpMsg(null);
     try {
-      const res = await api.sendRegistrationPhoneOtp(phone);
+      const res: any = await api.sendRegistrationPhoneOtp(phone);
       setRegOtpSent(true);
-      setRegOtpMsg({ text: res.message || "OTP code sent to your WhatsApp!", isError: false });
+      if (res?.devOtpHint) {
+        setDevRegOtpHint(res.devOtpHint);
+      } else {
+        setDevRegOtpHint(null);
+      }
+      setRegOtpMsg({ text: res?.message || "OTP code sent to your WhatsApp!", isError: false });
     } catch (err: any) {
       setRegOtpMsg({ text: err?.message || "Failed to dispatch WhatsApp OTP. Ensure number is valid.", isError: true });
     } finally {
@@ -886,6 +892,21 @@ export const AuthPage: React.FC = () => {
                                   {isVerifyingRegOtp ? "Verifying..." : "Verify"}
                                 </button>
                               </div>
+
+                              {devRegOtpHint && (
+                                <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs flex items-center justify-between">
+                                  <span>
+                                    💡 <strong>Setup Mode Code:</strong> <strong className="font-mono text-sm tracking-widest bg-amber-200/80 px-2 py-0.5 rounded text-amber-950">{devRegOtpHint}</strong>
+                                  </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => setRegOtpInput(devRegOtpHint)}
+                                    className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs transition cursor-pointer"
+                                  >
+                                    Auto-Fill
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           )}
 

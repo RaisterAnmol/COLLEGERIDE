@@ -103,6 +103,7 @@ export const DashboardPage: React.FC = () => {
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpInput, setOtpInput] = useState('');
+  const [devOtpHint, setDevOtpHint] = useState<string | null>(null);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [otpSuccessMsg, setOtpSuccessMsg] = useState<string | null>(null);
   const [otpErrorMsg, setOtpErrorMsg] = useState<string | null>(null);
@@ -117,9 +118,14 @@ export const DashboardPage: React.FC = () => {
     setOtpSuccessMsg(null);
     try {
       const formatted = `+91 ${editPhone.trim()}`;
-      const res = await api.sendPhoneOtp(formatted);
+      const res: any = await api.sendPhoneOtp(formatted);
       setOtpSent(true);
       setOtpInput('');
+      if (res?.devOtpHint) {
+        setDevOtpHint(res.devOtpHint);
+      } else {
+        setDevOtpHint(null);
+      }
       setOtpSuccessMsg(res.message || 'Verification code sent to your WhatsApp!');
     } catch (err: any) {
       setOtpErrorMsg(err?.message || 'Failed to dispatch WhatsApp OTP');
@@ -1660,6 +1666,21 @@ export const DashboardPage: React.FC = () => {
                             {isVerifyingOtp ? 'Verifying...' : 'Verify'}
                           </button>
                         </div>
+
+                        {devOtpHint && (
+                          <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs flex items-center justify-between">
+                            <span>
+                              💡 <strong>Setup Mode Code:</strong> <strong className="font-mono text-sm tracking-widest bg-amber-200/80 px-2 py-0.5 rounded text-amber-950">{devOtpHint}</strong>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setOtpInput(devOtpHint)}
+                              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs transition cursor-pointer"
+                            >
+                              Auto-Fill
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
 

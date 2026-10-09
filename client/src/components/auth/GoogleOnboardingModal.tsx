@@ -53,6 +53,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [otpInput, setOtpInput] = useState('');
+  const [devOtpHint, setDevOtpHint] = useState<string | null>(null);
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
   const [otpMsg, setOtpMsg] = useState<{ text: string; isError: boolean } | null>(null);
 
@@ -66,9 +67,14 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
     setOtpMsg(null);
     try {
       const formatted = `+91 ${cleanDigits}`;
-      const res = await api.sendPhoneOtp(formatted).catch(() => api.sendRegistrationPhoneOtp(cleanDigits));
+      const res: any = await api.sendPhoneOtp(formatted).catch(() => api.sendRegistrationPhoneOtp(cleanDigits));
       setOtpSent(true);
-      setOtpMsg({ text: (res as any)?.message || 'Verification code sent to your WhatsApp!', isError: false });
+      if (res?.devOtpHint) {
+        setDevOtpHint(res.devOtpHint);
+      } else {
+        setDevOtpHint(null);
+      }
+      setOtpMsg({ text: res?.message || 'Verification code sent to your WhatsApp!', isError: false });
     } catch (err: any) {
       setOtpMsg({ text: err?.message || 'Failed to dispatch WhatsApp OTP. Ensure number is valid.', isError: true });
     } finally {
@@ -577,6 +583,21 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
                             {isVerifyingOtp ? 'Verifying...' : 'Verify'}
                           </button>
                         </div>
+
+                        {devOtpHint && (
+                          <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-xs flex items-center justify-between">
+                            <span>
+                              💡 <strong>Setup Mode Code:</strong> <strong className="font-mono text-sm tracking-widest bg-amber-200/80 px-2 py-0.5 rounded text-amber-950">{devOtpHint}</strong>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setOtpInput(devOtpHint)}
+                              className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs transition cursor-pointer"
+                            >
+                              Auto-Fill
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
 
