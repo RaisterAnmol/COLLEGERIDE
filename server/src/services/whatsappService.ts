@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 import pino from "pino";
 import { logger } from "../utils/logger";
+import { WhatsAppSession } from "../models/WhatsAppSession";
 
 export type WhatsAppConnectionStatus =
   | "DISABLED"
@@ -60,14 +61,53 @@ class WhatsAppService {
     return this.status === "CONNECTED" && this.sock !== null;
   }
 
-  public clearAuthFiles(): void {
+  public async clearAuthFiles(): Promise<void> {
     try {
       if (fs.existsSync(this.authDir)) {
         fs.rmSync(this.authDir, { recursive: true, force: true });
       }
       fs.mkdirSync(this.authDir, { recursive: true });
+      await WhatsAppSession.deleteMany({}).catch(() => {});
     } catch (e) {
       logger.warn({ e }, "[WhatsApp Service] Failed to clear auth files directory");
+    }
+  }
+
+  private async restoreAuthFromMongo(): Promise<void> {
+    try {
+      const records = await WhatsAppSession.find();
+      if (records && records.length > 0) {
+        if (!fs.existsSync(this.authDir)) {
+          fs.mkdirSync(this.authDir, { recursive: true });
+        }
+        for (const rec of records) {
+          const filePath = path.join(this.authDir, rec.filename);
+          fs.writeFileSync(filePath, rec.data, "utf8");
+        }
+        logger.info({ count: records.length }, "[WhatsApp Service] Restored persistent session files from MongoDB");
+      }
+    } catch (err) {
+      logger.warn({ err }, "[WhatsApp Service] Could not restore session from MongoDB");
+    }
+  }
+
+  private async syncAuthToMongo(): Promise<void> {
+    try {
+      if (!fs.existsSync(this.authDir)) return;
+      const files = fs.readdirSync(this.authDir);
+      for (const file of files) {
+        if (file.endsWith(".json")) {
+          const fullPath = path.join(this.authDir, file);
+          const data = fs.readFileSync(fullPath, "utf8");
+          await WhatsAppSession.updateOne(
+            { filename: file },
+            { $set: { filename: file, data, updatedAt: new Date() } },
+            { upsert: true }
+          );
+        }
+      }
+    } catch (err) {
+      logger.warn({ err }, "[WhatsApp Service] Could not sync session to MongoDB");
     }
   }
 
@@ -85,7 +125,7 @@ class WhatsAppService {
       this.status = "DISCONNECTED";
       this.rawQr = null;
       this.qrDataUrl = null;
-      this.clearAuthFiles();
+      await this.clearAuthFiles();
       await this.initialize();
     } catch (err: any) {
       logger.error({ err }, "[WhatsApp Service] Failed to clear auth and restart");
@@ -118,6 +158,9 @@ class WhatsAppService {
         this.sock = null;
       }
 
+      // Restore persistent session files from MongoDB so container restarts don't lose session
+      await this.restoreAuthFromMongo();
+
       // Dynamic import to prevent CommonJS/Jest test runner collisions
       const baileys = await import("@whiskeysockets/baileys");
       const makeWASocket = (baileys.default || (baileys as any).makeWASocket || baileys) as any;
@@ -134,7 +177,12 @@ class WhatsAppService {
         syncFullHistory: false,
       });
 
-      this.sock.ev.on("creds.update", saveCreds);
+      this.sock.ev.on("creds.update", async () => {
+        try {
+          await saveCreds();
+          await this.syncAuthToMongo();
+        } catch (_) {}
+      });
 
       this.sock.ev.on("connection.update", async (update: any) => {
         const { connection, lastDisconnect, qr } = update;
@@ -213,6 +261,7 @@ class WhatsAppService {
           this.rawQr = null;
           this.qrDataUrl = null;
           this.reconnectAttempts = 0;
+          await this.syncAuthToMongo().catch(() => {});
 
           console.log("\n===============================================================");
           console.log("   ✅ [CAMPUSRIDE WHATSAPP BOT] CONNECTED & ACTIVE!");

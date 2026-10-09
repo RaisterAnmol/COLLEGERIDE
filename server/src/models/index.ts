@@ -23,3 +23,4 @@ export * from "./Notification";
 export * from "./PushDevice";
 export * from "./AuditLog";
 export * from "./SystemPricing";
+export * from "./WhatsAppSession";
