@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, Navigation, CheckCircle2, Clock, Car, PhoneCall, AlertCircle, Sparkles } from 'lucide-react';
+import { ShieldCheck, Navigation, Car, PhoneCall, AlertCircle, Sparkles } from 'lucide-react';
 
 interface DriverCockpitProps {
   driverName?: string;
@@ -43,17 +43,7 @@ export const DriverCockpitCard: React.FC<DriverCockpitProps> = ({
     },
   ]);
 
-  const [otpVerifiedModal, setOtpVerifiedModal] = useState(false);
   const [navigating, setNavigating] = useState(false);
-
-  const handleVerifyPriya = () => {
-    setPassengers((prev) =>
-      prev.map((p) => (p.id === 3 ? { ...p, status: 'verified' } : p))
-    );
-    setOtpVerifiedModal(true);
-    setTimeout(() => setOtpVerifiedModal(false), 3000);
-    if (onVerifyOtp) onVerifyOtp();
-  };
 
   const handleStartNav = () => {
     setNavigating(true);
@@ -192,35 +182,10 @@ export const DriverCockpitCard: React.FC<DriverCockpitProps> = ({
                       </p>
                     </div>
                   </div>
-
-                  <div>
-                    {p.status === 'verified' ? (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-800 text-[11px] font-mono font-bold">
-                        <span>OTP Verified</span>
-                        <span>✓</span>
-                      </span>
-                    ) : (
-                      <button
-                        onClick={handleVerifyPriya}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100/90 hover:bg-amber-200 border border-amber-300 text-amber-900 text-[11px] font-mono font-bold transition-colors cursor-pointer"
-                        title="Click to simulate OTP verification"
-                      >
-                        <Clock className="w-3 h-3 text-amber-700" />
-                        <span>Awaiting OTP</span>
-                      </button>
-                    )}
-                  </div>
                 </div>
               ))}
             </div>
           </div>
-
-          {otpVerifiedModal && (
-            <div className="mt-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-mono text-emerald-800 font-bold flex items-center gap-2 animate-in fade-in">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-              <span>Priya Singh's 4-digit token verified! Trip log synchronized.</span>
-            </div>
-          )}
 
           <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>All students ID-verified</span>
@@ -281,14 +246,6 @@ export const DriverCockpitCard: React.FC<DriverCockpitProps> = ({
             >
               <Navigation className="w-4 h-4" />
               <span>{navigating ? 'Navigation Running (Corridor 01)' : 'Start Trip Navigation'}</span>
-            </button>
-
-            <button
-              onClick={handleVerifyPriya}
-              className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-mono text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-2xs"
-            >
-              <span>✓</span>
-              <span>Verify OTP</span>
             </button>
           </div>
         </div>
