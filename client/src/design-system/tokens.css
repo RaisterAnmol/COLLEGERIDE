@@ -1,49 +1,116 @@
 :root {
-  /* Backgrounds */
-  --cr-bg-base: #F5F6F3;
-  --cr-bg-canvas: #FBFBFA;
+  /* CampusRide Tactile Neumorphic Palette (Plum & Sage) */
+  --bg: #E8EBE6;
+  --canvas: #E8EBE6;
+  --cr-bg-canvas: #E8EBE6;
+  
+  --paper: #F6F8F5;
+  --surface: #F6F8F5;
+  --cr-bg-surface: #F6F8F5;
+  
+  --card-white: #FFFFFF;
+  --surface-raised: #FFFFFF;
   --cr-bg-raised: #FFFFFF;
-  --cr-bg-inverse: #111111;
-  --cr-bg-subtle: #F0F2ED;
+  
+  --cr-bg-inverse: #1F2622;
+  --cr-bg-subtle: #E2E6E0;
 
-  /* Foregrounds */
-  --cr-fg-primary: #111111;
-  --cr-fg-secondary: #5B5F58;
-  --cr-fg-muted: #8A9085;
-  --cr-fg-inverse: #F5F6F3;
+  /* Foregrounds / Inks */
+  --ink: #1F2622;
+  --ink-primary: #1F2622;
+  --cr-fg-primary: #1F2622;
 
-  /* Brand - Deep Campus Green */
+  --ink-muted: #5C6761;
+  --ink-secondary: #5C6761;
+  --cr-fg-secondary: #5C6761;
+  --cr-fg-muted: #7E8A84;
+  --cr-fg-inverse: #FFFFFF;
+
+  /* Primary Brand: Warm Rich Plum */
+  --plum: #743A59;
+  --plum-hover: #5C2B45;
+  --plum-light: #F4EBF0;
+  --plum-border: #D9B8C9;
   --cr-brand-primary: #143D32;
   --cr-brand-hover: #0F2E26;
-  --cr-brand-subtle: #E8F4F0;
-  --cr-brand-border: #20594B;
+  --cr-brand-subtle: #F4EBF0;
+  --cr-brand-border: #D9B8C9;
+  --route: #743A59;
+  --route-light: #8E496F;
+  --route-pale: #F4EBF0;
 
-  /* Accent - University Blue */
-  --cr-accent-primary: #1769FF;
-  --cr-accent-hover: #0F52CC;
-  --cr-accent-subtle: #EBF2FF;
+  /* Secondary & Security Accents: Forest Green */
+  --green: #1B5E43;
+  --green-light: #DCFCE7;
+  --green-border: #86EFAC;
+  --cr-status-success: #1B5E43;
+  --cr-status-success-subtle: #DCFCE7;
+  --cr-status-verified: #1B5E43;
+  --cr-status-verified-bg: #DCFCE7;
 
-  /* Status Colors */
-  --cr-status-success: #1E8E5A;
-  --cr-status-success-subtle: #E7F6EE;
-  --cr-status-warning: #B45309;
+  /* Signal & Emergency Colors */
+  --signal-amber: #D97706;
+  --signal-amber-bg: #FEF3C7;
+  --emergency-crimson: #DC2626;
+  --emergency-crimson-bg: #FEE2E2;
+
+  --cr-status-warning: #D97706;
   --cr-status-warning-subtle: #FEF3C7;
-  --cr-status-danger: #C0392B;
-  --cr-status-danger-subtle: #FDE8E7;
+  --cr-status-danger: #DC2626;
+  --cr-status-danger-subtle: #FEE2E2;
 
-  /* Borders */
-  --cr-border-subtle: #E4E5E1;
-  --cr-border-strong: #111111;
-  --cr-border-focus: #143D32;
+  /* Borders & Subtle Dividers */
+  --border: #D7DCD5;
+  --border-light: #E5E9E3;
+  --cr-border-subtle: #E5E9E3;
+  --cr-border-base: #D7DCD5;
+  --cr-border-strong: #A8B1A5;
+  --cr-border-focus: #743A59;
 
-  /* Shadows */
-  --cr-shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.06);
-  --cr-shadow-md: 0 4px 12px rgba(17, 17, 17, 0.08);
-  --cr-shadow-lg: 0 12px 32px rgba(17, 17, 17, 0.12);
+  --line-subtle: #E5E9E3;
+  --line-base: #D7DCD5;
+  --line-strong: #A8B1A5;
 
-  /* Transitions */
+  /* Typography */
+  --cr-font-display: "Fraunces", "Plus Jakarta Sans", Georgia, serif;
+  --cr-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --cr-font-mono: "Space Mono", "JetBrains Mono", monospace;
+
+  /* Radii & Card Geometry */
+  --card-radius: 24px;
+  --card-padding: 24px 28px;
+  --card-gap: 24px;
+  --inner-gap: 14px;
+  --radius-control: 12px;
+  --radius-surface: 24px;
+  --radius-ticket: 16px;
+
+  /* Tactile Neumorphic Shadow System */
+  --shadow-sm: 0 1px 3px rgba(31, 38, 34, 0.05);
+  --shadow-card: 0 4px 16px rgba(31, 38, 34, 0.06);
+  --shadow-lg: 0 12px 32px rgba(31, 38, 34, 0.08);
+  --shadow-xl: 0 20px 48px -8px rgba(31, 38, 34, 0.14);
+
+  /* Enhanced Neumorphic Depth */
+  --neu-extruded: -6px -6px 14px rgba(255, 255, 255, 0.95), 6px 6px 16px rgba(31, 38, 34, 0.08);
+  --neu-extruded-sm: -3px -3px 8px rgba(255, 255, 255, 0.95), 3px 3px 10px rgba(31, 38, 34, 0.07);
+  --neu-extruded-lg: -10px -10px 24px rgba(255, 255, 255, 0.95), 12px 12px 28px rgba(31, 38, 34, 0.12);
+  --neu-sunken: inset 2px 2px 5px rgba(31, 38, 34, 0.10), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
+  --neu-sunken-deep: inset 3px 3px 8px rgba(31, 38, 34, 0.14), inset -3px -3px 8px rgba(255, 255, 255, 0.9);
+  --neu-btn-active: inset 2px 2px 4px rgba(31, 38, 34, 0.18), inset -1px -1px 3px rgba(255, 255, 255, 0.6);
+
+  /* Backwards compatibility */
+  --cr-shadow-subtle: 0 1px 2px 0 rgba(31, 38, 34, 0.04);
+  --cr-shadow-card: 0 4px 16px rgba(31, 38, 34, 0.06);
+  --cr-shadow-ticket: 0 4px 20px rgba(31, 38, 34, 0.06);
+  --cr-shadow-sm: var(--shadow-sm);
+  --cr-shadow-md: var(--shadow-card);
+  --cr-shadow-lg: var(--shadow-lg);
+
+  /* Motion */
   --cr-duration-fast: 150ms;
   --cr-duration-base: 250ms;
   --cr-duration-slow: 400ms;
   --cr-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-utility: cubic-bezier(0.22, 0.8, 0.3, 1);
 }

@@ -8,8 +8,8 @@ export const NetworkSection: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Editorial Title */}
         <div className="max-w-3xl">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#18A66A] font-semibold block mb-3">
-            06 — INSTITUTIONAL MOBILITY NETWORK
+          <span className="text-xs font-mono text-emerald-400 font-semibold block mb-3">
+            06 — Institutional Mobility Network
           </span>
           <h2 className="text-heading-clamp font-black text-white uppercase tracking-tight">
             A Campus That<br />
@@ -24,7 +24,7 @@ export const NetworkSection: React.FC = () => {
         <div className="mt-14 p-6 sm:p-10 rounded-2xl bg-white/[0.03] border border-white/10 relative min-h-[460px] flex flex-col justify-between">
           <div className="flex items-center justify-between text-xs font-mono text-[#98A2B3] pb-4 border-b border-white/10">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#18A66A] animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-[#18A66A]" />
               <span className="text-white font-bold">REGIONAL CAMPUS TOPOLOGY:</span>
               <span>DEHRADUN-PREMNAGAR INTERCONNECT</span>
             </div>

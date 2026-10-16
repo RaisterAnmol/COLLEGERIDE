@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { api } from '../../services/api';
+import { CustomSelect } from '../common/CustomSelect';
 import {
   Compass,
   Clock,
@@ -308,7 +309,7 @@ function createGooglePinIcon(color: string, label: string, isPulsing = false) {
       <div style="position: relative; display: flex; flex-direction: column; align-items: center; transform: translate(-50%, -100%); cursor: pointer;">
         ${
           isPulsing
-            ? `<div style="position: absolute; bottom: 0; width: 32px; height: 32px; border-radius: 50%; background-color: ${color}; opacity: 0.35; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>`
+            ? `<div style="position: absolute; bottom: 0; width: 32px; height: 32px; border-radius: 50%; background-color: ${color}; opacity: 0.25;"></div>`
             : ''
         }
         <div style="background-color: ${color}; color: white; padding: 3px 8px; border-radius: 12px; font-weight: 700; font-size: 11px; white-space: nowrap; box-shadow: 0 3px 8px rgba(0,0,0,0.3); border: 1.5px solid white; display: flex; align-items: center; gap: 4px;">
@@ -880,7 +881,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
 
         const altSnapped = snapRouteEndpoints(corridor.latLngs, originCoords, destCoords);
 
-        // Wide invisible hit target for effortless road clicking on desktop & touch
+        // Wide invisible hit target for fluid road clicking on desktop & touch
         const hitTarget = L.polyline(altSnapped, {
           color: 'transparent',
           weight: 28,
@@ -934,7 +935,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                 box-shadow: 0 4px 12px rgba(0,0,0,0.22);
                 padding: 4px 9px;
                 border-radius: 9999px;
-                font-family: system-ui, -apple-system, sans-serif;
+                font-family: inherit;
                 font-size: 11px;
                 font-weight: 700;
                 cursor: pointer;
@@ -942,7 +943,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
                 transform: translate(-50%, -50%);
                 user-select: none;
                 transition: transform 0.15s ease, background 0.15s ease;
-              " onmouseover="this.style.transform='translate(-50%, -50%) scale(1.08)'; this.style.borderColor='#94a3b8';" onmouseout="this.style.transform='translate(-50%, -50%) scale(1)'; this.style.borderColor='#cbd5e1';">
+              " onmouseover="this.style.transform='translate(-50%, -50%)'; this.style.borderColor='#94a3b8';" onmouseout="this.style.transform='translate(-50%, -50%)'; this.style.borderColor='#cbd5e1';">
                 <span>${corridor.durationMinutes} min</span>
                 <span style="font-size: 10px; color: #64748b; font-weight: 500;">(${diffText})</span>
               </div>
@@ -1004,10 +1005,10 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
               background: #1a73e8;
               color: #ffffff;
               border: 2px solid #ffffff;
-              box-shadow: 0 4px 16px rgba(26,115,232,0.45);
+              box-shadow: 0 4px 12px rgba(15,23,42,0.25);
               padding: 4px 11px;
               border-radius: 9999px;
-              font-family: system-ui, -apple-system, sans-serif;
+              font-family: inherit;
               font-size: 11px;
               font-weight: 800;
               cursor: pointer;
@@ -1189,7 +1190,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         {/* Header Title & Mode Switchers */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+            <div className="w-9 h-9 rounded-2xl bg-blue-600 flex items-center justify-center text-white shadow-sm">
               <Compass className="w-5 h-5" />
             </div>
             <div>
@@ -1288,51 +1289,55 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         {/* Google Maps Style Origin & Destination Selector Bar with Swap Button (⇄) */}
         <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
           {/* Origin Picker */}
-          <div className="flex-1 w-full relative flex items-center">
-            <div className="absolute left-3 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-emerald-100 shrink-0" />
-            <select
+          <div className="flex-1 w-full relative">
+            <CustomSelect
               value={currentOrigin}
-              onChange={(e) => handleOriginSelect(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer truncate shadow-xs"
-            >
-              {POPULAR_LOCATIONS.map((loc) => (
-                <option key={`orig-${loc.key}`} value={loc.name}>
-                  {loc.name}
-                </option>
-              ))}
-              {!POPULAR_LOCATIONS.some((l) => l.name === currentOrigin) && (
-                <option value={currentOrigin}>{currentOrigin}</option>
-              )}
-            </select>
+              onChange={(val) => handleOriginSelect(String(val))}
+              options={[
+                ...POPULAR_LOCATIONS.map((loc) => ({
+                  value: loc.name,
+                  label: loc.name,
+                  group: loc.name.includes('UIT') || loc.name.includes('Campus') ? '🏫 Campus Buildings' : '📍 Dehradun & Surrounding Hubs',
+                })),
+                ...(!POPULAR_LOCATIONS.some((l) => l.name === currentOrigin)
+                  ? [{ value: currentOrigin, label: currentOrigin }]
+                  : []),
+              ]}
+              icon={<div className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100 shrink-0" />}
+              placeholder="Select Origin Point"
+              ariaLabel="Origin Location"
+            />
           </div>
 
           {/* Direction Swap Button (⇅) */}
           <button
             type="button"
             onClick={handleSwapDirections}
-            className="p-2 bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-600 rounded-xl border border-slate-200 shadow-xs transition-all cursor-pointer shrink-0 hover:rotate-180 duration-200"
+            className="p-2.5 bg-white hover:bg-blue-50 text-slate-600 hover:text-blue-600 rounded-xl border border-slate-200 shadow-xs transition-all cursor-pointer shrink-0 hover:rotate-180 duration-200"
             title="Reverse Origin and Destination"
           >
             <ArrowUpDown className="w-4 h-4" />
           </button>
 
           {/* Destination Picker */}
-          <div className="flex-1 w-full relative flex items-center">
-            <div className="absolute left-3 w-3 h-3 rounded-full bg-red-500 ring-4 ring-red-100 shrink-0" />
-            <select
+          <div className="flex-1 w-full relative">
+            <CustomSelect
               value={currentDest}
-              onChange={(e) => handleDestSelect(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 cursor-pointer truncate shadow-xs"
-            >
-              {POPULAR_LOCATIONS.map((loc) => (
-                <option key={`dest-${loc.key}`} value={loc.name}>
-                  {loc.name}
-                </option>
-              ))}
-              {!POPULAR_LOCATIONS.some((l) => l.name === currentDest) && (
-                <option value={currentDest}>{currentDest}</option>
-              )}
-            </select>
+              onChange={(val) => handleDestSelect(String(val))}
+              options={[
+                ...POPULAR_LOCATIONS.map((loc) => ({
+                  value: loc.name,
+                  label: loc.name,
+                  group: loc.name.includes('UIT') || loc.name.includes('Campus') ? '🏫 Campus Buildings' : '📍 Dehradun & Surrounding Hubs',
+                })),
+                ...(!POPULAR_LOCATIONS.some((l) => l.name === currentDest)
+                  ? [{ value: currentDest, label: currentDest }]
+                  : []),
+              ]}
+              icon={<div className="w-2.5 h-2.5 rounded-full bg-red-500 ring-4 ring-red-100 shrink-0" />}
+              placeholder="Select Destination Point"
+              ariaLabel="Destination Location"
+            />
           </div>
 
           {/* Quick Route Count Badge */}
@@ -1383,7 +1388,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
 
         {/* Floating Top Hint Pill on Map */}
         {activeTab === 'route_choice' && !statusMessage && (
-          <div className="absolute top-4 left-4 z-10 bg-[#143D32]/95 backdrop-blur-md text-white px-3.5 py-1.5 rounded-xl border border-emerald-600/40 text-xs shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
+          <div className="absolute top-4 left-4 z-10 bg-[#143D32] text-white px-3.5 py-1.5 rounded-xl border border-emerald-600/40 text-xs shadow-md flex items-center gap-2 animate-in fade-in duration-200">
             <RouteIcon className="w-4 h-4 text-emerald-300" />
             <span>
               <b>Interactive:</b> Click any road line or floating pill to switch routes!
@@ -1396,7 +1401,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
           <button
             type="button"
             onClick={handleRecenter}
-            className="p-2.5 bg-white/95 backdrop-blur-md rounded-xl shadow-md border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-all cursor-pointer"
+            className="p-2.5 bg-white rounded-xl shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-all cursor-pointer"
             title="Recenter Map"
           >
             <LocateFixed className="w-4 h-4" />
@@ -1404,7 +1409,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
         </div>
 
         {/* Live Route Status HUD Overlay */}
-        <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-200 shadow-xl text-xs">
+        <div className="absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-2 bg-white px-4 py-2.5 rounded-2xl border border-slate-200 shadow-md text-xs">
           {activeTab === 'route_choice' ? (
             <>
               <div className="flex items-center gap-3">
@@ -1463,7 +1468,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
             {/* Route Cards Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-xs font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <h4 className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                   <Navigation2 className="w-4 h-4 text-blue-600" />
                   Select Driving Route (Click Card or Click Road on Map)
                 </h4>
@@ -1603,7 +1608,7 @@ export const PickupAndRouteNavigationMap: React.FC<Props> = ({
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                <h4 className="text-xs font-semibold text-slate-600">
                   Pedestrian Walk Guidance to Designated Carpool Bay
                 </h4>
                 <div className="flex items-center gap-2 mt-0.5">

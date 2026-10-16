@@ -101,6 +101,8 @@ export interface IRide {
   destination: ILocation;
   departureTime: string;
   availableSeats: number;
+  totalSeats?: number;
+  notes?: string;
   pricePerSeat?: number;
   recurring?: boolean;
   isRecurring?: boolean;

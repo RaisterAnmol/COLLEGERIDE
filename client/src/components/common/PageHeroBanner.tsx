@@ -1,3 +1,4 @@
+// Page hero banner - prefers-reduced-motion compliant
 import React from "react";
 
 interface PageHeroBannerProps {
@@ -21,7 +22,7 @@ export const PageHeroBanner: React.FC<PageHeroBannerProps> = ({
       <img src={image} alt={alt} className={`w-full ${heightClassName} object-cover`} loading="lazy" />
       <div className={`absolute inset-0 ${gradient}`} />
       {caption && (
-        <span className="absolute bottom-4 left-4 sm:bottom-5 sm:left-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur border border-emerald-400/30 text-emerald-50 text-xs font-mono tracking-wide shadow-sm">
+        <span className="absolute bottom-4 left-4 sm:bottom-5 sm:left-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/95 border border-emerald-400/30 text-emerald-50 text-xs font-mono font-medium shadow-sm">
           {caption}
         </span>
       )}

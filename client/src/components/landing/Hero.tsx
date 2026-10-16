@@ -1,725 +1,527 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
-  ArrowRight,
   Car,
   MapPin,
   Calendar,
   Search,
   ShieldCheck,
-  CheckCircle2,
   Landmark,
   ChevronDown,
   X,
-  Activity,
-} from "lucide-react";
-import gsap from "gsap";
+  Sparkles,
+  ArrowRight,
+  Shield,
+  Star,
+  CheckCircle2,
+} from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { StudentAvatar } from '../signature/StudentAvatar';
+import { CampusDatePicker } from '../common/CampusDatePicker';
 
-import { useAuth } from "../../context/AuthContext";
-import heroHome from "../../assets/illustrations/hero-home.webp";
+interface DriverSlide {
+  id: string;
+  name: string;
+  role: string;
+  college: string;
+  rating: string;
+  verifiedTime: string;
+  route: string;
+  fare: string;
+  image: string;
+  tag: string;
+}
+
+const DRIVER_SLIDES: DriverSlide[] = [
+  {
+    id: 'aditya',
+    name: 'Aditya Sharma',
+    role: 'B.Tech CSE ‘25',
+    college: 'UPES Dehradun',
+    rating: '4.96 ★',
+    verifiedTime: '07:30 AM selfie verified',
+    route: 'Premnagar Chowk ⇄ UIT Gate 1',
+    fare: '₹25',
+    image: '/hero-aditya-driver.jpg',
+    tag: 'VERIFIED CAMPUS DRIVER',
+  },
+  {
+    id: 'priya',
+    name: 'Priya Nair',
+    role: 'M.Sc Biotech ‘26',
+    college: 'Uttaranchal Univ',
+    rating: '4.98 ★',
+    verifiedTime: '08:10 AM liveness pass',
+    route: 'Suddhowala ⇄ UIT Campus',
+    fare: '₹20',
+    image: '/safety-student-real.jpg',
+    tag: 'DAILY COMMUTER',
+  },
+  {
+    id: 'rahul',
+    name: 'Rahul Verma',
+    role: 'B.Com Hons ‘25',
+    college: 'Graphic Era Univ',
+    rating: '4.92 ★',
+    verifiedTime: '07:45 AM campus badge verified',
+    route: 'Ballupur ⇄ Premnagar Hub',
+    fare: '₹30',
+    image: '/verification-student-real.jpg',
+    tag: 'VERIFIED DRIVER',
+  },
+  {
+    id: 'classmates',
+    name: 'Ananya & Classmates',
+    role: 'UIT Dehradun',
+    college: 'Engineering Quad',
+    rating: '5.0 ★',
+    verifiedTime: 'Daily Shared Pool',
+    route: 'Premnagar ⇄ UIT Tech Block',
+    fare: '₹15',
+    image: '/dashboard-students-real.jpg',
+    tag: 'CAMPUS CARPOOL BATCH',
+  },
+];
 
 export const Hero: React.FC = () => {
-  const { activePersona, user } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [from, setFrom] = useState("Premnagar Chowk");
-  const [to, setTo] = useState("UIT & USCS Gate 1");
-  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [from, setFrom] = useState('Premnagar Chowk');
+  const [to, setTo] = useState('UIT Gate 1');
+  const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  // Auto-rotate slides every 4.2 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % DRIVER_SLIDES.length);
+    }, 4200);
+    return () => clearInterval(timer);
+  }, []);
+
+  const currentSlide = DRIVER_SLIDES[activeSlide];
 
   const formatDisplayDate = (dStr: string) => {
     try {
       const d = new Date(dStr);
       if (isNaN(d.getTime())) return dStr;
-      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-      const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      ];
+      return `${days[d.getDay()]}, ${d.getDate()} ${months[d.getMonth()]}`;
     } catch {
       return dStr;
     }
   };
-  const heroRef = useRef<HTMLElement>(null);
-  const headlineRef = useRef<HTMLHeadingElement>(null);
-
-  // Entrance choreography with GSAP
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-
-      tl.from(".hero-badge", { opacity: 0, y: -10, duration: 0.5, delay: 0.1 })
-        .from(
-          ".hero-line",
-          { opacity: 0, y: 24, stagger: 0.1, duration: 0.8 },
-          "-=0.2",
-        )
-        .from(".hero-sub", { opacity: 0, y: 12, duration: 0.6 }, "-=0.4")
-        .from(
-          ".hero-cta",
-          { opacity: 0, y: 12, stagger: 0.1, duration: 0.5 },
-          "-=0.3",
-        );
-      if (heroRef.current?.querySelector(".hero-search")) {
-        tl.from(".hero-search", { opacity: 0, y: 16, duration: 0.6 }, "-=0.3");
-      }
-      if (heroRef.current?.querySelector(".hero-map-frame")) {
-        tl.from(".hero-map-frame", { opacity: 0, y: 20, duration: 0.8 }, "-=0.3");
-      }
-    }, heroRef);
-
-    return () => ctx.revert();
-  }, [activePersona]);
-
-  // High-precision path tracking for the vehicle along the bezier curve
-  const pathRef = useRef<SVGPathElement>(null);
-  const [carTransform, setCarTransform] = useState({ x: 60, y: 80, angle: 0 });
-
-  // Continuous 60fps smooth loop along the route curve
-  useEffect(() => {
-    let animFrameId: number;
-    let startTime: number | null = null;
-    const duration = 14000; // 14s full circuit
-
-    const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = timestamp - startTime;
-      const rawProgress = (elapsed % duration) / duration;
-
-      if (pathRef.current) {
-        const totalLen = pathRef.current.getTotalLength();
-        // Travel between 4% and 96% of the curve
-        const curDist = (0.04 + rawProgress * 0.92) * totalLen;
-        const pt = pathRef.current.getPointAtLength(curDist);
-        const ptAhead = pathRef.current.getPointAtLength(Math.min(curDist + 4, totalLen));
-        const angle = Math.atan2(ptAhead.y - pt.y, ptAhead.x - pt.x) * (180 / Math.PI);
-        setCarTransform({ x: pt.x, y: pt.y, angle });
-      }
-
-      animFrameId = requestAnimationFrame(animate);
-    };
-
-    animFrameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animFrameId);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     navigate(
-      `/search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}`,
+      `/search?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}&date=${date}`
     );
   };
 
   return (
-    <section
-      ref={heroRef}
-      className="relative pt-10 pb-20 md:pt-16 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden"
-    >
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-        {/* Left Column: Text Content */}
-        <div className="lg:col-span-7 flex flex-col items-start text-left">
-          {/* Verification Pill */}
-          <div className="hero-badge inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white text-slate-800 text-xs font-mono tracking-wider uppercase mb-6 border border-slate-200 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>CampusRide · University Commute Network</span>
-            {user ? (
-              <span className="bg-emerald-600 text-white px-2.5 py-0.5 rounded-full font-bold ml-1 text-[11px] shadow-xs">
-                {user.role === 'driver' || user.accountType === 'DRIVER'
-                  ? '🚗 VERIFIED DRIVER'
-                  : user.role === 'super_admin' || user.role === 'campus_admin'
-                  ? '🏛️ CAMPUS ADMIN'
-                  : user.accountType === 'WOMEN_PASSENGER'
-                  ? '🛡️ WOMEN-ONLY STUDENT'
-                  : '🎒 VERIFIED STUDENT'}
-              </span>
-            ) : (
-              <span className="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-bold ml-1 text-[11px]">
-                🔒 100% VERIFIED UNIVERSITY PEERS
-              </span>
-            )}
+    <section className="relative pt-6 pb-12 md:pt-10 md:pb-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      {/* 2-Column Editorial Campus Atlas Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        {/* Left Column (6 cols): Editorial Typography & Action */}
+        <motion.div
+          initial={{ opacity: 0, x: -35 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:col-span-6 flex flex-col items-start text-left"
+        >
+          {/* Factual Live Tag */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper text-ink-primary text-xs font-mono mb-4 border border-border shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
+            <span className="font-bold text-plum">Campus Atlas</span>
+            <span className="text-border">•</span>
+            <span className="text-ink-secondary">Dehradun University Transit</span>
           </div>
 
-          {/* Hero Headline */}
-          <h1
-            ref={headlineRef}
-            className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-slate-900 leading-[1.08] max-w-2xl"
-          >
-            <span className="hero-line block">Your daily campus commute,</span>
-            <span className="hero-line block text-[#143D32]">
-              {user?.role === 'driver' || user?.accountType === 'DRIVER'
-                ? 'share your seats & save fuel.'
-                : user?.role === 'super_admin' || user?.role === 'campus_admin'
-                ? 'managed with campus-wide safety.'
-                : 'shared with peers you trust.'}
-            </span>
+          {/* Display Headline in Fraunces serif */}
+          <h1 className="text-3xl sm:text-5xl lg:text-[3.65rem] font-display font-extrabold tracking-tight text-ink-primary leading-[1.06]">
+            Ride with people <br />
+            <em className="italic text-plum not-italic">from your campus.</em>
           </h1>
 
-          {/* Supporting Copy */}
-          <p className="hero-sub mt-5 text-base sm:text-lg text-slate-600 max-w-xl font-normal leading-relaxed">
-            {user?.role === 'driver' || user?.accountType === 'DRIVER'
-              ? 'Offer empty car/bike seats along your university route. Share commute expenses with verified student peers.'
-              : user?.role === 'super_admin' || user?.role === 'campus_admin'
-              ? 'Real-time university operations: live passenger tracking, incident monitoring, and campus mobility fare governance.'
-              : 'Direct rides with university peers heading your direction. Verified college IDs, zero commercial surge, and scheduled carpools.'}
+          {/* Reassuring, Honest Body Copy */}
+          <p className="mt-4 text-base sm:text-lg text-ink-secondary max-w-xl leading-relaxed">
+            Every driver and rider on CampusRide has submitted a university student ID verified by campus admins. Share everyday commutes between Premnagar, Suddhowala, and UIT Gate 1 with zero surge pricing.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="hero-cta mt-7 flex flex-wrap items-center gap-3.5">
-            {user?.role === 'driver' || user?.accountType === 'DRIVER' ? (
-              <>
-                <Link
-                  to="/post"
-                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
-                >
-                  <Car className="w-4 h-4 text-emerald-300" />
-                  <span>Post a Ride Now</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  to="/search"
-                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
-                >
-                  <Search className="w-4 h-4 text-slate-600" />
-                  <span>Browse Campus Rides</span>
-                </Link>
-              </>
-            ) : user?.role === 'super_admin' || user?.role === 'campus_admin' ? (
-              <>
-                <Link
-                  to="/admin"
-                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
-                >
-                  <ShieldCheck className="w-4 h-4 text-emerald-300" />
-                  <span>Open Admin Dashboard</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  to="/search"
-                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
-                >
-                  <span>Live Route Monitor</span>
-                </Link>
-              </>
-            ) : user ? (
-              <>
-                <Link
-                  to="/search"
-                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
-                >
-                  <Search className="w-4 h-4" />
-                  <span>Find a Ride</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  to="/post"
-                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
-                >
-                  <Car className="w-4 h-4 text-slate-600" />
-                  <span>Offer a Ride</span>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/login"
-                  className="px-6 py-3.5 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white font-semibold text-sm transition-all shadow-md hover:shadow-lg flex items-center gap-2 group"
-                >
-                  <span>Log In to CampusRide</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  to="/register"
-                  className="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-50 text-slate-900 font-semibold text-sm border border-slate-200 transition-all flex items-center gap-2 shadow-xs"
-                >
-                  <span>Create Student Account</span>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Right Column: High-Res Daytime Illustration (No Blur) */}
-        <div className="lg:col-span-5 w-full">
-          <div className="relative rounded-3xl overflow-hidden border border-[#DDE1DE] shadow-xl bg-white group">
-            <img
-              src={heroHome}
-              alt="CampusRide campus community and student commute on a sunny morning"
-              className="w-full h-[320px] sm:h-[400px] lg:h-[460px] object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
-              loading="eager"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
-            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white text-xs font-mono">
-              <span className="px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50">
-                CAMPUS COMMUTE
-              </span>
-              <span className="px-3 py-1.5 rounded-full bg-emerald-700 text-white font-semibold">
-                VERIFIED PEERS
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center text-center w-full">
-        {/* Corridor Quick Search Bar - Find a Ride */}
-        <div className="hero-search mt-10 w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded-2xl md:rounded-3xl border border-slate-200/90 shadow-[0_8px_30px_rgb(0,0,0,0.06)] p-4 sm:p-6 transition-all text-left">
-            <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-4 lg:gap-5">
-              {/* Left Title Block with Transit Nodes Icon */}
-              <div className="flex items-center gap-3 shrink-0 pr-2 lg:border-r lg:border-slate-100 lg:pr-5">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#143D32] flex items-center justify-center shrink-0 border border-emerald-100/80">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="6" cy="18" r="2.5" />
-                    <circle cx="18" cy="6" r="2.5" />
-                    <circle cx="6" cy="6" r="2.5" />
-                    <path d="M6 8.5v7" />
-                    <path d="M8.5 6h7" />
-                    <path d="M8 8l8 8" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight leading-tight">Find a Ride</h3>
-                  <p className="text-xs text-slate-500 font-normal leading-tight mt-0.5 whitespace-nowrap">
-                    Search campus routes and<br className="hidden sm:inline lg:hidden xl:inline" /> travel together
-                  </p>
-                </div>
-              </div>
-
-              {/* Form Inputs & Search Button */}
-              <form onSubmit={handleSearch} className="flex-1 flex flex-col md:flex-row items-stretch gap-2.5">
-                {/* FROM input */}
-                <div className="flex-1 min-w-[170px] flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600 bg-white transition-all">
-                  <MapPin className="w-4 h-4 text-slate-800 shrink-0" />
-                  <div className="flex-1 text-left min-w-0">
-                    <label className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">FROM</label>
-                    <input
-                      type="text"
-                      value={from}
-                      onChange={(e) => setFrom(e.target.value)}
-                      placeholder="Pickup hub"
-                      className="w-full bg-transparent text-sm font-semibold text-slate-800 focus:outline-none truncate"
-                    />
-                  </div>
-                  {from && (
-                    <button
-                      type="button"
-                      onClick={() => setFrom("")}
-                      className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                      title="Clear origin"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                {/* TO CAMPUS input */}
-                <div className="flex-1 min-w-[190px] flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600 bg-white transition-all">
-                  <Landmark className="w-4 h-4 text-[#143D32] shrink-0" />
-                  <div className="flex-1 text-left min-w-0">
-                    <label className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">TO CAMPUS</label>
-                    <input
-                      type="text"
-                      value={to}
-                      onChange={(e) => setTo(e.target.value)}
-                      placeholder="Campus gate"
-                      className="w-full bg-transparent text-sm font-semibold text-slate-800 focus:outline-none truncate"
-                    />
-                  </div>
-                  {to && (
-                    <button
-                      type="button"
-                      onClick={() => setTo("")}
-                      className="text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
-                      title="Clear destination"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-
-                {/* DATE input */}
-                <div className="w-full md:w-[185px] flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-slate-300 focus-within:border-emerald-600 focus-within:ring-1 focus-within:ring-emerald-600 bg-white transition-all relative cursor-pointer">
-                  <Calendar className="w-4 h-4 text-slate-700 shrink-0" />
-                  <div className="flex-1 text-left min-w-0">
-                    <label className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">DATE</label>
-                    <div className="text-sm font-semibold text-slate-800 truncate">
-                      {formatDisplayDate(date)}
-                    </div>
-                    <input
-                      type="date"
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
-                    />
-                  </div>
-                  <ChevronDown className="w-4 h-4 text-slate-400 shrink-0 pointer-events-none" />
-                </div>
-
-                {/* SEARCH BUTTON */}
-                <button
-                  type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-sm shrink-0 cursor-pointer"
-                >
-                  <Search className="w-4 h-4 text-white" />
-                  <span>Search</span>
-                </button>
-              </form>
-            </div>
-
-            {/* Bottom Sub-Bar */}
-            <div className="mt-4 pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-500">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
-                <span className="font-semibold text-slate-700">Verified campus network</span>
-                <span className="text-slate-300">•</span>
-                <span>Only college students &amp; verified drivers</span>
-              </div>
-              <div className="flex items-center gap-3 text-xs">
-                <div className="flex items-center gap-1.5 font-medium text-slate-700">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>4 active channels</span>
-                </div>
-                <span className="text-slate-300">|</span>
-                <div className="flex items-center gap-1.5 font-medium text-slate-700">
-                  <Activity className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Live GPS Telemetry</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Schematic Corridor Display */}
-      <div className="hero-map-frame mt-12 max-w-5xl mx-auto bg-white rounded-xl border border-slate-200 p-6 sm:p-7 shadow-sm relative">
-        <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 text-xs font-mono text-slate-500">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-            <span className="text-slate-900 font-medium">Corridor 01:</span>
-            <span>Chakrata Rd · Selaqui to UIT Campus</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-4 text-[11px]">
-            <span>Live Speed: 38 km/h</span>
-            <span className="text-emerald-600 font-medium">
-              Cost split only · Zero Surge
-            </span>
-          </div>
-        </div>
-
-        {/* SVG Route Track */}
-        <div className="relative h-44 sm:h-48 w-full mt-4 flex items-center">
-          <svg
-            className="w-full h-full overflow-visible"
-            viewBox="0 0 840 160"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <defs>
-              <linearGradient id="routeGradient" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#2563EB" />
-                <stop offset="50%" stopColor="#3B82F6" />
-                <stop offset="100%" stopColor="#059669" />
-              </linearGradient>
-              <filter id="badgeShadow" x="-10%" y="-10%" width="120%" height="130%">
-                <feDropShadow dx="0" dy="2" stdDeviation="2" floodOpacity="0.08" />
-              </filter>
-            </defs>
-
-            <line
-              x1="0"
-              y1="40"
-              x2="840"
-              y2="40"
-              stroke="#F1F5F9"
-              strokeWidth="1"
-              strokeDasharray="4 4"
-            />
-            <line
-              x1="0"
-              y1="80"
-              x2="840"
-              y2="80"
-              stroke="#F1F5F9"
-              strokeWidth="1"
-              strokeDasharray="4 4"
-            />
-            <line
-              x1="0"
-              y1="120"
-              x2="840"
-              y2="120"
-              stroke="#F1F5F9"
-              strokeWidth="1"
-              strokeDasharray="4 4"
-            />
-
-            {/* Base Route Track */}
-            <path
-              d="M 60 80 C 200 30, 260 55, 300 55 C 400 55, 480 125, 560 80 C 640 45, 710 80, 780 80"
-              stroke="#E2E8F0"
-              strokeWidth="6"
-              strokeLinecap="round"
-            />
-
-            {/* Active Highlight Track - Animated Dash */}
-            <path
-              ref={pathRef}
-              d="M 60 80 C 200 30, 260 55, 300 55 C 400 55, 480 125, 560 80 C 640 45, 710 80, 780 80"
-              stroke="url(#routeGradient)"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeDasharray="8 6"
-              className="route-dash-moving"
-            />
-
-            {/* Waypoint 1: Selaqui Hub (Starting Point) */}
-            <g transform="translate(60, 80)">
-              <circle r="8" fill="#FFFFFF" stroke="#0F172A" strokeWidth="2.5" />
-              <circle r="3" fill="#0F172A" />
-              <text
-                x="0"
-                y="-18"
-                textAnchor="middle"
-                fill="#0F172A"
-                fontSize="11"
-                fontWeight="600"
-              >
-                Selaqui Hub
-              </text>
-              {/* Opaque pill to guarantee zero line clash */}
-              <g transform="translate(0, 16)">
-                <rect
-                  x="-32"
-                  y="0"
-                  width="64"
-                  height="18"
-                  rx="9"
-                  fill="#FFFFFF"
-                  stroke="#E2E8F0"
-                  strokeWidth="1"
-                  filter="url(#badgeShadow)"
-                />
-                <text
-                  x="0"
-                  y="12.5"
-                  textAnchor="middle"
-                  fill="#64748B"
-                  fontSize="9.5"
-                  fontFamily="monospace"
-                >
-                  08:15 AM
-                </text>
-              </g>
-            </g>
-
-            {/* Waypoint 2: Suddhowala PG Hub */}
-            <g transform="translate(300, 55)">
-              <circle r="7" fill="#FFFFFF" stroke="#2563EB" strokeWidth="2.5" />
-              <circle r="3" fill="#2563EB" />
-              <text
-                x="0"
-                y="-18"
-                textAnchor="middle"
-                fill="#1E40AF"
-                fontSize="11"
-                fontWeight="600"
-              >
-                Suddhowala PG Hub
-              </text>
-              {/* Clean opaque badge for passenger - completely clears the curve */}
-              <g transform="translate(0, 18)">
-                <rect
-                  x="-46"
-                  y="0"
-                  width="92"
-                  height="20"
-                  rx="10"
-                  fill="#FFFFFF"
-                  stroke="#BFDBFE"
-                  strokeWidth="1.2"
-                  filter="url(#badgeShadow)"
-                />
-                <text
-                  x="0"
-                  y="13.5"
-                  textAnchor="middle"
-                  fill="#1D4ED8"
-                  fontSize="10"
-                  fontWeight="600"
-                  fontFamily="monospace"
-                >
-                  Rahul S. (+1)
-                </text>
-              </g>
-            </g>
-
-            {/* Waypoint 3: Nanda Ki Chowki Bridge */}
-            <g transform="translate(560, 80)">
-              <circle r="7" fill="#FFFFFF" stroke="#2563EB" strokeWidth="2.5" />
-              <circle r="3" fill="#2563EB" />
-              <text
-                x="0"
-                y="-18"
-                textAnchor="middle"
-                fill="#1E40AF"
-                fontSize="11"
-                fontWeight="600"
-              >
-                Nanda Ki Chowki
-              </text>
-              {/* Clean opaque badge for passenger */}
-              <g transform="translate(0, 18)">
-                <rect
-                  x="-44"
-                  y="0"
-                  width="88"
-                  height="20"
-                  rx="10"
-                  fill="#FFFFFF"
-                  stroke="#BFDBFE"
-                  strokeWidth="1.2"
-                  filter="url(#badgeShadow)"
-                />
-                <text
-                  x="0"
-                  y="13.5"
-                  textAnchor="middle"
-                  fill="#1D4ED8"
-                  fontSize="10"
-                  fontWeight="600"
-                  fontFamily="monospace"
-                >
-                  Priya S. (+1)
-                </text>
-              </g>
-            </g>
-
-            {/* Waypoint 4: UU Campus Gate 1 / UIT */}
-            <g transform="translate(780, 80)">
-              <circle r="10" fill="#FFFFFF" stroke="#059669" strokeWidth="3" />
-              <circle r="4" fill="#059669" />
-              <text
-                x="0"
-                y="-20"
-                textAnchor="middle"
-                fill="#065F46"
-                fontSize="11.5"
-                fontWeight="700"
-              >
-                UU Campus Gate 1 (UIT)
-              </text>
-              {/* Opaque arrival pill */}
-              <g transform="translate(0, 18)">
-                <rect
-                  x="-52"
-                  y="0"
-                  width="104"
-                  height="20"
-                  rx="10"
-                  fill="#ECFDF5"
-                  stroke="#A7F3D0"
-                  strokeWidth="1.2"
-                  filter="url(#badgeShadow)"
-                />
-                <text
-                  x="0"
-                  y="13.5"
-                  textAnchor="middle"
-                  fill="#059669"
-                  fontSize="10"
-                  fontWeight="600"
-                  fontFamily="monospace"
-                >
-                  08:45 AM Arrival
-                </text>
-              </g>
-            </g>
-
-            {/* Dynamically Traveling Vehicle Glued to SVG Bezier Curve */}
-            <g
-              transform={`translate(${carTransform.x}, ${carTransform.y})`}
-              className="pointer-events-none"
+          {/* Primary Action Buttons */}
+          <div className="mt-6 flex flex-wrap items-center gap-3.5">
+            <Link
+              to="/search"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-plum hover:bg-plum-hover text-white text-sm font-bold shadow-md hover:shadow-lg transition-all active:translate-y-0.5 neu-btn"
             >
-              {/* Radar Ping Glow */}
-              <circle r="16" fill="#2563EB" opacity="0.2" className="animate-ping" />
-              
-              {/* Traveling Car Marker Node */}
-              <circle r="9" fill="#0F172A" stroke="#3B82F6" strokeWidth="2.5" />
-              <circle r="3.5" fill="#60A5FA" />
+              <Search className="w-4 h-4" />
+              <span>Find a Ride</span>
+            </Link>
 
-              {/* Floating Driver Pill Badge - perfectly level, never flips */}
-              <g transform="translate(0, -28)">
-                <rect
-                  x="-42"
-                  y="-11"
-                  width="84"
-                  height="22"
-                  rx="6"
-                  fill="#0F172A"
-                  stroke="rgba(255,255,255,0.2)"
-                  strokeWidth="1"
-                  filter="url(#badgeShadow)"
-                />
-                {/* Pointer down to car */}
-                <polygon points="-4,11 4,11 0,14" fill="#0F172A" />
-                <text
-                  x="-12"
-                  y="4"
-                  textAnchor="middle"
-                  fill="#FFFFFF"
-                  fontSize="10"
-                  fontFamily="ui-monospace, monospace"
-                  fontWeight="600"
+            <Link
+              to={user ? '/post' : '/register'}
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-paper hover:bg-white text-ink-primary text-sm font-bold border border-border transition-all active:translate-y-0.5 neu-btn shadow-xs"
+            >
+              <Car className="w-4 h-4 text-plum" />
+              <span>Offer a Ride</span>
+            </Link>
+          </div>
+
+          {/* Sunken & Embossed Tactile Stat Counters */}
+          <div className="mt-7 grid grid-cols-2 gap-3.5 w-full max-w-md items-stretch">
+            <div className="p-3.5 rounded-2xl bg-paper neu-card-sm border border-white/80">
+              <div className="text-2xl font-extrabold text-plum font-mono">₹25</div>
+              <div className="text-xs font-semibold text-ink-secondary mt-0.5">Average Campus Share</div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-paper neu-card-sm border border-white/80">
+              <div className="text-2xl font-extrabold text-forest font-mono">100%</div>
+              <div className="text-xs font-semibold text-ink-secondary mt-0.5">Student &amp; Faculty ID Verified</div>
+            </div>
+          </div>
+
+          {/* Student Avatars Trust Strip */}
+          <div className="mt-6 pt-5 border-t border-border/70 w-full flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2.5 overflow-hidden">
+                <StudentAvatar archetype="aditya" state="matched" size={38} className="border-2 border-paper shadow-xs" />
+                <StudentAvatar archetype="priya" state="arrived" size={38} className="border-2 border-paper shadow-xs" />
+                <StudentAvatar archetype="rahul" state="waiting" size={38} className="border-2 border-paper shadow-xs" />
+                <StudentAvatar archetype="ananya" state="matched" size={38} className="border-2 border-paper shadow-xs" />
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-ink-primary block">Verified Classmates Commuting</span>
+                <span className="text-ink-secondary">Uttaranchal, UPES, DIT & Graphic Era</span>
+              </div>
+            </div>
+
+            <Link
+              to="/safety"
+              className="text-xs font-mono font-bold text-plum hover:underline inline-flex items-center gap-1"
+            >
+              <span>Safety protocols</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Right Column (6 cols): Auto-Rotating Real Photo Showcase with Neumorphic Depth */}
+        <motion.div
+          initial={{ opacity: 0, x: 35 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+          className="lg:col-span-6 w-full"
+        >
+          <div className="relative rounded-3xl bg-paper p-3 neu-card border border-white/90">
+            {/* Main Showcase Image Frame */}
+            <div className="relative h-[380px] sm:h-[420px] w-full rounded-2xl overflow-hidden bg-slate-900 shadow-inner">
+              {DRIVER_SLIDES.map((slide, idx) => (
+                <div
+                  key={slide.id}
+                  className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                    idx === activeSlide ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+                  }`}
                 >
-                  Aditya
-                </text>
-                <text
-                  x="20"
-                  y="4"
-                  textAnchor="middle"
-                  fill="#34D399"
-                  fontSize="10"
-                  fontFamily="ui-monospace, monospace"
-                  fontWeight="700"
+                  <img
+                    src={slide.image}
+                    alt={`${slide.name} - ${slide.role}`}
+                    className="w-full h-full object-cover object-center"
+                    loading="eager"
+                  />
+                  {/* Subtle Gradient Overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
+                </div>
+              ))}
+
+              {/* Progress Indicators (Dots) */}
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/55 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20">
+                {DRIVER_SLIDES.map((slide, idx) => (
+                  <button
+                    key={slide.id}
+                    onClick={() => setActiveSlide(idx)}
+                    aria-label={`Go to slide ${idx + 1}`}
+                    className={`transition-all rounded-full ${
+                      idx === activeSlide
+                        ? 'w-6 h-2 bg-white shadow-sm'
+                        : 'w-2 h-2 bg-white/40 hover:bg-white/70'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Slide Quick Navigation Pill */}
+              <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-white text-[11px] font-mono">
+                <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                <span>{currentSlide.tag}</span>
+              </div>
+            </div>
+
+            {/* Synchronized Floating Frosted Glassmorphism Telemetry Chips - Semi-Transparent & Razor-Sharp */}
+            {/* Top-Right Chip: Verified Driver Rating */}
+            <motion.div
+              animate={{ y: [0, -4, 0] }}
+              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
+              whileHover={{ scale: 1.04, y: -7 }}
+              className="absolute -top-4 -right-2 sm:-right-4 z-30 backdrop-blur-xl bg-white/70 border border-white/90 shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-2xl px-4 py-3 flex items-center gap-3.5 ring-1 ring-slate-900/10 cursor-pointer transition-shadow"
+            >
+              <div className="w-10 h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center shadow-sm shrink-0">
+                <ShieldCheck className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left">
+                <div className="text-[11px] font-mono font-black uppercase text-purple-950 tracking-wider flex items-center gap-1.5">
+                  <span>VERIFIED ID</span>
+                  <span className="bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded text-[10px] border border-amber-500 shadow-xs">
+                    ★ {currentSlide.rating}
+                  </span>
+                </div>
+                <div className="text-sm font-black text-slate-950 leading-tight">{currentSlide.name}</div>
+                <div className="text-[11px] font-bold text-slate-700">{currentSlide.college}</div>
+              </div>
+            </motion.div>
+
+            {/* Bottom-Left Chip: Route & Fare */}
+            <motion.div
+              animate={{ y: [0, -4, 0] }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }}
+              whileHover={{ scale: 1.04, y: -7 }}
+              className="absolute -bottom-6 -left-2 sm:-left-4 z-30 backdrop-blur-xl bg-white/70 border border-white/90 shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-2xl px-4 py-3 flex items-center gap-3.5 ring-1 ring-slate-900/10 cursor-pointer transition-shadow"
+            >
+              <div className="w-11 h-11 rounded-xl bg-[#143D32] text-white flex items-center justify-center font-mono font-black text-base shadow-sm shrink-0">
+                {currentSlide.fare}
+              </div>
+              <div className="text-left">
+                <div className="text-[11px] font-mono font-black uppercase text-[#143D32] tracking-wider">DAILY ROUTE</div>
+                <div
+                  className="text-sm font-black text-slate-950 truncate leading-tight"
+                  title={currentSlide.route}
                 >
-                  ₹40
-                </text>
-              </g>
-            </g>
-          </svg>
+                  {currentSlide.route}
+                </div>
+                <div className="text-[11px] font-bold text-emerald-900 flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600" />
+                  <span>Zero platform commission</span>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Bottom-Right Chip: Security Liveness */}
+            <motion.div
+              animate={{ y: [0, -4, 0] }}
+              transition={{ repeat: Infinity, duration: 4.8, ease: "easeInOut", delay: 1 }}
+              whileHover={{ scale: 1.05, y: -7 }}
+              className="absolute -bottom-6 -right-2 sm:-right-4 z-30 hidden sm:flex backdrop-blur-xl bg-white/70 border border-white/90 shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-2xl px-4 py-3 items-center gap-3 ring-1 ring-slate-900/10 cursor-pointer"
+            >
+              <div className="w-8 h-8 rounded-full bg-emerald-100 border border-emerald-300 flex items-center justify-center shrink-0 shadow-xs">
+                <CheckCircle2 className="w-5 h-5 text-emerald-700" />
+              </div>
+              <div className="text-left">
+                <div className="text-[11px] font-mono font-black text-emerald-950 uppercase tracking-tight">LIVENESS PASS</div>
+                <div className="text-xs font-black text-slate-950">{currentSlide.verifiedTime}</div>
+              </div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Pricing Pill - Enlarged & High Contrast Tactile */}
+      <div className="mt-14 flex justify-center px-4">
+        <div className="bg-[#582C4D] text-white rounded-3xl p-6 sm:p-7 shadow-lg flex items-center justify-center gap-3 sm:gap-4 max-w-4xl w-full text-center hover:scale-[1.01] transition-transform border border-pink-400/20">
+          <span className="font-display font-black text-3xl sm:text-4xl tracking-tight leading-none text-white shrink-0">
+            ₹0
+          </span>
+          <span className="text-sm sm:text-base font-medium text-white/95">
+            platform markup. Fuel is split directly between verified university students.
+          </span>
         </div>
+      </div>
 
-        {/* Telemetry Strip */}
-        <div className="mt-4 pt-3.5 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
-          <div>
-            <span className="text-slate-500 block text-[11px]">Distance</span>
-            <span className="text-slate-900 font-semibold">
-              12.8 km corridor
+      {/* Corridor Stops Ribbon - Enlarged & Continuous Horizontal Marquee */}
+      <div className="mt-5 overflow-hidden whitespace-nowrap py-4 sm:py-4.5 bg-[#FAF8F5] border-y-2 border-[#E8E4DD] shadow-xs relative">
+        {/* Subtle Fade Edges for Professional Polish */}
+        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#FAF8F5] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FAF8F5] to-transparent z-10 pointer-events-none" />
+
+        <div className="animate-marquee-horizontal items-center gap-10 font-bold text-sm sm:text-base text-slate-800">
+          {/* Corridor Stops Sequence - Group 1 */}
+          <div className="flex items-center gap-10 shrink-0">
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Suddhowala Student Quad</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Pickup
+              </span>
+            </span>
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Nanda Ki Chowki</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Junction
+              </span>
+            </span>
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">UIT Gate 1 Academic Campus</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Terminal
+              </span>
+            </span>
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Premnagar Market Chowk</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Hub
+              </span>
+            </span>
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Ballupur Chowk Artery</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Pickup
+              </span>
             </span>
           </div>
-          <div>
-            <span className="text-slate-500 block text-[11px]">
-              Detour impact
+
+          {/* Corridor Stops Sequence - Group 2 (Identical clone for seamless loop) */}
+          <div className="flex items-center gap-10 shrink-0">
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Suddhowala Student Quad</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Pickup
+              </span>
             </span>
-            <span className="text-emerald-600 font-semibold">
-              &lt; 3 mins total
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Nanda Ki Chowki</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Junction
+              </span>
             </span>
-          </div>
-          <div>
-            <span className="text-slate-500 block text-[11px]">
-              Fare structure
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">UIT Gate 1 Academic Campus</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Terminal
+              </span>
             </span>
-            <span className="text-slate-900 font-semibold">₹40 fuel split</span>
-          </div>
-          <div>
-            <span className="text-slate-500 block text-[11px]">
-              Authentication
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Premnagar Market Chowk</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Hub
+              </span>
             </span>
-            <span className="text-[#143D32] font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" /> Verified IDs
+            <span className="flex items-center gap-2.5">
+              <span className="text-[#582C4D] text-base font-black">✦</span>
+              <span className="font-display">Ballupur Chowk Artery</span>
+              <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-[#F5EBF2] text-[#582C4D] border border-[#582C4D]/20">
+                Pickup
+              </span>
             </span>
           </div>
         </div>
       </div>
+
+      {/* Corridor Quick Search Bar (Tactile Neumorphic Container) */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        className="mt-8 w-full max-w-5xl mx-auto"
+      >
+        <div className="bg-paper rounded-3xl border border-white/80 neu-card p-4 sm:p-5 text-left">
+          <form onSubmit={handleSearch} className="flex flex-col lg:flex-row items-stretch gap-3">
+            {/* FROM input */}
+            <div className="flex-1 flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl border border-border/80 bg-white shadow-2xs focus-within:border-plum focus-within:ring-2 focus-within:ring-plum/20 transition-all">
+              <MapPin className="w-4 h-4 text-plum shrink-0" />
+              <div className="flex-1 text-left min-w-0">
+                <label className="block text-[10px] font-mono text-ink-muted uppercase font-bold">
+                  Pickup Stop
+                </label>
+                <input
+                  type="text"
+                  value={from}
+                  onChange={(e) => setFrom(e.target.value)}
+                  placeholder="e.g. Premnagar Chowk"
+                  className="w-full bg-transparent text-sm font-bold text-ink-primary focus:outline-none truncate"
+                />
+              </div>
+              {from && (
+                <button
+                  type="button"
+                  onClick={() => setFrom('')}
+                  className="text-ink-muted hover:text-ink-primary p-0.5 cursor-pointer"
+                  title="Clear origin"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* TO CAMPUS input */}
+            <div className="flex-1 flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl border border-border/80 bg-white shadow-2xs focus-within:border-plum focus-within:ring-2 focus-within:ring-plum/20 transition-all">
+              <Landmark className="w-4 h-4 text-plum shrink-0" />
+              <div className="flex-1 text-left min-w-0">
+                <label className="block text-[10px] font-mono text-ink-muted uppercase font-bold">
+                  Campus Gate
+                </label>
+                <input
+                  type="text"
+                  value={to}
+                  onChange={(e) => setTo(e.target.value)}
+                  placeholder="e.g. UIT Gate 1"
+                  className="w-full bg-transparent text-sm font-bold text-ink-primary focus:outline-none truncate"
+                />
+              </div>
+              {to && (
+                <button
+                  type="button"
+                  onClick={() => setTo('')}
+                  className="text-ink-muted hover:text-ink-primary p-0.5 cursor-pointer"
+                  title="Clear destination"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Custom Tactile Campus Date Picker */}
+            <div className="w-full lg:w-48 px-3.5 py-2.5 rounded-2xl border border-border/80 bg-white shadow-2xs relative">
+              <CampusDatePicker value={date} onChange={setDate} />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="px-6 py-3 rounded-xl bg-plum hover:bg-plum-hover text-white font-bold text-sm neu-btn flex items-center justify-center gap-2 shrink-0 active:translate-y-0.5 transition-all shadow-md"
+            >
+              <Search className="w-4 h-4" />
+              <span>Search Rides</span>
+            </button>
+          </form>
+
+          {/* Factual Sub-bar */}
+          <div className="mt-3.5 pt-3 border-t border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-ink-secondary">
+            <span className="flex items-center gap-1.5 font-medium">
+              <ShieldCheck className="w-4 h-4 text-forest shrink-0" />
+              <span>Enrolled university students and verified drivers only</span>
+            </span>
+            <span className="font-mono text-[11px] text-ink-muted">
+              Zero platform markup • Direct fuel share • 100% Student Verified
+            </span>
+          </div>
+        </div>
+      </motion.div>
     </section>
   );
 };
 
-// Backwards-compatible alias
 export const EditorialHero = Hero;

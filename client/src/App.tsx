@@ -1,8 +1,8 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { MotionConfig, AnimatePresence, motion } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Navbar } from './components/Navbar';
-import { CustomCursor } from './components/common/CustomCursor';
 import { CampusBackground } from './components/common/CampusBackground';
 import type { CampusBackgroundVariant } from './components/common/CampusBackground';
 import { LandingPage } from './pages/LandingPage';
@@ -21,11 +21,12 @@ const VerificationStatusPage = lazy(() => import('./pages/VerificationStatusPage
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage').then(m => ({ default: m.VerifyEmailPage })));
 const FaceVerifyPage = lazy(() => import('./pages/FaceVerifyPage').then(m => ({ default: m.FaceVerifyPage })));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage').then(m => ({ default: m.NotFoundPage })));
+const DesignPlaygroundPage = lazy(() => import('./pages/DesignPlaygroundPage').then(m => ({ default: m.DesignPlaygroundPage })));
 
 function RouteFallback() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="w-8 h-8 rounded-full border-2 border-[#143D32] border-t-transparent animate-spin" />
+      <div className="w-8 h-8 rounded-full border-2 border-[#143D32] border-t-transparent cr-spinner" />
     </div>
   );
 }
@@ -93,37 +94,52 @@ function AppLayout() {
   const isAdminRoute = location.pathname.startsWith('/admin');
 
   return (
-    <div className="min-h-screen flex flex-col font-sans antialiased text-[#0F172A] selection:bg-[#10B981] selection:text-white">
-      <CampusBackground variant={variant} />
-      <CustomCursor />
-      {!isAdminRoute && <Navbar />}
-      <main className="flex-1 relative">
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth" element={<AuthPage />} />
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/signin" element={<AuthPage />} />
-            <Route path="/register" element={<AuthPage />} />
-            <Route path="/signup" element={<AuthPage />} />
-            <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-            <Route path="/verification" element={<ProtectedRoute><VerificationStatusPage /></ProtectedRoute>} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route path="/face-verify" element={<ProtectedRoute><FaceVerifyPage /></ProtectedRoute>} />
-            <Route path="/post" element={<ProtectedRoute><PostRidePage /></ProtectedRoute>} />
-            <Route path="/post-ride" element={<Navigate to="/post" replace />} />
-            <Route path="/search" element={<SearchRidesPage />} />
-            <Route path="/rides" element={<Navigate to="/search" replace />} />
-            <Route path="/rides/:id" element={<RideDetailPage />} />
-            <Route path="/trips/:id" element={<ProtectedRoute><TripTrackingPage /></ProtectedRoute>} />
-            <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
-            <Route path="/safety" element={<SafetyPage />} />
-            <Route path="/colleges" element={<CollegesPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
-        </Suspense>
-      </main>
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen flex flex-col font-sans antialiased text-ink-primary selection:bg-route selection:text-white">
+        <CampusBackground variant={variant} />
+        {!isAdminRoute && <Navbar />}
+        <main className="flex-1 relative">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{
+                duration: 0.22,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <Suspense fallback={<RouteFallback />}>
+                <Routes location={location}>
+                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/__design" element={<DesignPlaygroundPage />} />
+                  <Route path="/auth" element={<AuthPage />} />
+                  <Route path="/login" element={<AuthPage />} />
+                  <Route path="/signin" element={<AuthPage />} />
+                  <Route path="/register" element={<AuthPage />} />
+                  <Route path="/signup" element={<AuthPage />} />
+                  <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+                  <Route path="/verification" element={<ProtectedRoute><VerificationStatusPage /></ProtectedRoute>} />
+                  <Route path="/verify-email" element={<VerifyEmailPage />} />
+                  <Route path="/face-verify" element={<ProtectedRoute><FaceVerifyPage /></ProtectedRoute>} />
+                  <Route path="/post" element={<ProtectedRoute><PostRidePage /></ProtectedRoute>} />
+                  <Route path="/post-ride" element={<Navigate to="/post" replace />} />
+                  <Route path="/search" element={<SearchRidesPage />} />
+                  <Route path="/rides" element={<Navigate to="/search" replace />} />
+                  <Route path="/rides/:id" element={<RideDetailPage />} />
+                  <Route path="/trips/:id" element={<ProtectedRoute><TripTrackingPage /></ProtectedRoute>} />
+                  <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
+                  <Route path="/safety" element={<SafetyPage />} />
+                  <Route path="/colleges" element={<CollegesPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </Suspense>
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+    </MotionConfig>
   );
 }
 

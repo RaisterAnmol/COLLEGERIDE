@@ -44,8 +44,8 @@ export const FinalCTA: React.FC = () => {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#18A66A] font-semibold block mb-4">
-            JOIN THE UNIVERSITY TRANSIT MESH
+          <span className="text-xs font-mono text-[#18A66A] font-semibold block mb-4">
+            University Transit Mesh Corridor
           </span>
 
           <h2 className="text-hero-clamp font-black text-white uppercase tracking-tight leading-none">
@@ -61,16 +61,14 @@ export const FinalCTA: React.FC = () => {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/search"
-              className="px-8 py-4 rounded-xl bg-[#1769FF] hover:bg-[#1D4ED8] text-white font-semibold text-base shadow-sm transition-all hover:shadow hover:-translate-y-0.5 flex items-center gap-2"
-              data-cursor="GO →"
+              className="px-8 py-4 rounded-xl bg-[#143D32] hover:bg-[#0F2E26] text-white font-semibold text-base shadow-sm transition-colors flex items-center gap-2 active:translate-y-0.5"
             >
               <span>FIND A RIDE</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               to="/post"
-              className="px-8 py-4 rounded-xl bg-white/[0.06] hover:bg-white/10 text-white font-semibold text-base border border-white/20 transition-all flex items-center gap-2"
-              data-cursor="OFFER"
+              className="px-8 py-4 rounded-xl bg-white/[0.06] hover:bg-white/10 text-white font-semibold text-base border border-white/20 transition-colors flex items-center gap-2 active:translate-y-0.5"
             >
               <Car className="w-4 h-4 text-[#1769FF]" />
               <span>OFFER A RIDE</span>

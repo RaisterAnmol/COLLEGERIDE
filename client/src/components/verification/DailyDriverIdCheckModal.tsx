@@ -1,3 +1,4 @@
+// Pre-ride ID verification - prefers-reduced-motion compliant
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   ShieldCheck,
@@ -187,7 +188,7 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#143D32]/50 backdrop-blur-sm animate-in fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#143D32]/75 animate-in fade-in">
       <div className="relative w-full max-w-lg bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
         {/* Clean Header */}
         <div className="px-6 py-5 border-b border-slate-100 flex items-start justify-between bg-white">
@@ -243,7 +244,7 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
                     <div className="w-4 h-4 border-t-2 border-l-2 border-emerald-400" />
                     <div className="w-4 h-4 border-t-2 border-r-2 border-emerald-400" />
                   </div>
-                  <p className="text-[11px] font-medium text-white/80 text-center bg-[#143D32]/80 border border-emerald-400/30 backdrop-blur-xs py-1 px-3 rounded-full mx-auto">
+                  <p className="text-[11px] font-medium text-white/90 text-center bg-[#143D32]/95 border border-emerald-400/30 py-1 px-3 rounded-full mx-auto">
                     Align student ID within box
                   </p>
                   <div className="flex justify-between">
@@ -275,14 +276,14 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
                   <button
                     type="button"
                     onClick={() => setCapturedPhoto(null)}
-                    className="absolute top-3 right-3 px-2.5 py-1.5 bg-[#143D32]/85 hover:bg-[#143D32] border border-emerald-400/30 text-white text-xs font-medium rounded-lg backdrop-blur-sm flex items-center gap-1.5 cursor-pointer shadow transition-colors"
+                    className="absolute top-3 right-3 px-2.5 py-1.5 bg-[#143D32]/95 hover:bg-[#143D32] border border-emerald-400/30 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 cursor-pointer shadow transition-colors"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Retake</span>
                   </button>
                 )}
                 {verified && (
-                  <div className="absolute inset-0 bg-emerald-950/80 backdrop-blur-xs flex flex-col items-center justify-center text-white p-4 text-center">
+                  <div className="absolute inset-0 bg-[#0B1E19]/90 flex flex-col items-center justify-center text-white p-4 text-center">
                     <CheckCircle2 className="w-10 h-10 text-emerald-400 mb-2" />
                     <p className="text-sm font-bold text-white">Daily Check Verified</p>
                     <p className="text-xs text-emerald-200 mt-0.5">Matched with enrolled record ({matchScore}%)</p>
@@ -351,7 +352,7 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
                 />
               </div>
               <div className="min-w-0">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+                <span className="text-[11px] font-medium text-slate-500 block">
                   Enrolled ID on File
                 </span>
                 <p className="font-semibold text-slate-900 truncate">{user.name}</p>
@@ -369,11 +370,11 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
           {scanning && (
             <div className="p-3.5 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
               <div className="flex items-center gap-2 text-xs font-semibold text-emerald-900">
-                <RefreshCw className="w-3.5 h-3.5 text-emerald-700 animate-spin" />
+                <RefreshCw className="w-3.5 h-3.5 text-emerald-700 cr-spinner" />
                 <span>{scanStep}</span>
               </div>
               <div className="w-full bg-emerald-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-emerald-600 h-full w-2/3 animate-pulse" />
+                <div className="bg-[#143D32] h-full w-2/3 transition-all duration-300" />
               </div>
             </div>
           )}
@@ -404,7 +405,7 @@ export const DailyDriverIdCheckModal: React.FC<DailyDriverIdCheckModalProps> = (
             >
               {scanning ? (
                 <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <RefreshCw className="w-3.5 h-3.5 cr-spinner" />
                   Verifying...
                 </>
               ) : verified ? (

@@ -172,31 +172,31 @@ export const SearchableInput: React.FC<SearchableInputProps> = ({
 
   return (
     <div ref={containerRef} className="relative w-full">
-      <div className="flex justify-between items-center mb-1">
+      <div className="flex justify-between items-center h-5 mb-1.5 gap-2">
         <label
           htmlFor={id}
-          className="block text-xs font-semibold text-slate-700 select-none"
+          className="block text-xs font-semibold text-ink-primary select-none whitespace-nowrap shrink-0"
         >
-          {label} {required && <span className="text-emerald-500">*</span>}
+          {label} {required && <span className="text-route">*</span>}
         </label>
         {helperText && (
-          <span className="text-[10px] text-slate-400 hidden sm:inline-block">
+          <span className="text-[10px] text-ink-muted truncate text-right hidden sm:inline-block font-normal">
             {helperText}
           </span>
         )}
       </div>
 
       <div
-        className={`relative flex items-center w-full rounded-xl border transition-all duration-150 bg-white ${
+        className={`relative flex items-center w-full h-[46px] rounded-xl border transition-all duration-150 bg-white ${
           error
             ? "border-rose-400 focus-within:ring-2 focus-within:ring-rose-400"
             : isOpen
-            ? "border-emerald-500 ring-2 ring-emerald-500/20 shadow-xs"
-            : "border-slate-300 hover:border-slate-400 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20"
+            ? "border-[#582C4D] ring-2 ring-[#582C4D]/20 shadow-xs"
+            : "border-slate-200/90 hover:border-slate-300 focus-within:border-[#582C4D] focus-within:ring-2 focus-within:ring-[#582C4D]/20 shadow-2xs"
         } ${disabled ? "bg-slate-100 cursor-not-allowed opacity-75" : ""}`}
       >
         {/* Left Icon */}
-        <div className="pl-3 pr-1 text-slate-400 shrink-0 select-none">
+        <div className="pl-3.5 pr-1.5 text-slate-400 shrink-0 select-none">
           {icon || <Search className="w-4 h-4" />}
         </div>
 
@@ -252,8 +252,8 @@ export const SearchableInput: React.FC<SearchableInputProps> = ({
             tabIndex={-1}
           >
             <ChevronDown
-              className={`w-4 h-4 transition-transform duration-200 ${
-                isOpen ? "rotate-180 text-emerald-600" : ""
+              className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                isOpen ? "rotate-180 text-[#582C4D]" : ""
               }`}
             />
           </button>

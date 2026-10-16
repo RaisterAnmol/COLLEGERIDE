@@ -1,3 +1,4 @@
+// prefers-reduced-motion compliant live trip telemetry
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -178,14 +179,12 @@ export const TripTrackingPage: React.FC = () => {
     setLiveLocation({ lat: simulatedLat, lng: simulatedLng, speed: 11.2 });
   };
 
-  // Real Emergency SOS Dispatch (Guardrails #11 & #12)
-  const handleTriggerEmergencySos = async () => {
-    if (!id) return;
-    const confirm = window.confirm(
-      '⚠️ ARE YOU IN DANGER?\n\nThis will instantly dispatch an emergency incident to Campus Security and notify your verified emergency contacts with your live GPS location.'
-    );
-    if (!confirm) return;
+  const [sosModalOpen, setSosModalOpen] = useState(false);
+  const [withdrawModalOpen, setWithdrawModalOpen] = useState(false);
 
+  // Real Emergency SOS Dispatch (Guardrails #11 & #12)
+  const executeSosDispatch = async () => {
+    if (!id) return;
     setSosTriggering(true);
     setError('');
 
@@ -208,6 +207,7 @@ export const TripTrackingPage: React.FC = () => {
       setError(err.message || 'Failed to dispatch SOS alert. Please dial 112 immediately.');
     } finally {
       setSosTriggering(false);
+      setSosModalOpen(false);
     }
   };
 
@@ -293,9 +293,8 @@ export const TripTrackingPage: React.FC = () => {
     }
   };
 
-  const handlePassengerWithdraw = async () => {
+  const executePassengerWithdraw = async () => {
     if (!id) return;
-    if (!window.confirm("Are you sure you want to cancel your booking for this trip?")) return;
     setActionLoading(true);
     setError('');
     try {
@@ -309,13 +308,14 @@ export const TripTrackingPage: React.FC = () => {
       setError(err?.message || 'Failed to withdraw from trip');
     } finally {
       setActionLoading(false);
+      setWithdrawModalOpen(false);
     }
   };
 
   if (loading) {
     return (
       <div className="py-24 text-center font-mono text-xs text-[#646A67]">
-        <div className="w-8 h-8 border-2 border-[#143D32] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+        <div className="w-8 h-8 border-2 border-[#143D32] border-t-transparent rounded-full mx-auto mb-3" />
         INITIALIZING SECURE TRIP TELEMETRY CHANNEL...
       </div>
     );
@@ -351,7 +351,7 @@ export const TripTrackingPage: React.FC = () => {
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
       {/* Route Corridor Deviation Warning Banner (Guardrail #9) */}
       {corridorDeviation && (
-        <div className="p-4 bg-amber-500 text-white rounded-2xl flex items-center justify-between shadow-lg animate-pulse">
+        <div className="p-4 bg-amber-500 text-white rounded-2xl flex items-center justify-between shadow-lg">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-6 h-6 shrink-0" />
             <div>
@@ -365,7 +365,7 @@ export const TripTrackingPage: React.FC = () => {
           </div>
           <button
             onClick={() => setCorridorDeviation(null)}
-            className="px-3 py-1 bg-emerald-950/20 hover:bg-emerald-950/30 rounded text-xs uppercase tracking-wider font-mono shrink-0"
+            className="px-3 py-1 bg-emerald-950/20 hover:bg-emerald-950/30 rounded text-xs font-mono font-semibold shrink-0"
           >
             Acknowledge
           </button>
@@ -399,11 +399,11 @@ export const TripTrackingPage: React.FC = () => {
           <div>
             <div className="flex items-center gap-2 mb-2">
               <span
-                className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider ${
+                className={`px-3 py-1 rounded-full text-xs font-mono font-bold ${
                   trip.status === 'completed'
                     ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
                     : trip.status === 'in_progress'
-                    ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40 animate-pulse'
+                    ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40'
                     : 'bg-white/10 text-white/90 border border-white/20'
                 }`}
               >
@@ -475,7 +475,7 @@ export const TripTrackingPage: React.FC = () => {
       <div className="bg-white rounded-3xl border border-[#DDE1DE] p-6 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Radio className="w-4 h-4 text-[#18A66A] animate-pulse" />
+            <Radio className="w-4 h-4 text-[#18A66A]" />
             <span className="text-xs font-mono font-bold text-[#18201D] uppercase">
               Live Transit Telemetry & GPS Navigation
             </span>
@@ -599,7 +599,7 @@ export const TripTrackingPage: React.FC = () => {
               </div>
             ) : (
               <div className="p-8 bg-[#143D32] rounded-2xl text-white text-center shadow-md space-y-3">
-                <span className="text-xs uppercase font-mono tracking-widest text-emerald-300 block">
+                <span className="text-xs font-mono text-emerald-300 block">
                   Numeric Pickup Code
                 </span>
                 <div className="flex items-center justify-center gap-3">
@@ -622,7 +622,7 @@ export const TripTrackingPage: React.FC = () => {
                   disabled={isRegenerating}
                   className="mt-2 inline-flex items-center gap-1.5 text-xs text-white/70 hover:text-white transition-colors"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isRegenerating ? 'animate-spin' : ''}`} />
+                  <RefreshCw className="w-3.5 h-3.5" />
                   <span>Regenerate Code</span>
                 </button>
               </div>
@@ -699,12 +699,12 @@ export const TripTrackingPage: React.FC = () => {
             ) : (
               <div className="space-y-6">
                 <div className="flex items-center justify-between pb-1">
-                  <span className="text-xs font-mono text-slate-500 font-bold uppercase tracking-wider">
+                  <span className="text-xs font-mono text-slate-500 font-bold">
                     Step 1: Boarding Verification
                   </span>
                   <button
                     type="button"
-                    onClick={handlePassengerWithdraw}
+                    onClick={() => setWithdrawModalOpen(true)}
                     disabled={actionLoading}
                     className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                     title="Cancel your seat on this trip"
@@ -747,7 +747,7 @@ export const TripTrackingPage: React.FC = () => {
                 {/* Secondary Option: Manual Code Entry */}
                 <div className="border-t border-[#DDE1DE] pt-6">
                   <form onSubmit={handleVerifyOtp} className="max-w-md mx-auto space-y-4 text-center">
-                    <label className="block text-xs font-mono font-bold text-[#646A67] uppercase tracking-wider">
+                    <label className="block text-xs font-mono font-bold text-[#646A67]">
                       Or enter 6-digit code manually
                     </label>
                     <div className="flex items-center justify-center gap-2">
@@ -812,7 +812,7 @@ export const TripTrackingPage: React.FC = () => {
             <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-[#18201D]">
+            <h4 className="text-xs font-mono font-bold text-[#18201D]">
               Campus Safety ICE & Emergency Operations Link
             </h4>
             <p className="text-[11px] text-[#646A67] mt-0.5">
@@ -834,9 +834,10 @@ export const TripTrackingPage: React.FC = () => {
           </a>
 
           <button
-            onClick={handleTriggerEmergencySos}
+            type="button"
+            onClick={() => setSosModalOpen(true)}
             disabled={sosTriggering}
-            className="px-4 py-2.5 rounded-xl bg-[#D9383A] hover:bg-[#B82E30] text-white font-mono font-bold text-xs shadow-md transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50"
+            className="px-4 py-2.5 rounded-xl bg-[#D9383A] hover:bg-[#B82E30] text-white font-mono font-bold text-xs shadow-md transition-colors inline-flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             <PhoneCall className="w-4 h-4" />
             <span>{sosTriggering ? 'DISPATCHING...' : 'TRIGGER SOS'}</span>
@@ -910,6 +911,80 @@ export const TripTrackingPage: React.FC = () => {
           onClose={() => setShowChat(false)}
           title="Trip Coordination Chat"
         />
+      )}
+
+      {/* Accessible SOS Distress Confirmation Modal */}
+      {sosModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sos-dialog-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-primary/60 animate-in fade-in duration-150"
+        >
+          <div className="bg-surface rounded-card border-2 border-emergency-crimson p-6 max-w-md w-full shadow-card space-y-4">
+            <h3 id="sos-dialog-title" className="text-base font-display font-bold text-emergency-crimson flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 shrink-0" />
+              <span>CONFIRM EMERGENCY DISTRESS DISPATCH</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-primary leading-relaxed font-medium">
+              Are you in immediate danger? Confirming will instantly dispatch an emergency incident to Campus Security and notify your verified emergency contacts with your live GPS coordinates.
+            </p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setSosModalOpen(false)}
+                className="px-4 py-2 rounded-control border border-line-base text-ink-secondary text-xs font-semibold hover:bg-canvas transition-colors min-h-[44px] cursor-pointer"
+              >
+                Cancel Distress
+              </button>
+              <button
+                type="button"
+                onClick={executeSosDispatch}
+                disabled={sosTriggering}
+                className="px-4 py-2 rounded-control bg-emergency-crimson hover:bg-red-700 text-surface text-xs font-bold shadow-2xs active:translate-y-[1.5px] transition-all min-h-[44px] cursor-pointer"
+              >
+                {sosTriggering ? "DISPATCHING..." : "CONFIRM & DISPATCH SOS"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Accessible Passenger Cancel Booking Modal */}
+      {withdrawModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="withdraw-booking-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-primary/60 animate-in fade-in duration-150"
+        >
+          <div className="bg-surface rounded-card border border-line-base p-6 max-w-md w-full shadow-card space-y-4">
+            <h3 id="withdraw-booking-title" className="text-base font-display font-bold text-ink-primary flex items-center gap-2">
+              <XCircle className="w-5 h-5 text-emergency-crimson shrink-0" />
+              <span>Cancel Trip Booking?</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
+              Are you sure you want to cancel your seat booking for this active trip? The driver will be notified immediately.
+            </p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setWithdrawModalOpen(false)}
+                className="px-4 py-2 rounded-control border border-line-base text-ink-secondary text-xs font-semibold hover:bg-canvas transition-colors min-h-[44px] cursor-pointer"
+              >
+                Keep Booking
+              </button>
+              <button
+                type="button"
+                onClick={executePassengerWithdraw}
+                disabled={actionLoading}
+                className="px-4 py-2 rounded-control bg-emergency-crimson hover:bg-red-700 text-surface text-xs font-semibold shadow-2xs active:translate-y-[1.5px] transition-all min-h-[44px] cursor-pointer"
+              >
+                {actionLoading ? "Cancelling..." : "Confirm Cancellation"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

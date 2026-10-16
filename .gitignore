@@ -55,4 +55,7 @@ server/uploads/verification/temp-*
 server/data/whatsapp_auth/
 server/data/
 
+# Internal agent state
+.agents/
+
 

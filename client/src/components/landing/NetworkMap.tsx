@@ -73,7 +73,7 @@ const VEHICLES: ActiveVehicle[] = [
   {
     id: 'v-2',
     driver: 'Ananya Verma',
-    avatar: '/test_uploads/driver_female_makima.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     department: 'USCS Computer Science · Sem 5',
     college: 'Uttaranchal University',
     car: 'Hyundai i20 Sportz',
@@ -96,7 +96,7 @@ const VEHICLES: ActiveVehicle[] = [
   {
     id: 'v-3',
     driver: 'Siddharth Rao',
-    avatar: '/test_uploads/driver_male_ichigo.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     department: 'UIM BBA Marketing · Sem 5',
     college: 'Uttaranchal University',
     car: 'Honda City i-VTEC',
@@ -119,7 +119,7 @@ const VEHICLES: ActiveVehicle[] = [
   {
     id: 'v-4',
     driver: 'Sneha Joshi',
-    avatar: '/test_uploads/driver_female_mitsuha.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     department: 'Law College Dehradun · Sem 7',
     college: 'Uttaranchal University',
     car: 'Tata Nexon EV',
@@ -337,32 +337,62 @@ export const NetworkMap: React.FC = () => {
     const isEast = isAll || selectedCorridor === 'east';
 
     // 1. Polylines
-    // North Corridor (Emerald)
+    // North Corridor (Emerald) - Solid Base Track + Animated Telemetry Pulse
     L.polyline(NORTH_ROUTE, {
       color: '#10B981',
-      weight: selectedCorridor === 'north' ? 6 : 4.5,
-      opacity: isNorth ? 0.95 : 0.2,
+      weight: selectedCorridor === 'north' ? 5 : 3.5,
+      opacity: isNorth ? 0.45 : 0.15,
       lineCap: 'round',
       lineJoin: 'round',
     }).addTo(group);
+    if (isNorth) {
+      L.polyline(NORTH_ROUTE, {
+        color: '#10B981',
+        weight: selectedCorridor === 'north' ? 6 : 4.5,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round',
+        className: 'animated-transit-route',
+      }).addTo(group);
+    }
 
-    // West Corridor (Indigo)
+    // West Corridor (Campus Route Light) - Solid Base Track + Animated Telemetry Pulse
     L.polyline(WEST_ROUTE, {
-      color: '#6366F1',
-      weight: selectedCorridor === 'west' ? 6 : 4.5,
-      opacity: isWest ? 0.95 : 0.2,
+      color: '#2D6A4F',
+      weight: selectedCorridor === 'west' ? 5 : 3.5,
+      opacity: isWest ? 0.45 : 0.15,
       lineCap: 'round',
       lineJoin: 'round',
     }).addTo(group);
+    if (isWest) {
+      L.polyline(WEST_ROUTE, {
+        color: '#2D6A4F',
+        weight: selectedCorridor === 'west' ? 6 : 4.5,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round',
+        className: 'animated-transit-route',
+      }).addTo(group);
+    }
 
-    // East Corridor (Teal/Emerald dark)
+    // East Corridor (Teal/Emerald dark) - Solid Base Track + Animated Telemetry Pulse
     L.polyline(EAST_ROUTE, {
       color: '#0D9488',
-      weight: selectedCorridor === 'east' ? 6 : 4.5,
-      opacity: isEast ? 0.95 : 0.2,
+      weight: selectedCorridor === 'east' ? 5 : 3.5,
+      opacity: isEast ? 0.45 : 0.15,
       lineCap: 'round',
       lineJoin: 'round',
     }).addTo(group);
+    if (isEast) {
+      L.polyline(EAST_ROUTE, {
+        color: '#0D9488',
+        weight: selectedCorridor === 'east' ? 6 : 4.5,
+        opacity: 0.95,
+        lineCap: 'round',
+        lineJoin: 'round',
+        className: 'animated-transit-route',
+      }).addTo(group);
+    }
 
     // 2. Waypoint Markers (Clean circular pins with no text collision)
     // Selaqui Hub
@@ -370,7 +400,7 @@ export const NetworkMap: React.FC = () => {
       const selaquiIcon = L.divIcon({
         className: 'custom-waypoint',
         html: `
-          <div class="flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1 rounded-full shadow-md border border-slate-200/90 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-105 transition-transform">
+          <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-full shadow-sm border border-slate-200 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer">
             <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-200"></span>
             <span class="text-xs font-bold text-slate-800">Selaqui Hub</span>
           </div>
@@ -382,7 +412,7 @@ export const NetworkMap: React.FC = () => {
       const suddhowalaIcon = L.divIcon({
         className: 'custom-waypoint',
         html: `
-          <div class="flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1 rounded-full shadow-md border border-slate-200/90 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-105 transition-transform">
+          <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-full shadow-sm border border-slate-200 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer">
             <span class="w-2.5 h-2.5 rounded-full bg-teal-500 ring-2 ring-teal-200"></span>
             <span class="text-xs font-bold text-slate-800">Suddhowala Hub</span>
           </div>
@@ -397,7 +427,7 @@ export const NetworkMap: React.FC = () => {
       const premnagarIcon = L.divIcon({
         className: 'custom-waypoint',
         html: `
-          <div class="flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1 rounded-full shadow-md border border-slate-200/90 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-105 transition-transform">
+          <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-full shadow-sm border border-slate-200 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer">
             <span class="w-2.5 h-2.5 rounded-full bg-indigo-500 ring-2 ring-indigo-200"></span>
             <span class="text-xs font-bold text-slate-800">Premnagar Chowk</span>
           </div>
@@ -412,7 +442,7 @@ export const NetworkMap: React.FC = () => {
       const ballupurIcon = L.divIcon({
         className: 'custom-waypoint',
         html: `
-          <div class="flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1 rounded-full shadow-md border border-slate-200/90 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-105 transition-transform">
+          <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-full shadow-sm border border-slate-200 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer">
             <span class="w-2.5 h-2.5 rounded-full bg-cyan-600 ring-2 ring-cyan-200"></span>
             <span class="text-xs font-bold text-slate-800">Ballupur Chowk</span>
           </div>
@@ -424,7 +454,7 @@ export const NetworkMap: React.FC = () => {
       const clockTowerIcon = L.divIcon({
         className: 'custom-waypoint',
         html: `
-          <div class="flex items-center gap-1.5 bg-white/95 backdrop-blur px-2.5 py-1 rounded-full shadow-md border border-slate-200/90 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-105 transition-transform">
+          <div class="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-full shadow-sm border border-slate-200/90 whitespace-nowrap transform -translate-x-1/2 -translate-y-1/2 cursor-pointer active:scale-95 transition-transform">
             <span class="w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-amber-200"></span>
             <span class="text-xs font-bold text-slate-800">Clock Tower</span>
           </div>
@@ -440,8 +470,8 @@ export const NetworkMap: React.FC = () => {
       html: `
         <div class="flex flex-col items-center cursor-pointer pointer-events-auto transform -translate-x-1/2 -translate-y-1/2 group">
           <div class="relative flex items-center justify-center">
-            <div class="absolute w-12 h-12 rounded-full bg-emerald-500/30 animate-ping pointer-events-none"></div>
-            <div class="w-10 h-10 rounded-full bg-[#143D32] text-white flex items-center justify-center border-2 border-white shadow-xl text-base group-hover:scale-110 transition-transform">
+            <div class="absolute w-12 h-12 rounded-full bg-emerald-500/20 pointer-events-none"></div>
+            <div class="w-10 h-10 rounded-full bg-[#143D32] text-white flex items-center justify-center border-2 border-white shadow-md text-base transition-transform">
               🏛️
             </div>
           </div>
@@ -467,9 +497,9 @@ export const NetworkMap: React.FC = () => {
       const vehicleIcon = L.divIcon({
         className: `vehicle-pulse-marker ${isFocused ? 'z-50' : 'z-30'}`,
         html: `
-          <div class="group relative cursor-pointer transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-200 hover:scale-115">
-            <!-- Pulsing Radar Glow -->
-            <span class="absolute -inset-1.5 rounded-full ${isFocused ? 'bg-indigo-500/40 animate-ping' : 'bg-emerald-500/30 animate-pulse'}"></span>
+          <div class="group relative cursor-pointer transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-200">
+            <!-- Settled Radar Accent -->
+            <span class="absolute -inset-1 rounded-full ${isFocused ? 'bg-emerald-600/30 ring-1 ring-emerald-500/50' : 'bg-emerald-500/15'}"></span>
             
             <!-- Circular Driver Badge -->
             <div class="relative w-10 h-10 rounded-full border-2 ${isFocused ? 'border-indigo-600 ring-2 ring-indigo-400' : 'border-white ring-2 ring-emerald-500'} shadow-lg overflow-hidden bg-white">
@@ -493,7 +523,7 @@ export const NetworkMap: React.FC = () => {
 
       // Popup with detailed driver telemetry
       const popupHtml = `
-        <div style="font-family: system-ui, -apple-system, sans-serif; min-width: 220px; padding: 4px 2px;">
+        <div style="font-family: inherit, sans-serif; min-width: 220px; padding: 4px 2px;">
           <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
             <img src="${v.avatar}" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #10B981;" />
             <div>
@@ -564,10 +594,10 @@ export const NetworkMap: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-mono font-semibold border border-emerald-200/80 shadow-2xs">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span>24 STUDENTS EN ROUTE TO UTTARANCHAL UNIVERSITY</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span>Active Campus Corridors</span>
           </div>
-          <h2 className="mt-3 text-3xl sm:text-5xl font-black text-slate-900 uppercase tracking-tight">
+          <h2 className="mt-3 text-3xl sm:text-5xl font-black text-slate-900 tracking-tight font-display">
             Find Your People.
           </h2>
           <p className="mt-2 text-base text-slate-600 max-w-2xl leading-relaxed">
@@ -621,8 +651,8 @@ export const NetworkMap: React.FC = () => {
           <div className="flex items-start justify-between flex-wrap gap-2.5">
             {/* Top Left: Transit Mesh Title Pill */}
             <div className="flex items-center gap-2">
-              <div className="pointer-events-auto bg-white/95 backdrop-blur px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-md text-xs font-mono flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="pointer-events-auto bg-white px-3.5 py-1.5 rounded-full border border-slate-200/80 shadow-sm text-xs font-mono flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 <span className="text-slate-900 font-bold tracking-tight">TRANSIT MESH: DEHRADUN CAMPUS ARTERIES</span>
                 <span className="text-slate-400">⇄</span>
                 <span className="text-slate-600 font-semibold">{activeVehiclesCount} ACTIVE CHANNELS</span>
@@ -631,13 +661,13 @@ export const NetworkMap: React.FC = () => {
 
             {/* Top Right: Layer Switcher & Live GPS Telemetry */}
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="pointer-events-auto bg-emerald-50/95 backdrop-blur px-3 py-1.5 rounded-full border border-emerald-300/80 shadow-md text-xs font-mono text-[#143D32] font-bold flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+              <div className="pointer-events-auto bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-300/80 shadow-sm text-xs font-mono text-[#143D32] font-bold flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-emerald-600" />
                 <span>LIVE GPS TELEMETRY</span>
               </div>
 
               {/* 3-Way Layer Switcher */}
-              <div className="pointer-events-auto bg-white/95 backdrop-blur p-0.5 rounded-full border border-slate-200/80 shadow-md text-xs font-mono flex items-center">
+              <div className="pointer-events-auto bg-white p-0.5 rounded-full border border-slate-200/80 shadow-sm text-xs font-mono flex items-center">
                 <button
                   type="button"
                   onClick={() => setMapLayerType('google')}
@@ -668,7 +698,7 @@ export const NetworkMap: React.FC = () => {
               </div>
 
               {/* Minimalist Legend */}
-              <div className="hidden lg:flex pointer-events-auto bg-white/95 backdrop-blur px-3 py-1.5 rounded-full border border-slate-200/80 shadow-md text-xs font-mono text-slate-700 items-center gap-3">
+              <div className="hidden lg:flex pointer-events-auto bg-white px-3 py-1.5 rounded-full border border-slate-200/80 shadow-sm text-xs font-mono text-slate-700 items-center gap-3">
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /> Live Car
                 </span>
@@ -688,13 +718,13 @@ export const NetworkMap: React.FC = () => {
                 type="button"
                 onClick={handleRecenter}
                 title="Reset view to entire Dehradun transit corridor"
-                className="w-8 h-8 rounded-full bg-white/95 backdrop-blur border border-slate-200 shadow-md flex items-center justify-center text-slate-700 hover:text-[#143D32] hover:bg-emerald-50 cursor-pointer transition-colors"
+                className="w-8 h-8 rounded-full bg-white border border-slate-200 shadow-sm flex items-center justify-center text-slate-700 hover:text-[#143D32] hover:bg-emerald-50 cursor-pointer transition-colors"
               >
                 <Compass className="w-4 h-4" />
               </button>
 
               {/* Zoom In/Out Buttons */}
-              <div className="bg-white/95 backdrop-blur rounded-xl border border-slate-200 shadow-md overflow-hidden flex flex-col divide-y divide-slate-100">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col divide-y divide-slate-100">
                 <button
                   type="button"
                   onClick={handleZoomIn}
@@ -714,7 +744,7 @@ export const NetworkMap: React.FC = () => {
               </div>
 
               {/* Scale Pill */}
-              <div className="bg-white/95 backdrop-blur px-2.5 py-1 rounded-md border border-slate-200 shadow-xs text-[10px] font-mono text-slate-600 flex items-center gap-1.5">
+              <div className="bg-white px-2.5 py-1 rounded-md border border-slate-200 shadow-xs text-[10px] font-mono text-slate-600 flex items-center gap-1.5">
                 <div className="w-8 h-1 bg-slate-800 rounded-full" />
                 <span>1 km</span>
               </div>
@@ -727,9 +757,9 @@ export const NetworkMap: React.FC = () => {
       <div className="mt-5 space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-mono uppercase tracking-wider text-slate-700 font-bold">
-              ACTIVE CLASSMATE CARPOOLS EN ROUTE ({activeVehiclesCount})
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+            <span className="text-xs font-mono text-slate-700 font-semibold">
+              Active Classmate Carpools en Route ({activeVehiclesCount})
             </span>
           </div>
           <span className="text-xs text-slate-400 font-mono hidden sm:inline-block">
@@ -830,7 +860,7 @@ export const NetworkMap: React.FC = () => {
             <Car className="w-5 h-5 text-slate-800" />
           </div>
           <div>
-            <span className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+            <span className="block text-[9px] font-mono text-slate-500 font-bold">
               LIVE CARPOOLS
             </span>
             <span className="text-xl sm:text-2xl font-black text-slate-900 block leading-tight">4</span>
@@ -847,7 +877,7 @@ export const NetworkMap: React.FC = () => {
             <Coins className="w-5 h-5 text-[#143D32]" />
           </div>
           <div>
-            <span className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+            <span className="block text-[9px] font-mono text-slate-500 font-bold">
               AVG FARE (PER SEAT)
             </span>
             <span className="text-xl sm:text-2xl font-black text-slate-900 block leading-tight">₹40</span>
@@ -861,7 +891,7 @@ export const NetworkMap: React.FC = () => {
             <ArrowLeftRight className="w-5 h-5 text-slate-700" />
           </div>
           <div>
-            <span className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+            <span className="block text-[9px] font-mono text-slate-500 font-bold">
               MEDIAN DETOUR
             </span>
             <span className="text-xl sm:text-2xl font-black text-slate-900 block leading-tight">&lt; 2.5 mins</span>
@@ -875,7 +905,7 @@ export const NetworkMap: React.FC = () => {
             <ShieldCheck className="w-5 h-5 text-[#143D32]" />
           </div>
           <div>
-            <span className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+            <span className="block text-[9px] font-mono text-slate-500 font-bold">
               COMMISSION
             </span>
             <span className="text-xl sm:text-2xl font-black text-slate-900 block leading-tight">₹0</span>
@@ -889,7 +919,7 @@ export const NetworkMap: React.FC = () => {
             <Wifi className="w-5 h-5 text-emerald-600" />
           </div>
           <div>
-            <span className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+            <span className="block text-[9px] font-mono text-slate-500 font-bold">
               NETWORK STATUS
             </span>
             <span className="text-xl sm:text-2xl font-black text-slate-900 block leading-tight">Healthy</span>
@@ -906,7 +936,7 @@ export const NetworkMap: React.FC = () => {
             <RotateCw className="w-5 h-5 text-slate-600" />
           </div>
           <div>
-            <span className="block text-[9px] font-mono uppercase tracking-wider text-slate-400 font-bold">
+            <span className="block text-[9px] font-mono text-slate-500 font-bold">
               TELEMETRY SYNC
             </span>
             <span className="text-xs font-bold text-slate-800 block mt-0.5">Updated just now</span>

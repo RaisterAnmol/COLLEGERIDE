@@ -1,3 +1,4 @@
+// prefers-reduced-motion compliant ride posting form (reducedMotion="user")
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,6 +10,7 @@ import {
   Clock,
   Users,
   Shield,
+  ShieldCheck,
   CheckCircle2,
   Calendar,
   ArrowRight,
@@ -18,7 +20,9 @@ import {
 import { PickupAndRouteNavigationMap } from "../components/map/PickupAndRouteNavigationMap";
 import { PageHeroBanner } from "../components/common/PageHeroBanner";
 import { MorningDriverLivenessModal } from "../components/verification/MorningDriverLivenessModal";
-import offerRideImg from "../assets/illustrations/offer-ride.webp";
+import { JourneyTicket } from "../components/signature/JourneyTicket";
+import { CustomSelect } from "../components/common/CustomSelect";
+const offerRideImg = "/hero-aditya-driver.jpg";
 
 const PRESET_LOCATIONS = [
   // Dehradun - Uttaranchal University Campus Buildings
@@ -208,7 +212,7 @@ export const PostRidePage: React.FC = () => {
           <div className="w-16 h-16 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-inner">
             <Users className="w-8 h-8 text-blue-600" />
           </div>
-          <span className="inline-block px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-blue-100 text-blue-800 uppercase tracking-wider border border-blue-300">
+          <span className="inline-block px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-blue-100 text-blue-800 border border-blue-300">
             Passenger Account Active
           </span>
           <h2 className="text-2xl font-bold text-slate-900 mt-3 tracking-tight">
@@ -245,7 +249,7 @@ export const PostRidePage: React.FC = () => {
           <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center mx-auto mb-4 border border-amber-100 shadow-inner">
             <Shield className="w-8 h-8 text-amber-600" />
           </div>
-          <span className="inline-block px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-amber-100 text-amber-800 uppercase tracking-wider border border-amber-300">
+          <span className="inline-block px-3 py-1 rounded-full text-[11px] font-mono font-bold bg-amber-100 text-amber-800 border border-amber-300">
             Driver Verification {user.verificationStatus.toUpperCase()}
           </span>
           <h2 className="text-2xl font-bold text-slate-900 mt-3 tracking-tight">
@@ -274,73 +278,83 @@ export const PostRidePage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-left">
       {/* Driver Hub Side-by-Side Header */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10 bg-white p-6 sm:p-8 rounded-3xl border border-[#DDE1DE] shadow-xs">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10 bg-paper p-6 sm:p-7 rounded-card border border-white/80 neu-card">
         <div className="lg:col-span-7 space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 inline-block">
+          <span className="text-xs font-mono font-bold text-plum bg-plum-light px-3.5 py-1 rounded-full border border-plum-border inline-block uppercase tracking-wider">
             CAMPUSRIDE DRIVER HUB
           </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-[#111111] uppercase tracking-tight leading-[1.1]">
+          <h1 className="text-3xl sm:text-5xl font-display font-extrabold text-ink-primary tracking-tight leading-[1.08]">
             Offer Empty Seats.<br />
-            <span className="text-[#143D32]">Split Your Commute.</span>
+            <span className="text-plum">Split Your Commute.</span>
           </h1>
-          <p className="text-sm sm:text-base text-[#646A67] leading-relaxed">
+          <p className="text-sm sm:text-base text-ink-secondary leading-relaxed">
             Share your regular commute with verified classmates traveling your corridor. Save fuel costs with zero platform fee.
           </p>
-          <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold text-slate-700">
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">✓ Zero Commission</span>
-            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ 4-Digit In-App OTP</span>
-            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ Verified Peers Only</span>
+          <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold text-ink-secondary">
+            <span className="px-3 py-1 rounded-full bg-forest-light text-forest border border-forest/30 font-bold whitespace-nowrap shrink-0 shadow-2xs">✓ Zero Commission</span>
+            <span className="px-3 py-1 rounded-full bg-white border border-border whitespace-nowrap shrink-0 shadow-2xs">✓ 4-Digit In-App OTP</span>
+            <span className="px-3 py-1 rounded-full bg-white border border-border whitespace-nowrap shrink-0 shadow-2xs">✓ Verified Peers Only</span>
           </div>
         </div>
 
         <div className="lg:col-span-5 w-full">
-          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+          <div className="relative rounded-3xl overflow-hidden border border-border neu-card-sm group">
             <img
               src={offerRideImg}
               alt="Student driver checking ride requests on phone beside CampusRide car"
-              className="w-full h-52 sm:h-60 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-52 sm:h-60 object-cover object-center select-none"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
-            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50 text-xs font-mono">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-plum/90 border border-plum-light/30 text-white text-xs font-mono font-bold">
               OFFER A RIDE
             </span>
           </div>
         </div>
       </div>
 
-      {/* Progress Indicator */}
-      <div className="bg-[#FFFFFF] p-4 rounded-2xl border border-[#DDE1DE] shadow-xs mb-8">
+      {/* Progress Indicator with Spring-Animated Liquid Line */}
+      <div className="bg-paper p-4 rounded-3xl border border-white/80 neu-card-sm mb-8">
         <div className="flex items-center justify-between relative">
-          <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-[#DDE1DE] -translate-y-1/2 -z-0" />
+          <div className="absolute top-1/2 left-6 right-6 h-0.5 bg-border -translate-y-1/2 -z-0" />
+          <motion.div
+            className="absolute top-1/2 left-6 h-0.5 bg-plum -translate-y-1/2 z-0"
+            initial={false}
+            animate={{ width: `calc(${((currentStep - 1) / (stepsList.length - 1)) * 100}% - ${((currentStep - 1) / (stepsList.length - 1)) * 12}px)` }}
+            transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+          />
           {stepsList.map((s) => {
             const isDone = currentStep > s.num;
             const isCurrent = currentStep === s.num;
 
             return (
-              <div
+              <button
                 key={s.num}
-                className="relative z-10 flex flex-col items-center"
+                type="button"
+                onClick={() => setCurrentStep(s.num)}
+                className="relative z-10 flex flex-col items-center cursor-pointer group focus:outline-none"
               >
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-all ${
+                <motion.div
+                  animate={{ scale: isCurrent ? 1.08 : 1 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold transition-colors ${
                     isDone
-                      ? "bg-[#18A66A] text-white"
+                      ? "bg-forest text-white shadow-xs"
                       : isCurrent
-                        ? "bg-[#1769FF] text-white ring-4 ring-[#1769FF]/20"
-                        : "bg-[#F5F6F3] text-[#646A67] border border-[#DDE1DE]"
+                        ? "bg-plum text-white ring-4 ring-plum/20 shadow-xs"
+                        : "bg-canvas text-ink-muted border border-border group-hover:border-plum/40"
                   }`}
                 >
                   {isDone ? "✓" : `0${s.num}`}
-                </div>
+                </motion.div>
                 <span
-                  className={`text-[11px] font-mono mt-1 hidden sm:block ${isCurrent ? "font-bold text-[#111111]" : "text-[#646A67]"}`}
+                  className={`text-[11px] font-mono mt-1 hidden sm:block ${isCurrent ? "font-bold text-ink-primary" : "text-ink-muted"}`}
                 >
                   {s.title}
                 </span>
-              </div>
+              </button>
             );
           })}
         </div>
@@ -354,7 +368,7 @@ export const PostRidePage: React.FC = () => {
       )}
 
       {/* Step Content Card with Animated Transitions */}
-      <div className="bg-[#FFFFFF] p-6 sm:p-10 rounded-2xl border border-[#DDE1DE] shadow-xs min-h-[380px] flex flex-col justify-between">
+      <div className="bg-paper p-6 sm:p-10 rounded-3xl border border-white/80 neu-card-lg shadow-sm min-h-[380px] flex flex-col justify-between relative">
         <AnimatePresence mode="wait">
           {/* STEP 1: ROUTE */}
           {currentStep === 1 && (
@@ -366,21 +380,21 @@ export const PostRidePage: React.FC = () => {
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              <div className="border-b border-[#DDE1DE] pb-3">
-                <span className="text-xs font-mono text-[#1769FF] font-bold uppercase">
+              <div className="border-b border-border pb-3">
+                <span className="text-xs font-mono text-plum font-bold uppercase tracking-wider">
                   Step 01 / Route
                 </span>
-                <h2 className="text-xl font-black text-[#111111] mt-1">
+                <h2 className="text-2xl font-display font-extrabold text-ink-primary mt-1 tracking-tight">
                   Select Origin & Destination
                 </h2>
               </div>
 
-              {/* Quick Campus Landmarks Chips */}
-              <div className="space-y-1.5 p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-900 font-bold block">
+              {/* Quick Campus Landmarks Chips - Sunken Neumorphic Container */}
+              <div className="space-y-2 p-4 rounded-2xl bg-canvas neu-sunken border border-border/80">
+                <span className="text-[11px] font-mono text-ink-muted font-bold block uppercase tracking-wider">
                   Quick Campus Landmarks (Tap to set)
                 </span>
-                <div className="flex flex-wrap items-center gap-1.5">
+                <div className="flex flex-wrap items-center gap-2">
                   {[
                     { label: "🏛️ Main Gate 1", index: 4 },
                     { label: "💻 UIT Tech Block", index: 0 },
@@ -399,12 +413,12 @@ export const PostRidePage: React.FC = () => {
                           setDestIndex(chip.index);
                         }
                       }}
-                      className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer font-medium ${
+                      className={`text-xs px-3 py-1.5 rounded-xl border transition-all cursor-pointer font-medium active:translate-y-0.5 ${
                         originIndex === chip.index
-                          ? "bg-emerald-700 text-white border-emerald-700 shadow-2xs"
+                          ? "bg-plum text-white border-plum shadow-xs font-bold"
                           : destIndex === chip.index
-                          ? "bg-blue-600 text-white border-blue-600 shadow-2xs"
-                          : "bg-white text-slate-700 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50"
+                          ? "bg-forest text-white border-forest shadow-xs font-bold"
+                          : "bg-white text-ink-primary border-border hover:border-plum/40 hover:bg-paper"
                       }`}
                     >
                       {chip.label}
@@ -414,44 +428,44 @@ export const PostRidePage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-stretch">
                 <div>
-                  <label className="text-xs font-mono text-[#646A67] uppercase block mb-2">
+                  <label className="text-xs font-mono text-ink-muted uppercase font-bold block mb-2">
                     Pickup Location
                   </label>
-                  <select
+                  <CustomSelect
                     value={originIndex}
-                    onChange={(e) => setOriginIndex(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] text-sm text-[#111111] focus:outline-none focus:border-[#1769FF]"
-                  >
-                    {PRESET_LOCATIONS.map((loc, i) => (
-                      <option key={i} value={i}>
-                        {loc.text}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => setOriginIndex(Number(val))}
+                    options={PRESET_LOCATIONS.map((loc, i) => ({
+                      value: i,
+                      label: loc.text,
+                      group: i < 5 ? '🏫 Campus Buildings (Uttaranchal University)' : '📍 Dehradun & Surrounding Hubs',
+                    }))}
+                    placeholder="Select Pickup Location"
+                    ariaLabel="Pickup Location"
+                  />
                 </div>
 
                 <div>
-                  <label className="text-xs font-mono text-[#646A67] uppercase block mb-2">
+                  <label className="text-xs font-mono text-ink-muted uppercase font-bold block mb-2">
                     Campus Destination
                   </label>
-                  <select
+                  <CustomSelect
                     value={destIndex}
-                    onChange={(e) => setDestIndex(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] text-sm text-[#111111] focus:outline-none focus:border-[#1769FF]"
-                  >
-                    {PRESET_LOCATIONS.map((loc, i) => (
-                      <option key={i} value={i}>
-                        {loc.text}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => setDestIndex(Number(val))}
+                    options={PRESET_LOCATIONS.map((loc, i) => ({
+                      value: i,
+                      label: loc.text,
+                      group: i < 5 ? '🏫 Campus Buildings (Uttaranchal University)' : '📍 Dehradun & Surrounding Hubs',
+                    }))}
+                    placeholder="Select Campus Destination"
+                    ariaLabel="Campus Destination"
+                  />
                 </div>
               </div>
 
               {/* Interactive Google Maps Multi-Road Selector */}
-              <div className="pt-4 border-t border-[#DDE1DE]">
+              <div className="pt-4 border-t border-border">
                 <PickupAndRouteNavigationMap
                   originText={PRESET_LOCATIONS[originIndex]?.text}
                   destinationText={PRESET_LOCATIONS[destIndex]?.text}
@@ -477,6 +491,118 @@ export const PostRidePage: React.FC = () => {
                   }}
                 />
               </div>
+
+              {/* Real-time Neumorphic Corridor Route Ticket Pass (Replacing thin wavy line) */}
+              <div className="pt-4 border-t border-border">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-plum">
+                      Corridor Transit Ticket Pass
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-ink-muted bg-paper px-2.5 py-0.5 rounded-full border border-border font-bold">
+                    PASS #DEH-{(originIndex + 1) * 100 + (destIndex + 1)}
+                  </span>
+                </div>
+
+                {/* Physical Ticket Pass Container with Semicircular Punch Notches */}
+                <div className="relative bg-paper rounded-card border border-white/90 neu-card p-6 sm:p-7 overflow-hidden shadow-xs">
+                  {/* Semicircular punch notches on left and right edges */}
+                  <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#EBECE8] border border-border shadow-inner pointer-events-none" />
+                  <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-[#EBECE8] border border-border shadow-inner pointer-events-none" />
+
+                  {/* Top Bar inside Ticket */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pb-3.5 border-b border-dashed border-border text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-plum-light text-plum font-mono font-bold text-[10px] uppercase whitespace-nowrap shrink-0">
+                        Campus Carpool Pass
+                      </span>
+                      <span className="text-ink-secondary text-xs font-semibold">
+                        Uttaranchal & Foothills Artery
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-bold whitespace-nowrap shrink-0">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>100% Verified Student Network</span>
+                    </div>
+                  </div>
+
+                  {/* Route Block Sequence with Tactile Neumorphic Sunken Blocks */}
+                  <div className="grid grid-cols-1 md:grid-cols-11 gap-3 items-center py-4">
+                    {/* Origin Block (Pickup) */}
+                    <div className="md:col-span-4 p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-plum flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-plum inline-block" />
+                          Pickup Location
+                        </span>
+                        <span className="text-[10px] font-mono font-bold bg-plum-light text-plum px-1.5 py-0.2 rounded whitespace-nowrap shrink-0">
+                          ORIGIN
+                        </span>
+                      </div>
+                      <div className="text-sm font-bold text-ink-primary truncate">
+                        {PRESET_LOCATIONS[originIndex]?.text?.split('(')[0]?.trim() || 'Pickup Point'}
+                      </div>
+                      <div className="text-[11px] text-ink-muted truncate mt-0.5 font-medium">
+                        {PRESET_LOCATIONS[originIndex]?.text?.match(/\((.*?)\)/)?.[1] || 'Designated Campus Hub'}
+                      </div>
+                    </div>
+
+                    {/* Corridor Connector Block */}
+                    <div className="md:col-span-3 flex flex-col items-center justify-center py-1">
+                      <div className="flex items-center gap-1.5 w-full justify-center">
+                        <div className="h-0.5 flex-1 bg-gradient-to-r from-plum/30 via-emerald-500/50 to-emerald-600/30" />
+                        <div className="px-2.5 py-1 rounded-full bg-paper border border-border neu-card-sm text-[10px] font-mono font-bold text-ink-secondary flex items-center gap-1 shadow-xs whitespace-nowrap shrink-0">
+                          <Car className="w-3 h-3 text-emerald-600" />
+                          <span>~4.2 km</span>
+                        </div>
+                        <div className="h-0.5 flex-1 bg-gradient-to-r from-emerald-600/30 via-emerald-500/50 to-plum/30" />
+                      </div>
+                      <span className="text-[10px] font-mono text-ink-muted mt-1.5 text-center truncate max-w-full font-semibold">
+                        Via Suddhowala Junction Bay
+                      </span>
+                    </div>
+
+                    {/* Destination Block (Drop-off) */}
+                    <div className="md:col-span-4 p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-emerald-600 inline-block" />
+                          Campus Destination
+                        </span>
+                        <span className="text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded">
+                          DROP-OFF
+                        </span>
+                      </div>
+                      <div className="text-sm font-bold text-ink-primary truncate">
+                        {PRESET_LOCATIONS[destIndex]?.text?.split('(')[0]?.trim() || 'Campus Gate'}
+                      </div>
+                      <div className="text-[11px] text-ink-muted truncate mt-0.5 font-medium">
+                        {PRESET_LOCATIONS[destIndex]?.text?.match(/\((.*?)\)/)?.[1] || 'Academic Quad / Terminal'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Bottom Ticket Perforation & Telemetry Perks */}
+                  <div className="pt-3 border-t border-dashed border-border flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="px-2.5 py-1 rounded-lg bg-canvas border border-border text-[11px] font-mono text-ink-primary font-bold">
+                        ₹{pricePerSeat || 15} <span className="text-ink-muted font-normal">/ seat</span>
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg bg-canvas border border-border text-[11px] font-mono text-ink-muted">
+                        Zero Platform Markup
+                      </span>
+                      <span className="px-2.5 py-1 rounded-lg bg-canvas border border-border text-[11px] font-mono text-emerald-700 font-medium">
+                        ✓ 4-Digit In-App OTP Safe Handshake
+                      </span>
+                    </div>
+                    <div className="font-mono text-[10px] text-ink-muted tracking-widest uppercase hidden sm:block">
+                      ||| | || |||| | ||||
+                    </div>
+                  </div>
+                </div>
+              </div>
             </motion.div>
           )}
 
@@ -490,33 +616,33 @@ export const PostRidePage: React.FC = () => {
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              <div className="border-b border-[#DDE1DE] pb-3">
-                <span className="text-xs font-mono text-[#1769FF] font-bold uppercase">
+              <div className="border-b border-border pb-3">
+                <span className="text-xs font-mono text-plum font-bold uppercase tracking-wider">
                   Step 02 / Schedule
                 </span>
-                <h2 className="text-xl font-black text-[#111111] mt-1">
+                <h2 className="text-2xl font-display font-extrabold text-ink-primary mt-1 tracking-tight">
                   Departure Date & Time
                 </h2>
               </div>
 
               <div>
-                <label className="text-xs font-mono text-[#646A67] uppercase block mb-2">
+                <label className="text-xs font-mono text-ink-muted uppercase font-bold block mb-2">
                   Departure Slot
                 </label>
                 <input
                   type="datetime-local"
                   value={departureDate}
                   onChange={(e) => setDepartureDate(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] text-sm font-mono text-[#111111] focus:outline-none"
+                  className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-sm font-mono text-ink-primary focus:outline-none focus:border-plum"
                 />
               </div>
 
-              <div className="p-4 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] flex items-center justify-between">
+              <div className="p-4 rounded-2xl bg-canvas neu-sunken border border-border/80 flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-bold text-[#111111]">
+                  <div className="text-sm font-bold text-ink-primary">
                     Recurring Weekday Commute
                   </div>
-                  <div className="text-xs text-[#646A67]">
+                  <div className="text-xs text-ink-muted mt-0.5">
                     Repeat this departure slot every Monday–Friday
                   </div>
                 </div>
@@ -524,12 +650,12 @@ export const PostRidePage: React.FC = () => {
                   type="checkbox"
                   checked={recurring}
                   onChange={(e) => setRecurring(e.target.checked)}
-                  className="w-5 h-5 rounded accent-emerald-600 cursor-pointer"
+                  className="w-5 h-5 rounded accent-plum cursor-pointer"
                 />
               </div>
 
               {recurring && (
-                <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 space-y-1">
+                <div className="p-4 rounded-2xl bg-emerald-50 neu-sunken border border-emerald-200 text-xs text-emerald-900 space-y-1">
                   <div className="font-bold flex items-center gap-1.5 text-emerald-800">
                     <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Active Mon–Fri Semester Schedule</span>
@@ -552,49 +678,97 @@ export const PostRidePage: React.FC = () => {
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              <div className="border-b border-[#DDE1DE] pb-3">
-                <span className="text-xs font-mono text-[#1769FF] font-bold uppercase">
+              <div className="border-b border-border pb-3">
+                <span className="text-xs font-mono text-plum font-bold uppercase tracking-wider">
                   Step 03 / Vehicle & Capacity
                 </span>
-                <h2 className="text-xl font-black text-[#111111] mt-1">
+                <h2 className="text-2xl font-display font-extrabold text-ink-primary mt-1 tracking-tight">
                   Vehicle Specifications
                 </h2>
               </div>
 
+              {/* Neumorphic Vehicle Type Selector */}
+              <div>
+                <label className="text-xs font-mono text-ink-muted uppercase font-bold block mb-2">
+                  Select Vehicle Category
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <motion.button
+                    type="button"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setVehicleType("car");
+                      if (availableSeats < 1) setAvailableSeats(3);
+                    }}
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+                      vehicleType === "car"
+                        ? "bg-plum text-white border-plum neu-sunken shadow-inner"
+                        : "bg-paper text-ink-primary border-border/80 neu-btn hover:border-plum/40 shadow-xs"
+                    }`}
+                  >
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
+                      vehicleType === "car" ? "bg-white/20 text-white" : "bg-canvas neu-sunken text-plum"
+                    }`}>
+                      🚗
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold block leading-tight">Student Car</span>
+                      <span className={`text-[11px] block mt-0.5 ${
+                        vehicleType === "car" ? "text-plum-light" : "text-ink-muted"
+                      }`}>
+                        Sedan / Hatch / SUV
+                      </span>
+                    </div>
+                  </motion.button>
+
+                  <motion.button
+                    type="button"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setVehicleType("bike");
+                      setAvailableSeats(1);
+                    }}
+                    className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center gap-3.5 ${
+                      vehicleType === "bike"
+                        ? "bg-plum text-white border-plum neu-sunken shadow-inner"
+                        : "bg-paper text-ink-primary border-border/80 neu-btn hover:border-plum/40 shadow-xs"
+                    }`}
+                  >
+                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
+                      vehicleType === "bike" ? "bg-white/20 text-white" : "bg-canvas neu-sunken text-plum"
+                    }`}>
+                      🛵
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold block leading-tight">Two-Wheeler</span>
+                      <span className={`text-[11px] block mt-0.5 ${
+                        vehicleType === "bike" ? "text-plum-light" : "text-ink-muted"
+                      }`}>
+                        Scooter / Motorbike
+                      </span>
+                    </div>
+                  </motion.button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono text-[#646A67] uppercase block mb-1.5">
-                    Vehicle Type
-                  </label>
-                  <select
-                    value={vehicleType}
-                    onChange={(e) =>
-                      setVehicleType(e.target.value as "car" | "bike")
-                    }
-                    className="w-full p-3 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] text-sm font-mono"
-                  >
-                    <option value="car">Car (Sedan / Hatchback / SUV)</option>
-                    <option value="bike">Two-Wheeler / Bike</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-xs font-mono text-[#646A67] uppercase block mb-1.5">
+                  <label className="text-xs font-mono text-ink-muted uppercase font-bold block mb-1.5">
                     Model Name
                   </label>
                   <input
                     type="text"
                     value={vehicleModel}
                     onChange={(e) => setVehicleModel(e.target.value)}
-                    placeholder="e.g. Honda City"
-                    className="w-full p-3 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] text-sm"
+                    placeholder="e.g. Honda City / Activa 6G"
+                    className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-sm font-medium text-ink-primary focus:outline-none focus:border-plum"
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-mono text-[#646A67] uppercase block mb-1.5">
+                  <label className="text-xs font-mono text-ink-muted uppercase font-bold block mb-1.5">
                     License Plate (Last 4 Digits)
                   </label>
                   <input
@@ -603,51 +777,69 @@ export const PostRidePage: React.FC = () => {
                     onChange={(e) => setPlateLast4(e.target.value)}
                     maxLength={4}
                     placeholder="4821"
-                    className="w-full p-3 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] text-sm font-mono uppercase"
+                    className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-sm font-mono uppercase text-ink-primary focus:outline-none focus:border-plum"
                   />
                 </div>
+              </div>
 
-                <div>
-                  <label className="text-xs font-mono text-[#646A67] uppercase block mb-1.5">
-                    Available Passenger Seats
-                  </label>
-                  <select
-                    value={availableSeats}
-                    onChange={(e) => setAvailableSeats(Number(e.target.value))}
-                    className="w-full p-3 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] text-sm font-mono"
-                  >
-                    <option value={1}>1 passenger</option>
-                    <option value={2}>2 passengers</option>
-                    <option value={3}>3 passengers</option>
-                    <option value={4}>4 passengers</option>
-                  </select>
+              {/* Neumorphic Available Seats Selection */}
+              <div>
+                <label className="text-xs font-mono text-ink-muted uppercase font-bold block mb-2">
+                  Available Passenger Seats
+                </label>
+                <div className="grid grid-cols-4 gap-2.5">
+                  {[1, 2, 3, 4].map((count) => {
+                    const isBikeDisabled = vehicleType === "bike" && count > 1;
+                    return (
+                      <motion.button
+                        key={count}
+                        type="button"
+                        disabled={isBikeDisabled}
+                        whileHover={!isBikeDisabled ? { y: -2 } : {}}
+                        whileTap={!isBikeDisabled ? { scale: 0.95 } : {}}
+                        onClick={() => setAvailableSeats(count)}
+                        className={`p-3 rounded-2xl border text-center transition-all font-display font-extrabold ${
+                          isBikeDisabled
+                            ? "opacity-30 cursor-not-allowed bg-canvas border-border/40 text-ink-muted"
+                            : availableSeats === count
+                            ? "bg-plum text-white border-plum neu-sunken shadow-inner cursor-pointer"
+                            : "bg-paper text-ink-primary border-border/80 neu-btn hover:border-plum/40 shadow-xs cursor-pointer"
+                        }`}
+                      >
+                        <span className="text-lg block leading-none">{count}</span>
+                        <span className="text-[10px] font-mono block mt-1 uppercase font-normal">
+                          {count === 1 ? "Seat" : "Seats"}
+                        </span>
+                      </motion.button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Price Per Seat Input (Minimum ₹10) */}
-              <div className="p-4 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] space-y-2">
+              <div className="p-4 rounded-2xl bg-canvas neu-sunken border border-border/80 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-mono text-[#111111] uppercase font-bold flex items-center gap-1.5">
+                  <label className="text-xs font-mono text-ink-primary uppercase font-bold flex items-center gap-1.5">
                     <span>Fare Contribution Per Seat</span>
-                    <span className="text-[10px] text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full font-bold">
+                    <span className="text-[10px] text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full font-bold">
                       Campus Min: ₹10
                     </span>
                   </label>
-                  <span className="text-xs font-mono text-slate-500">Local transit shared rate</span>
+                  <span className="text-xs font-mono text-ink-muted">Local transit shared rate</span>
                 </div>
                 <div className="relative max-w-xs">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-700 font-bold text-sm">₹</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-primary font-bold text-sm">₹</span>
                   <input
                     type="number"
                     min={10}
                     value={pricePerSeat}
                     onChange={(e) => setPricePerSeat(Math.max(10, Number(e.target.value)))}
-                    className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white border border-[#DDE1DE] text-sm font-bold text-slate-900 focus:outline-none focus:border-emerald-500"
+                    className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white border border-border text-sm font-bold text-ink-primary focus:outline-none focus:border-plum shadow-2xs"
                     placeholder="20"
                   />
                 </div>
-                <p className="text-[11px] text-[#646A67]">
-                  Helps offset fuel costs for your carpool. Admin minimum threshold is ₹10 per seat.
+                <p className="text-[11px] text-ink-muted">
+                  Helps offset fuel costs for your carpool. Admin minimum threshold is ₹10 per seat. Zero platform markup.
                 </p>
               </div>
             </motion.div>
@@ -663,49 +855,81 @@ export const PostRidePage: React.FC = () => {
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              <div className="border-b border-[#DDE1DE] pb-3">
-                <span className="text-xs font-mono text-[#1769FF] font-bold uppercase">
+              <div className="border-b border-border pb-3">
+                <span className="text-xs font-mono text-plum font-bold uppercase tracking-wider">
                   Step 04 / Preferences
                 </span>
-                <h2 className="text-xl font-black text-[#111111] mt-1">
+                <h2 className="text-2xl font-display font-extrabold text-ink-primary mt-1 tracking-tight">
                   Commute Ground Rules
                 </h2>
               </div>
 
               <div className="space-y-3">
-                <label className="p-4 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] flex items-center justify-between cursor-pointer">
-                  <div>
-                    <span className="text-sm font-bold text-[#111111] block">
-                      Women-Only Carpool
-                    </span>
-                    <span className="text-xs text-[#646A67]">
-                      Only match with verified female passengers
-                    </span>
+                <motion.div
+                  whileHover={{ y: -2 }}
+                  onClick={() => setWomenOnlyDriver(!womenOnlyDriver)}
+                  className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
+                    womenOnlyDriver
+                      ? "bg-plum/5 border-plum neu-sunken shadow-inner"
+                      : "bg-paper border-border/80 neu-btn hover:border-plum/40 shadow-xs"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-base neu-sunken shrink-0">
+                      🛡️
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold text-ink-primary block">
+                        Women-Only Carpool
+                      </span>
+                      <span className="text-xs text-ink-muted">
+                        Only match and accept verified female students
+                      </span>
+                    </div>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={womenOnlyDriver}
-                    onChange={(e) => setWomenOnlyDriver(e.target.checked)}
-                    className="w-5 h-5 rounded accent-[#18A66A]"
-                  />
-                </label>
+                  <div className={`w-12 h-6 rounded-full transition-colors relative p-0.5 neu-sunken ${
+                    womenOnlyDriver ? "bg-plum" : "bg-slate-300"
+                  }`}>
+                    <motion.div
+                      animate={{ x: womenOnlyDriver ? 24 : 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      className="w-5 h-5 rounded-full bg-white shadow-md"
+                    />
+                  </div>
+                </motion.div>
 
-                <label className="p-4 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] flex items-center justify-between cursor-pointer">
-                  <div>
-                    <span className="text-sm font-bold text-[#111111] block">
-                      Music Allowed
-                    </span>
-                    <span className="text-xs text-[#646A67]">
-                      Radio / AUX playback during commute
-                    </span>
+                <motion.div
+                  whileHover={{ y: -2 }}
+                  onClick={() => setMusicAllowed(!musicAllowed)}
+                  className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition-all ${
+                    musicAllowed
+                      ? "bg-emerald-500/5 border-emerald-600 neu-sunken shadow-inner"
+                      : "bg-paper border-border/80 neu-btn hover:border-emerald-600/40 shadow-xs"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-base neu-sunken shrink-0">
+                      🎵
+                    </div>
+                    <div>
+                      <span className="text-sm font-bold text-ink-primary block">
+                        Music &amp; AUX Allowed
+                      </span>
+                      <span className="text-xs text-ink-muted">
+                        Radio, podcasts, or student AUX playlist during commute
+                      </span>
+                    </div>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={musicAllowed}
-                    onChange={(e) => setMusicAllowed(e.target.checked)}
-                    className="w-5 h-5 rounded accent-[#1769FF]"
-                  />
-                </label>
+                  <div className={`w-12 h-6 rounded-full transition-colors relative p-0.5 neu-sunken ${
+                    musicAllowed ? "bg-emerald-600" : "bg-slate-300"
+                  }`}>
+                    <motion.div
+                      animate={{ x: musicAllowed ? 24 : 0 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      className="w-5 h-5 rounded-full bg-white shadow-md"
+                    />
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           )}
@@ -720,48 +944,43 @@ export const PostRidePage: React.FC = () => {
               transition={{ duration: 0.2 }}
               className="space-y-6"
             >
-              <div className="border-b border-[#DDE1DE] pb-3">
-                <span className="text-xs font-mono text-[#18A66A] font-bold uppercase">
+              <div className="border-b border-border pb-3">
+                <span className="text-xs font-mono text-plum font-bold uppercase tracking-wider">
                   Step 05 / Review & Publish
                 </span>
-                <h2 className="text-xl font-black text-[#111111] mt-1">
+                <h2 className="text-2xl font-display font-extrabold text-ink-primary mt-1 tracking-tight">
                   Commute Pass Summary
                 </h2>
               </div>
 
-              <div className="p-5 rounded-xl bg-[#F5F6F3] border border-[#DDE1DE] space-y-3 font-mono text-xs">
-                <div className="flex justify-between">
-                  <span className="text-[#646A67]">Route:</span>
-                  <span className="font-bold text-[#111111]">
-                    {PRESET_LOCATIONS[originIndex].text} →{" "}
-                    {PRESET_LOCATIONS[destIndex].text}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#646A67]">Departure:</span>
-                  <span className="font-bold text-[#1769FF]">
-                    {new Date(departureDate).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#646A67]">Vehicle:</span>
-                  <span className="font-bold text-[#111111]">
-                    {vehicleModel} (••• {plateLast4})
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#646A67]">Seats Open:</span>
-                  <span className="font-bold text-[#18A66A]">
-                    {availableSeats} seats
-                  </span>
-                </div>
+              {/* Live Journey Ticket Preview */}
+              <div className="space-y-2">
+                <span className="text-xs font-mono text-ink-muted uppercase font-bold block">
+                  Live Pass Preview (How Students Will See Your Ride)
+                </span>
+                <JourneyTicket
+                  ride={{
+                    _id: "draft_preview",
+                    creator: user || { name: "You" },
+                    origin: PRESET_LOCATIONS[originIndex],
+                    destination: PRESET_LOCATIONS[destIndex],
+                    departureTime: new Date(departureDate).toISOString(),
+                    seatsAvailable: availableSeats,
+                    availableSeats: availableSeats,
+                    fare: pricePerSeat,
+                    vehicleModel: vehicleModel,
+                    vehiclePlate: plateLast4,
+                    isWomenOnly: womenOnlyDriver,
+                  }}
+                  isCurrentUserCreator={true}
+                />
               </div>
 
-              <div className="p-4 rounded-xl bg-[#00D084]/10 border border-[#00D084]/30 flex items-start gap-3 text-xs">
-                <Shield className="w-4 h-4 text-[#18A66A] shrink-0 mt-0.5" />
+              <div className="p-4 rounded-2xl bg-emerald-50 neu-sunken border border-emerald-200 flex items-start gap-3 text-xs">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold text-[#111111]">Daily Student ID Check Activated</span>
-                  <p className="text-[#646A67] text-[11px] mt-0.5">
+                  <span className="font-bold text-ink-primary">Daily Student ID Check Activated</span>
+                  <p className="text-ink-muted text-[11px] mt-0.5">
                     Before starting your first ride of the day, you will be prompted to snap a photo of your physical student ID card to match against your enrolled baseline card.
                   </p>
                 </div>
@@ -771,11 +990,11 @@ export const PostRidePage: React.FC = () => {
         </AnimatePresence>
 
         {/* Wizard Footer Controls */}
-        <div className="mt-8 pt-6 border-t border-[#DDE1DE] flex items-center justify-between">
+        <div className="mt-8 pt-6 border-t border-border flex items-center justify-between">
           {currentStep > 1 ? (
             <button
               onClick={handleBack}
-              className="px-5 py-2.5 rounded-xl border border-[#DDE1DE] text-xs font-mono font-bold text-[#111111] hover:bg-[#F5F6F3] flex items-center gap-1.5"
+              className="px-6 py-2.5 rounded-xl bg-white border border-border text-xs font-mono font-bold text-ink-primary hover:bg-canvas active:translate-y-0.5 neu-card-sm flex items-center gap-1.5 transition-all shadow-xs"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
@@ -787,7 +1006,7 @@ export const PostRidePage: React.FC = () => {
           {currentStep < 5 ? (
             <button
               onClick={handleNext}
-              className="px-6 py-2.5 rounded-xl bg-[#1769FF] hover:bg-[#1D4ED8] text-white text-xs font-mono font-bold flex items-center gap-2 shadow-xs"
+              className="px-7 py-2.5 rounded-xl bg-plum hover:bg-plum-hover active:translate-y-0.5 text-white text-xs font-mono font-bold flex items-center gap-2 shadow-md neu-btn transition-all cursor-pointer"
             >
               <span>Next Step</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -796,7 +1015,7 @@ export const PostRidePage: React.FC = () => {
             <button
               onClick={handlePublish}
               disabled={loading}
-              className="px-8 py-3 rounded-xl bg-[#18A66A] hover:bg-[#15803D] text-white text-sm font-mono font-bold flex items-center gap-2 shadow-xs disabled:opacity-50"
+              className="px-8 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:translate-y-0.5 text-white text-sm font-mono font-bold flex items-center gap-2 shadow-md neu-btn transition-all disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <span>Publishing corridor...</span>
@@ -811,7 +1030,7 @@ export const PostRidePage: React.FC = () => {
       {/* Animated Commute Published Success Modal */}
       <AnimatePresence>
         {showSuccessModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 animate-in fade-in">
             <motion.div
               initial={{ opacity: 0, scale: 0.85, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}

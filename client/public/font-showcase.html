@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusRide — Professional Typography & Font Pairing Studio</title>
+
+  <!-- Google Fonts Imports for All Candidate Pairings -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Figtree:ital,wght@0,400..700;1,400..700&family=Fira+Code:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,800;1,9..144,600&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Space+Mono:wght@400;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --canvas: #F7F5F0;
+      --paper: #FFFDFC;
+      --forest: #143D32;
+      --forest-light: #E7F0EB;
+      --plum: #582C4D;
+      --plum-light: #F9EEF4;
+      --plum-border: #D9B8C9;
+      --border: #E2DDD3;
+      --border-subtle: #EDE8DF;
+      --ink-primary: #143D32;
+      --ink-secondary: #5C716A;
+      --ink-muted: #857F6B;
+      --amber: #D97706;
+      --amber-bg: #FEF3C7;
+      --emerald: #166534;
+      --emerald-bg: #DCFCE7;
+      --crimson: #DC2626;
+
+      /* Active Dynamic Font Variables */
+      --font-display: 'Plus Jakarta Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--canvas);
+      color: var(--ink-primary);
+      font-family: var(--font-body);
+      line-height: 1.5;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .font-display { font-family: var(--font-display) !important; }
+    .font-body { font-family: var(--font-body) !important; }
+    .font-mono { font-family: var(--font-mono) !important; }
+
+    /* Top Sticky Control Header */
+    header.studio-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 253, 252, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--forest);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .brand-title span.badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 700;
+      background: var(--plum-light);
+      color: var(--plum);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      border: 1px solid var(--plum-border);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Preset Buttons Bar */
+    .preset-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--canvas);
+      padding: 0.35rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .preset-btn {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.45rem 0.9rem;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .preset-btn:hover {
+      color: var(--ink-primary);
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .preset-btn.active {
+      background: var(--plum);
+      color: #FFFFFF;
+      box-shadow: 0 2px 8px rgba(88, 44, 77, 0.25);
+    }
+
+    /* Font Selectors Toolbar */
+    .custom-select-bar {
+      max-width: 1400px;
+      margin: 1.25rem auto 0;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .selectors-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .select-card {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--paper);
+      padding: 0.4rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 0.78rem;
+    }
+
+    .select-card label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .select-card select {
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 0.3rem 0.5rem;
+      background: var(--canvas);
+      color: var(--ink-primary);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .select-card select:focus {
+      border-color: var(--plum);
+    }
+
+    .active-spec-badge {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--forest);
+      background: var(--forest-light);
+      padding: 0.4rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid rgba(20, 61, 50, 0.2);
+      white-space: nowrap;
+    }
+
+    /* Main Showcase Canvas */
+    main.studio-content {
+      max-width: 1400px;
+      margin: 1.75rem auto 4rem;
+      padding: 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    /* Hero Preview Banner */
+    .hero-banner {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.03);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-banner::after {
+      content: '';
+      position: absolute;
+      top: -40%;
+      right: -10%;
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(88, 44, 77, 0.05) 0%, rgba(20, 61, 50, 0.03) 50%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--plum);
+      background: var(--plum-light);
+      padding: 0.3rem 0.8rem;
+      border-radius: 9999px;
+      border: 1px solid var(--plum-border);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      display: inline-block;
+      margin-bottom: 1.25rem;
+      white-space: nowrap;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 3.75rem);
+      font-weight: 800;
+      color: var(--ink-primary);
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+      margin-bottom: 1rem;
+      max-width: 820px;
+    }
+
+    .hero-title .highlight {
+      color: var(--plum);
+    }
+
+    .hero-lead {
+      font-family: var(--font-body);
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+      font-weight: 450;
+      color: var(--ink-secondary);
+      line-height: 1.6;
+      max-width: 680px;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-primary {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 700;
+      background: var(--forest);
+      color: #FFFFFF;
+      padding: 0.75rem 1.6rem;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 8px rgba(20, 61, 50, 0.25);
+      white-space: nowrap;
+    }
+
+    .btn-primary:hover {
+      background: #0D2820;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 600;
+      background: var(--paper);
+      color: var(--ink-primary);
+      padding: 0.75rem 1.4rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn-secondary:hover {
+      background: #F5F2EB;
+    }
+
+    .hero-perks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.75rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .pill-badge {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      background: var(--canvas);
+      border: 1px solid var(--border);
+      color: var(--ink-secondary);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .pill-badge.active-green {
+      background: var(--emerald-bg);
+      color: var(--emerald);
+      border-color: rgba(22, 101, 52, 0.25);
+      font-weight: 700;
+    }
+
+    /* Grid Section: KPIs + Journey Ticket + Option Blocks */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.5rem;
+    }
+
+    /* 4 Stat Cards */
+    .kpi-row {
+      grid-column: span 12;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .kpi-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.35rem 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.02);
+      transition: transform 0.18s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .kpi-label {
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      font-weight: 550;
+      color: var(--ink-secondary);
+    }
+
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--ink-primary);
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin: 0.35rem 0;
+    }
+
+    .kpi-trend {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--emerald);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Real Journey Ticket Card (Left 7 Cols) */
+    .ticket-container {
+      grid-column: span 7;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    @media (max-width: 980px) {
+      .ticket-container { grid-column: span 12; }
+    }
+
+    .ticket-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 1.25rem;
+    }
+
+    .driver-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .driver-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #143D32, #245749);
+      color: #FFFFFF;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(20, 61, 50, 0.2);
+    }
+
+    .driver-name {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 750;
+      color: var(--ink-primary);
+      line-height: 1.2;
+    }
+
+    .driver-college {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--ink-secondary);
+      margin-top: 0.15rem;
+    }
+
+    .stamp-badge {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--emerald);
+      background: var(--emerald-bg);
+      border: 1px dashed rgba(22, 101, 52, 0.4);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      transform: rotate(-2deg);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      white-space: nowrap;
+    }
+
+    /* Route Stopover Display */
+    .route-itinerary {
+      padding: 1.5rem 0;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .route-node {
+      background: var(--canvas);
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .route-node-tag {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .route-node-name {
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .route-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .connector-line {
+      width: 48px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--plum), var(--forest));
+      position: relative;
+    }
+
+    .connector-pill {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.45rem;
+      border-radius: 9999px;
+      color: var(--ink-secondary);
+      white-space: nowrap;
+    }
+
+    .ticket-bottom {
+      border-top: 1px dashed var(--border);
+      padding-top: 1.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .fare-group {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+
+    .fare-amount {
+      font-family: var(--font-mono);
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--plum);
+    }
+
+    .fare-sub {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+    }
+
+    /* Option Blocks & Filter Matrix (Right 5 Cols) */
+    .option-blocks-card {
+      grid-column: span 5;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 980px) {
+      .option-blocks-card { grid-column: span 12; }
+    }
+
+    .card-heading {
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ink-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-sub {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: var(--ink-secondary);
+      margin-top: 0.2rem;
+    }
+
+    /* Interactive Option Items */
+    .option-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--canvas);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .option-item:hover {
+      border-color: var(--plum-border);
+      background: var(--paper);
+    }
+
+    .option-item.selected {
+      background: var(--plum-light);
+      border-color: var(--plum);
+    }
+
+    .option-title {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink-primary);
+      white-space: nowrap;
+    }
+
+    .option-desc {
+      font-family: var(--font-body);
+      font-size: 0.72rem;
+      color: var(--ink-secondary);
+      margin-top: 0.1rem;
+      white-space: nowrap;
+    }
+
+    /* Tabular Figures & Telemetry Preview */
+    .table-container {
+      grid-column: span 12;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.5rem 1.75rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      overflow-x: auto;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.8rem;
+    }
+
+    table.data-table th {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--canvas);
+    }
+
+    table.data-table td {
+      padding: 0.95rem 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--ink-primary);
+    }
+
+    table.data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .cell-title {
+      font-family: var(--font-body);
+      font-weight: 700;
+      color: var(--ink-primary);
+    }
+
+    .cell-mono {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--ink-secondary);
+    }
+
+    /* Comparison Matrix Cards at bottom */
+    .comparison-section {
+      margin-top: 2rem;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .pairing-card {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .pairing-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .pairing-card.active-card {
+      border: 2px solid var(--plum);
+      background: #FFFFFF;
+    }
+
+    .pairing-badge {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 800;
+      background: var(--canvas);
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      color: var(--ink-muted);
+      display: inline-block;
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .pairing-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--ink-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .pairing-spec {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--ink-secondary);
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+
+    .pairing-preview-text {
+      padding: 0.75rem;
+      border-radius: 10px;
+      background: var(--canvas);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.8rem;
+      color: var(--ink-primary);
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Studio Control Header -->
+  <header class="studio-header">
+    <div class="header-inner">
+      <div class="brand-title">
+        <span>CampusRide</span>
+        <span class="badge">Typography Studio</span>
+      </div>
+
+      <!-- Presets Switcher -->
+      <nav class="preset-nav">
+        <button class="preset-btn active" onclick="applyPreset('tech')">
+          <span>✨ 1. Modern Tech SaaS</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('swiss')">
+          <span>📐 2. Swiss Geometric</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('nordic')">
+          <span>🌿 3. Nordic Precision</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('grotesk')">
+          <span>⚡ 4. High-Craft Grotesque</span>
+        </button>
+        <button class="preset-btn" onclick="applyPreset('editorial')">
+          <span>🏛️ 5. Collegiate Editorial</span>
+        </button>
+      </nav>
+
+      <div class="active-spec-badge" id="currentSpecBadge">
+        Display: Plus Jakarta Sans · Body: Inter · Mono: JetBrains Mono
+      </div>
+    </div>
+
+    <!-- Fine-Tuning Selectors -->
+    <div class="custom-select-bar">
+      <div class="selectors-group">
+        <div class="select-card">
+          <label>Display / Headings:</label>
+          <select id="selectDisplay" onchange="onCustomChange()">
+            <option value="'Plus Jakarta Sans', sans-serif" selected>Plus Jakarta Sans (Modern Geometric)</option>
+            <option value="'Outfit', sans-serif">Outfit (Clean Open Geometric)</option>
+            <option value="'Manrope', sans-serif">Manrope (Semi-Geometric Precision)</option>
+            <option value="'Bricolage Grotesque', sans-serif">Bricolage Grotesque (High Craft)</option>
+            <option value="'Space Grotesk', sans-serif">Space Grotesk (Tech Neo-Grotesque)</option>
+            <option value="'Syne', sans-serif">Syne (Punchy Design-Forward)</option>
+            <option value="'Fraunces', serif">Fraunces (Collegiate Soft Serif)</option>
+            <option value="'Geist', sans-serif">Geist (Silicon Valley Minimal)</option>
+          </select>
+        </div>
+
+        <div class="select-card">
+          <label>Body / UI Text:</label>
+          <select id="selectBody" onchange="onCustomChange()">
+            <option value="'Inter', sans-serif" selected>Inter (Ultra-Clean SaaS Standard)</option>
+            <option value="'DM Sans', sans-serif">DM Sans (Humanist Geometric)</option>
+            <option value="'Figtree', sans-serif">Figtree (Warm & Crisp Mobile UI)</option>
+            <option value="'Geist', sans-serif">Geist (Clean Monoline)</option>
+            <option value="'Plus Jakarta Sans', sans-serif">Plus Jakarta Sans</option>
+          </select>
+        </div>
+
+        <div class="select-card">
+          <label>Monospace / Figures:</label>
+          <select id="selectMono" onchange="onCustomChange()">
+            <option value="'JetBrains Mono', monospace" selected>JetBrains Mono (High Legibility)</option>
+            <option value="'Fira Code', monospace">Fira Code (Developer Crisp)</option>
+            <option value="'Space Mono', monospace">Space Mono (Transit Ticket Motif)</option>
+            <option value="'Geist Mono', monospace">Geist Mono (Engineered Precision)</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="copyConfig()" style="padding: 0.45rem 1rem; font-size: 0.78rem;">
+        📋 Copy Tailwind Font Config
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Showcase -->
+  <main class="studio-content">
+
+    <!-- 1. Hero Section Showcase -->
+    <section class="hero-banner">
+      <span class="hero-tag">Verified University Commute Network</span>
+      <h1 class="hero-title">
+        Share Daily Campus Commutes.<br />
+        <span class="highlight">Verified Classmate by Classmate.</span>
+      </h1>
+      <p class="hero-lead">
+        Connect with authenticated students traveling your daily campus corridor. Zero platform commission, cryptographic 4-digit OTP boarding handshakes, and institutional security.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary">Find a Commute Match →</button>
+        <button class="btn-secondary">Offer Empty Seats</button>
+        <button class="btn-secondary">Campus Safety Office (112 SOS)</button>
+      </div>
+
+      <div class="hero-perks">
+        <span class="pill-badge active-green">✓ 100% Institutional Real Data</span>
+        <span class="pill-badge">✓ Zero Fabricated Metrics</span>
+        <span class="pill-badge">✓ 4-Digit In-App OTP Safe Handshake</span>
+        <span class="pill-badge">✓ Dehradun University Corridor</span>
+        <span class="pill-badge">✓ Women-Only Commute Option</span>
+      </div>
+    </section>
+
+    <!-- 2. KPI Cards Row -->
+    <section class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">Active Rides Today</div>
+        <div class="kpi-value">128</div>
+        <div class="kpi-trend">
+          <span>↑ 12%</span>
+          <span style="color: var(--ink-secondary); font-weight: 400;">vs last Thursday</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Verified Student Commuters</div>
+        <div class="kpi-value">3,482</div>
+        <div class="kpi-trend">
+          <span>↑ 4.1%</span>
+          <span style="color: var(--ink-secondary); font-weight: 400;">new monthly enrollments</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Student Fuel Costs Saved</div>
+        <div class="kpi-value">₹84,200</div>
+        <div class="kpi-trend">
+          <span>↑ 18.3%</span>
+          <span style="color: var(--ink-secondary); font-weight: 400;">direct peer splitting</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">Corridor Safety Score</div>
+        <div class="kpi-value">99.8%</div>
+        <div class="kpi-trend">
+          <span>🛡️ Verified</span>
+          <span style="color: var(--ink-secondary); font-weight: 400;">zero SOS incidents</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Journey Ticket & Option Blocks Row -->
+    <div class="showcase-grid">
+      
+      <!-- Journey Ticket Card -->
+      <article class="ticket-container">
+        <div>
+          <div class="ticket-top">
+            <div class="driver-meta">
+              <div class="driver-avatar">AJ</div>
+              <div>
+                <h3 class="driver-name">Aarav Joshi</h3>
+                <p class="driver-college">Uttaranchal Institute of Technology · B.Tech CSE</p>
+              </div>
+            </div>
+            <div class="stamp-badge">
+              <span>✓ CAMPUS VERIFIED</span>
+            </div>
+          </div>
+
+          <div class="route-itinerary">
+            <div class="route-node">
+              <div class="route-node-tag">DEPARTURE · 08:30 AM</div>
+              <div class="route-node-name">Premnagar Junction</div>
+            </div>
+
+            <div class="route-connector">
+              <div class="connector-line"></div>
+              <span class="connector-pill">4.2 km · 12 min</span>
+            </div>
+
+            <div class="route-node">
+              <div class="route-node-tag">ARRIVAL · 08:45 AM</div>
+              <div class="route-node-name">UIT Main Gate 1</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ticket-bottom">
+          <div class="fare-group">
+            <span class="fare-amount">₹25</span>
+            <span class="fare-sub">/ seat · 3 seats left</span>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span class="pill-badge" style="font-family: var(--font-mono); font-size: 0.72rem;">Vehicle: Honda City (4821)</span>
+            <button class="btn-primary" style="padding: 0.5rem 1.1rem; font-size: 0.8rem;">
+              Request Seat
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Option Blocks & Symmetrical Pills -->
+      <aside class="option-blocks-card">
+        <div>
+          <div class="card-heading">
+            <span>Commute Preferences</span>
+            <span class="pill-badge" style="font-size: 0.68rem;">Audit Grade</span>
+          </div>
+          <p class="card-sub">Test how option cards and buttons render with this font style</p>
+        </div>
+
+        <div class="option-item selected">
+          <div>
+            <div class="option-title">Women-Only Carpool Filter</div>
+            <div class="option-desc">Match exclusively with verified female students</div>
+          </div>
+          <span style="font-size: 1.1rem;">🛡️</span>
+        </div>
+
+        <div class="option-item">
+          <div>
+            <div class="option-title">Same Course &amp; Semester Only</div>
+            <div class="option-desc">Coordinate with classmates sharing your lecture schedule</div>
+          </div>
+          <span style="font-size: 1.1rem;">📚</span>
+        </div>
+
+        <div class="option-item">
+          <div>
+            <div class="option-title">Music &amp; Student AUX Allowed</div>
+            <div class="option-desc">Casual playlist sharing permitted during transit</div>
+          </div>
+          <span style="font-size: 1.1rem;">🎵</span>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; padding-top: 0.5rem;">
+          <button class="btn-primary" style="flex: 1; padding: 0.65rem 1rem; font-size: 0.8rem;">
+            Save Settings
+          </button>
+          <button class="btn-secondary" style="padding: 0.65rem 1rem; font-size: 0.8rem;">
+            Reset
+          </button>
+        </div>
+      </aside>
+
+      <!-- Telemetry Data Table Preview -->
+      <div class="table-container">
+        <div style="margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <h4 class="card-heading">Live Campus Transit Corridors</h4>
+            <p class="card-sub">Tabular figures &amp; monospace font rendering audit</p>
+          </div>
+          <span class="pill-badge" style="font-family: var(--font-mono);">UPDATED 10 SECONDS AGO</span>
+        </div>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Corridor Route</th>
+              <th>Active Drivers</th>
+              <th>Departure Slot</th>
+              <th>Avg Fare</th>
+              <th>Transit Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="cell-title">Premnagar Hub → UIT Gate 1</span>
+                <span style="display: block; font-size: 0.7rem; color: var(--ink-muted);">Via Suddhowala Junction Bay</span>
+              </td>
+              <td><span class="cell-mono">14 drivers</span></td>
+              <td><span class="cell-mono">08:15 AM – 09:00 AM</span></td>
+              <td><span class="cell-mono" style="font-weight: 700; color: var(--plum);">₹20 – ₹25</span></td>
+              <td><span class="pill-badge active-green">● High Availability</span></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cell-title">Selaqui Industrial → Graphic Era Hill</span>
+                <span style="display: block; font-size: 0.7rem; color: var(--ink-muted);">Via Chakrata Highway Express</span>
+              </td>
+              <td><span class="cell-mono">8 drivers</span></td>
+              <td><span class="cell-mono">08:45 AM – 09:15 AM</span></td>
+              <td><span class="cell-mono" style="font-weight: 700; color: var(--plum);">₹35 – ₹40</span></td>
+              <td><span class="pill-badge active-green">● Moderate</span></td>
+            </tr>
+            <tr>
+              <td>
+                <span class="cell-title">Dehradun Clock Tower → DIT University</span>
+                <span style="display: block; font-size: 0.7rem; color: var(--ink-muted);">Via Rajpur Road Commute Lane</span>
+              </td>
+              <td><span class="cell-mono">6 drivers</span></td>
+              <td><span class="cell-mono">09:00 AM – 09:30 AM</span></td>
+              <td><span class="cell-mono" style="font-weight: 700; color: var(--plum);">₹45 – ₹50</span></td>
+              <td><span class="pill-badge" style="background: var(--amber-bg); color: var(--amber);">● Filling Fast</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. Preset Comparison Cards Matrix -->
+    <section class="comparison-section">
+      <h2 style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--ink-primary);">
+        Curated Professional Font Pairings
+      </h2>
+      <p style="font-size: 0.85rem; color: var(--ink-secondary); margin-top: 0.25rem;">
+        Click any card below to instantly preview that typography system across the entire interface above:
+      </p>
+
+      <div class="comparison-grid">
+        
+        <!-- Preset 1 -->
+        <div class="pairing-card active-card" id="card-tech" onclick="applyPreset('tech')">
+          <span class="pairing-badge">Option 1 · SaaS Standard (Recommended)</span>
+          <h3 class="pairing-title" style="font-family: 'Plus Jakarta Sans', sans-serif;">Modern Tech SaaS</h3>
+          <p class="pairing-spec">Display: Plus Jakarta Sans<br>Body: Inter<br>Mono: JetBrains Mono</p>
+          <div class="pairing-preview-text" style="font-family: 'Inter', sans-serif;">
+            <strong style="font-family: 'Plus Jakarta Sans', sans-serif;">Uttarakhand Campus Network</strong><br>
+            Crisp, ultra-legible neo-grotesque hierarchy used by Stripe &amp; Linear. High x-height ensures superior reading comfort on phone screens.
+          </div>
+        </div>
+
+        <!-- Preset 2 -->
+        <div class="pairing-card" id="card-swiss" onclick="applyPreset('swiss')">
+          <span class="pairing-badge">Option 2 · Modern Mobility</span>
+          <h3 class="pairing-title" style="font-family: 'Outfit', sans-serif;">Swiss Geometric</h3>
+          <p class="pairing-spec">Display: Outfit<br>Body: DM Sans<br>Mono: Space Mono</p>
+          <div class="pairing-preview-text" style="font-family: 'DM Sans', sans-serif;">
+            <strong style="font-family: 'Outfit', sans-serif;">Uttarakhand Campus Network</strong><br>
+            Clean, rounded geometric curves. Friendly and welcoming while maintaining crisp engineering discipline.
+          </div>
+        </div>
+
+        <!-- Preset 3 -->
+        <div class="pairing-card" id="card-nordic" onclick="applyPreset('nordic')">
+          <span class="pairing-badge">Option 3 · Balanced Clarity</span>
+          <h3 class="pairing-title" style="font-family: 'Manrope', sans-serif;">Nordic Precision</h3>
+          <p class="pairing-spec">Display: Manrope<br>Body: Figtree<br>Mono: Fira Code</p>
+          <div class="pairing-preview-text" style="font-family: 'Figtree', sans-serif;">
+            <strong style="font-family: 'Manrope', sans-serif;">Uttarakhand Campus Network</strong><br>
+            Semi-geometric Nordic typography. Balanced open counters and warm curves designed for mobile navigation and map UI.
+          </div>
+        </div>
+
+        <!-- Preset 4 -->
+        <div class="pairing-card" id="card-grotesk" onclick="applyPreset('grotesk')">
+          <span class="pairing-badge">Option 4 · High Craft</span>
+          <h3 class="pairing-title" style="font-family: 'Bricolage Grotesque', sans-serif;">High-Craft Grotesque</h3>
+          <p class="pairing-spec">Display: Bricolage Grotesque<br>Body: Inter<br>Mono: Geist Mono</p>
+          <div class="pairing-preview-text" style="font-family: 'Inter', sans-serif;">
+            <strong style="font-family: 'Bricolage Grotesque', sans-serif;">Uttarakhand Campus Network</strong><br>
+            Expressive, confident editorial headlines paired with minimal body typography. High character and visual distinction.
+          </div>
+        </div>
+
+        <!-- Preset 5 -->
+        <div class="pairing-card" id="card-editorial" onclick="applyPreset('editorial')">
+          <span class="pairing-badge">Option 5 · Heritage Atlas</span>
+          <h3 class="pairing-title" style="font-family: 'Fraunces', serif;">Collegiate Editorial</h3>
+          <p class="pairing-spec">Display: Fraunces<br>Body: DM Sans<br>Mono: JetBrains Mono</p>
+          <div class="pairing-preview-text" style="font-family: 'DM Sans', sans-serif;">
+            <strong style="font-family: 'Fraunces', serif;">Uttarakhand Campus Network</strong><br>
+            Warm soft-serif headlines evoking traditional university diplomas and transit timetables, backed by clean geometric body sans.
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    const presets = {
+      tech: {
+        display: "'Plus Jakarta Sans', sans-serif",
+        body: "'Inter', sans-serif",
+        mono: "'JetBrains Mono', monospace",
+        name: "Modern Tech SaaS",
+        desc: "Display: Plus Jakarta Sans · Body: Inter · Mono: JetBrains Mono"
+      },
+      swiss: {
+        display: "'Outfit', sans-serif",
+        body: "'DM Sans', sans-serif",
+        mono: "'Space Mono', monospace",
+        name: "Swiss Geometric",
+        desc: "Display: Outfit · Body: DM Sans · Mono: Space Mono"
+      },
+      nordic: {
+        display: "'Manrope', sans-serif",
+        body: "'Figtree', sans-serif",
+        mono: "'Fira Code', monospace",
+        name: "Nordic Precision",
+        desc: "Display: Manrope · Body: Figtree · Mono: Fira Code"
+      },
+      grotesk: {
+        display: "'Bricolage Grotesque', sans-serif",
+        body: "'Inter', sans-serif",
+        mono: "'Geist Mono', monospace",
+        name: "High-Craft Grotesque",
+        desc: "Display: Bricolage Grotesque · Body: Inter · Mono: Geist Mono"
+      },
+      editorial: {
+        display: "'Fraunces', serif",
+        body: "'DM Sans', sans-serif",
+        mono: "'JetBrains Mono', monospace",
+        name: "Collegiate Editorial",
+        desc: "Display: Fraunces · Body: DM Sans · Mono: JetBrains Mono"
+      }
+    };
+
+    function applyPreset(key) {
+      const p = presets[key];
+      if (!p) return;
+
+      document.documentElement.style.setProperty('--font-display', p.display);
+      document.documentElement.style.setProperty('--font-body', p.body);
+      document.documentElement.style.setProperty('--font-mono', p.mono);
+
+      document.getElementById('selectDisplay').value = p.display;
+      document.getElementById('selectBody').value = p.body;
+      document.getElementById('selectMono').value = p.mono;
+
+      document.getElementById('currentSpecBadge').textContent = p.desc;
+
+      // Update preset buttons
+      document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      const activeIdx = ['tech', 'swiss', 'nordic', 'grotesk', 'editorial'].indexOf(key);
+      if (activeIdx >= 0) {
+        document.querySelectorAll('.preset-btn')[activeIdx].classList.add('active');
+      }
+
+      // Update comparison cards
+      document.querySelectorAll('.pairing-card').forEach(c => c.classList.remove('active-card'));
+      const card = document.getElementById('card-' + key);
+      if (card) card.classList.add('active-card');
+    }
+
+    function onCustomChange() {
+      const d = document.getElementById('selectDisplay').value;
+      const b = document.getElementById('selectBody').value;
+      const m = document.getElementById('selectMono').value;
+
+      document.documentElement.style.setProperty('--font-display', d);
+      document.documentElement.style.setProperty('--font-body', b);
+      document.documentElement.style.setProperty('--font-mono', m);
+
+      const dName = d.split(',')[0].replace(/'/g, '');
+      const bName = b.split(',')[0].replace(/'/g, '');
+      const mName = m.split(',')[0].replace(/'/g, '');
+
+      document.getElementById('currentSpecBadge').textContent = 
+        `Custom: Display: ${dName} · Body: ${bName} · Mono: ${mName}`;
+
+      document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.pairing-card').forEach(c => c.classList.remove('active-card'));
+    }
+
+    function copyConfig() {
+      const d = getComputedStyle(document.documentElement).getPropertyValue('--font-display').trim();
+      const b = getComputedStyle(document.documentElement).getPropertyValue('--font-body').trim();
+      const m = getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim();
+
+      const configText = `// tailwind.config.js fontFamily configuration
+fontFamily: {
+  display: [${d}, "sans-serif"],
+  sans: [${b}, "sans-serif"],
+  mono: [${m}, "monospace"],
+}`;
+
+      navigator.clipboard.writeText(configText).then(() => {
+        alert("Tailwind font configuration copied to clipboard!\n\n" + configText);
+      }).catch(() => {
+        prompt("Copy this configuration:", configText);
+      });
+    }
+  </script>
+</body>
+</html>
+

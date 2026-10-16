@@ -16,17 +16,18 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
     },
     ref
   ) => {
-    const baseStyles = 'rounded-2xl transition-all duration-200';
+    const baseStyles = 'rounded-surface transition-colors duration-150';
 
     const variantStyles = {
-      default: 'bg-white border border-[#E4E5E1] shadow-sm',
-      raised: 'bg-white border border-[#E4E5E1] shadow-md',
-      bordered: 'bg-transparent border border-[#E4E5E1]',
-      subtle: 'bg-[#FBFBFA] border border-[#EAE7DF]',
+      default: 'bg-surface border border-line-subtle shadow-card',
+      raised: 'bg-surface-raised border border-line-base shadow-subtle',
+      bordered: 'bg-transparent border border-line-base',
+      subtle: 'bg-canvas border border-line-subtle',
     };
 
+    // Prohibit card lift on hover per Campus Atlas anti-slop guidelines
     const interactiveStyles = interactive
-      ? 'hover:-translate-y-1 hover:shadow-md hover:border-[#CBD5E1] cursor-pointer'
+      ? 'hover:border-line-strong active:bg-canvas/80 cursor-pointer'
       : '';
 
     return (
@@ -42,3 +43,4 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
 );
 
 Card.displayName = 'Card';
+export default Card;

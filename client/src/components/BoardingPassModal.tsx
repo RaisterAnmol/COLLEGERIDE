@@ -1,3 +1,4 @@
+// Verified student boarding pass - prefers-reduced-motion compliant
 import React, { useEffect } from 'react';
 import { X, ShieldCheck, MapPin, Clock, Car } from 'lucide-react';
 import { QRCodeDisplay } from './QRCodeDisplay';
@@ -44,13 +45,13 @@ export const BoardingPassModal: React.FC<BoardingPassModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="boarding-pass-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/75 p-4"
     >
       <div className="bg-white rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl border border-slate-200">
         {/* Pass Header */}
         <div className="bg-[#143D32] text-white p-5 flex items-center justify-between">
           <div>
-            <div className="flex items-center gap-1.5 text-emerald-300 text-xs font-mono uppercase tracking-wider">
+            <div className="flex items-center gap-1.5 text-emerald-300 text-xs font-mono font-medium">
               <ShieldCheck className="w-3.5 h-3.5" />
               Verified Student Pass
             </div>

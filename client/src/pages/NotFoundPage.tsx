@@ -1,3 +1,4 @@
+// prefers-reduced-motion compliant 404 page
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -24,7 +25,7 @@ export const NotFoundPage: React.FC = () => {
 
       <div className="max-w-2xl w-full text-center relative z-10 space-y-8">
         {/* Top 404 Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono font-bold uppercase tracking-wider shadow-xs">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-mono font-bold shadow-xs">
           <AlertTriangle className="w-3.5 h-3.5 text-emerald-600" />
           <span>Error 404 • Commute Stop Not Found</span>
         </div>
@@ -36,7 +37,7 @@ export const NotFoundPage: React.FC = () => {
           </div>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-[#143D32] to-[#10B981] text-white flex items-center justify-center shadow-xl shadow-emerald-900/20 transform rotate-6 hover:rotate-0 transition-transform duration-300">
-              <Compass className="w-10 h-10 sm:w-12 sm:h-12 animate-pulse" />
+              <Compass className="w-10 h-10 sm:w-12 sm:h-12" />
             </div>
           </div>
         </div>
@@ -89,7 +90,7 @@ export const NotFoundPage: React.FC = () => {
 
         {/* Quick Route Shortcuts Card */}
         <div className="p-5 rounded-2xl bg-white border border-slate-200/90 shadow-sm text-left max-w-lg mx-auto">
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wide mb-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-800 mb-3">
             <School className="w-4 h-4 text-emerald-600" />
             <span>Quick Campus Destinations in Uttarakhand</span>
           </div>

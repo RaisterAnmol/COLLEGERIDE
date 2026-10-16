@@ -1,3 +1,4 @@
+// prefers-reduced-motion compliant ride detail pass
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -28,9 +29,11 @@ import {
   Check,
 } from "lucide-react";
 import { ReviewModal } from "../components/ReviewModal";
-import reviewsTrustImg from "../assets/illustrations/campus-reviews-trust.webp";
 import { sanitizeLocationText } from "../utils/sanitizeLocation";
 import RideRequestSuccessModal from "../components/RideRequestSuccessModal";
+import { JourneyTicket } from "../components/signature/JourneyTicket";
+import { TactileButton } from "../components/signature/TactileButton";
+import { HoldToConfirmWithFallback } from "../components/signature/HoldToConfirm";
 
 export const RideDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -41,6 +44,7 @@ export const RideDetailPage: React.FC = () => {
   const [requests, setRequests] = useState<IRideRequest[]>([]);
   const [activeTrip, setActiveTrip] = useState<ITrip | null>(null);
   const [showChat, setShowChat] = useState(false);
+  const [showWalkingGuide, setShowWalkingGuide] = useState(false);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState("");
@@ -190,7 +194,7 @@ export const RideDetailPage: React.FC = () => {
     }
 
     if (requestSaved) {
-      // Persist in localStorage directly for seamless Vercel / offline mode
+      // Persist in localStorage directly for standalone offline mode
       const localReqs = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
       const newReq = {
         _id: "req_" + Date.now(),
@@ -224,9 +228,10 @@ export const RideDetailPage: React.FC = () => {
     }
   };
 
-  const handleCancelMyRequest = async () => {
+  const [cancelRequestModalOpen, setCancelRequestModalOpen] = useState(false);
+
+  const executeCancelMyRequest = async () => {
     if (!myRequest) return;
-    if (!window.confirm("Are you sure you want to cancel your seat request?")) return;
     setActionLoading(true);
     setError("");
     try {
@@ -242,12 +247,12 @@ export const RideDetailPage: React.FC = () => {
       setError(err?.message || "Failed to cancel request");
     } finally {
       setActionLoading(false);
+      setCancelRequestModalOpen(false);
     }
   };
 
-  const handleCancelRide = async () => {
+  const executeCancelRide = async () => {
     if (!id) return;
-    if (!window.confirm("Are you sure you want to cancel this entire offered ride? All passengers will be notified.")) return;
     setActionLoading(true);
     setError("");
     try {
@@ -292,9 +297,8 @@ export const RideDetailPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="py-20 text-center text-slate-400">
-        <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-        Loading ride details...
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <JourneyTicket isLoading={true} />
       </div>
     );
   }
@@ -338,311 +342,242 @@ export const RideDetailPage: React.FC = () => {
         </div>
       )}
 
-      {/* Main Ride Overview Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-md p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold uppercase tracking-wider">
-                {ride.status}
-              </span>
-              <span className="text-xs text-slate-400">
-                Created on {new Date(ride.createdAt).toLocaleDateString()}
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
-              Campus Commute Details
-            </h1>
+      {/* Header Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-control bg-surface border border-line-base text-xs font-mono text-ink-primary mb-2">
+            <span className="w-2 h-2 rounded-full bg-route" />
+            <span className="font-semibold">{ride.status.toUpperCase()} COMMUTE PASS</span>
+            <span className="text-line-strong">•</span>
+            <span className="text-ink-secondary">{new Date(ride.createdAt).toLocaleDateString()}</span>
           </div>
-
-          {/* Chat Action */}
-          <button
-            type="button"
-            onClick={() => setShowChat(true)}
-            className="px-4 py-2.5 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] text-white font-semibold text-xs flex items-center gap-2 shadow-sm transition-colors"
-          >
-            <MessageSquare className="w-4 h-4 text-emerald-400" />
-            Ride Coordination Chat
-          </button>
+          <h1 className="text-2xl sm:text-3xl font-display font-extrabold text-ink-primary tracking-tight">
+            Campus Commute Pass
+          </h1>
         </div>
 
-        {/* Route Visual Section */}
-        <div className="py-6 space-y-4">
-          <div className="p-5 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-2xl border border-slate-200">
-            <div className="flex items-start gap-4">
-              <div className="flex flex-col items-center pt-1">
-                <div className="w-4 h-4 rounded-full bg-emerald-500 ring-4 ring-emerald-200" />
-                <div className="w-0.5 h-12 bg-slate-300 my-1" />
-                <div className="w-4 h-4 rounded-full bg-blue-500 ring-4 ring-blue-200" />
-              </div>
-              <div className="flex-1 space-y-4">
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-emerald-700 tracking-wider">
-                    Departure Origin
-                  </span>
-                  <div className="text-base font-bold text-slate-900">
-                    {sanitizeLocationText(ride.origin.text)}
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    Coords: ({ride.origin.lat.toFixed(4)},{" "}
-                    {ride.origin.lng.toFixed(4)})
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[10px] uppercase font-bold text-blue-700 tracking-wider">
-                    Destination Arrival
-                  </span>
-                  <div className="text-base font-bold text-slate-900">
-                    {sanitizeLocationText(ride.destination.text)}
-                  </div>
-                  <div className="text-xs text-slate-500">
-                    Coords: ({ride.destination.lat.toFixed(4)},{" "}
-                    {ride.destination.lng.toFixed(4)})
-                  </div>
-                </div>
-              </div>
+        <button
+          type="button"
+          onClick={() => setShowChat(true)}
+          className="px-4 py-2.5 rounded-control bg-route hover:bg-route-light text-surface font-semibold text-xs flex items-center gap-2 shadow-subtle active:translate-y-[1.5px] transition-all cursor-pointer self-start sm:self-auto"
+        >
+          <MessageSquare className="w-4 h-4 text-route-pale" />
+          <span>Ride Coordination Chat</span>
+        </button>
+      </div>
+
+      {/* Main Interactive Journey Ticket Pass */}
+      <JourneyTicket
+        ride={{
+          _id: ride._id,
+          creator: ride.creator,
+          origin: ride.origin,
+          destination: ride.destination,
+          departureTime: ride.departureTime,
+          seatsAvailable: ride.availableSeats ?? (ride as any).seatsAvailable,
+          availableSeats: ride.availableSeats,
+          seatsTotal: (ride as any).totalSeats ?? (ride as any).seatsTotal,
+          fare: (ride as any).fare ?? (ride as any).pricePerSeat ?? 20,
+          vehicleModel: ride.vehicleId?.model,
+          vehiclePlate: ride.vehicleId?.plateLast4,
+          notes: (ride as any).notes,
+          isWomenOnly: (ride as any).isWomenOnly || (ride as any).womenOnlyDriver,
+          status: ride.status,
+        }}
+        variant="detail"
+        status={ride.status}
+        isCurrentUserCreator={isDriver}
+        isUserVerified={isUserVerified}
+        isRequested={Boolean(myRequest)}
+        requestLoading={actionLoading}
+        isMapOpen={showWalkingGuide}
+        onToggleMap={() => setShowWalkingGuide(!showWalkingGuide)}
+        onRequestSeat={() => handleRequestSeat()}
+        onCancelRequest={() => setCancelRequestModalOpen(true)}
+        onVerifyPrompt={() => navigate('/verification')}
+      />
+
+      {/* Walking Guide & Campus Pickup Bay Navigation Map */}
+      {showWalkingGuide && (
+        <div className="bg-surface rounded-surface border border-line-base p-5 sm:p-6 shadow-subtle space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-line-subtle">
+            <div className="flex items-center gap-2 text-xs font-mono">
+              <span className="w-2 h-2 rounded-full bg-route" />
+              <strong className="text-ink-primary">Designated Campus Pickup Bay &amp; Walking Guide</strong>
             </div>
+            <span className="text-[11px] font-mono text-ink-muted">High-Accuracy GPS Corridor</span>
           </div>
+          <PickupAndRouteNavigationMap
+            originText={sanitizeLocationText(ride.origin.text)}
+            destinationText={sanitizeLocationText(ride.destination.text)}
+          />
+        </div>
+      )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                <Clock className="w-4 h-4 text-emerald-600" /> Departure Time
-              </div>
-              <div className="text-sm font-bold text-slate-900">
-                {new Date(ride.departureTime).toLocaleDateString([], {
-                  weekday: "short",
-                  month: "short",
-                  day: "numeric",
-                })}
-                ,{" "}
-                {new Date(ride.departureTime).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
-            </div>
-
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                <Users className="w-4 h-4 text-emerald-600" /> Capacity
-              </div>
-              <div className="text-sm font-bold text-slate-900">
-                {ride.availableSeats} Seats Currently Free
-              </div>
-            </div>
-
-            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
-                <Car className="w-4 h-4 text-emerald-600" /> Vehicle
-              </div>
-              <div className="text-sm font-bold text-slate-900">
-                {ride.vehicleId?.model || "Car"} (
-                {ride.vehicleId?.plateLast4 || "N/A"})
-              </div>
-            </div>
+      {/* Corridor Route Waypoints Breakdown */}
+      <div className="bg-paper rounded-3xl border border-[#E2DDD3] p-5 sm:p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between pb-3 border-b border-border/60">
+          <div className="flex items-center gap-2 text-xs font-mono">
+            <span className="w-2.5 h-2.5 rounded-full bg-forest animate-pulse" />
+            <strong className="text-ink-primary font-bold">Verified Corridor Waypoints</strong>
           </div>
-
-          {/* Interactive Google Maps Commute & Pickup Navigation Map */}
-          <div className="pt-6 border-t border-slate-100">
-            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-              <span>🗺️ Verified Highway Route & Designated Campus Pickup Bay</span>
-            </h3>
-            <PickupAndRouteNavigationMap
-              originText={sanitizeLocationText(ride.origin.text)}
-              destinationText={sanitizeLocationText(ride.destination.text)}
-            />
-          </div>
+          <span className="text-xs font-mono text-ink-muted">Dehradun University Belt</span>
         </div>
 
-        {/* Driver Profile */}
-        <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-          <div className="flex items-center gap-3.5">
-            <img
-              src={
-                ride.creator?.avatarURL ||
-                "/test_uploads/profile_photo.jpg"
-              }
-              alt={ride.creator?.name}
-              className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20"
-            />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
+          <div className="h-full p-4 sm:p-5 bg-canvas/70 rounded-2xl border border-[#E2DDD3] flex flex-col justify-between shadow-2xs hover:border-forest/40 transition-colors">
             <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-slate-900 text-sm">
-                  {ride.creator?.name}
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
-                  Verified Driver
-                </span>
+              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-forest uppercase tracking-wide mb-2">
+                <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <span>Waypoint 01 — Pickup Origin</span>
               </div>
-              <div className="flex items-center gap-3 text-xs text-slate-500 mt-0.5">
-                <span className="flex items-center gap-1 text-amber-500 font-semibold">
-                  <Star className="w-3.5 h-3.5 fill-amber-500" />
-                  {ride.creator?.rating?.toFixed(1) || "5.0"}
-                </span>
-                <span>•</span>
-                <span>{ride.creator?.college}</span>
-                <span>•</span>
-                <span>{ride.creator?.totalRides || 0} rides completed</span>
+              <div className="text-xs sm:text-sm font-bold text-ink-primary leading-snug">
+                {sanitizeLocationText(ride.origin.text)}
               </div>
+            </div>
+            <div className="text-[11px] font-mono text-ink-secondary mt-3 pt-2.5 border-t border-border/50">
+              GPS: {ride.origin.lat.toFixed(4)}, {ride.origin.lng.toFixed(4)}
             </div>
           </div>
 
-          {/* Driver Actions (Start Trip or View Active Trip QR) */}
+          <div className="h-full p-4 sm:p-5 bg-canvas/70 rounded-2xl border border-[#E2DDD3] flex flex-col justify-between shadow-2xs hover:border-plum/40 transition-colors">
+            <div>
+              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-plum uppercase tracking-wide mb-2">
+                <Car className="w-3.5 h-3.5 shrink-0" />
+                <span>Waypoint 02 — En Route Transit</span>
+              </div>
+              <div className="text-xs sm:text-sm font-bold text-ink-primary leading-snug">
+                Suddhowala PG Belt / Junction Bay
+              </div>
+            </div>
+            <div className="text-[11px] font-mono text-ink-secondary mt-3 pt-2.5 border-t border-border/50">
+              Campus Highway Detour ≤ 3 min
+            </div>
+          </div>
+
+          <div className="h-full p-4 sm:p-5 bg-canvas/70 rounded-2xl border border-[#E2DDD3] flex flex-col justify-between shadow-2xs hover:border-forest/40 transition-colors">
+            <div>
+              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold text-forest uppercase tracking-wide mb-2">
+                <MapPin className="w-3.5 h-3.5 shrink-0" />
+                <span>Waypoint 03 — Campus Arrival</span>
+              </div>
+              <div className="text-xs sm:text-sm font-bold text-ink-primary leading-snug">
+                {sanitizeLocationText(ride.destination.text)}
+              </div>
+            </div>
+            <div className="text-[11px] font-mono text-ink-secondary mt-3 pt-2.5 border-t border-border/50">
+              GPS: {ride.destination.lat.toFixed(4)}, {ride.destination.lng.toFixed(4)}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Driver Controls & Passenger Actions Bar */}
+      <div className="bg-surface rounded-surface border border-line-base p-5 shadow-subtle flex flex-wrap items-center justify-between gap-4">
+        <div className="text-xs text-ink-secondary">
+          {isDriver ? (
+            <span>You are offering this carpool. Confirm student requests below and start the trip at departure time.</span>
+          ) : myRequest?.status === 'accepted' ? (
+            <span className="text-status-verified font-medium">Your seat is confirmed! Be at the designated pickup bay on time.</span>
+          ) : (
+            <span>Direct fuel share split between verified classmates. Zero platform commission.</span>
+          )}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2.5">
           {isDriver && (
-            <div className="flex items-center gap-2">
+            <>
               {activeTrip ? (
                 <button
                   type="button"
                   onClick={() => navigate(`/trips/${activeTrip._id}`)}
-                  className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                  className="px-4 py-2 rounded-control bg-route hover:bg-route-light text-surface font-semibold text-xs flex items-center gap-2 active:translate-y-[1.5px] transition-all cursor-pointer shadow-subtle"
                 >
-                  <Key className="w-4 h-4" />
-                  View Trip & Pickup QR
+                  <Key className="w-4 h-4 text-route-pale" />
+                  <span>View Trip &amp; Pickup QR</span>
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handleStartTrip}
                   disabled={actionLoading || ride.status === 'cancelled' || ride.status === 'completed'}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
+                  className="px-4 py-2 rounded-control bg-route hover:bg-route-light disabled:opacity-50 text-surface font-semibold text-xs flex items-center gap-2 active:translate-y-[1.5px] transition-all cursor-pointer shadow-subtle"
                 >
-                  <Key className="w-4 h-4" />
-                  Start Trip & Show Pickup QR
+                  <Key className="w-4 h-4 text-route-pale" />
+                  <span>Start Trip &amp; Show Pickup QR</span>
                 </button>
               )}
               {ride.status !== 'cancelled' && ride.status !== 'completed' && !activeTrip && (
-                <button
-                  type="button"
-                  onClick={handleCancelRide}
-                  disabled={actionLoading}
-                  className="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors cursor-pointer"
-                  title="Cancel this offered ride"
-                >
-                  Cancel Ride
-                </button>
+                <HoldToConfirmWithFallback
+                  onConfirm={executeCancelRide}
+                  label="Hold to Cancel Ride"
+                  confirmingLabel="Cancelling Ride..."
+                  dialogTitle="Cancel Entire Offered Ride?"
+                  dialogDescription="Are you sure you want to cancel this entire offered carpool? All passengers who booked seats will be notified immediately."
+                />
               )}
-            </div>
+            </>
           )}
 
-          {/* Passenger Actions (Request Seat or View QR / Boarding Pass) */}
-          {!isDriver && (
-            <div>
-              {myRequest ? (
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`px-3.5 py-2 rounded-xl text-xs font-bold uppercase flex items-center gap-1.5 ${
-                      myRequest.status === "accepted"
-                        ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                        : myRequest.status === "pending"
-                          ? "bg-amber-100 text-amber-800 border border-amber-300"
-                          : "bg-slate-200 text-slate-700"
-                    }`}
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>Request Sent ({myRequest.status})</span>
-                  </span>
-
-                  {(myRequest.status === "pending" || myRequest.status === "accepted") && (
-                    <button
-                      type="button"
-                      disabled={actionLoading}
-                      onClick={handleCancelMyRequest}
-                      className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
-                      title="Cancel seat request"
-                    >
-                      <XCircle className="w-3.5 h-3.5" />
-                      <span>Cancel Request</span>
-                    </button>
-                  )}
-                  {myRequest.status === "accepted" && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          if (activeTrip) {
-                            navigate(`/trips/${activeTrip._id}`);
-                          } else {
-                            navigate("/dashboard");
-                          }
-                        }}
-                        className="px-4 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-semibold hover:bg-emerald-700 cursor-pointer shadow-sm"
-                      >
-                        {activeTrip ? "Scan Pickup QR →" : "View Dashboard →"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setActiveReviewModal({
-                            tripId: id || 'trip_' + Date.now(),
-                            toUserId: ride.creator._id || (ride.creator as any).id,
-                            recipientName: ride.creator.name || 'Driver',
-                            role: 'driver',
-                            college: ride.creator.college,
-                          });
-                        }}
-                        className="px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
-                        title="Rate Driver"
-                      >
-                        <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                        <span>Rate Driver</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              ) : !isUserVerified ? (
-                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-                  <span className="text-[11px] text-amber-800 bg-amber-50 border border-amber-300 px-3 py-1.5 rounded-xl font-medium flex items-center gap-1.5 shadow-2xs">
-                    <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                    ID Verification Pending
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => navigate('/verification')}
-                    className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
-                  >
-                    <span>Verify ID</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleRequestSeat}
-                  disabled={actionLoading || ride.availableSeats <= 0}
-                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-xs shadow-md transition-all flex items-center gap-2 cursor-pointer"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  Request Seat Now
-                </button>
-              )}
-            </div>
+          {!isDriver && myRequest?.status === "accepted" && (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeTrip) {
+                    navigate(`/trips/${activeTrip._id}`);
+                  } else {
+                    navigate("/dashboard");
+                  }
+                }}
+                className="px-4 py-2 rounded-control bg-route hover:bg-route-light text-surface text-xs font-semibold cursor-pointer active:translate-y-[1.5px] transition-all"
+              >
+                {activeTrip ? "Scan Pickup QR →" : "View Dashboard →"}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveReviewModal({
+                    tripId: id || 'trip_' + Date.now(),
+                    toUserId: ride.creator._id || (ride.creator as any).id,
+                    recipientName: ride.creator.name || 'Driver',
+                    role: 'driver',
+                    college: ride.creator.college,
+                  });
+                }}
+                className="px-3.5 py-2 rounded-control border border-line-base bg-surface hover:bg-canvas text-ink-primary text-xs font-semibold flex items-center gap-1 active:translate-y-[1.5px] transition-all cursor-pointer"
+              >
+                <Star className="w-3.5 h-3.5 fill-signal text-signal" />
+                <span>Rate Driver</span>
+              </button>
+            </>
           )}
         </div>
       </div>
 
       {/* Verified Driver Reputation & Reviews Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <div className="bg-surface rounded-surface border border-line-base p-6 sm:p-8 shadow-subtle space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line-subtle">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-control bg-route-pale text-route border border-route-light/20 flex items-center justify-center font-bold">
               <Award className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-900 text-base">
-                Verified Driver Trust & Reviews
+              <h3 className="font-display font-bold text-ink-primary text-base">
+                Verified Driver Trust &amp; Reviews
               </h3>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-ink-secondary">
                 Community feedback for {ride.creator?.name || 'this student driver'}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 px-3 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
-              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+            <div className="flex items-center gap-1 px-3 py-1 rounded-control bg-surface border border-line-base text-ink-primary text-xs font-bold">
+              <Star className="w-4 h-4 fill-signal text-signal" />
               <span>{ride.creator?.rating?.toFixed(1) || '5.0'} / 5.0 Rating</span>
             </div>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-ink-muted">
               ({driverReviews.length} verified reviews)
             </span>
           </div>
@@ -650,87 +585,89 @@ export const RideDetailPage: React.FC = () => {
 
         {/* Driver Reviews List / Empty State */}
         {driverReviewsLoading ? (
-          <div className="py-6 text-center text-slate-400 text-xs">
+          <div className="py-6 text-center text-ink-muted text-xs">
             Loading verified driver reviews...
           </div>
         ) : driverReviews.length === 0 ? (
-          <div className="flex flex-col sm:flex-row items-center gap-4 p-5 rounded-2xl bg-emerald-50/60 border border-emerald-100">
+          <div className="flex flex-col sm:flex-row items-center gap-6 p-6 sm:p-7 rounded-2xl bg-canvas border border-line-base shadow-2xs">
             <img
-              src={reviewsTrustImg}
+              src="/carpool-commute.jpg"
               alt="Verified Student Commutes"
-              className="w-24 h-20 rounded-xl object-cover border border-emerald-200 shadow-xs shrink-0"
+              className="w-28 h-20 rounded-xl object-cover border border-line-base shadow-subtle shrink-0"
             />
-            <div className="space-y-1">
-              <h4 className="text-xs font-bold text-emerald-950 uppercase tracking-wider">
+            <div className="space-y-1.5 text-left">
+              <h4 className="text-xs font-bold text-ink-primary">
                 Exemplary Campus Safety Record
               </h4>
-              <p className="text-xs text-slate-600">
+              <p className="text-xs text-ink-secondary leading-relaxed">
                 {ride.creator?.name} is an active student at {ride.creator?.college || 'our university'}, verified with student ID credentials and active route telemetry.
               </p>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
             {driverReviews.map((rev, idx) => {
               const reviewer = rev.fromUserId || {};
               const reviewerName = reviewer.name || 'Student Passenger';
               return (
                 <div
                   key={rev._id || idx}
-                  className="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 space-y-2.5"
+                  className="h-full p-6 sm:p-7 rounded-2xl border border-line-base bg-canvas space-y-3.5 flex flex-col justify-between shadow-2xs"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold text-xs flex items-center justify-center uppercase">
-                        {reviewer.avatarURL ? (
-                          <img
-                            src={reviewer.avatarURL}
-                            alt={reviewerName}
-                            className="w-full h-full object-cover rounded-lg"
+                  <div className="space-y-3.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-route text-surface font-bold text-xs flex items-center justify-center uppercase shrink-0 overflow-hidden shadow-2xs">
+                          {reviewer.avatarURL ? (
+                            <img
+                              src={reviewer.avatarURL}
+                              alt={reviewerName}
+                              className="w-full h-full object-cover rounded-xl"
+                            />
+                          ) : (
+                            reviewerName.charAt(0)
+                          )}
+                        </div>
+                        <div>
+                          <span className="font-bold text-xs text-ink-primary block leading-tight">
+                            {reviewerName}
+                          </span>
+                          <span className="text-[11px] text-ink-secondary">
+                            {reviewer.college || 'Verified Classmate'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-0.5 text-signal">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star
+                            key={s}
+                            className={`w-3.5 h-3.5 ${
+                              s <= (rev.rating || 5)
+                                ? 'fill-signal text-signal'
+                                : 'text-line-strong'
+                            }`}
                           />
-                        ) : (
-                          reviewerName.charAt(0)
-                        )}
-                      </div>
-                      <div>
-                        <span className="font-bold text-xs text-slate-900 block leading-tight">
-                          {reviewerName}
-                        </span>
-                        <span className="text-[11px] text-slate-500">
-                          {reviewer.college || 'Verified Classmate'}
-                        </span>
+                        ))}
                       </div>
                     </div>
-                    <div className="flex items-center gap-0.5 text-amber-400">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star
-                          key={s}
-                          className={`w-3 h-3 ${
-                            s <= (rev.rating || 5)
-                              ? 'fill-amber-400 text-amber-400'
-                              : 'text-slate-200'
-                          }`}
-                        />
-                      ))}
-                    </div>
+
+                    {Array.isArray(rev.tags) && rev.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5">
+                        {rev.tags.map((t: string) => (
+                          <span
+                            key={t}
+                            className="px-2.5 py-1 rounded-lg bg-surface border border-line-base text-ink-secondary text-[11px] font-semibold"
+                          >
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <p className="text-xs text-ink-secondary leading-relaxed italic">
+                      "{rev.comment || 'Smooth driving and punctual campus commute!'}"
+                    </p>
                   </div>
-
-                  {Array.isArray(rev.tags) && rev.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {rev.tags.map((t: string) => (
-                        <span
-                          key={t}
-                          className="px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-700 text-[10px] font-semibold"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <p className="text-xs text-slate-600 italic">
-                    "{rev.comment || 'Smooth driving and punctual campus commute!'}"
-                  </p>
                 </div>
               );
             })}
@@ -738,37 +675,31 @@ export const RideDetailPage: React.FC = () => {
         )}
       </div>
 
-      {/* Interactive Walk-to-Pickup & Route Choice Navigation Map */}
-      <PickupAndRouteNavigationMap
-        originText={sanitizeLocationText(ride.origin.text)}
-        destinationText={sanitizeLocationText(ride.destination.text)}
-      />
-
       {/* Driver Incoming Requests Panel */}
       {isDriver && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
+        <div className="bg-surface rounded-surface border border-line-base p-6 sm:p-8 shadow-subtle space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-base font-display font-bold text-ink-primary">
                 Incoming Passenger Requests
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-ink-secondary mt-0.5">
                 Accepting decrements seats automatically and alerts the student
                 via Socket.IO.
               </p>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold">
+            <span className="px-2.5 py-1 rounded-control bg-canvas border border-line-base text-ink-primary text-xs font-mono font-bold">
               {requests.length} Total Requests
             </span>
           </div>
 
           {requests.length === 0 ? (
-            <div className="py-8 text-center text-slate-400 text-xs">
+            <div className="py-8 text-center text-ink-muted text-xs">
               No passenger requests yet. Students will appear here in real time
               as they request seats!
             </div>
           ) : (
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-line-subtle">
               {requests.map((req) => (
                 <div
                   key={req._id}
@@ -781,22 +712,22 @@ export const RideDetailPage: React.FC = () => {
                         "/test_uploads/profile_photo.jpg"
                       }
                       alt={req.passengerId?.name}
-                      className="w-10 h-10 rounded-xl object-cover ring-2 ring-blue-500/20"
+                      className="w-10 h-10 rounded-control object-cover border border-line-base shadow-subtle"
                     />
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-sm text-slate-900">
+                        <span className="font-bold text-sm text-ink-primary">
                           {req.passengerId?.name}
                         </span>
                         {req.passengerId?.verificationStatus === "verified" && (
-                          <span className="text-emerald-600">
+                          <span className="text-route">
                             <ShieldCheck className="w-3.5 h-3.5" />
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500">
-                        <span className="flex items-center gap-0.5 text-amber-500 font-semibold">
-                          <Star className="w-3 h-3 fill-amber-500" />
+                      <div className="flex items-center gap-2 text-xs text-ink-secondary">
+                        <span className="flex items-center gap-0.5 text-signal font-semibold">
+                          <Star className="w-3 h-3 fill-signal text-signal" />
                           {req.passengerId?.rating?.toFixed(1) || "5.0"}
                         </span>
                         <span>•</span>
@@ -816,9 +747,9 @@ export const RideDetailPage: React.FC = () => {
                             handleRequestStatus(req._id, "accepted")
                           }
                           disabled={actionLoading}
-                          className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 shadow-sm"
+                          className="px-3.5 py-1.5 rounded-control bg-route hover:bg-route-light text-surface text-xs font-semibold flex items-center gap-1 shadow-subtle active:translate-y-[1.5px] transition-all cursor-pointer"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-route-pale" />
                           Accept (+Seat Reserve)
                         </button>
                         <button
@@ -827,19 +758,19 @@ export const RideDetailPage: React.FC = () => {
                             handleRequestStatus(req._id, "declined")
                           }
                           disabled={actionLoading}
-                          className="px-3 py-1.5 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-semibold flex items-center gap-1"
+                          className="px-3 py-1.5 rounded-control bg-canvas hover:bg-surface text-ink-primary border border-line-base text-xs font-semibold flex items-center gap-1 active:translate-y-[1.5px] transition-all cursor-pointer"
                         >
-                          <XCircle className="w-3.5 h-3.5" />
+                          <XCircle className="w-3.5 h-3.5 text-ink-muted" />
                           Decline
                         </button>
                       </>
                     ) : (
                       <div className="flex items-center gap-2">
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                          className={`px-2.5 py-1 rounded-control text-xs font-mono font-bold uppercase ${
                             req.status === "accepted"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : "bg-red-100 text-red-800"
+                              ? "bg-route-pale text-route border border-route-light/20"
+                              : "bg-emergency-crimson/10 text-emergency-crimson border border-emergency-crimson/20"
                           }`}
                         >
                           {req.status}
@@ -851,7 +782,7 @@ export const RideDetailPage: React.FC = () => {
                               handleRequestStatus(req._id, "declined")
                             }
                             disabled={actionLoading}
-                            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                            className="px-2.5 py-1 bg-emergency-crimson/10 hover:bg-emergency-crimson/20 text-emergency-crimson border border-emergency-crimson/30 rounded-control text-xs font-medium transition-colors cursor-pointer"
                             title="Remove Passenger / Mark No-show (frees up seat)"
                           >
                             Remove / No-show
@@ -869,10 +800,10 @@ export const RideDetailPage: React.FC = () => {
                                 college: req.passengerId.college,
                               });
                             }}
-                            className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                            className="px-2.5 py-1 bg-surface hover:bg-canvas text-ink-primary border border-line-base rounded-control text-xs font-semibold transition-colors flex items-center gap-1 cursor-pointer active:translate-y-[1.5px]"
                             title="Rate Passenger"
                           >
-                            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                            <Star className="w-3.5 h-3.5 fill-signal text-signal" />
                             <span>Rate Passenger</span>
                           </button>
                         )}
@@ -930,6 +861,43 @@ export const RideDetailPage: React.FC = () => {
         onClose={() => setShowSuccessModal(false)}
         rideName={ride ? `${sanitizeLocationText(ride.origin.text)} → ${sanitizeLocationText(ride.destination.text)}` : ''}
       />
+
+      {/* Accessible Cancel Seat Request Modal */}
+      {cancelRequestModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-seat-detail-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-primary/60 animate-in fade-in duration-150"
+        >
+          <div className="bg-surface rounded-card border border-line-base p-6 max-w-md w-full shadow-card space-y-4">
+            <h3 id="cancel-seat-detail-title" className="text-base font-display font-bold text-ink-primary flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-emergency-crimson shrink-0" />
+              <span>Cancel Your Seat Request?</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
+              Are you sure you want to withdraw your reservation for this ride? Your seat will be returned to the open campus pool and the driver will be notified.
+            </p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setCancelRequestModalOpen(false)}
+                className="px-4 py-2 rounded-control border border-line-base text-ink-secondary text-xs font-semibold hover:bg-canvas transition-colors min-h-[44px] cursor-pointer"
+              >
+                Keep Seat
+              </button>
+              <button
+                type="button"
+                onClick={executeCancelMyRequest}
+                disabled={actionLoading}
+                className="px-4 py-2 rounded-control bg-emergency-crimson hover:bg-red-700 text-surface text-xs font-semibold shadow-2xs active:translate-y-[1.5px] transition-all min-h-[44px] cursor-pointer"
+              >
+                {actionLoading ? "Cancelling..." : "Confirm Cancellation"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

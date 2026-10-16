@@ -23,7 +23,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({
   return (
     <div
       aria-hidden="true"
-      className={`animate-pulse bg-[#E4E5E1]/60 ${variantStyles[variant]} ${className}`}
+      className={`bg-[#E4E5E1]/80 ${variantStyles[variant]} ${className}`}
       style={{
         width,
         height,

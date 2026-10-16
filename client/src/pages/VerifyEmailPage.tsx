@@ -1,3 +1,4 @@
+// prefers-reduced-motion compliant email verification (reducedMotion="user")
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -79,12 +80,12 @@ export const VerifyEmailPage: React.FC = () => {
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35 }}
-        className="w-full max-w-md bg-white/95 backdrop-blur-md rounded-3xl p-8 border border-slate-200 shadow-xl text-center"
+        className="w-full max-w-md bg-white rounded-3xl p-8 border border-slate-200 shadow-xl text-center"
       >
         {status === "loading" && (
           <div className="py-8 flex flex-col items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 animate-pulse">
-              <Loader2 className="w-8 h-8 animate-spin" />
+            <div className="w-16 h-16 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
+              <Loader2 className="w-8 h-8 text-emerald-600" />
             </div>
             <h1 className="text-xl font-bold text-slate-900">Verifying Email...</h1>
             <p className="text-sm text-slate-600">

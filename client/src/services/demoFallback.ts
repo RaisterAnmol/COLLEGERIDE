@@ -487,7 +487,7 @@ export const DEMO_FALLBACK_RIDES = [
       totalRides: 42,
       gender: "male",
       verificationStatus: "verified",
-      avatarURL: "/test_uploads/profile_photo.jpg"
+      avatarURL: "/hero-aditya-driver.jpg"
     },
     vehicle: { type: "car", model: "Honda City i-VTEC (Silver)", plateLast4: "4821" },
     origin: { text: "UIT Building (Uttaranchal Institute of Technology)", lat: 30.3400, lng: 77.9515, coordinates: [77.9515, 30.3400] },

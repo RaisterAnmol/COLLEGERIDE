@@ -56,8 +56,8 @@ export const LiveNetworkStats: React.FC = () => {
       {/* Section Eyebrow */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-3">
-            07 — LIVE CAMPUS TELEMETRY
+          <span className="text-xs font-mono text-[#143D32] font-semibold block mb-3">
+            07 — Live Campus Telemetry
           </span>
           <h2 className="text-heading-clamp font-black text-[#111111] uppercase tracking-tight">
             Network Scale.
@@ -68,7 +68,7 @@ export const LiveNetworkStats: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 text-xs font-mono text-[#18A66A] bg-[#ECFDF5] border border-[#D1FAE5] px-3.5 py-1.5 rounded-full self-start md:self-auto">
-          <span className="w-2 h-2 rounded-full bg-[#18A66A] animate-ping" />
+          <span className="w-2 h-2 rounded-full bg-[#18A66A]" />
           <span>REAL-TIME SOCKET.IO TELEMETRY FEED</span>
         </div>
       </div>

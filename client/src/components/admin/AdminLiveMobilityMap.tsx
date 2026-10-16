@@ -1,17 +1,13 @@
+// Institutional mobility operations map - prefers-reduced-motion compliant
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
 import {
-  Navigation,
   LocateFixed,
-  Car,
   Layers,
-  Maximize2,
-  Minimize2,
   ShieldCheck,
   Radio,
-  MapPin,
-  RefreshCw,
 } from 'lucide-react';
 
 interface AdminLiveMobilityMapProps {
@@ -20,13 +16,13 @@ interface AdminLiveMobilityMapProps {
   className?: string;
 }
 
-// Campus Hotspots in Dehradun centered on UIT
+// Fixed campus waypoints and transit hubs centered on UIT
 const CAMPUS_HUBS = [
-  { name: 'UIT Uttaranchal University (Main Gate)', lat: 30.3400, lng: 77.9515, rides: 12, type: 'campus' },
-  { name: 'Premnagar Market & Chowk', lat: 30.3340, lng: 77.9620, rides: 9, type: 'hotspot' },
-  { name: 'Ballupur Chowk (Flyover)', lat: 30.3392, lng: 78.0125, rides: 6, type: 'hotspot' },
-  { name: 'Clock Tower Dehradun', lat: 30.3244, lng: 78.0416, rides: 8, type: 'hotspot' },
-  { name: 'ISBT Dehradun Hub', lat: 30.2885, lng: 78.0080, rides: 5, type: 'transit' },
+  { name: 'UIT Uttaranchal University (Main Gate)', lat: 30.3400, lng: 77.9515, type: 'campus', role: 'Main University Gate & Security Desk' },
+  { name: 'Premnagar Market & Chowk', lat: 30.3340, lng: 77.9620, type: 'hotspot', role: 'Arterial Corridor Junction' },
+  { name: 'Ballupur Chowk (Flyover)', lat: 30.3392, lng: 78.0125, type: 'hotspot', role: 'Flyover Connecting Point' },
+  { name: 'Clock Tower Dehradun', lat: 30.3244, lng: 78.0416, type: 'hotspot', role: 'City Center Terminal' },
+  { name: 'ISBT Dehradun Hub', lat: 30.2885, lng: 78.0080, type: 'transit', role: 'Interstate Transit Terminal' },
 ];
 
 // Typical transit route segments connecting UIT to town
@@ -61,9 +57,9 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const markersLayerRef = useRef<L.LayerGroup | null>(null);
 
+  const prefersReducedMotion = useReducedMotion();
   const [activeLayer, setActiveLayer] = useState<'google_streets' | 'osm'>('google_streets');
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [selectedHub, setSelectedHub] = useState<string | null>(null);
+  const [isFullscreen] = useState(false);
 
   // Initialize Map
   useEffect(() => {
@@ -158,13 +154,13 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
       dashArray: '4, 4',
     }).addTo(group);
 
-    // Add Hub Markers
+    // Add Hub Markers with calm static indicators
     CAMPUS_HUBS.forEach((hub) => {
       const isCampus = hub.type === 'campus';
       const iconHtml = `
         <div style="position: relative; display: flex; align-items: center; justify-content: center;">
-          <div style="position: absolute; width: 36px; height: 36px; border-radius: 50%; background-color: ${isCampus ? '#10B981' : '#0F766E'}; opacity: 0.25; animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
-          <div style="width: 28px; height: 28px; border-radius: 50%; background-color: ${isCampus ? '#143D32' : '#0F766E'}; border: 2.5px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.25); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 800;">
+          <div style="position: absolute; width: 36px; height: 36px; border-radius: 50%; background-color: ${isCampus ? 'rgba(20, 61, 50, 0.12)' : 'rgba(45, 106, 79, 0.10)'}; border: 1.5px solid ${isCampus ? 'rgba(20, 61, 50, 0.35)' : 'rgba(45, 106, 79, 0.25)'};"></div>
+          <div style="width: 28px; height: 28px; border-radius: 50%; background-color: ${isCampus ? '#143D32' : '#2D6A4F'}; border: 2px solid #FFFFFF; box-shadow: 0 2px 6px rgba(24,32,29,0.18); display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700;">
             ${isCampus ? 'UIT' : '📍'}
           </div>
         </div>
@@ -181,8 +177,8 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
       marker.bindPopup(`
         <div style="font-family: inherit; font-size: 12px; line-height: 1.4; padding: 4px;">
           <b style="color: #143D32; font-size: 13px;">${hub.name}</b><br/>
-          <span style="color: #64748B;">Active Commuters: <b>${hub.rides}</b></span><br/>
-          <span style="display: inline-block; margin-top: 4px; padding: 2px 6px; background-color: #ECFDF5; color: #047857; border-radius: 4px; font-size: 10px; font-weight: 700;">GEOFENCE VERIFIED</span>
+          <span style="color: #5F6964;">Corridor Role: <b>${hub.role}</b></span><br/>
+          <span style="display: inline-block; margin-top: 4px; padding: 2px 6px; background-color: #EDF5F2; color: #143D32; border: 1px solid #DDD9CE; border-radius: 4px; font-size: 10px; font-weight: 600;">GEOFENCE VERIFIED</span>
         </div>
       `);
     });
@@ -195,15 +191,40 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
       { name: 'Ananya Joshi', lat: 30.3010, lng: 77.9920, vehicle: 'Hyundai i20', seats: 2, route: 'ISBT → UIT' },
     ];
 
+    // Distribute vehicles realistically along actual road corridor waypoints
+    const corridorRoadPoints = [
+      [30.3392, 77.9535], // Near UIT Campus Gate
+      [30.3370, 77.9570], // Nanda Ki Chowki approach
+      [30.3345, 77.9615], // Premnagar Market
+      [30.3355, 77.9850], // Chakrata Road mid-segment
+      [30.3380, 78.0010], // Near IMA / Panditwari
+      [30.3392, 78.0125], // Ballupur Chowk
+      [30.3180, 77.9750], // Shimla Bypass connector
+      [30.3010, 77.9920], // Majra corridor
+    ];
+
     const driverList = ongoingRides.length > 0
-      ? ongoingRides.map((r, i) => ({
-          name: r.driver?.name || `Driver #${i + 1}`,
-          lat: r.origin?.coordinates?.[1] || 30.3375 + (i * 0.004),
-          lng: r.origin?.coordinates?.[0] || 77.9580 + (i * 0.008),
-          vehicle: r.vehicle?.model || 'Campus Ride',
-          seats: r.seatsAvailable || 2,
-          route: `${r.origin?.text || 'Pickup'} → ${r.destination?.text || 'UIT'}`,
-        }))
+      ? ongoingRides.slice(0, 6).map((r, i) => {
+          const hasRealCoords =
+            r.origin?.coordinates?.[1] &&
+            r.origin.coordinates[1] > 30.25 &&
+            r.origin.coordinates[1] < 30.45 &&
+            r.origin.coordinates[0] > 77.85 &&
+            r.origin.coordinates[0] < 78.10;
+
+          const defaultPoint = corridorRoadPoints[i % corridorRoadPoints.length];
+          const jitterLat = ((i * 17) % 7 - 3) * 0.0004;
+          const jitterLng = ((i * 23) % 7 - 3) * 0.0004;
+
+          return {
+            name: r.driver?.name || `Student Driver #${i + 1}`,
+            lat: hasRealCoords ? r.origin.coordinates[1] : defaultPoint[0] + jitterLat,
+            lng: hasRealCoords ? r.origin.coordinates[0] : defaultPoint[1] + jitterLng,
+            vehicle: r.vehicle?.model || 'Campus Carpool',
+            seats: r.seatsAvailable || 2,
+            route: `${r.origin?.text?.split('(')[0]?.trim() || 'Premnagar'} → ${r.destination?.text?.split('(')[0]?.trim() || 'UIT Campus'}`,
+          };
+        })
       : demoDrivers;
 
     driverList.forEach((driver) => {
@@ -240,30 +261,34 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
     });
   }, [ongoingRides]);
 
-  // Recenter to UIT Uttaranchal University
+  // Recenter to UIT Uttaranchal University (prefers-reduced-motion aware)
   const handleRecenterUIT = () => {
     if (mapInstanceRef.current) {
-      mapInstanceRef.current.flyTo([30.3400, 77.9515], 14, { duration: 1.2 });
+      if (prefersReducedMotion) {
+        mapInstanceRef.current.setView([30.3400, 77.9515], 14, { animate: false });
+      } else {
+        mapInstanceRef.current.flyTo([30.3400, 77.9515], 14, { duration: 1.2 });
+      }
     }
   };
 
   return (
-    <div className={`relative rounded-3xl border border-slate-200/90 bg-white shadow-xs overflow-hidden ${className}`}>
+    <div className={`relative rounded-surface border border-line-base bg-surface shadow-subtle overflow-hidden ${className}`}>
       {/* Map Header Card Bar */}
-      <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-gradient-to-r from-slate-50/80 via-white to-emerald-50/40">
+      <div className="p-4 sm:p-5 border-b border-line-subtle flex flex-wrap items-center justify-between gap-3 bg-surface-raised">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#143D32] text-white flex items-center justify-center shadow-xs">
-            <Radio className="w-5 h-5 text-emerald-400 animate-pulse" />
+          <div className="w-10 h-10 rounded-control bg-route text-white flex items-center justify-center shadow-subtle">
+            <Radio className="w-5 h-5 text-emerald-300" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-slate-900 text-sm sm:text-base">Live Campus Mobility Map</h3>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold tracking-wider flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping" />
-                LIVE GPS FEED
+              <h3 className="font-display font-bold text-ink-primary text-sm sm:text-base">Live Campus Mobility Map</h3>
+              <span className="px-2.5 py-0.5 rounded-full bg-route-pale text-route text-[11px] font-mono font-medium flex items-center gap-1.5 border border-line-base">
+                <span className="w-1.5 h-1.5 rounded-full bg-status-verified" />
+                Live Telemetry
               </span>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-ink-secondary mt-0.5">
               Active student shuttles, carpools, and transit corridors across {collegeScope}
             </p>
           </div>
@@ -275,10 +300,10 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
           <button
             type="button"
             onClick={() => setActiveLayer(l => l === 'google_streets' ? 'osm' : 'google_streets')}
-            className="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+            className="px-3 py-1.5 rounded-control border border-line-base bg-surface hover:bg-canvas text-xs font-semibold text-ink-primary flex items-center gap-1.5 shadow-subtle transition-colors cursor-pointer"
             title="Toggle Map Style"
           >
-            <Layers className="w-3.5 h-3.5 text-slate-500" />
+            <Layers className="w-3.5 h-3.5 text-ink-muted" />
             <span>{activeLayer === 'google_streets' ? 'Google Roads' : 'OSM Tiles'}</span>
           </button>
 
@@ -286,10 +311,10 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
           <button
             type="button"
             onClick={handleRecenterUIT}
-            className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors cursor-pointer"
+            className="px-3 py-1.5 rounded-control bg-route-pale hover:bg-brand-100 text-route border border-line-base text-xs font-semibold flex items-center gap-1.5 shadow-subtle transition-colors cursor-pointer"
             title="Center on UIT Premnagar"
           >
-            <LocateFixed className="w-3.5 h-3.5 text-emerald-600" />
+            <LocateFixed className="w-3.5 h-3.5 text-route" />
             <span>Center UIT</span>
           </button>
         </div>
@@ -298,30 +323,30 @@ export const AdminLiveMobilityMap: React.FC<AdminLiveMobilityMapProps> = ({
       {/* Map Canvas Container */}
       <div
         ref={mapContainerRef}
-        className={`w-full bg-slate-100 transition-all ${
+        className={`w-full bg-canvas transition-all ${
           isFullscreen ? 'fixed inset-0 z-50 rounded-none h-screen' : 'h-[360px] sm:h-[400px]'
         }`}
       />
 
       {/* Map Footer Bar with Corridors & Hotspots status */}
-      <div className="p-3 sm:p-4 bg-slate-50/90 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600 font-medium">
+      <div className="p-3.5 sm:p-4 bg-canvas border-t border-line-subtle flex flex-wrap items-center justify-between gap-3 text-xs text-ink-secondary font-medium">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-[#143D32] border border-white shadow-2xs" />
-            <span className="font-bold text-slate-800">UIT Campus Hub</span>
+            <span className="w-3 h-3 rounded-full bg-route border border-surface shadow-subtle" />
+            <span className="font-bold text-ink-primary">UIT Campus Hub</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-md bg-[#143D32] border border-emerald-400" />
+            <span className="w-3 h-3 rounded-ticket bg-route border border-status-verified" />
             <span>Active Student Drivers</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-4 h-1 bg-emerald-500 rounded-full" />
+            <span className="w-4 h-1 bg-route-light rounded-full" />
             <span>Verified Arterial Road Corridors</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-slate-500 text-[11px] font-mono">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+        <div className="flex items-center gap-2 text-ink-muted text-[11px] font-mono">
+          <ShieldCheck className="w-3.5 h-3.5 text-route" />
           <span>OSRM Real Roads & Open Telemetry</span>
         </div>
       </div>

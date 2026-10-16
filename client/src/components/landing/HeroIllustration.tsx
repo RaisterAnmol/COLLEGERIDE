@@ -18,8 +18,8 @@ export const HeroIllustration: React.FC = () => {
 
       {/* Foreground Hero Content Card */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 w-full">
-        <div className="max-w-xl bg-white/92 backdrop-blur-md p-6 sm:p-8 md:p-10 rounded-3xl border border-white/80 shadow-2xl">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-[#143D32] text-xs font-mono font-bold tracking-wider uppercase mb-5">
+        <div className="max-w-xl bg-white p-6 sm:p-8 md:p-10 rounded-3xl border border-line-base shadow-subtle">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-[#143D32] text-xs font-mono font-semibold mb-5">
             Share Rides · Save Time · Stay Safe
           </span>
 

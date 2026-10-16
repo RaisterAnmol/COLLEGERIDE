@@ -34,55 +34,66 @@ export const Navbar: React.FC = () => {
   const isDriver = user?.role === 'driver' || user?.accountType === 'DRIVER';
   const isAdmin = user?.role === 'super_admin' || user?.role === 'campus_admin' || user?.role === 'moderator';
 
-  // Navigation Links: Strictly role-aware (Drivers only see Offer a Ride; Passengers only see Find a Ride; Admins see neither)
+  // Navigation Links: 'Campuses' is only shown before login (public). When logged in, it is hidden for drivers, passengers, and admins.
   const navLinks = user
     ? [
         { label: 'Dashboard', href: '/dashboard' },
         ...(isDriver ? [{ label: 'Offer a Ride', href: '/post' }] : []),
         ...(!isDriver && !isAdmin ? [{ label: 'Find a Ride', href: '/search' }] : []),
-        { label: 'Campuses', href: '/colleges' },
         { label: 'Safety', href: '/safety' },
         { label: 'Verification', href: '/verification' },
         ...(isAdmin ? [{ label: 'Admin Dashboard', href: '/admin' }] : []),
       ]
-    : [];
+    : [
+        { label: 'Campuses', href: '/colleges' },
+        { label: 'Find a Ride', href: '/search' },
+        { label: 'Safety', href: '/safety' },
+        { label: 'Verification', href: '/verification' },
+      ];
 
   return (
     <motion.header
       className={`sticky top-0 z-40 w-full transition-all duration-200 ${
         isScrolled
-          ? 'bg-white/95 backdrop-blur-md border-b border-slate-200 py-3 shadow-xs'
-          : 'bg-[#F8FAFC] py-4 border-b border-slate-200/80'
+          ? 'bg-white/95 backdrop-blur-md border-b border-border py-3 shadow-sm'
+          : 'bg-[#E8EBE6]/85 backdrop-blur-md py-3.5 border-b border-border/70'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#143D32] ring-4 ring-[#143D32]/20 group-hover:scale-125 transition-transform" />
-          <span className="text-xl font-bold tracking-tight text-slate-900 font-sans">
+          <span className="w-2.5 h-2.5 rounded-full bg-forest ring-4 ring-forest/20 transition-transform group-hover:scale-110" />
+          <span className="text-2xl font-extrabold tracking-tight text-ink-primary font-display">
             CampusRide
           </span>
-          <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full border border-slate-200 hidden sm:inline">
-            UNIVERSITY TRANSIT
+          <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-paper text-ink-secondary rounded-full border border-border hidden sm:inline">
+            DEHRADUN TRANSIT
           </span>
         </Link>
 
-        {/* Desktop Nav Links - Only visible AFTER login */}
-        {user && navLinks.length > 0 && (
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-slate-600">
+        {/* Desktop Nav Links - Accessible both before and after login */}
+        {navLinks.length > 0 && (
+          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-ink-secondary">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.href;
               return (
                 <Link
                   key={link.label}
                   to={link.href}
-                  className={`transition-colors py-1 ${
+                  className={`relative transition-colors py-1 ${
                     isActive
-                      ? 'text-[#143D32] font-bold border-b-2 border-[#143D32]'
-                      : 'hover:text-slate-900'
+                      ? 'text-plum font-bold'
+                      : 'hover:text-ink-primary'
                   }`}
                 >
                   {link.label}
+                  {isActive && (
+                    <motion.span
+                      layoutId="desktop-nav-active-pill"
+                      className="absolute -bottom-0.5 left-0 right-0 h-[2px] bg-plum rounded-full"
+                      transition={{ type: 'spring', stiffness: 400, damping: 30, mass: 0.8 }}
+                    />
+                  )}
                 </Link>
               );
             })}
@@ -96,9 +107,9 @@ export const Navbar: React.FC = () => {
               {isDriver && (
                 <Link
                   to="/post"
-                  className="px-3.5 py-1.5 text-xs font-semibold text-white bg-[#143D32] hover:bg-[#0f2e26] rounded-xl transition-colors flex items-center gap-1.5 shadow-xs"
+                  className="px-4 py-2 text-xs font-bold text-white bg-plum hover:bg-plum-hover rounded-control transition-all flex items-center gap-1.5 shadow-sm active:translate-y-0.5"
                 >
-                  <Car className="w-3.5 h-3.5 text-emerald-300" />
+                  <Car className="w-3.5 h-3.5 text-plum-light" />
                   <span>Post a Ride</span>
                 </Link>
               )}
@@ -106,9 +117,9 @@ export const Navbar: React.FC = () => {
               {!isDriver && !isAdmin && (
                 <Link
                   to="/search"
-                  className="px-3.5 py-1.5 text-xs font-semibold text-[#143D32] bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-colors flex items-center gap-1.5 shadow-xs"
+                  className="px-4 py-2 text-xs font-bold text-plum bg-plum-light hover:bg-[#E9D7E2] border border-plum-border rounded-control transition-all flex items-center gap-1.5 shadow-sm active:translate-y-0.5"
                 >
-                  <Search className="w-3.5 h-3.5 text-emerald-600" />
+                  <Search className="w-3.5 h-3.5 text-plum" />
                   <span>Find a Ride</span>
                 </Link>
               )}
@@ -116,7 +127,7 @@ export const Navbar: React.FC = () => {
               {isAdmin && (
                 <Link
                   to="/admin"
-                  className="px-3.5 py-1.5 text-xs font-semibold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-xl transition-colors flex items-center gap-1.5 shadow-xs"
+                  className="px-4 py-2 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-300 rounded-control transition-colors flex items-center gap-1.5 shadow-xs"
                 >
                   <ShieldAlert className="w-3.5 h-3.5 text-amber-700" />
                   <span>Admin Panel</span>
@@ -129,24 +140,24 @@ export const Navbar: React.FC = () => {
               {/* Profile Capsule */}
               <Link
                 to="/dashboard"
-                className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all shadow-xs group"
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-control border border-border bg-paper hover:border-plum-border hover:bg-white transition-all shadow-xs group"
                 title="View Dashboard & Profile"
               >
                 <img
                   src={
                     user.avatarURL ||
-                    '/test_uploads/profile_photo.jpg'
+                    '/avatars/aditya.jpg'
                   }
                   alt={user.name}
-                  className="w-7 h-7 rounded-full object-cover border border-slate-300"
+                  className="w-7 h-7 rounded-full object-cover border border-border"
                 />
                 <div className="flex flex-col text-left">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-bold text-slate-900 leading-none">
+                    <span className="text-xs font-bold text-ink-primary leading-none">
                       {user.name.split(' ')[0]}
                     </span>
                     {isDriver && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-forest-light text-forest border border-forest/30">
                         DRIVER
                       </span>
                     )}
@@ -161,10 +172,10 @@ export const Navbar: React.FC = () => {
                       </span>
                     )}
                   </div>
-                  <span className="text-[10px] text-slate-500 leading-tight flex items-center gap-1 mt-0.5">
+                  <span className="text-[10px] text-ink-muted leading-tight flex items-center gap-1 mt-0.5">
                     {user.verificationStatus === 'verified' ? (
-                      <span className="text-emerald-700 font-medium flex items-center gap-0.5">
-                        <ShieldCheck className="w-2.5 h-2.5 inline text-emerald-600" /> Verified
+                      <span className="text-forest font-medium flex items-center gap-0.5">
+                        <ShieldCheck className="w-2.5 h-2.5 inline text-forest" /> Verified
                       </span>
                     ) : (
                       <span className="text-amber-700 font-medium flex items-center gap-0.5">
@@ -181,7 +192,7 @@ export const Navbar: React.FC = () => {
                   logout();
                   navigate('/');
                 }}
-                className="px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer flex items-center gap-1.5 border border-slate-200"
+                className="px-3 py-1.5 text-xs font-semibold text-ink-secondary hover:text-emergency-crimson hover:bg-red-50 rounded-control transition-colors cursor-pointer flex items-center gap-1.5 border border-border"
                 title="Log Out & Switch Account"
                 aria-label="Log Out"
               >
@@ -193,17 +204,19 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-2.5">
               <Link
                 to="/login"
-                className="px-4 py-2 text-xs font-bold text-slate-700 hover:text-[#143D32] hover:bg-slate-100 rounded-xl transition-colors border border-slate-300 shadow-2xs"
+                className="px-4 py-2 text-xs font-bold text-ink-primary hover:text-plum hover:bg-white rounded-control transition-all border border-border shadow-xs bg-paper"
               >
                 Log In
               </Link>
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white text-xs font-bold shadow-xs hover:shadow transition-all hover:-translate-y-0.5 cursor-pointer"
-              >
-                <span>Register</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+              <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.97, y: 1 }} transition={{ type: 'spring', stiffness: 400, damping: 30 }}>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-control bg-plum hover:bg-plum-hover text-white text-xs font-bold shadow-sm hover:shadow transition-all cursor-pointer"
+                >
+                  <span>Register</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </motion.div>
             </div>
           )}
         </div>
@@ -214,35 +227,55 @@ export const Navbar: React.FC = () => {
             <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="px-3 py-1.5 text-xs font-bold text-slate-700 hover:text-[#143D32] bg-slate-100 border border-slate-200 rounded-xl"
+                className="px-3 py-1.5 text-xs font-bold text-ink-primary bg-paper border border-border rounded-control"
               >
                 Log In
               </Link>
               <Link
                 to="/register"
-                className="px-3 py-1.5 text-xs font-bold text-white bg-[#143D32] rounded-xl shadow-xs"
+                className="px-3 py-1.5 text-xs font-bold text-white bg-plum rounded-control shadow-xs"
               >
                 Register
               </Link>
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="p-1.5 text-ink-primary rounded-xl hover:bg-black/5 transition-colors cursor-pointer"
+                aria-label="Toggle navigation menu"
+              >
+                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              </button>
             </div>
           ) : (
             <div className="flex items-center gap-1.5">
               <NotificationBell />
-              <button
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 28 }}
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="p-2 text-slate-800 rounded-xl hover:bg-emerald-50 transition-colors cursor-pointer"
                 aria-label="Toggle navigation menu"
               >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={mobileMenuOpen ? 'close' : 'open'}
+                    initial={{ opacity: 0, rotate: -90 }}
+                    animate={{ opacity: 1, rotate: 0 }}
+                    exit={{ opacity: 0, rotate: 90 }}
+                    transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                    className="block"
+                  >
+                    {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                  </motion.span>
+                </AnimatePresence>
+              </motion.button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Mobile Menu - Only shown for authenticated users */}
+      {/* Mobile Menu - Accessible for all visitors & authenticated users */}
       <AnimatePresence>
-        {mobileMenuOpen && user && (
+        {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
@@ -334,7 +367,7 @@ export const Navbar: React.FC = () => {
                   </Link>
                   <Link
                     to="/register"
-                    className="w-full py-2.5 text-center text-sm font-bold bg-[#143D32] text-white rounded-xl shadow-xs"
+                    className="w-full py-2.5 text-center text-sm font-bold bg-plum hover:bg-plum-hover text-white rounded-xl shadow-xs transition-colors"
                   >
                     Register
                   </Link>

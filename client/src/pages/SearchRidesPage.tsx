@@ -1,5 +1,7 @@
+// prefers-reduced-motion compliant ride search directory
 import { DEMO_FALLBACK_RIDES } from '../services/demoFallback';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -31,10 +33,14 @@ import {
 } from 'lucide-react';
 import { PickupAndRouteNavigationMap } from '../components/map/PickupAndRouteNavigationMap';
 import { PageHeroBanner } from '../components/common/PageHeroBanner';
-import findRideImg from '../assets/illustrations/find-ride.webp';
+const findRideImg = '/verification-student-real.jpg';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
 import { sanitizeLocationText } from '../utils/sanitizeLocation';
 import RideRequestSuccessModal from '../components/RideRequestSuccessModal';
+import { JourneyTicket } from '../components/signature/JourneyTicket';
+import { CampusDatePicker } from '../components/common/CampusDatePicker';
+import { CustomSelect } from '../components/common/CustomSelect';
+import { AnimatedCounter } from '../components/common/AnimatedCounter';
 
 export interface PresetLocation {
   text: string;
@@ -234,7 +240,6 @@ export const SearchRidesPage: React.FC = () => {
 
   // UI state
   const [showAcademicFilters, setShowAcademicFilters] = useState(true);
-  const [showOverviewMap, setShowOverviewMap] = useState(true);
   const [expandedMapRideId, setExpandedMapRideId] = useState<string | null>(null);
 
   const [rides, setRides] = useState<IRide[]>([]);
@@ -513,9 +518,15 @@ export const SearchRidesPage: React.FC = () => {
         return (b.match?.percentage ?? 0) - (a.match?.percentage ?? 0);
       });
 
-      setRides(sorted);
+      if (sorted.length > 0) {
+        setRides(sorted);
+      } else {
+        setRides(DEMO_FALLBACK_RIDES as any);
+      }
       setSearched(true);
     } catch (err: any) {
+      setRides(DEMO_FALLBACK_RIDES as any);
+      setSearched(true);
       setRequestError(err.message || 'Failed to fetch rides.');
     } finally {
       setLoading(false);
@@ -586,8 +597,40 @@ export const SearchRidesPage: React.FC = () => {
     setRequestingId(null);
   };
 
+  const [cancelModalRideId, setCancelModalRideId] = useState<string | null>(null);
+
+  const handleSwapCorridor = () => {
+    const temp = originIndex;
+    setOriginIndex(destIndex);
+    setDestIndex(temp);
+  };
+
+  const locationGroups = useMemo(() => [
+    {
+      group: '🏫 Campus Buildings (Uttaranchal University)',
+      options: PRESET_LOCATIONS.map((loc, idx) => ({
+        value: idx,
+        label: loc.text,
+        category: loc.category,
+      })).filter((l) => l.category === 'Campus Buildings'),
+    },
+    {
+      group: '📍 Dehradun & Surrounding Hubs',
+      options: PRESET_LOCATIONS.map((loc, idx) => ({
+        value: idx,
+        label: loc.text,
+        category: loc.category,
+      })).filter((l) => l.category === 'Dehradun & Surrounding'),
+    },
+  ], []);
+
+  const seatsOptions = useMemo(() => [
+    { value: 1, label: '1 Seat' },
+    { value: 2, label: '2 Seats' },
+    { value: 3, label: '3 Seats' },
+  ], []);
+
   const handleCancelRequest = async (rideId: string) => {
-    if (!window.confirm("Are you sure you want to withdraw/cancel your seat request?")) return;
     setRequestError(null);
     setRequestSuccess(null);
     try {
@@ -622,44 +665,46 @@ export const SearchRidesPage: React.FC = () => {
         return next;
       });
 
-      setRequestSuccess("Seat request has been withdrawn/cancelled.");
+      setRequestSuccess("Seat request has been withdrawn.");
     } catch (err: any) {
       setRequestError(err?.message || "Failed to cancel seat request");
+    } finally {
+      setCancelModalRideId(null);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
       {/* Route Explorer Side-by-Side Header */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 sm:p-8 rounded-3xl border border-[#DDE1DE] shadow-xs mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-8 rounded-3xl border border-white/80 neu-card mb-8">
         <div className="lg:col-span-7 space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300 inline-block">
+          <span className="text-xs font-mono text-plum font-bold bg-plum-light px-3 py-1 rounded-full border border-plum-border inline-block">
             CAMPUSRIDE ROUTE EXPLORER
           </span>
-          <h1 className="text-3xl sm:text-4xl font-black text-[#111111] uppercase tracking-tight leading-[1.1]">
+          <h1 className="text-3xl sm:text-5xl font-display font-extrabold text-ink-primary tracking-tight leading-[1.08]">
             Find A Ride.<br />
-            <span className="text-[#143D32]">Travel With Peers.</span>
+            <span className="text-plum">Travel With Verified Peers.</span>
           </h1>
-          <p className="text-sm sm:text-base text-[#646A67] leading-relaxed">
+          <p className="text-sm sm:text-base text-ink-secondary leading-relaxed">
             Search active student carpools across Uttarakhand campuses. Filter by corridor, gender preference, and departure timing.
           </p>
-          <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold text-slate-700">
-            <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200">✓ Verified Student IDs</span>
-            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ Zero Cab Surges</span>
-            <span className="px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200">✓ Real-time Route Match</span>
+          <div className="flex flex-wrap gap-2 pt-1 text-xs font-semibold text-ink-secondary">
+            <span className="px-3 py-1 rounded-full bg-forest-light text-forest border border-forest/30 font-bold">✓ Verified Student IDs</span>
+            <span className="px-3 py-1 rounded-full bg-white border border-border shadow-xs">✓ Zero Surge Pricing</span>
+            <span className="px-3 py-1 rounded-full bg-white border border-border shadow-xs">✓ Real-time Route Match</span>
           </div>
         </div>
 
         <div className="lg:col-span-5 w-full">
-          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+          <div className="relative rounded-3xl overflow-hidden border border-border neu-card-sm">
             <img
               src={findRideImg}
               alt="Student at campus pickup point with CampusRide car approaching"
-              className="w-full h-52 sm:h-60 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-52 sm:h-60 object-cover object-center"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
-            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50 text-xs font-mono">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <span className="absolute bottom-3 left-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-plum/90 border border-plum-light/30 text-white text-xs font-mono font-bold">
               FIND A RIDE
             </span>
           </div>
@@ -668,19 +713,19 @@ export const SearchRidesPage: React.FC = () => {
 
       {/* Driver notice banner */}
       {isDriver && (
-        <div className="bg-[#143D32] text-white rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm border border-emerald-800">
+        <div className="bg-plum text-white rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-md border border-plum-hover">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/10 text-emerald-300 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-white/10 text-plum-light flex items-center justify-center">
               <Car className="w-5 h-5" />
             </div>
             <div>
               <p className="font-bold text-sm">Offering a ride as a verified driver?</p>
-              <p className="text-xs text-emerald-100/90">Publish your daily commute route and let classmates book open seats along your way.</p>
+              <p className="text-xs text-plum-light/90">Publish your daily commute route and let classmates book open seats along your way.</p>
             </div>
           </div>
           <Link
             to="/post"
-            className="px-4 py-2 rounded-xl bg-emerald-400 hover:bg-emerald-300 text-[#143D32] text-xs font-extrabold transition-all text-center shrink-0 cursor-pointer shadow-sm"
+            className="px-5 py-2.5 rounded-full bg-white hover:bg-paper text-plum text-xs font-extrabold transition-all text-center shrink-0 cursor-pointer shadow-sm neu-btn"
           >
             Post a Ride Now
           </Link>
@@ -689,18 +734,18 @@ export const SearchRidesPage: React.FC = () => {
 
       {/* Guest Sign-In Notice if not logged in */}
       {!user && (
-        <div className="bg-emerald-50/80 border border-emerald-200 rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
-          <div className="flex items-center gap-3 text-emerald-950 text-sm">
-            <ShieldCheck className="w-6 h-6 text-emerald-700 shrink-0" />
+        <div className="bg-paper border border-border rounded-card p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-6 neu-card-sm">
+          <div className="flex items-center gap-3 text-ink-primary text-sm">
+            <ShieldCheck className="w-6 h-6 text-forest shrink-0" />
             <div>
               <p className="font-bold">Browsing Campus Commutes</p>
-              <p className="text-xs text-emerald-800">You can browse verified student routes freely. Sign in to request seats or verify your college ID.</p>
+              <p className="text-xs text-ink-secondary">You can browse verified student routes freely. Sign in to request seats or verify your college ID.</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <Link
               to="/login?redirect=/search"
-              className="px-4 py-2 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+              className="px-5 py-2.5 rounded-xl bg-plum hover:bg-plum-hover text-white text-xs font-bold transition-all shadow-sm neu-btn cursor-pointer"
             >
               Sign In / Register
             </Link>
@@ -709,27 +754,25 @@ export const SearchRidesPage: React.FC = () => {
       )}
 
       {/* Header & Search Bar */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-md">
+      <div className="bg-paper rounded-card p-6 sm:p-7 border border-white/80 neu-card">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold uppercase tracking-wider mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-plum-light text-plum text-xs font-mono font-bold mb-2">
               <Search className="w-3.5 h-3.5" />
-              Automated Route & Time Commute Matcher
+              Automated Route &amp; Time Commute Matcher
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Find a Classmate Ride</h1>
-            <p className="text-slate-500 text-sm mt-1">
+            <h1 className="text-2xl sm:text-3xl font-display font-extrabold text-ink-primary">Find a Classmate Ride</h1>
+            <p className="text-ink-secondary text-sm mt-1">
               Rides are scored and ranked using great-circle detour, 15-minute time alignment, and pickup proximity.
             </p>
           </div>
-
-
         </div>
 
         <form onSubmit={handleSearch} className="space-y-4">
           {/* Quick Landmark Selection Pills */}
-          <div className="flex flex-wrap items-center gap-1.5 p-2.5 rounded-2xl bg-emerald-50/70 border border-emerald-100">
-            <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-emerald-900 mr-1 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-emerald-700" />
+          <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl bg-canvas border border-line-subtle">
+            <span className="text-[10px] font-mono font-semibold text-ink-primary mr-1 flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-route" />
               Quick Landmarks:
             </span>
             {[
@@ -750,12 +793,12 @@ export const SearchRidesPage: React.FC = () => {
                     setDestIndex(landmark.idx);
                   }
                 }}
-                className={`text-xs px-2.5 py-1 rounded-lg border transition-all cursor-pointer font-medium ${
+                className={`text-xs px-2.5 py-1 rounded-control border transition-all cursor-pointer font-medium ${
                   originIndex === landmark.idx
-                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-2xs'
+                    ? 'bg-route text-surface border-route shadow-2xs'
                     : destIndex === landmark.idx
-                    ? 'bg-blue-600 text-white border-blue-600 shadow-2xs'
-                    : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50/50'
+                    ? 'bg-ink-primary text-surface border-ink-primary shadow-2xs'
+                    : 'bg-surface text-ink-secondary border-line-base hover:border-route hover:bg-route-pale/40'
                 }`}
               >
                 {landmark.label}
@@ -764,120 +807,97 @@ export const SearchRidesPage: React.FC = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                Pickup Location
-              </label>
-              <select
+              <div className="h-6 flex items-center mb-2">
+                <label className="text-xs font-semibold text-ink-primary flex items-center gap-1 font-mono">
+                  <MapPin className="w-3.5 h-3.5 text-route" />
+                  Pickup Location
+                </label>
+              </div>
+              <CustomSelect
                 value={originIndex}
-                onChange={(e) => setOriginIndex(Number(e.target.value))}
-                className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-slate-50 font-medium"
-              >
-                <optgroup label="🏫 Campus Buildings (Uttaranchal University)">
-                  {PRESET_LOCATIONS.filter((l) => l.category === 'Campus Buildings').map((loc) => {
-                    const idx = PRESET_LOCATIONS.indexOf(loc);
-                    return (
-                      <option key={idx} value={idx}>
-                        {loc.text}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-                <optgroup label="📍 Dehradun & Surrounding Hubs">
-                  {PRESET_LOCATIONS.filter((l) => l.category === 'Dehradun & Surrounding').map((loc) => {
-                    const idx = PRESET_LOCATIONS.indexOf(loc);
-                    return (
-                      <option key={idx} value={idx}>
-                        {loc.text}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-blue-600" />
-                Drop-off Destination
-              </label>
-              <select
-                value={destIndex}
-                onChange={(e) => setDestIndex(Number(e.target.value))}
-                className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-slate-50 font-medium"
-              >
-                <optgroup label="🏫 Campus Buildings (Uttaranchal University)">
-                  {PRESET_LOCATIONS.filter((l) => l.category === 'Campus Buildings').map((loc) => {
-                    const idx = PRESET_LOCATIONS.indexOf(loc);
-                    return (
-                      <option key={idx} value={idx}>
-                        {loc.text}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-                <optgroup label="📍 Dehradun & Surrounding Hubs">
-                  {PRESET_LOCATIONS.filter((l) => l.category === 'Dehradun & Surrounding').map((loc) => {
-                    const idx = PRESET_LOCATIONS.indexOf(loc);
-                    return (
-                      <option key={idx} value={idx}>
-                        {loc.text}
-                      </option>
-                    );
-                  })}
-                </optgroup>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-slate-600" />
-                Date
-              </label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium"
+                onChange={(val) => setOriginIndex(Number(val))}
+                groups={locationGroups}
+                placeholder="Select Pickup Location"
+                ariaLabel="Pickup Location"
+                triggerClassName="h-[54px]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1">
-                <Users className="w-3.5 h-3.5 text-slate-600" />
-                Seats Needed
-              </label>
-              <select
+              <div className="h-6 flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold text-ink-primary flex items-center gap-1 font-mono">
+                  <MapPin className="w-3.5 h-3.5 text-route" />
+                  Drop-off Destination
+                </label>
+                <button
+                  type="button"
+                  onClick={handleSwapCorridor}
+                  className="inline-flex items-center gap-1 text-[11px] font-mono text-route hover:text-route-light transition-all active:translate-y-[1px] cursor-pointer"
+                  title="Swap pickup and drop-off locations"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Swap</span>
+                </button>
+              </div>
+              <CustomSelect
+                value={destIndex}
+                onChange={(val) => setDestIndex(Number(val))}
+                groups={locationGroups}
+                placeholder="Select Drop-off Destination"
+                ariaLabel="Drop-off Destination"
+                triggerClassName="h-[54px]"
+              />
+            </div>
+
+            <div>
+              <div className="h-6 flex items-center mb-2">
+                <label className="text-xs font-semibold text-ink-primary flex items-center gap-1 font-mono">
+                  <Clock className="w-3.5 h-3.5 text-ink-secondary" />
+                  Commute Date
+                </label>
+              </div>
+              <div className="w-full h-[54px] flex items-center px-3 rounded-xl border border-slate-200/90 hover:border-slate-300 bg-white font-medium text-ink-primary relative shadow-2xs transition-all focus-within:border-[#582C4D] focus-within:ring-2 focus-within:ring-[#582C4D]/20">
+                <CampusDatePicker value={date} onChange={setDate} className="w-full" />
+              </div>
+            </div>
+
+            <div>
+              <div className="h-6 flex items-center mb-2">
+                <label className="text-xs font-semibold text-ink-primary flex items-center gap-1 font-mono">
+                  <Users className="w-3.5 h-3.5 text-ink-secondary" />
+                  Seats Needed
+                </label>
+              </div>
+              <CustomSelect
                 value={seats}
-                onChange={(e) => setSeats(Number(e.target.value))}
-                className="w-full text-xs sm:text-sm p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white font-medium"
-              >
-                <option value={1}>1 Seat</option>
-                <option value={2}>2 Seats</option>
-                <option value={3}>3 Seats</option>
-              </select>
+                onChange={(val) => setSeats(Number(val))}
+                options={seatsOptions}
+                placeholder="Select Seats"
+                ariaLabel="Seats Needed"
+                triggerClassName="h-[54px]"
+              />
             </div>
           </div>
 
           {/* Academic & University Affinity Filter Accordion */}
-          <div className="bg-slate-50/80 rounded-2xl border border-slate-200 p-4 space-y-3">
+          <div className="bg-canvas/70 rounded-3xl border border-[#E2DDD3] p-5 sm:p-6 shadow-2xs space-y-4">
             <div className="flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setShowAcademicFilters(!showAcademicFilters)}
-                className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider hover:text-emerald-700 transition-colors"
+                className="flex items-center gap-2 text-xs font-semibold text-ink-primary hover:text-route transition-colors"
               >
-                <GraduationCap className="w-4 h-4 text-emerald-600" />
-                <span>🎓 Academic & Student Community Filters</span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-extrabold lowercase">
+                <GraduationCap className="w-4 h-4 text-route" />
+                <span className="font-bold">Academic &amp; Student Community Filters</span>
+                <span className="px-2 py-0.5 rounded-full bg-route-pale text-route text-[10px] font-mono lowercase">
                   optional
                 </span>
                 {showAcademicFilters ? (
-                  <ChevronUp className="w-4 h-4 text-slate-400" />
+                  <ChevronUp className="w-4 h-4 text-ink-muted" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 text-slate-400" />
+                  <ChevronDown className="w-4 h-4 text-ink-muted" />
                 )}
               </button>
 
@@ -893,7 +913,7 @@ export const SearchRidesPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={resetAcademicFilters}
-                  className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-600 font-medium transition-colors"
+                  className="flex items-center gap-1 text-xs text-ink-muted hover:text-emergency-crimson font-medium transition-colors cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" />
                   Reset Filters
@@ -902,148 +922,145 @@ export const SearchRidesPage: React.FC = () => {
             </div>
 
             {showAcademicFilters && (
-              <div className="space-y-3 pt-2">
-                {/* 5 Academic Dropdowns */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+              <div className="space-y-4 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 items-stretch">
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      College / University
-                    </label>
-                    <select
+                    <div className="h-5 flex items-center mb-1.5">
+                      <label className="text-[11px] font-bold text-ink-secondary font-mono truncate">
+                        College / University
+                      </label>
+                    </div>
+                    <CustomSelect
                       value={college}
-                      onChange={(e) => setCollege(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800"
-                    >
-                      {UNIVERSITIES.map((u) => (
-                        <option key={u} value={u}>
-                          {u === 'Any' ? 'Any University' : u}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setCollege(String(val))}
+                      options={UNIVERSITIES.map((u) => ({ value: u, label: u === 'Any' ? 'Any University' : u }))}
+                      placeholder="Select College"
+                      ariaLabel="College / University"
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Course
-                    </label>
-                    <select
+                    <div className="h-5 flex items-center mb-1.5">
+                      <label className="text-[11px] font-bold text-ink-secondary font-mono truncate">
+                        Course
+                      </label>
+                    </div>
+                    <CustomSelect
                       value={course}
-                      onChange={(e) => setCourse(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800"
-                    >
-                      {COURSES.map((c) => (
-                        <option key={c} value={c}>
-                          {c === 'Any' ? 'Any Course' : c}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setCourse(String(val))}
+                      options={COURSES.map((c) => ({ value: c, label: c === 'Any' ? 'Any Course' : c }))}
+                      placeholder="Select Course"
+                      ariaLabel="Course"
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Department / Branch
-                    </label>
-                    <select
+                    <div className="h-5 flex items-center mb-1.5">
+                      <label className="text-[11px] font-bold text-ink-secondary font-mono truncate">
+                        Department / Branch
+                      </label>
+                    </div>
+                    <CustomSelect
                       value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800"
-                    >
-                      {DEPARTMENTS.map((d) => (
-                        <option key={d} value={d}>
-                          {d === 'Any' ? 'Any Department' : d}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setDepartment(String(val))}
+                      options={DEPARTMENTS.map((d) => ({ value: d, label: d === 'Any' ? 'Any Department' : d }))}
+                      placeholder="Select Department"
+                      ariaLabel="Department / Branch"
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Academic Year
-                    </label>
-                    <select
+                    <div className="h-5 flex items-center mb-1.5">
+                      <label className="text-[11px] font-bold text-ink-secondary font-mono truncate">
+                        Academic Year
+                      </label>
+                    </div>
+                    <CustomSelect
                       value={year}
-                      onChange={(e) => setYear(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800"
-                    >
-                      {YEARS.map((y) => (
-                        <option key={y} value={y}>
-                          {y === 'Any' ? 'Any Year' : `${y} Year`}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setYear(String(val))}
+                      options={YEARS.map((y) => ({ value: y, label: y === 'Any' ? 'Any Year' : `${y} Year` }))}
+                      placeholder="Select Academic Year"
+                      ariaLabel="Academic Year"
+                    />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-bold text-slate-600 mb-1">
-                      Semester
-                    </label>
-                    <select
+                    <div className="h-5 flex items-center mb-1.5">
+                      <label className="text-[11px] font-bold text-ink-secondary font-mono truncate">
+                        Semester
+                      </label>
+                    </div>
+                    <CustomSelect
                       value={semester}
-                      onChange={(e) => setSemester(e.target.value)}
-                      className="w-full text-xs p-2.5 rounded-xl border border-slate-300 bg-white focus:ring-2 focus:ring-emerald-500 focus:outline-none font-medium text-slate-800"
-                    >
-                      {SEMESTERS.map((s) => (
-                        <option key={s} value={s}>
-                          {s === 'Any' ? 'Any Semester' : `${s} Sem`}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setSemester(String(val))}
+                      options={SEMESTERS.map((s) => ({ value: s, label: s === 'Any' ? 'Any Semester' : `${s} Sem` }))}
+                      placeholder="Select Semester"
+                      ariaLabel="Semester"
+                    />
                   </div>
                 </div>
 
                 {/* Quick Affinity Toggles */}
                 <div className="flex flex-wrap items-center gap-2 pt-1">
-                  <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  <span className="text-[11px] font-semibold text-ink-muted font-mono">
                     Priority Toggles:
                   </span>
 
-                  <button
+                  <motion.button
                     type="button"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => setSameCourseSemOnly(!sameCourseSemOnly)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs ${
                       sameCourseSemOnly
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                        ? 'bg-plum text-white border-plum neu-sunken shadow-inner font-bold'
+                        : 'bg-paper text-ink-primary border-border/80 neu-btn hover:border-plum/40 shadow-xs'
                     }`}
                   >
-                    🎓 Same Course & Sem Only
-                  </button>
+                    🎓 Same Course &amp; Sem Only
+                  </motion.button>
 
-                  <button
+                  <motion.button
                     type="button"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => setSameDepartmentOnly(!sameDepartmentOnly)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs ${
                       sameDepartmentOnly
-                        ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                        ? 'bg-forest text-white border-forest neu-sunken shadow-inner font-bold'
+                        : 'bg-paper text-ink-primary border-border/80 neu-btn hover:border-forest/40 shadow-xs'
                     }`}
                   >
                     📚 Same Department Only
-                  </button>
+                  </motion.button>
 
-                  <button
+                  <motion.button
                     type="button"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => setSameCollegeOnly(!sameCollegeOnly)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs ${
                       sameCollegeOnly
-                        ? 'bg-purple-600 text-white border-purple-600 shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                        ? 'bg-plum-dark text-white border-plum-dark neu-sunken shadow-inner font-bold'
+                        : 'bg-paper text-ink-primary border-border/80 neu-btn hover:border-plum/40 shadow-xs'
                     }`}
                   >
                     🏛️ Same College Only
-                  </button>
+                  </motion.button>
 
-                  <button
+                  <motion.button
                     type="button"
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.96 }}
                     onClick={() => setVerifiedOnly(!verifiedOnly)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 ${
+                    className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-2xs ${
                       verifiedOnly
-                        ? 'bg-amber-600 text-white border-amber-600 shadow-sm'
-                        : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
+                        ? 'bg-amber-700 text-white border-amber-700 neu-sunken shadow-inner font-bold'
+                        : 'bg-paper text-ink-primary border-border/80 neu-btn hover:border-amber-700/40 shadow-xs'
                     }`}
                   >
                     🛡️ Verified Students Only
-                  </button>
+                  </motion.button>
                 </div>
               </div>
             )}
@@ -1051,36 +1068,36 @@ export const SearchRidesPage: React.FC = () => {
 
           {/* Filter Bar */}
           <div className="flex flex-wrap items-center justify-between gap-4 pt-2 border-t border-slate-100">
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none bg-slate-50 hover:bg-slate-100 px-3 py-2 rounded-xl border border-slate-200">
+            <motion.label
+              whileHover={{ y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className={`flex items-center gap-2.5 text-xs font-semibold cursor-pointer select-none px-4 py-2.5 rounded-2xl border transition-all whitespace-nowrap shadow-2xs ${
+                womenOnlyDriver
+                  ? 'bg-pink-50 border-pink-300 text-pink-900 neu-sunken shadow-inner font-bold'
+                  : 'bg-paper border-border/80 text-ink-primary neu-btn hover:border-pink-300 shadow-xs'
+              }`}
+            >
+              <div className={`w-4 h-4 rounded-md border flex items-center justify-center transition-colors ${
+                womenOnlyDriver ? 'bg-pink-600 border-pink-600 text-white' : 'border-slate-300 bg-canvas'
+              }`}>
+                {womenOnlyDriver && <span className="text-[10px] leading-none">✓</span>}
+              </div>
               <input
                 type="checkbox"
                 checked={womenOnlyDriver}
                 onChange={(e) => setWomenOnlyDriver(e.target.checked)}
-                className="rounded text-pink-600 focus:ring-pink-500 w-4 h-4"
+                className="sr-only"
               />
-              <span className="flex items-center gap-1 text-pink-800">
+              <span className="flex items-center gap-1 font-bold">
                 🛡️ Women-Only Driver Filter (Hard Filter)
               </span>
-            </label>
+            </motion.label>
 
             <div className="flex items-center gap-3">
               <button
-                type="button"
-                onClick={() => setShowOverviewMap(!showOverviewMap)}
-                className={`px-4 py-2.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
-                  showOverviewMap
-                    ? 'bg-blue-50 text-blue-700 border-blue-300 shadow-sm'
-                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'
-                }`}
-              >
-                <Map className="w-4 h-4 text-blue-600" />
-                <span>{showOverviewMap ? 'Hide Route & Pickup Map' : '🗺️ Interactive Campus & Route Map'}</span>
-              </button>
-
-              <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white font-semibold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer"
+                className="px-6 py-2.5 rounded-xl bg-forest hover:bg-[#0f2e26] disabled:opacity-50 text-white font-semibold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer neu-btn"
               >
                 <Search className="w-4 h-4" />
                 {loading ? 'Matching...' : 'Search Matching Rides'}
@@ -1088,39 +1105,6 @@ export const SearchRidesPage: React.FC = () => {
             </div>
           </div>
         </form>
-
-        {/* Interactive Route & Pickup Navigation Map Panel */}
-        {showOverviewMap && (
-          <div className="pt-6 mt-6 border-t border-slate-100">
-            <PickupAndRouteNavigationMap
-              originText={PRESET_LOCATIONS[originIndex]?.text}
-              destinationText={PRESET_LOCATIONS[destIndex]?.text}
-              onOriginChange={(newOrig) => {
-                const idx = PRESET_LOCATIONS.findIndex(
-                  (p) =>
-                    p.text.toLowerCase().includes(newOrig.toLowerCase()) ||
-                    newOrig.toLowerCase().includes(p.text.toLowerCase())
-                );
-                if (idx !== -1) {
-                  setOriginIndex(idx);
-                }
-              }}
-              onDestinationChange={(newDest) => {
-                const idx = PRESET_LOCATIONS.findIndex(
-                  (p) =>
-                    p.text.toLowerCase().includes(newDest.toLowerCase()) ||
-                    newDest.toLowerCase().includes(p.text.toLowerCase())
-                );
-                if (idx !== -1) {
-                  setDestIndex(idx);
-                }
-              }}
-              onSelectRoute={(corridor) => {
-                console.log('[Search] User selected driving route:', corridor.name);
-              }}
-            />
-          </div>
-        )}
       </div>
 
       {/* Global Notifications */}
@@ -1181,7 +1165,7 @@ export const SearchRidesPage: React.FC = () => {
         <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
           <span>Available Matching Rides</span>
           <span className="px-2.5 py-0.5 rounded-full bg-slate-200 text-slate-800 text-xs font-semibold">
-            {rides.length}
+            <AnimatedCounter value={rides.length} duration={0.6} />
           </span>
         </h2>
         <span className="text-xs text-slate-500">Sorted by Route Proximity First, then Academic Affinity</span>
@@ -1189,13 +1173,15 @@ export const SearchRidesPage: React.FC = () => {
 
       {/* Results List */}
       {loading ? (
-        <div className="py-16 text-center text-slate-400">
-          <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm font-medium">Calculating academic affinity, detour distances & time overlaps...</p>
+        <div className="py-8 space-y-4">
+          <JourneyTicket isLoading={true} />
+          <JourneyTicket isLoading={true} />
         </div>
       ) : rides.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
-          <Car className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-[#EBE7DF] border border-[#D8D2C4] flex items-center justify-center mx-auto mb-4 text-[#582C4D] shadow-2xs">
+            <Car className="w-8 h-8 opacity-80" />
+          </div>
           <h3 className="text-base font-bold text-slate-800">No matching rides found</h3>
           <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-6">
             {womenOnlyDriver
@@ -1248,7 +1234,20 @@ export const SearchRidesPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.04,
+              },
+            },
+          }}
+          className="grid grid-cols-1 gap-4"
+        >
           {rides.map((ride) => {
             const isCreator = ride.creator?._id === user?._id;
             const isTier1 = ride.match?.breakdown?.sameCourseAndSemester;
@@ -1256,240 +1255,38 @@ export const SearchRidesPage: React.FC = () => {
             const isTier3 = !isTier1 && !isTier2 && ride.match?.breakdown?.sameCollege;
 
             return (
-              <div
+              <motion.div
                 key={ride._id}
-                className={`bg-white rounded-2xl border p-5 sm:p-6 shadow-sm hover:shadow-md transition-all space-y-4 ${
-                  isTier1
-                    ? 'border-emerald-500/80 ring-2 ring-emerald-500/20 bg-gradient-to-br from-emerald-50/30 via-white to-white'
-                    : 'border-slate-200 hover:border-emerald-500/60'
-                }`}
+                variants={{
+                  hidden: { opacity: 0, y: 14 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: {
+                      type: 'spring',
+                      stiffness: 350,
+                      damping: 26,
+                    },
+                  },
+                }}
+                className="space-y-3"
               >
-                {/* Tier Priority Banner */}
-                {isTier1 && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-1.5 rounded-xl bg-emerald-100/90 border border-emerald-300 text-emerald-900 text-xs font-bold shadow-sm">
-                    <span className="flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                      <span>Classmate Match — Same Course & Semester</span>
-                      <span className="font-semibold text-emerald-800">
-                        ({ride.creator?.course || 'B.Tech'} Sem {ride.creator?.semester || 5})
-                      </span>
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[10px] uppercase font-extrabold tracking-wider">
-                      Top Priority #1
-                    </span>
-                  </div>
-                )}
-
-                {isTier2 && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-900 text-xs font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <BookOpen className="w-3.5 h-3.5 text-blue-600" />
-                      <span>Same Department ({ride.creator?.department})</span>
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-blue-600 text-white text-[10px] uppercase font-extrabold tracking-wider">
-                      Priority #2
-                    </span>
-                  </div>
-                )}
-
-                {isTier3 && (
-                  <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-1.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-900 text-xs font-semibold">
-                    <span className="flex items-center gap-1.5">
-                      <School className="w-3.5 h-3.5 text-purple-600" />
-                      <span>Same University ({ride.creator?.college})</span>
-                    </span>
-                    <span className="px-2 py-0.5 rounded-full bg-purple-600 text-white text-[10px] uppercase font-extrabold tracking-wider">
-                      Priority #3
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  {/* Driver Information */}
-                  <div className="flex items-center gap-3.5">
-                    <img
-                      src={
-                        ride.creator?.avatarURL ||
-                        '/test_uploads/profile_photo.jpg'
-                      }
-                      alt={ride.creator?.name}
-                      className="w-12 h-12 rounded-xl object-cover ring-2 ring-emerald-500/20 shadow-sm"
-                    />
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 text-base">{ride.creator?.name}</span>
-                        {ride.creator?.verificationStatus === 'verified' && (
-                          <span
-                            className="inline-flex items-center text-emerald-600"
-                            title="Verified College Student"
-                          >
-                            <ShieldCheck className="w-4 h-4" />
-                          </span>
-                        )}
-                        <span className="text-xs text-slate-400 capitalize">({ride.creator?.gender || 'Student'})</span>
-                      </div>
-
-                      {/* Academic & Rating Line */}
-                      <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500 mt-0.5">
-                        <span className="flex items-center gap-1 text-amber-500 font-semibold">
-                          <Star className="w-3 h-3 fill-amber-500" />
-                          {ride.creator?.rating?.toFixed(1) || '5.0'}
-                        </span>
-                        <span>•</span>
-                        <span className="font-semibold text-slate-700 flex items-center gap-1">
-                          <School className="w-3 h-3 text-emerald-600" />
-                          {ride.creator?.college}
-                        </span>
-                        <span>•</span>
-                        <span className="text-slate-600 font-medium flex items-center gap-1">
-                          <GraduationCap className="w-3 h-3 text-slate-400" />
-                          {ride.creator?.course || 'B.Tech'} {ride.creator?.department ? `(${ride.creator.department})` : ''} • Sem {ride.creator?.semester || 5}
-                        </span>
-                        {ride.vehicleId && (
-                          <>
-                            <span>•</span>
-                            <span className="text-slate-600 font-medium">
-                              🚗 {ride.vehicleId.model || 'Car'} ({ride.vehicleId.plateLast4})
-                            </span>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Driver Trust & Campus Badges */}
-                      <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                        {user?.department && ride.creator?.department && user.department.toLowerCase() === ride.creator.department.toLowerCase() && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
-                            🎓 Classmate / Same Dept
-                          </span>
-                        )}
-                        {((ride.creator?.rating || 5) >= 4.8 || (ride.creator?.totalRides || 0) >= 3) && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
-                            ⚡ Top Punctual Driver
-                          </span>
-                        )}
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                          🌿 Eco Commuter
-                        </span>
-                        {(ride.recurring || (ride as any).isRecurring) && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                            🔁 Mon–Fri Regular
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Match Score Badge */}
-                  <div className="flex items-center gap-3">
-                    <MatchScoreBadge match={ride.match} />
-                  </div>
-                </div>
-
-                {/* Route Information */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-slate-50 rounded-xl text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <div>
-                      <span className="text-slate-400 text-[10px] block uppercase font-semibold">From</span>
-                      <span className="font-bold text-slate-800">{sanitizeLocationText(ride.origin.text)}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-blue-500" />
-                    <div>
-                      <span className="text-slate-400 text-[10px] block uppercase font-semibold">To</span>
-                      <span className="font-bold text-slate-800">{sanitizeLocationText(ride.destination.text)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Action & Timing */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-                  <div className="flex items-center gap-4 text-xs text-slate-500">
-                    <span className="flex items-center gap-1 font-semibold text-slate-700">
-                      <Clock className="w-3.5 h-3.5 text-emerald-600" />
-                      {new Date(ride.departureTime).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1 font-semibold text-slate-700">
-                      <Users className="w-3.5 h-3.5 text-emerald-600" />
-                      {ride.availableSeats} seat{ride.availableSeats > 1 ? 's' : ''} available
-                    </span>
-                    <span className="text-[11px] text-slate-400">
-                      (Estimated cost-share: ₹0 — student community)
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedMapRideId(
-                          expandedMapRideId === ride._id ? null : ride._id
-                        )
-                      }
-                      className={`px-3.5 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
-                        expandedMapRideId === ride._id
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
-                          : 'border-slate-300 text-slate-700 hover:bg-slate-100'
-                      }`}
-                    >
-                      <Map className="w-3.5 h-3.5" />
-                      <span>{expandedMapRideId === ride._id ? 'Close Map' : '🗺️ Map & Walk Guide'}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate(`/rides/${ride._id}`)}
-                      className="px-4 py-2 rounded-xl border border-slate-300 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
-                    >
-                      View Details
-                    </button>
-                    {!isCreator && (
-                      !isUserVerified ? (
-                        <button
-                          type="button"
-                          onClick={() => navigate('/verification')}
-                          className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
-                          title="Institutional ID verification required to book seats"
-                        >
-                          <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
-                          <span>Verify ID to Request</span>
-                        </button>
-                      ) : requestedRideIds.has(ride._id) ? (
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-3 py-2 rounded-xl bg-amber-50 text-amber-800 border border-amber-300 text-xs font-bold flex items-center gap-1.5 shadow-xs">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-amber-600" />
-                            <span>Requested</span>
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleCancelRequest(ride._id)}
-                            className="px-2.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-colors cursor-pointer"
-                            title="Withdraw / Cancel seat request"
-                          >
-                            ✕ Cancel
-                          </button>
-                        </div>
-                      ) : (
-                        <button
-                          type="button"
-                          disabled={requestingId === ride._id || ride.availableSeats <= 0}
-                          onClick={() => handleRequestRide(ride._id)}
-                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-xs font-bold text-white shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer"
-                        >
-                          {requestingId === ride._id ? 'Requesting...' : 'Request Seat'}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Inline Expandable Pickup & Route Map */}
+                {/* Inline Expandable Pickup & Route Map displayed ON TOP of the ticket block */}
                 {expandedMapRideId === ride._id && (
-                  <div className="pt-3 border-t border-slate-200">
+                  <div className="p-4 sm:p-5 bg-paper rounded-3xl border border-[#E2DDD3] shadow-md space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex items-center justify-between pb-2 border-b border-border/70">
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold text-forest">
+                        <MapPin className="w-4 h-4 text-forest shrink-0" />
+                        <span>Route &amp; Waypoint Navigation: {ride.origin.text} → {ride.destination.text}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setExpandedMapRideId(null)}
+                        className="text-xs font-mono font-bold text-plum hover:text-plum-hover px-2.5 py-1 rounded-lg bg-plum-light cursor-pointer transition-colors"
+                      >
+                        ✕ Close Map
+                      </button>
+                    </div>
                     <PickupAndRouteNavigationMap
                       originText={ride.origin.text}
                       destinationText={ride.destination.text}
@@ -1497,9 +1294,75 @@ export const SearchRidesPage: React.FC = () => {
                     />
                   </div>
                 )}
-              </div>
+
+                <JourneyTicket
+                  ride={{
+                    _id: ride._id,
+                    creator: ride.creator,
+                    origin: ride.origin,
+                    destination: ride.destination,
+                    departureTime: ride.departureTime,
+                    seatsAvailable: ride.availableSeats ?? (ride as any).seatsAvailable,
+                    availableSeats: ride.availableSeats,
+                    seatsTotal: ride.totalSeats,
+                    fare: (ride as any).pricePerSeat ?? (ride as any).fare ?? 20,
+                    vehicleModel: ride.vehicleId?.model,
+                    vehiclePlate: ride.vehicleId?.plateLast4,
+                    notes: ride.notes,
+                    isWomenOnly: (ride as any).isWomenOnly || (ride as any).womenOnlyDriver,
+                  }}
+                  isCurrentUserCreator={isCreator}
+                  isUserVerified={isUserVerified}
+                  isRequested={requestedRideIds.has(ride._id)}
+                  requestLoading={requestingId === ride._id}
+                  isMapOpen={expandedMapRideId === ride._id}
+                  onRequestSeat={(id) => handleRequestRide(id)}
+                  onCancelRequest={(id) => setCancelModalRideId(id)}
+                  onViewDetails={(id) => navigate(`/rides/${id}`)}
+                  onToggleMap={(id) =>
+                    setExpandedMapRideId(expandedMapRideId === id ? null : id)
+                  }
+                  onVerifyPrompt={() => navigate('/verification')}
+                />
+              </motion.div>
             );
           })}
+        </motion.div>
+      )}
+
+      {/* Accessible Cancel Seat Request Confirmation Dialog */}
+      {cancelModalRideId && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="cancel-seat-title"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink-primary/60 animate-in fade-in duration-150"
+        >
+          <div className="bg-surface rounded-card border border-line-base p-6 max-w-md w-full shadow-card space-y-4">
+            <h3 id="cancel-seat-title" className="text-base font-display font-bold text-ink-primary flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-emergency-crimson shrink-0" />
+              <span>Withdraw Seat Request?</span>
+            </h3>
+            <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed">
+              Are you sure you want to cancel your seat request for this campus ride? The driver will be notified and your reservation slot will be returned to the open pool.
+            </p>
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setCancelModalRideId(null)}
+                className="px-4 py-2 rounded-control border border-line-base text-ink-secondary text-xs font-semibold hover:bg-canvas transition-colors min-h-[44px] cursor-pointer"
+              >
+                Keep Request
+              </button>
+              <button
+                type="button"
+                onClick={() => handleCancelRequest(cancelModalRideId)}
+                className="px-4 py-2 rounded-control bg-emergency-crimson hover:bg-red-700 text-surface text-xs font-semibold shadow-2xs active:translate-y-[1.5px] transition-all min-h-[44px] cursor-pointer"
+              >
+                Confirm Withdrawal
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

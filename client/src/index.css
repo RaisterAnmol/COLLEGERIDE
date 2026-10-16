@@ -1,19 +1,246 @@
 @import "leaflet/dist/leaflet.css";
+@import "./design-system/tokens.css";
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* CampusRide Tactile Neumorphic Palette (Plum & Sage) */
+  --canvas: #E8EBE6;
+  --bg: #E8EBE6;
+  --surface: #F6F8F5;
+  --paper: #F6F8F5;
+  --surface-raised: #FFFFFF;
+  --card-white: #FFFFFF;
+
+  --ink-primary: #1F2622;
+  --ink-secondary: #5C6761;
+  --ink-muted: #7E8A84;
+
+  --plum: #743A59;
+  --plum-hover: #5C2B45;
+  --plum-light: #F4EBF0;
+  --plum-border: #D9B8C9;
+
+  --route: #743A59;
+  --route-light: #8E496F;
+  --route-pale: #F4EBF0;
+
+  --green: #1B5E43;
+  --green-light: #DCFCE7;
+  --green-border: #86EFAC;
+  --status-verified: #1B5E43;
+  --status-verified-bg: #DCFCE7;
+
+  --signal-amber: #D97706;
+  --signal-amber-bg: #FEF3C7;
+  --emergency-crimson: #DC2626;
+  --emergency-crimson-bg: #FEE2E2;
+
+  --line-subtle: #E5E9E3;
+  --line-base: #D7DCD5;
+  --line-strong: #A8B1A5;
+  --border: #D7DCD5;
+  --border-light: #E5E9E3;
+
+  --card-radius: 24px;
+  --card-padding: 24px 28px;
+  --card-gap: 24px;
+  --inner-gap: 14px;
+
+  --radius-control: 12px;
+  --radius-surface: 24px;
+  --radius-ticket: 16px;
+
+  --neu-extruded: -6px -6px 14px rgba(255, 255, 255, 0.95), 6px 6px 16px rgba(31, 38, 34, 0.08);
+  --neu-extruded-sm: -3px -3px 8px rgba(255, 255, 255, 0.95), 3px 3px 10px rgba(31, 38, 34, 0.07);
+  --neu-extruded-lg: -10px -10px 24px rgba(255, 255, 255, 0.95), 12px 12px 28px rgba(31, 38, 34, 0.12);
+  --neu-sunken: inset 2px 2px 5px rgba(31, 38, 34, 0.10), inset -2px -2px 5px rgba(255, 255, 255, 0.95);
+  --neu-sunken-deep: inset 3px 3px 8px rgba(31, 38, 34, 0.14), inset -3px -3px 8px rgba(255, 255, 255, 0.9);
+  --neu-btn-active: inset 2px 2px 4px rgba(31, 38, 34, 0.18), inset -1px -1px 3px rgba(255, 255, 255, 0.6);
+
+  --ease-utility: cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
+    background-color: var(--canvas);
+    margin: 0;
+    padding: 0;
   }
   body {
-    background-color: transparent;
-    color: #0F172A;
+    background-color: var(--canvas);
+    color: var(--ink-primary);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  /* Major Headings: Fraunces (prestigious collegiate serif) */
+  h1, .font-display, .hero-heading, .section-heading-major {
+    font-family: 'Fraunces', 'Plus Jakarta Sans', Georgia, serif;
+    letter-spacing: -0.025em;
+  }
+
+  /* Secondary headings and card titles: Inter (maintains crisp visual hierarchy) */
+  h2:not(.font-display), h3:not(.font-display), h4, h5, h6 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    letter-spacing: -0.015em;
+  }
+
+  /* Metadata, tabular figures, and ticket-inspired details: Space Mono */
+  .font-mono, code, pre, .ticket-mono, .tabular-nums {
+    font-family: 'Space Mono', 'JetBrains Mono', monospace;
+  }
+}
+
+/* Tactile Neumorphism Utility Classes */
+.neu-card {
+  box-shadow: var(--neu-extruded);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+.neu-card-sm {
+  box-shadow: var(--neu-extruded-sm);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+.neu-card-lg {
+  box-shadow: var(--neu-extruded-lg);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+}
+.neu-sunken {
+  box-shadow: inset 1px 1px 3px rgba(31, 38, 34, 0.05), inset -1px -1px 3px rgba(255, 255, 255, 0.8);
+  background: #F8F9F7;
+  border: 1px solid var(--border-light, #E5E9E3);
+}
+.neu-sunken-deep {
+  box-shadow: var(--neu-sunken-deep);
+  background: #EFF2ED;
+  border: 1px solid var(--border-light, #E5E9E3);
+}
+.neu-btn {
+  box-shadow: -3px -3px 8px rgba(255, 255, 255, 0.95), 3px 3px 8px rgba(31, 38, 34, 0.09);
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.neu-btn:hover {
+  transform: translateY(-1.5px);
+  box-shadow: -4px -4px 10px rgba(255, 255, 255, 1), 4px 4px 12px rgba(31, 38, 34, 0.12);
+}
+.neu-btn:active {
+  transform: translateY(1px);
+  box-shadow: var(--neu-btn-active);
+}
+
+/* Shared Card, Inner-Panel, Chip, and Grid Geometry Tokens */
+.ui-card {
+  border-radius: var(--card-radius, 24px);
+  padding: var(--card-padding, 24px 28px);
+  background-color: var(--paper, #F6F8F5);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: var(--neu-extruded);
+}
+
+.ui-inner-panel {
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-light, #E5E9E3);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 2px rgba(31, 38, 34, 0.03);
+}
+
+.ui-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  white-space: nowrap;
+  font-family: var(--font-mono, monospace);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  line-height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.ui-card-grid {
+  display: grid;
+  gap: var(--card-gap, 24px);
+  align-items: stretch;
+}
+
+/* Scroll Entrance Animation Classes */
+.reveal-on-scroll {
+  opacity: 0;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal-from-left {
+  transform: translateX(-40px);
+}
+.reveal-from-right {
+  transform: translateX(40px);
+}
+.reveal-from-bottom {
+  transform: translateY(35px);
+}
+.reveal-active {
+  opacity: 1 !important;
+  transform: translate(0, 0) !important;
+}
+
+@keyframes cr-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.cr-spinner {
+  animation-name: cr-rotate;
+  animation-duration: 0.8s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Signature Journey Ticket Mask (docs/02-signature-components.md) */
+.ticket-silhouette {
+  --r: 10px;
+  mask: radial-gradient(circle var(--r) at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
+        radial-gradient(circle var(--r) at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+  -webkit-mask: radial-gradient(circle var(--r) at 0 50%, #0000 98%, #000) left / 51% 100% no-repeat,
+                radial-gradient(circle var(--r) at 100% 50%, #0000 98%, #000) right / 51% 100% no-repeat;
+}
+
+.ticket-wrapper {
+  filter: drop-shadow(0 1px 1px rgba(24, 32, 29, 0.08)) drop-shadow(0 4px 12px rgba(24, 32, 29, 0.05));
+}
+
+/* Route Thread CSS Draw (docs/02-signature-components.md) */
+.route-thread-path {
+  fill: none;
+  stroke: var(--route);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.route-thread-path.is-drawn {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 900ms cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .route-thread-path {
+    stroke-dashoffset: 0 !important;
+    transition: none !important;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
   }
 }
 
@@ -23,12 +250,79 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F1F5F9;
+  background: var(--canvas);
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: var(--line-base);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: var(--line-strong);
 }
+
+/* Horizontal Infinite Marquee Ticker (Continuous Smooth Motion) */
+@keyframes marquee-scroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-marquee-horizontal {
+  display: flex !important;
+  width: max-content !important;
+  will-change: transform;
+  animation: marquee-scroll 24s linear infinite;
+}
+
+.animate-marquee-horizontal:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-horizontal {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+
+/* Animated Transit Telemetry Route Polyline Keyframes */
+@keyframes routePulseTrace {
+  0% {
+    stroke-dashoffset: 48;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animated-transit-route {
+  stroke-dasharray: 8 12;
+  animation: routePulseTrace 1.6s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animated-transit-route {
+    animation: none !important;
+    stroke-dasharray: none !important;
+  }
+}
+
+/* Thin subtle custom scrollbar for popovers and dropdowns */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(116, 58, 89, 0.2);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(116, 58, 89, 0.4);
+}
+
+

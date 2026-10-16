@@ -16,8 +16,8 @@ export const TestimonialsSection: React.FC = () => {
     <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#DDE1DE]">
       {/* Editorial Header */}
       <div className="max-w-4xl">
-        <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-3">
-          09 — STUDENT EXPERIENCES
+        <span className="text-xs font-mono text-[#143D32] font-semibold block mb-3">
+          09 — Student Experiences
         </span>
         <h2 className="text-heading-clamp font-black text-[#111111] uppercase tracking-tight">
           Real Commutes.<br />

@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusRide — Unified Design System Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #E8EBE6;
+      --paper: #F6F8F5;
+      --card-white: #FFFFFF;
+      --plum: #743A59;
+      --plum-hover: #5C2B45;
+      --plum-light: #F4EBF0;
+      --plum-border: #D9B8C9;
+      --green: #1B5E43;
+      --green-light: #E8F3EE;
+      --ink: #1F2622;
+      --ink-muted: #5C6761;
+      --border: #D7DCD5;
+      --border-light: #E5E9E3;
+      --shadow-sm: 0 1px 3px rgba(31, 38, 34, 0.05);
+      --shadow-card: 0 4px 16px rgba(31, 38, 34, 0.06);
+      --shadow-lg: 0 12px 32px rgba(31, 38, 34, 0.08);
+      --shadow-sunken: inset 2px 2px 5px rgba(31, 38, 34, 0.08), inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+      --shadow-emboss: -4px -4px 10px rgba(255, 255, 255, 0.9), 4px 4px 12px rgba(31, 38, 34, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 5rem;
+    }
+
+    /* Top Preview Switcher Bar */
+    .top-switcher {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(31, 38, 34, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .switcher-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .switcher-brand span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34D399;
+    }
+    .view-pills {
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(255,255,255,0.1);
+      padding: 0.25rem;
+      border-radius: 9999px;
+    }
+    .view-pill {
+      background: transparent;
+      border: none;
+      color: #D1D5DB;
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .view-pill.active {
+      background: var(--plum);
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(116, 58, 89, 0.4);
+    }
+
+    /* App Nav */
+    .app-nav {
+      max-width: 1240px;
+      margin: 1.25rem auto 0;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      font-family: 'Fraunces', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .nav-logo span.dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--plum);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+    }
+    .nav-link {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--plum);
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .btn-text {
+      background: none;
+      border: none;
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 0.5rem 0.75rem;
+    }
+    .btn-plum {
+      background: var(--plum);
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.65rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(116, 58, 89, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-plum:hover {
+      background: var(--plum-hover);
+      transform: translateY(-1px);
+    }
+    .btn-soft {
+      background: var(--paper);
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.65rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .btn-soft:hover {
+      background: #fff;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* VIEW SECTIONS */
+    .view-section {
+      display: none;
+    }
+    .view-section.active {
+      display: block;
+    }
+
+    /* ========================================================= */
+    /* 1. HERO SECTION (Plum Palette & Stop Trigger Route Card)   */
+    /* ========================================================= */
+    .hero-wrapper {
+      padding: 2.5rem 0 3.5rem;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+    .hero-h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 4rem;
+      line-height: 1.05;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.75rem;
+    }
+    .hero-h1 em {
+      font-style: italic;
+      color: var(--plum);
+      font-weight: 700;
+    }
+    .hero-btn-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-counters {
+      display: flex;
+      gap: 1.25rem;
+    }
+    .stat-box {
+      background: var(--paper);
+      border-radius: 1.25rem;
+      padding: 1.25rem 1.75rem;
+      box-shadow: var(--shadow-emboss);
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+    .stat-box.sunken {
+      box-shadow: var(--shadow-sunken);
+      background: #E2E6E0;
+    }
+    .stat-val {
+      font-family: 'Fraunces', serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--plum);
+    }
+    .stat-lbl {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Stop Trigger Route Card */
+    .route-card {
+      background: var(--paper);
+      border: 1px solid rgba(255,255,255,0.8);
+      border-radius: 2rem;
+      padding: 2rem 2.25rem;
+      box-shadow: var(--shadow-emboss);
+      position: relative;
+    }
+    .route-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+    .route-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 2rem;
+    }
+
+    /* SVG Route with Stop Trigger */
+    .route-svg-container {
+      position: relative;
+      width: 100%;
+      height: 110px;
+      margin: 1.5rem 0 1rem;
+    }
+    .route-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .route-line-bg {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+    .route-line-active {
+      fill: none;
+      stroke: var(--plum);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 600;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 0.8s ease;
+    }
+    .waypoint-btn {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .waypoint-btn:hover {
+      transform: scale(1.2);
+    }
+    .trigger-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+    .trigger-status {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+    }
+    .trigger-status strong {
+      color: var(--plum);
+    }
+    .btn-trigger {
+      background: var(--plum-light);
+      color: var(--plum);
+      border: 1px solid var(--plum-border);
+      padding: 0.45rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-trigger:hover {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    /* Plum Banner & Marquee */
+    .plum-banner {
+      background: var(--plum);
+      color: #fff;
+      border-radius: 1.5rem;
+      padding: 1.5rem 2.25rem;
+      margin: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      box-shadow: 0 8px 24px rgba(116, 58, 89, 0.25);
+    }
+    .banner-badge {
+      font-family: 'Fraunces', serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .banner-text {
+      font-size: 1.15rem;
+      font-weight: 500;
+    }
+    .marquee-strip {
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 0.75rem 0;
+      color: var(--ink-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-top: 2rem;
+    }
+    .marquee-track {
+      display: inline-block;
+      animation: marquee 25s linear infinite;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ========================================================= */
+    /* 2. TICKET DESIGN (Image 1 Style with Cutout Notches)       */
+    /* ========================================================= */
+    .ticket-section-header {
+      margin: 3.5rem 0 2rem;
+      text-align: center;
+    }
+    .ticket-section-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--plum);
+      margin-bottom: 0.4rem;
+    }
+    .ticket-section-title {
+      font-family: 'Fraunces', serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .ticket-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+    }
+    .ticket-card {
+      background: #FFFFFF;
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 20px rgba(31, 38, 34, 0.06);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-light);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .ticket-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(31, 38, 34, 0.12);
+    }
+
+    /* Semi-circular punch notches */
+    .ticket-card::before, .ticket-card::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: var(--bg);
+      border-radius: 50%;
+      top: 48%;
+      z-index: 2;
+      border: 1px solid var(--border);
+    }
+    .ticket-card::before {
+      left: -10px;
+    }
+    .ticket-card::after {
+      right: -10px;
+    }
+
+    .ticket-top {
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 1px dashed var(--border);
+      position: relative;
+    }
+    .ticket-time-price {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .ticket-time {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .ticket-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .ticket-price span {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
+
+    /* Student Archetype Stamp Badge */
+    .archetype-box {
+      background: #EFE9E0;
+      border-radius: 0.9rem;
+      padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .archetype-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 0.75rem;
+      object-fit: cover;
+      border: 2px dashed #3E8F6C;
+      background: #E8F5E9;
+    }
+    .archetype-info {
+      flex: 1;
+    }
+    .archetype-name {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .archetype-check {
+      color: #3E8F6C;
+      font-size: 0.8rem;
+    }
+    .archetype-univ {
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+    .archetype-tag {
+      background: #FFFFFF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 0.35rem;
+      display: inline-block;
+      margin-top: 0.2rem;
+      color: var(--ink);
+    }
+
+    .ticket-mid {
+      padding: 1rem 1.25rem;
+      flex: 1;
+    }
+    .ticket-route {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+    .ticket-progress-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--border-light);
+      border-radius: 2px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .ticket-progress-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 2px;
+    }
+    .ticket-quote {
+      font-size: 0.75rem;
+      font-style: italic;
+      color: var(--ink-muted);
+      line-height: 1.4;
+    }
+
+    .ticket-bot {
+      padding: 0.85rem 1.25rem;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FAFCF9;
+      border-bottom-left-radius: 1.25rem;
+      border-bottom-right-radius: 1.25rem;
+    }
+    .ticket-rating {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .ticket-rating span.star {
+      color: #F59E0B;
+    }
+    .ticket-link {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    /* ========================================================= */
+    /* 3. FIND A RIDE SEARCH PAGE (Image 3 Style)                */
+    /* ========================================================= */
+    .find-ride-header {
+      background: #FFFFFF;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .search-title-h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .filter-pills {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .filter-pill {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+    .filter-pill.active {
+      background: var(--plum);
+      color: #fff;
+      border-color: var(--plum);
+    }
+
+    /* Horizontal Ticket Ride Card (Image 3) */
+    .horiz-ticket {
+      background: #FFFFFF;
+      border-radius: 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .horiz-ticket:hover {
+      box-shadow: var(--shadow-card);
+      border-color: var(--plum-border);
+    }
+
+    /* Horizontal Punch Notches */
+    .horiz-ticket::before, .horiz-ticket::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--bg);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      border: 1px solid var(--border);
+    }
+    .horiz-ticket::before {
+      left: -11px;
+    }
+    .horiz-ticket::after {
+      right: -11px;
+    }
+
+    .horiz-top {
+      padding: 1.25rem 2rem 1rem;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .horiz-time-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: var(--paper);
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+    }
+    .horiz-price-box {
+      text-align: right;
+    }
+    .horiz-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .horiz-price-lbl {
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+    }
+
+    .horiz-stops {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .stop-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .stop-dot-green {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10B981;
+    }
+    .stop-dot-orange {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #F59E0B;
+    }
+    .stop-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+    }
+    .stop-name {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .horiz-bottom {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FCFDFC;
+    }
+    .driver-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .driver-avatar-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--plum-border);
+    }
+    .driver-name-row {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .driver-verified-badge {
+      color: #10B981;
+      font-size: 0.85rem;
+    }
+    .driver-sub {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+
+    .horiz-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .seats-pill {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      margin-right: 0.5rem;
+    }
+    .btn-action-outline {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--ink);
+      transition: all 0.15s;
+    }
+    .btn-action-outline:hover {
+      background: var(--paper);
+    }
+    .btn-action-request {
+      background: #FFF7ED;
+      border: 1px solid #FDBA74;
+      color: #C2410C;
+      padding: 0.5rem 1.1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-action-request:hover {
+      background: #F97316;
+      color: #fff;
+    }
+    .vehicle-note-strip {
+      padding: 0.5rem 2rem;
+      background: var(--paper);
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ========================================================= */
+    /* 4. OVERVIEW / AUTHENTICATOR & OTP ENGINE (Image 4 Style)  */
+    /* ========================================================= */
+    .overview-header {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .overview-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-bottom: 0.35rem;
+    }
+    .overview-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .profile-tabs {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .profile-tab {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+    .profile-tab.active {
+      background: var(--plum);
+      color: #fff;
+      border-color: var(--plum);
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2rem;
+    }
+
+    /* Left Card: Credential Layers */
+    .credential-card {
+      background: #FFFFFF;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .cred-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.75rem;
+    }
+    .cred-driver-box {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .stamp-badge {
+      border: 2px dashed #1B5E43;
+      padding: 0.5rem 0.85rem;
+      border-radius: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #1B5E43;
+      text-transform: uppercase;
+      transform: rotate(-3deg);
+      background: #E8F5EE;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 1.25rem 0;
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      margin-bottom: 1.5rem;
+    }
+    .meta-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+    .meta-val {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-top: 0.25rem;
+    }
+
+    .vehicle-pill-box {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .badge-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .security-badge {
+      background: #E8F5EE;
+      color: #1B5E43;
+      border: 1px solid #C7E6D7;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Right Card: Real-Time OTP Handshake */
+    .otp-card {
+      background: #FFFFFF;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .otp-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--plum);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .otp-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+    }
+    .otp-desc {
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .otp-terminal {
+      background: #EDFDF5;
+      border: 1px solid #A7F3D0;
+      border-radius: 1.25rem;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .otp-terminal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #065F46;
+      margin-bottom: 1.25rem;
+    }
+    .otp-dots {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .otp-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #065F46;
+      transition: all 0.3s;
+    }
+    .otp-revealed-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      color: #065F46;
+      display: none;
+    }
+    .otp-status-line {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #047857;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .btn-simulate-otp {
+      background: var(--plum);
+      color: #fff;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-simulate-otp:hover {
+      background: var(--plum-hover);
+    }
+
+    /* ========================================================= */
+    /* 5. DRIVER DASHBOARD (5th Image Section)                   */
+    /* ========================================================= */
+    .driver-dash-header {
+      background: #FFFFFF;
+      border-radius: 1.5rem;
+      padding: 1.75rem 2rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .dash-profile-block {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .dash-avatar-lg {
+      width: 68px;
+      height: 68px;
+      border-radius: 1.25rem;
+      object-fit: cover;
+      border: 3px solid var(--plum-border);
+    }
+    .dash-driver-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .dash-driver-role {
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+    .dash-liveness-pill {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dash-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .kpi-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--plum);
+    }
+    .kpi-lbl {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dash-content-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2rem;
+    }
+    .dash-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .dash-card-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .passenger-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .passenger-row:last-child {
+      border-bottom: none;
+    }
+    .pass-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .pass-avatar-sm {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .pass-name {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+    .pass-stop {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+    }
+    .otp-badge-input {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.65rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .hero-wrapper, .overview-grid, .dash-content-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+      .ticket-grid, .dash-kpis {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .ticket-grid, .dash-kpis {
+        grid-template-columns: 1fr;
+      }
+      .hero-h1 {
+        font-size: 2.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top View Switcher -->
+  <div class="top-switcher">
+    <div class="switcher-brand">
+      <span class="dot"></span>
+      <span>CampusRide Design System (Plum & Sage + Ticket Suite)</span>
+    </div>
+
+    <div class="view-pills">
+      <button class="view-pill active" onclick="switchView('hero')">1. Hero & Stop Trigger</button>
+      <button class="view-pill" onclick="switchView('tickets')">2. Ticket Cards</button>
+      <button class="view-pill" onclick="switchView('search')">3. Find a Ride Page</button>
+      <button class="view-pill" onclick="switchView('overview')">4. Authenticator & OTP</button>
+      <button class="view-pill" onclick="switchView('driver-dash')">5. Driver Dashboard</button>
+    </div>
+  </div>
+
+  <!-- Main App Navigation -->
+  <header class="app-nav">
+    <a href="#" class="nav-logo" onclick="switchView('hero'); return false;">
+      <span class="dot"></span>
+      <span>CampusRide</span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#" class="nav-link active" onclick="switchView('hero'); return false;">Home</a>
+      <a href="#" class="nav-link" onclick="switchView('search'); return false;">Find a Ride</a>
+      <a href="#" class="nav-link" onclick="switchView('overview'); return false;">Verification & OTP</a>
+      <a href="#" class="nav-link" onclick="switchView('driver-dash'); return false;">Driver Dashboard</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a href="#" class="btn-text">Log In</a>
+      <a href="#" class="btn-plum" onclick="switchView('search'); return false;">Register</a>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 1: HERO SECTION WITH STOP TRIGGER & PLUM PALETTE (IMAGE 2 STYLE)     -->
+    <!-- ========================================================================= -->
+    <section id="view-hero" class="view-section active">
+      <div class="hero-wrapper">
+        <!-- Left: Copy & Counters -->
+        <div>
+          <h1 class="hero-h1">
+            Ride with people <em>from</em> your campus.
+          </h1>
+
+          <div class="hero-btn-row">
+            <button class="btn-plum" onclick="switchView('search')">Find a ride</button>
+            <button class="btn-soft" onclick="switchView('driver-dash')">Offer a ride</button>
+          </div>
+
+          <div class="stat-counters">
+            <div class="stat-box sunken">
+              <div class="stat-val">100%</div>
+              <div class="stat-lbl">ID-Checked</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val" id="rides-today-counter">24</div>
+              <div class="stat-lbl">Rides Today</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Stop Trigger Route Card (Image 2) -->
+        <div class="route-card">
+          <div class="route-eyebrow">TOMORROW, 7:45</div>
+          <div class="route-title">Premnagar → UIT Gate 1</div>
+
+          <!-- SVG Route Path with Interactive Stop Trigger -->
+          <div class="route-svg-container">
+            <svg class="route-svg" viewBox="0 0 400 90">
+              <!-- Background Path -->
+              <path class="route-line-bg" d="M 20 65 Q 120 70 200 45 T 380 25" />
+              
+              <!-- Active Progress Path -->
+              <path id="route-progress-path" class="route-line-active" d="M 20 65 Q 120 70 200 45 T 380 25" />
+
+              <!-- Waypoint Stop 1: Premnagar -->
+              <g class="waypoint-btn" onclick="triggerStop(1)">
+                <circle cx="20" cy="65" r="9" fill="#FFFDFC" stroke="#743A59" stroke-width="4" />
+                <circle id="stop-inner-1" cx="20" cy="65" r="4" fill="#743A59" />
+                <text x="20" y="85" text-anchor="middle" font-size="10" font-family="'DM Sans', sans-serif" font-weight="700" fill="#1F2622">Premnagar</text>
+              </g>
+
+              <!-- Waypoint Stop 2: Suddhowala -->
+              <g class="waypoint-btn" onclick="triggerStop(2)">
+                <circle cx="200" cy="45" r="8" fill="#FFFDFC" stroke="#743A59" stroke-width="3" />
+                <circle id="stop-inner-2" cx="200" cy="45" r="3" fill="#B98FA3" />
+                <text x="200" y="68" text-anchor="middle" font-size="10" font-family="'DM Sans', sans-serif" font-weight="600" fill="#5C6761">Suddhowala</text>
+              </g>
+
+              <!-- Waypoint Stop 3: UIT Gate 1 -->
+              <g class="waypoint-btn" onclick="triggerStop(3)">
+                <circle cx="380" cy="25" r="9" fill="#743A59" stroke="#FFFDFC" stroke-width="2" />
+                <circle id="stop-inner-3" cx="380" cy="25" r="4" fill="#FFFDFC" />
+                <text x="380" y="48" text-anchor="middle" font-size="10" font-family="'DM Sans', sans-serif" font-weight="700" fill="#1F2622">UIT Gate 1</text>
+              </g>
+
+              <!-- Animated Car Indicator -->
+              <circle id="car-dot" cx="20" cy="65" r="6" fill="#10B981" stroke="#fff" stroke-width="2" />
+            </svg>
+          </div>
+
+          <!-- Stop Trigger Control Strip -->
+          <div class="trigger-controls">
+            <div class="trigger-status">
+              Current Waypoint: <strong id="waypoint-label">Premnagar Chowk (Pickup Hub)</strong>
+            </div>
+            <button class="btn-trigger" onclick="advanceStop()">Trigger Next Stop →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plum Banner (Image 2) -->
+      <div class="plum-banner">
+        <div class="banner-badge">₹0</div>
+        <div class="banner-text">platform markup. Fuel is split directly between verified students.</div>
+      </div>
+
+      <!-- Marquee Ticker (Image 2) -->
+      <div class="marquee-strip">
+        <div class="marquee-track">
+          Premnagar Chowk Market • Selaqui Industrial Hub • Suddhowala Hub • Nanda Ki Chowki • UIT Gate 1 • Rajpur Road • DIT University • Clement Town • Graphic Era • Ballupur Chowk • Premnagar Chowk Market • Selaqui Industrial Hub • Suddhowala Hub • Nanda Ki Chowki • UIT Gate 1 • Rajpur Road
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 2: TICKET CARDS SUITE (IMAGE 1 STYLE WITH CUTOUT NOTCHES)            -->
+    <!-- ========================================================================= -->
+    <section id="view-tickets" class="view-section">
+      <div class="ticket-section-header">
+        <div class="ticket-section-eyebrow">Engineered Ride Passes</div>
+        <h2 class="ticket-section-title">Physical Ticket-Style Micro-Passes</h2>
+      </div>
+
+      <div class="ticket-grid">
+        <!-- Ticket 1: Aditya Kumar -->
+        <article class="ticket-card">
+          <div class="ticket-top">
+            <div class="ticket-time-price">
+              <div class="ticket-time">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:15 AM</span>
+              </div>
+              <div class="ticket-price">₹25 <span>split</span></div>
+            </div>
+
+            <div class="archetype-box">
+              <img src="/hero-aditya-driver.jpg" alt="Aditya Kumar" class="archetype-avatar">
+              <div class="archetype-info">
+                <div class="archetype-name">
+                  <span>Aditya Kumar</span>
+                  <span class="archetype-check">✓</span>
+                </div>
+                <div class="archetype-univ">UU</div>
+                <span class="archetype-tag">DRIVER</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-mid">
+            <div class="ticket-route">
+              <span>Premnagar Chowk Market</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-progress-bar">
+              <div class="ticket-progress-fill" style="width: 85%;"></div>
+            </div>
+            <p class="ticket-quote">
+              "Mechanical senior commuting daily. Courteous driving, always play lo-fi on the route."
+            </p>
+          </div>
+
+          <div class="ticket-bot">
+            <div class="ticket-rating">
+              <span class="star">★</span>
+              <span>4.8 · 98% on-time</span>
+            </div>
+            <a href="#" class="ticket-link" onclick="switchView('search'); return false;">Ride →</a>
+          </div>
+        </article>
+
+        <!-- Ticket 2: Ananya Verma -->
+        <article class="ticket-card">
+          <div class="ticket-top">
+            <div class="ticket-time-price">
+              <div class="ticket-time">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:30 AM</span>
+              </div>
+              <div class="ticket-price">₹35 <span>split</span></div>
+            </div>
+
+            <div class="archetype-box">
+              <img src="/student_backpack.jpg" alt="Ananya Verma" class="archetype-avatar">
+              <div class="archetype-info">
+                <div class="archetype-name">
+                  <span>Ananya Verma</span>
+                  <span class="archetype-check">✓</span>
+                </div>
+                <div class="archetype-univ">GEU</div>
+                <span class="archetype-tag">ANCHOR</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-mid">
+            <div class="ticket-route">
+              <span>Selaqui Industrial Hub</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-progress-bar">
+              <div class="ticket-progress-fill" style="width: 60%;"></div>
+            </div>
+            <p class="ticket-quote">
+              "Campus ride anchor. Verified female-only carpools on Tuesdays & Thursdays."
+            </p>
+          </div>
+
+          <div class="ticket-bot">
+            <div class="ticket-rating">
+              <span class="star">★</span>
+              <span>4.9 · 100% on-time</span>
+            </div>
+            <a href="#" class="ticket-link" onclick="switchView('search'); return false;">Ride →</a>
+          </div>
+        </article>
+
+        <!-- Ticket 3: Rahul Sharma -->
+        <article class="ticket-card">
+          <div class="ticket-top">
+            <div class="ticket-time-price">
+              <div class="ticket-time">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:20 AM</span>
+              </div>
+              <div class="ticket-price">₹25 <span>split</span></div>
+            </div>
+
+            <div class="archetype-box">
+              <img src="/candidate2.jpg" alt="Rahul Sharma" class="archetype-avatar">
+              <div class="archetype-info">
+                <div class="archetype-name">
+                  <span>Rahul Sharma</span>
+                  <span class="archetype-check">✓</span>
+                </div>
+                <div class="archetype-univ">UU</div>
+                <span class="archetype-tag">PASSENGER</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-mid">
+            <div class="ticket-route">
+              <span>Suddhowala Chowk</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-progress-bar">
+              <div class="ticket-progress-fill" style="width: 45%;"></div>
+            </div>
+            <p class="ticket-quote">
+              "IT sophomore. Punctual, respectful, splits fuel instantly via UPI before gate."
+            </p>
+          </div>
+
+          <div class="ticket-bot">
+            <div class="ticket-rating">
+              <span class="star">★</span>
+              <span>4.9 · 99% on-time</span>
+            </div>
+            <a href="#" class="ticket-link" onclick="switchView('search'); return false;">Ride →</a>
+          </div>
+        </article>
+
+        <!-- Ticket 4: Priya Singh -->
+        <article class="ticket-card">
+          <div class="ticket-top">
+            <div class="ticket-time-price">
+              <div class="ticket-time">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:40 AM</span>
+              </div>
+              <div class="ticket-price">₹30 <span>split</span></div>
+            </div>
+
+            <div class="archetype-box">
+              <img src="/student_commuter_female.jpg" alt="Priya Singh" class="archetype-avatar">
+              <div class="archetype-info">
+                <div class="archetype-name">
+                  <span>Priya Singh</span>
+                  <span class="archetype-check">✓</span>
+                </div>
+                <div class="archetype-univ">GEHU</div>
+                <span class="archetype-tag">PASSENGER</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-mid">
+            <div class="ticket-route">
+              <span>Ballupur Chowk</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-progress-bar">
+              <div class="ticket-progress-fill" style="width: 70%;"></div>
+            </div>
+            <p class="ticket-quote">
+              "Physics researcher. Rides exclusively with verified university students."
+            </p>
+          </div>
+
+          <div class="ticket-bot">
+            <div class="ticket-rating">
+              <span class="star">★</span>
+              <span>5.0 · 100% on-time</span>
+            </div>
+            <a href="#" class="ticket-link" onclick="switchView('search'); return false;">Ride →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 3: FIND A RIDE PAGE (IMAGE 3 HORIZONTAL TICKET CARDS)                -->
+    <!-- ========================================================================= -->
+    <section id="view-search" class="view-section">
+      <div class="find-ride-header">
+        <div>
+          <h2 class="search-title-h2">Find a Campus Ride</h2>
+          <p style="font-size: 0.85rem; color: var(--ink-muted); margin-top: 0.2rem;">
+            Verified peer carpools scheduled today for UIT, UPES & Graphic Era corridors.
+          </p>
+        </div>
+
+        <div class="filter-pills">
+          <button class="filter-pill active">All Corridors (4)</button>
+          <button class="filter-pill">Premnagar Hub</button>
+          <button class="filter-pill">Suddhowala</button>
+          <button class="filter-pill">Women-Only</button>
+        </div>
+      </div>
+
+      <!-- Horizontal Ride 1 (Aditya Kumar) -->
+      <div class="horiz-ticket">
+        <div class="horiz-top">
+          <div>
+            <div class="horiz-time-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>03:35 PM</span>
+            </div>
+
+            <div class="horiz-stops">
+              <div class="stop-row">
+                <span class="stop-dot-green"></span>
+                <span class="stop-tag">PICKUP STOP</span>
+                <span class="stop-name">UIT Building (Uttaranchal Institute of Technology)</span>
+              </div>
+              <div class="stop-row">
+                <span class="stop-dot-orange"></span>
+                <span class="stop-tag">DROP-OFF POINT</span>
+                <span class="stop-name">Premnagar Chowk Market</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="horiz-price-box">
+            <div class="horiz-price">₹20</div>
+            <div class="horiz-price-lbl">fuel share</div>
+          </div>
+        </div>
+
+        <div class="horiz-bottom">
+          <div class="driver-meta">
+            <img src="/hero-aditya-driver.jpg" alt="Aditya Kumar" class="driver-avatar-circle">
+            <div>
+              <div class="driver-name-row">
+                <span>Aditya Kumar</span>
+                <span class="driver-verified-badge">✓</span>
+              </div>
+              <div class="driver-sub">Uttaranchal University • CSE</div>
+            </div>
+          </div>
+
+          <div class="horiz-actions">
+            <span class="seats-pill">👥 3 seats open</span>
+            <button class="btn-action-outline">Map</button>
+            <button class="btn-action-outline">View Details</button>
+            <button class="btn-action-request">Verify ID to Request</button>
+          </div>
+        </div>
+
+        <div class="vehicle-note-strip">
+          <span>Vehicle & Corridor Notes ▾</span>
+          <span>🚗 Honda City i-VTEC (Silver)</span>
+        </div>
+      </div>
+
+      <!-- Horizontal Ride 2 (Ananya Verma) -->
+      <div class="horiz-ticket">
+        <div class="horiz-top">
+          <div>
+            <div class="horiz-time-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>03:47 PM</span>
+            </div>
+
+            <div class="horiz-stops">
+              <div class="stop-row">
+                <span class="stop-dot-green"></span>
+                <span class="stop-tag">PICKUP STOP</span>
+                <span class="stop-name">UIT Building (Uttaranchal Institute of Technology)</span>
+              </div>
+              <div class="stop-row">
+                <span class="stop-dot-orange"></span>
+                <span class="stop-tag">DROP-OFF POINT</span>
+                <span class="stop-name">Premnagar Chowk Market</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="horiz-price-box">
+            <div class="horiz-price">₹20</div>
+            <div class="horiz-price-lbl">fuel share</div>
+          </div>
+        </div>
+
+        <div class="horiz-bottom">
+          <div class="driver-meta">
+            <img src="/student_backpack.jpg" alt="Ananya Verma" class="driver-avatar-circle">
+            <div>
+              <div class="driver-name-row">
+                <span>Ananya Verma</span>
+                <span class="driver-verified-badge">✓</span>
+              </div>
+              <div class="driver-sub">Uttaranchal University • Management</div>
+            </div>
+          </div>
+
+          <div class="horiz-actions">
+            <span class="seats-pill">👥 3 seats open</span>
+            <button class="btn-action-outline">Map</button>
+            <button class="btn-action-outline">View Details</button>
+            <button class="btn-action-request">Verify ID to Request</button>
+          </div>
+        </div>
+
+        <div class="vehicle-note-strip">
+          <span>Vehicle & Corridor Notes ▾</span>
+          <span>🚗 Hyundai i20 Sportz (Polar White)</span>
+        </div>
+      </div>
+
+      <!-- Horizontal Ride 3 (Sneha Patel) -->
+      <div class="horiz-ticket">
+        <div class="horiz-top">
+          <div>
+            <div class="horiz-time-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>04:05 PM</span>
+            </div>
+
+            <div class="horiz-stops">
+              <div class="stop-row">
+                <span class="stop-dot-green"></span>
+                <span class="stop-tag">PICKUP STOP</span>
+                <span class="stop-name">UIT Building (Uttaranchal Institute of Technology)</span>
+              </div>
+              <div class="stop-row">
+                <span class="stop-dot-orange"></span>
+                <span class="stop-tag">DROP-OFF POINT</span>
+                <span class="stop-name">Premnagar Chowk Market</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="horiz-price-box">
+            <div class="horiz-price">₹20</div>
+            <div class="horiz-price-lbl">fuel share</div>
+          </div>
+        </div>
+
+        <div class="horiz-bottom">
+          <div class="driver-meta">
+            <img src="/candidate5.jpg" alt="Sneha Patel" class="driver-avatar-circle">
+            <div>
+              <div class="driver-name-row">
+                <span>Sneha Patel</span>
+                <span class="driver-verified-badge">✓</span>
+              </div>
+              <div class="driver-sub">Graphic Era University • Computer Applications</div>
+            </div>
+          </div>
+
+          <div class="horiz-actions">
+            <span class="seats-pill">👥 3 seats open</span>
+            <button class="btn-action-outline">Map</button>
+            <button class="btn-action-outline">View Details</button>
+            <button class="btn-action-request">Verify ID to Request</button>
+          </div>
+        </div>
+
+        <div class="vehicle-note-strip">
+          <span>Vehicle & Corridor Notes ▾</span>
+          <span>🚗 Maruti Suzuki Swift (Fire Red)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 4: AUTHENTICATOR & REAL-TIME OTP ENGINE (IMAGE 4 STYLE)              -->
+    <!-- ========================================================================= -->
+    <section id="view-overview" class="view-section">
+      <div class="overview-header">
+        <div>
+          <div class="overview-eyebrow">INTERACTIVE PROFILE AUTHENTICATOR</div>
+          <div class="overview-title">Select a verified student profile to inspect credential layers:</div>
+        </div>
+
+        <div class="profile-tabs">
+          <button class="profile-tab active" id="tab-aditya" onclick="selectProfile('aditya')">Aditya (Driver)</button>
+          <button class="profile-tab" id="tab-priya" onclick="selectProfile('priya')">Priya (Driver)</button>
+          <button class="profile-tab" id="tab-rohan" onclick="selectProfile('rohan')">Rohan (Driver)</button>
+        </div>
+      </div>
+
+      <div class="overview-grid">
+        <!-- Left: Student Credential Layers -->
+        <div class="credential-card">
+          <div class="cred-header-row">
+            <div class="cred-driver-box">
+              <div class="archetype-box" style="padding: 0.6rem 0.9rem;">
+                <img id="prof-avatar" src="/hero-aditya-driver.jpg" alt="Profile" class="archetype-avatar">
+                <div>
+                  <div class="archetype-name" id="prof-badge-name">Aditya Sharma</div>
+                  <div class="archetype-univ" id="prof-badge-univ">UIT</div>
+                  <span class="archetype-tag">DRIVER</span>
+                </div>
+              </div>
+
+              <div>
+                <h3 id="prof-full-name" style="font-family: 'Fraunces', serif; font-size: 1.5rem; font-weight: 800;">Aditya Sharma</h3>
+                <div style="font-size: 0.82rem; color: #10B981; font-weight: 700; margin-top: 0.1rem;">Verified Driver ✓</div>
+                <div id="prof-college" style="font-size: 0.78rem; color: var(--ink-muted);">Uttaranchal University (UIT)</div>
+              </div>
+            </div>
+
+            <div class="stamp-badge">
+              STUDENT ID VERIFIED<br>ACADEMIC YR 2026
+            </div>
+          </div>
+
+          <div class="meta-grid">
+            <div>
+              <div class="meta-label">DEPARTMENT</div>
+              <div class="meta-val" id="prof-dept">B.Tech Computer Science & Engineering</div>
+            </div>
+            <div>
+              <div class="meta-label">BATCH</div>
+              <div class="meta-val" id="prof-batch">Class of 2025</div>
+            </div>
+            <div>
+              <div class="meta-label">TRIPS COMPLETED</div>
+              <div class="meta-val" id="prof-trips" style="color: #10B981;">24 verified</div>
+            </div>
+          </div>
+
+          <div class="vehicle-pill-box">
+            <span>🚗</span>
+            <span>Vehicle: <strong id="prof-car">Honda City (UK 07 AK 4821)</strong> • Insured & Inspected</span>
+          </div>
+
+          <div class="badge-strip">
+            <span class="security-badge">✓ UIT .edu Verified</span>
+            <span class="security-badge">✓ Driving License Authenticated</span>
+            <span class="security-badge">✓ Zero Detour Violations</span>
+          </div>
+        </div>
+
+        <!-- Right: Real-Time OTP Protection -->
+        <div class="otp-card">
+          <div>
+            <div class="otp-eyebrow">PICKUP VERIFICATION HANDSHAKE</div>
+            <h3 class="otp-title">Real-Time OTP Protection</h3>
+            <p class="otp-desc">
+              Before passenger enters the car, driver shows this code. This prevents mistaken pickups, ensures GPS tracking starts, and notifies emergency contacts.
+            </p>
+
+            <div class="otp-terminal">
+              <div class="otp-terminal-title">Secure Trip Token</div>
+              
+              <!-- Hidden/Revealed OTP Token -->
+              <div id="otp-dots-container" class="otp-dots">
+                <div class="otp-dot"></div>
+                <div class="otp-dot"></div>
+                <div class="otp-dot"></div>
+                <div class="otp-dot"></div>
+              </div>
+
+              <div id="otp-revealed-text" class="otp-revealed-number">
+                4 8 2 1
+              </div>
+
+              <div id="otp-status-msg" class="otp-status-line">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span>
+                <span>Waiting for driver arrival simulation...</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="btn-reveal-otp" class="btn-simulate-otp" onclick="simulateOTPReveal()">
+            <span>Simulate Driver OTP Reveal →</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- VIEW 5: DRIVER DASHBOARD (IMAGE 5 STYLE)                                  -->
+    <!-- ========================================================================= -->
+    <section id="view-driver-dash" class="view-section">
+      <!-- Driver Top Banner -->
+      <div class="driver-dash-header">
+        <div class="dash-profile-block">
+          <img src="/hero-aditya-driver.jpg" alt="Driver" class="dash-avatar-lg">
+          <div>
+            <h2 class="dash-driver-name">Aditya Kumar</h2>
+            <div class="dash-driver-role">Verified Campus Driver · Honda City (UK 07 AK 4821)</div>
+          </div>
+        </div>
+
+        <div class="dash-liveness-pill">
+          <span>🛡️</span>
+          <span>Morning Face Liveness: Verified for Today</span>
+        </div>
+      </div>
+
+      <!-- 4 KPI Blocks -->
+      <div class="dash-kpis">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Today's Seats</div>
+          <div class="kpi-num">3 / 4</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Fuel Split Earned</div>
+          <div class="kpi-num">₹180</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Punctuality Score</div>
+          <div class="kpi-num">98.5%</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Rating</div>
+          <div class="kpi-num">4.9 ★</div>
+        </div>
+      </div>
+
+      <!-- Driver Main Grid -->
+      <div class="dash-content-grid">
+        <!-- Left: Today's Booked Classmates -->
+        <div class="dash-card">
+          <div class="dash-card-title">
+            <span>Today's Morning Commute Passengers</span>
+            <span style="font-size: 0.8rem; font-family: 'JetBrains Mono', monospace; color: var(--green);">Departure: 08:15 AM</span>
+          </div>
+
+          <div class="passenger-row">
+            <div class="pass-user">
+              <img src="/candidate2.jpg" alt="Rahul" class="pass-avatar-sm">
+              <div>
+                <div class="pass-name">Rahul Sharma (UU - CSE)</div>
+                <div class="pass-stop">Pickup: Suddhowala Chowk (08:00 AM)</div>
+              </div>
+            </div>
+            <div class="otp-badge-input">OTP Verified ✓</div>
+          </div>
+
+          <div class="passenger-row">
+            <div class="pass-user">
+              <img src="/student_backpack.jpg" alt="Ananya" class="pass-avatar-sm">
+              <div>
+                <div class="pass-name">Ananya Verma (UU - MBA)</div>
+                <div class="pass-stop">Pickup: Premnagar Market (07:45 AM)</div>
+              </div>
+            </div>
+            <div class="otp-badge-input">OTP Verified ✓</div>
+          </div>
+
+          <div class="passenger-row">
+            <div class="pass-user">
+              <img src="/student_commuter_female.jpg" alt="Priya" class="pass-avatar-sm">
+              <div>
+                <div class="pass-name">Priya Singh (GEHU - MSc)</div>
+                <div class="pass-stop">Pickup: Nanda Ki Chowki (08:05 AM)</div>
+              </div>
+            </div>
+            <div class="otp-badge-input" style="color: #F59E0B; border-color: #FDE68A;">Awaiting OTP</div>
+          </div>
+        </div>
+
+        <!-- Right: Corridor Actions & GPS Telemetry -->
+        <div class="dash-card">
+          <div class="dash-card-title">
+            <span>Active Corridor Telemetry</span>
+          </div>
+
+          <div style="background: var(--paper); border: 1px solid var(--border); border-radius: 1rem; padding: 1.25rem; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--ink-muted); text-transform: uppercase; font-family: 'JetBrains Mono', monospace; margin-bottom: 0.4rem;">
+              Corridor 01: Premnagar → UIT Gate 1
+            </div>
+            <div style="font-size: 1.1rem; font-weight: 800; color: var(--ink);">
+              Status: Live Corridor Scheduled
+            </div>
+            <div style="font-size: 0.85rem; color: var(--ink-muted); margin-top: 0.35rem;">
+              GPS tracking begins automatically when driver inputs 1st passenger OTP code.
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-plum" style="flex: 1; justify-content: center;" onclick="alert('Trip start simulated! Live GPS corridor beacon activated.')">Start Trip Navigation</button>
+            <button class="btn-soft" onclick="switchView('overview')">Verify OTP</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // View Switcher Functionality
+    function switchView(viewId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.view-pill').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+
+      const target = document.getElementById('view-' + viewId);
+      if (target) {
+        target.classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      // Sync active button
+      const buttons = document.querySelectorAll('.view-pill');
+      if (viewId === 'hero' && buttons[0]) buttons[0].classList.add('active');
+      if (viewId === 'tickets' && buttons[1]) buttons[1].classList.add('active');
+      if (viewId === 'search' && buttons[2]) buttons[2].classList.add('active');
+      if (viewId === 'overview' && buttons[3]) buttons[3].classList.add('active');
+      if (viewId === 'driver-dash' && buttons[4]) buttons[4].classList.add('active');
+    }
+
+    // Stop Trigger Waypoints on Route Card
+    let currentStop = 1;
+    const stopsData = [
+      { id: 1, name: "Premnagar Chowk (Pickup Hub)", dashoffset: "400", carX: 20, carY: 65 },
+      { id: 2, name: "Suddhowala Student Quad (+6 min)", dashoffset: "200", carX: 200, carY: 45 },
+      { id: 3, name: "UIT Gate 1 Academic Quad (Arrival)", dashoffset: "0", carX: 380, carY: 25 }
+    ];
+
+    function triggerStop(stopId) {
+      currentStop = stopId;
+      const data = stopsData[stopId - 1];
+      
+      const path = document.getElementById('route-progress-path');
+      const label = document.getElementById('waypoint-label');
+      const car = document.getElementById('car-dot');
+
+      if (path) path.style.strokeDashoffset = data.dashoffset;
+      if (label) label.textContent = data.name;
+      if (car) {
+        car.setAttribute('cx', data.carX);
+        car.setAttribute('cy', data.carY);
+      }
+
+      // Highlight active dot
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById('stop-inner-' + i);
+        if (dot) {
+          dot.setAttribute('fill', i <= stopId ? '#743A59' : '#B98FA3');
+        }
+      }
+    }
+
+    function advanceStop() {
+      currentStop = currentStop >= 3 ? 1 : currentStop + 1;
+      triggerStop(currentStop);
+    }
+
+    // Profile Authenticator Selector
+    const profiles = {
+      aditya: {
+        name: "Aditya Sharma",
+        univ: "UIT",
+        college: "Uttaranchal University (UIT)",
+        dept: "B.Tech Computer Science & Engineering",
+        batch: "Class of 2025",
+        trips: "24 verified",
+        car: "Honda City (UK 07 AK 4821)",
+        avatar: "/hero-aditya-driver.jpg",
+        otp: "4 8 2 1"
+      },
+      priya: {
+        name: "Priya Singh",
+        univ: "GEHU",
+        college: "Graphic Era Hill University (GEHU)",
+        dept: "M.Sc Physics & Research",
+        batch: "Class of 2026",
+        trips: "18 verified",
+        car: "Hyundai i20 (UK 07 BP 1994)",
+        avatar: "/student_commuter_female.jpg",
+        otp: "7 1 9 4"
+      },
+      rohan: {
+        name: "Rohan Verma",
+        univ: "UPES",
+        college: "University of Petroleum & Energy Studies",
+        dept: "B.Des Digital Product Design",
+        batch: "Class of 2025",
+        trips: "31 verified",
+        car: "Maruti Swift (UK 07 TC 3320)",
+        avatar: "/candidate2.jpg",
+        otp: "9 3 0 2"
+      }
+    };
+
+    let activeProfileKey = 'aditya';
+
+    function selectProfile(key) {
+      activeProfileKey = key;
+      const p = profiles[key];
+      if (!p) return;
+
+      document.querySelectorAll('.profile-tab').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById('tab-' + key);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('prof-avatar').src = p.avatar;
+      document.getElementById('prof-badge-name').textContent = p.name;
+      document.getElementById('prof-badge-univ').textContent = p.univ;
+      document.getElementById('prof-full-name').textContent = p.name;
+      document.getElementById('prof-college').textContent = p.college;
+      document.getElementById('prof-dept').textContent = p.dept;
+      document.getElementById('prof-batch').textContent = p.batch;
+      document.getElementById('prof-trips').textContent = p.trips;
+      document.getElementById('prof-car').textContent = p.car;
+
+      // Reset OTP
+      const dots = document.getElementById('otp-dots-container');
+      const text = document.getElementById('otp-revealed-text');
+      const msg = document.getElementById('otp-status-msg');
+      const btn = document.getElementById('btn-reveal-otp');
+
+      dots.style.display = 'flex';
+      text.style.display = 'none';
+      text.textContent = p.otp;
+      msg.innerHTML = '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span> <span>Waiting for driver arrival simulation...</span>';
+      btn.innerHTML = '<span>Simulate Driver OTP Reveal →</span>';
+      btn.style.background = 'var(--plum)';
+    }
+
+    // OTP Simulation Handshake
+    function simulateOTPReveal() {
+      const dots = document.getElementById('otp-dots-container');
+      const text = document.getElementById('otp-revealed-text');
+      const msg = document.getElementById('otp-status-msg');
+      const btn = document.getElementById('btn-reveal-otp');
+
+      if (dots.style.display !== 'none') {
+        dots.style.display = 'none';
+        text.style.display = 'block';
+        msg.innerHTML = '<span style="color:#065F46; font-weight:800;">✓ OTP Handshake Verified — GPS Live Tracking Initialized!</span>';
+        btn.innerHTML = '<span>✓ Code Matched & Authenticated</span>';
+        btn.style.background = '#10B981';
+      } else {
+        dots.style.display = 'flex';
+        text.style.display = 'none';
+        msg.innerHTML = '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span> <span>Waiting for driver arrival simulation...</span>';
+        btn.innerHTML = '<span>Simulate Driver OTP Reveal →</span>';
+        btn.style.background = 'var(--plum)';
+      }
+    }
+  </script>
+</body>
+</html>
+

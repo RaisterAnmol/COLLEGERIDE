@@ -42,8 +42,9 @@ import {
 } from 'lucide-react';
 import { SearchableInput } from '../components/common/SearchableInput';
 import { ReviewModal } from '../components/ReviewModal';
-import dashboardHeroImg from '../assets/illustrations/dashboard-hero.webp';
-import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.webp';
+import { AnimatedCounter } from '../components/common/AnimatedCounter';
+import { CustomSelect } from '../components/common/CustomSelect';
+import { motion } from 'framer-motion';
 import {
   POPULAR_COLLEGES,
   POPULAR_DEPARTMENTS,
@@ -426,7 +427,7 @@ export const DashboardPage: React.FC = () => {
               <div>
                 <p className="font-bold text-amber-950 text-sm flex items-center gap-2">
                   <span>Student ID Verification Under Review</span>
-                  <span className="text-[10px] font-mono uppercase bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full border border-amber-300 font-bold">
+                  <span className="text-[10px] font-mono uppercase bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-full border border-amber-300 font-bold whitespace-nowrap shrink-0 shadow-2xs">
                     {user.verificationStatus || 'Pending'}
                   </span>
                 </p>
@@ -447,90 +448,140 @@ export const DashboardPage: React.FC = () => {
           </div>
         )}
 
-        {/* Missing Emergency Contact / Mobile Number Warning Banner */}
-        {user && (!user.phone || !user.emergencyContact?.phone) && (
-          <div className="bg-gradient-to-r from-rose-50 via-red-50 to-amber-50 border-2 border-rose-300/90 p-5 rounded-3xl flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm animate-in fade-in duration-300">
-            <div className="flex items-start gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-rose-100 border border-rose-300 text-rose-600 flex items-center justify-center shrink-0 shadow-inner">
-                <ShieldAlert className="w-6 h-6 animate-pulse" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-black text-rose-950 text-sm sm:text-base">
-                    Action Required: Add Emergency Contact & WhatsApp Number
-                  </h4>
-                  <span className="text-[10px] font-mono uppercase bg-rose-200 text-rose-900 px-2 py-0.5 rounded-full font-bold">
-                    Safety Guardrail
-                  </span>
-                </div>
-                <p className="text-xs text-rose-900/80 max-w-2xl leading-relaxed">
-                  CampusRide requires an emergency contact (Parent / Guardian) and verified mobile number to enable instant <strong>24/7 WhatsApp SOS distress dispatch</strong> with live Google Maps tracking during university commutes.
-                </p>
-                <div className="text-[11px] text-slate-700 bg-white/80 rounded-xl p-3 border border-rose-200 mt-2 space-y-1">
-                  <span className="font-bold text-slate-900 block">How to add in 10 seconds:</span>
-                  <p>1. Click <strong>"Add Emergency Contact"</strong> button on the right.</p>
-                  <p>2. Enter your <strong>Mobile Number</strong> (for self-confirmation) and <strong>Emergency Contact</strong> details.</p>
-                  <p>3. Click <strong>"Save Changes"</strong> — your profile is instantly protected on campus!</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0 md:min-w-[190px]">
-              <button
-                type="button"
-                onClick={openEditModal}
-                className="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <PhoneCall className="w-3.5 h-3.5" />
-                <span>Add Emergency Contact</span>
-              </button>
-              <Link
-                to="/safety"
-                className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 border border-rose-300 text-slate-700 font-bold text-xs text-center transition-colors shadow-2xs"
-              >
-                View Safety Hub
-              </Link>
-            </div>
-          </div>
-        )}
+        {/* Onboarding Setup Progress Card (Matches Image 2 design styled in Atlas UI) */}
+        {user && (!user.isPhoneVerified || !user.emergencyContact?.phone) && (() => {
+          const isEmailDone = Boolean(user.email);
+          const isPhoneDone = Boolean(user.isPhoneVerified);
+          const isEmergencyDone = Boolean(user.emergencyContact?.phone || (user.emergencyContacts && user.emergencyContacts.length > 0));
+          const completedSteps = (isEmailDone ? 1 : 0) + (isPhoneDone ? 1 : 0) + (isEmergencyDone ? 1 : 0);
+          const remainingSteps = 3 - completedSteps;
 
-        {/* Unverified Phone OTP Advisory Banner for Older and New Accounts */}
-        {!user?.isPhoneVerified && (
-          <div className="rounded-3xl bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-2 border-amber-300 p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 animate-in fade-in">
-            <div className="flex items-start gap-3.5">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center font-black text-lg shrink-0 shadow-md">
-                🔐
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-black text-amber-950 text-sm sm:text-base">
-                    Action Required: Verify Mobile Number with WhatsApp OTP
-                  </h4>
-                  <span className="text-[10px] font-mono uppercase bg-amber-200 text-amber-900 px-2 py-0.5 rounded-full font-bold">
-                    OTP Required
+          return (
+            <div className="bg-paper border border-[#E2DDD3] rounded-3xl p-5 sm:p-6 shadow-xs relative overflow-hidden text-left space-y-4 animate-in fade-in duration-200">
+              {/* Header with Circular Progress Ring */}
+              <div className="flex items-center gap-3.5 pb-3 border-b border-[#E2DDD3]/70">
+                <div className="relative w-11 h-11 flex items-center justify-center shrink-0">
+                  <svg className="w-11 h-11 transform -rotate-90" viewBox="0 0 36 36">
+                    <path
+                      className="text-[#EAE5DA]"
+                      strokeWidth="3.5"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                    <path
+                      className="text-emerald-600 transition-all duration-500 ease-out"
+                      strokeDasharray={`${(completedSteps / 3) * 100}, 100`}
+                      strokeLinecap="round"
+                      strokeWidth="3.5"
+                      stroke="currentColor"
+                      fill="none"
+                      d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                    />
+                  </svg>
+                  <span className="absolute font-mono text-xs font-bold text-[#143D32]">
+                    {completedSteps}/3
                   </span>
                 </div>
-                <p className="text-xs text-amber-900/80 max-w-2xl leading-relaxed">
-                  Your mobile number <strong>{user?.phone || 'not configured'}</strong> is currently unverified. WhatsApp OTP verification is required to unlock ride booking, driver coordination, and 24/7 SOS safety alerts.
-                </p>
-                <div className="text-[11px] text-slate-700 bg-white/80 rounded-xl p-2.5 border border-amber-200 mt-1 space-y-0.5">
-                  <p>1. Click <strong>"Verify Phone OTP"</strong> on the right.</p>
-                  <p>2. In the modal, click <strong>"Send WhatsApp OTP"</strong> to receive your 6-digit code.</p>
-                  <p>3. Enter the 6-digit code and tap <strong>"Verify"</strong> to activate your verified badge!</p>
+
+                <div>
+                  <h3 className="text-base font-bold font-display text-[#143D32] tracking-tight">
+                    Finish setup to book rides
+                  </h3>
+                  <p className="text-xs text-[#5C716A]">
+                    {remainingSteps === 1 ? 'One step left' : `${remainingSteps} steps left`}
+                  </p>
+                </div>
+              </div>
+
+              {/* 3 Setup Steps Rows */}
+              <div className="space-y-2.5">
+                {/* Step 1: University Email */}
+                <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[#F8F6F1] border border-[#E2DDD3]/70">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 font-bold text-xs">
+                      <Check className="w-4 h-4 text-emerald-700" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-[#143D32]">University email</div>
+                      <div className="text-[11px] text-[#5C716A] font-mono truncate">{user.email || 'aditya.kumar@college.edu'}</div>
+                    </div>
+                  </div>
+                  <span className="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono shrink-0">
+                    Done
+                  </span>
+                </div>
+
+                {/* Step 2: Verify Phone */}
+                <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[#F8F6F1] border border-[#E2DDD3]/70">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {isPhoneDone ? (
+                      <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 font-bold text-xs">
+                        <Check className="w-4 h-4 text-emerald-700" />
+                      </div>
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-[#EAE5DA] text-[#143D32] flex items-center justify-center shrink-0 font-bold text-xs font-mono">
+                        2
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-[#143D32]">Verify phone</div>
+                      <div className="text-[11px] text-[#5C716A] font-mono truncate">{user.phone || '+91 98765 43210'}</div>
+                    </div>
+                  </div>
+                  {isPhoneDone ? (
+                    <span className="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono shrink-0">
+                      Done
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={openEditModal}
+                      className="px-4 py-1.5 rounded-xl bg-[#143D32] hover:bg-[#0E2C24] text-white text-xs font-bold shadow-2xs transition-all active:translate-y-0.5 cursor-pointer shrink-0 flex items-center gap-1.5"
+                    >
+                      <Zap className="w-3 h-3 text-amber-300" />
+                      <span>Send OTP</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Step 3: Emergency Contact */}
+                <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-[#F8F6F1] border border-[#E2DDD3]/70">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {isEmergencyDone ? (
+                      <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 font-bold text-xs">
+                        <Check className="w-4 h-4 text-emerald-700" />
+                      </div>
+                    ) : (
+                      <div className="w-7 h-7 rounded-full bg-[#EAE5DA] text-[#143D32] flex items-center justify-center shrink-0 font-bold text-xs font-mono">
+                        3
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-[#143D32]">Emergency contact</div>
+                      <div className="text-[11px] text-[#5C716A] truncate">
+                        {isEmergencyDone ? (user.emergencyContact?.phone || 'Configured for live SOS') : 'Gets your live location on SOS'}
+                      </div>
+                    </div>
+                  </div>
+                  {isEmergencyDone ? (
+                    <span className="px-3 py-1 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold font-mono shrink-0">
+                      Done
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={openEditModal}
+                      className="px-4 py-1.5 rounded-xl border border-[#E2DDD3] bg-paper hover:bg-[#F5F2EB] text-[#143D32] text-xs font-bold shadow-2xs transition-all active:translate-y-0.5 cursor-pointer shrink-0"
+                    >
+                      Add
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row md:flex-col gap-2 shrink-0 md:min-w-[190px]">
-              <button
-                type="button"
-                onClick={openEditModal}
-                className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <Zap className="w-3.5 h-3.5" />
-                <span>Verify Phone OTP</span>
-              </button>
-            </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Action Feedback Banner */}
         {actionFeedback && (
@@ -561,7 +612,7 @@ export const DashboardPage: React.FC = () => {
               <div className="lg:col-span-4 space-y-4 flex flex-col justify-between">
                 
                 {/* Driver Greeting Card */}
-                <div className="bg-white rounded-3xl border border-slate-200/90 p-5 shadow-xs relative overflow-hidden">
+                <div className="bg-white rounded-card border border-slate-200/90 p-6 sm:p-7 shadow-xs relative overflow-hidden">
                   <div className="flex items-start gap-4">
                     {/* Driver Avatar */}
                     <div className="w-16 h-16 rounded-2xl p-0.5 bg-gradient-to-tr from-emerald-400 to-teal-600 shadow-sm shrink-0 overflow-hidden ring-2 ring-emerald-100">
@@ -598,7 +649,7 @@ export const DashboardPage: React.FC = () => {
                     <div className="bg-slate-50/80 p-2 rounded-xl border border-slate-100">
                       <div className="flex items-center justify-center gap-1 font-black text-slate-900 text-xs">
                         <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                        <span>{user?.rating?.toFixed(1) || '4.9'}</span>
+                        <AnimatedCounter value={user?.rating || 4.9} decimals={1} duration={1.0} />
                       </div>
                       <span className="text-[10px] text-slate-400 font-medium">Rating</span>
                     </div>
@@ -606,7 +657,7 @@ export const DashboardPage: React.FC = () => {
                     <div className="bg-slate-50/80 p-2 rounded-xl border border-slate-100">
                       <div className="flex items-center justify-center gap-1 font-black text-slate-900 text-xs">
                         <Car className="w-3 h-3 text-emerald-600" />
-                        <span>{myOfferedRides.length > 0 ? myOfferedRides.length : 15}</span>
+                        <AnimatedCounter value={myOfferedRides.length > 0 ? myOfferedRides.length : 15} duration={1.2} />
                       </div>
                       <span className="text-[10px] text-slate-400 font-medium">Rides</span>
                     </div>
@@ -614,7 +665,7 @@ export const DashboardPage: React.FC = () => {
                     <div className="bg-slate-50/80 p-2 rounded-xl border border-slate-100">
                       <div className="flex items-center justify-center gap-1 font-black text-emerald-700 text-xs">
                         <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                        <span>100%</span>
+                        <AnimatedCounter value={100} suffix="%" duration={0.9} />
                       </div>
                       <span className="text-[10px] text-slate-400 font-medium">Verified</span>
                     </div>
@@ -675,7 +726,7 @@ export const DashboardPage: React.FC = () => {
               </div>
 
               {/* Center Column (lg:col-span-3): "Your Next Ride" Card */}
-              <div className="lg:col-span-3 bg-white rounded-3xl border border-slate-200/90 p-5 shadow-xs flex flex-col justify-between relative overflow-hidden">
+              <div className="lg:col-span-3 bg-white rounded-card border border-slate-200/90 p-6 sm:p-7 shadow-xs flex flex-col justify-between relative overflow-hidden">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
@@ -744,21 +795,21 @@ export const DashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Right Column (lg:col-span-5): Campus Quad Artwork with Signpost */}
-              <div className="lg:col-span-5 relative rounded-3xl overflow-hidden border border-slate-200 shadow-md group">
+              {/* Right Column (lg:col-span-5): Campus Quad Photorealistic Commute with Signpost */}
+              <div className="lg:col-span-5 relative rounded-3xl overflow-hidden border border-[#E2DDD3] shadow-xs group">
                 <img
-                  src={dashboardHeroImg}
-                  alt="CampusRide green car parked on university quad with students and clocktower"
-                  className="w-full h-full min-h-[240px] object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+                  src="/dashboard-students-real.jpg"
+                  alt="Verified students commuting and carpooling together on university campus"
+                  className="w-full h-full min-h-[240px] max-h-[290px] object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
 
-                {/* Chalkboard Signpost Graphic Overlay (Matches Image 2) */}
-                <div className="absolute bottom-4 right-4 z-20 max-w-[200px] bg-[#143D32]/95 backdrop-blur-xs border-2 border-emerald-400/40 rounded-2xl p-3 text-white shadow-xl transform rotate-1 select-none">
+                {/* Chalkboard Signpost Graphic Overlay */}
+                <div className="absolute bottom-4 right-4 z-20 max-w-[210px] bg-[#143D32]/95 backdrop-blur-xs border border-emerald-400/40 rounded-2xl p-3 text-white shadow-lg transform rotate-1 select-none">
                   <p className="text-[10px] font-mono tracking-wider uppercase text-emerald-200 font-bold mb-0.5">
                     COLLEGE TRANSIT
                   </p>
-                  <p className="text-xs font-black tracking-tight leading-snug">
+                  <p className="text-xs font-bold tracking-tight leading-snug">
                     Same Campus <br />
                     Same Goals <br />
                     <span className="text-emerald-300">Better Rides ☺</span>
@@ -769,58 +820,62 @@ export const DashboardPage: React.FC = () => {
             </div>
 
             {/* SUSTAINABILITY & DEPARTMENT LEADERBOARD ROW */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-              {/* Left: Eco & Green Impact (lg:col-span-5) */}
-              <div className="lg:col-span-5 bg-gradient-to-br from-[#143D32] to-[#0A201A] text-white rounded-3xl p-6 shadow-md flex flex-col justify-between space-y-4">
-                <div className="space-y-1">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left: Eco & Green Impact (lg:col-span-5) - Warm Paper Atlas Style */}
+              <div className="lg:col-span-5 bg-paper rounded-card border border-[#E2DDD3] p-6 sm:p-7 shadow-xs flex flex-col justify-between space-y-4">
+                <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="p-1 rounded-lg bg-emerald-400/20 text-emerald-300">
+                    <span className="p-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200/80">
                       <Sparkles className="w-4 h-4" />
                     </span>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-800 font-bold">
                       Campus Green Impact
                     </span>
                   </div>
-                  <h3 className="text-xl font-black text-white tracking-tight">
+                  <h3 className="text-xl font-bold font-display text-[#143D32] tracking-tight">
                     Together for Cleaner Air 🌱
                   </h3>
-                  <p className="text-xs text-emerald-100/80 leading-relaxed">
+                  <p className="text-xs text-[#5C716A] leading-relaxed">
                     By carpooling together, students from {user?.college || 'our campus'} are directly curbing campus traffic and Dehradun air pollution.
                   </p>
                 </div>
 
                 {/* 3 Green Metrics */}
-                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-emerald-500/20 text-center">
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-lg font-black text-emerald-300 block">48.6 kg</span>
-                    <span className="text-[10px] text-emerald-100/70 block mt-0.5">CO₂ Avoided</span>
+                <div className="grid grid-cols-3 gap-2.5 pt-2 border-t border-[#E2DDD3] text-center">
+                  <div className="p-2.5 rounded-xl bg-[#F8F6F1] border border-[#E2DDD3]">
+                    <span className="text-lg font-black text-emerald-800 block">48.6 kg</span>
+                    <span className="text-[10px] text-[#5C716A] font-semibold block mt-0.5">CO₂ Avoided</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-lg font-black text-emerald-300 block">₹4,200</span>
-                    <span className="text-[10px] text-emerald-100/70 block mt-0.5">Fuel Saved</span>
+                  <div className="p-2.5 rounded-xl bg-[#F8F6F1] border border-[#E2DDD3]">
+                    <span className="text-lg font-black text-emerald-800 block">₹4,200</span>
+                    <span className="text-[10px] text-[#5C716A] font-semibold block mt-0.5">Fuel Saved</span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/5 border border-white/10">
-                    <span className="text-lg font-black text-emerald-300 block">16 Cars</span>
-                    <span className="text-[10px] text-emerald-100/70 block mt-0.5">Off Roadways</span>
+                  <div className="p-2.5 rounded-xl bg-[#F8F6F1] border border-[#E2DDD3]">
+                    <span className="text-lg font-black text-emerald-800 block">16 Cars</span>
+                    <span className="text-[10px] text-[#5C716A] font-semibold block mt-0.5">Off Roadways</span>
                   </div>
                 </div>
               </div>
 
-              {/* Right: Department Carpool Leaderboard (lg:col-span-7) */}
-              <div className="lg:col-span-7 bg-white rounded-3xl border border-slate-200/90 p-5 sm:p-6 shadow-xs space-y-3.5">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              {/* Right: Department Carpool Leaderboard (lg:col-span-7) with Staggered Entrance & Animated Bars */}
+              <div className="lg:col-span-7 bg-paper rounded-card border border-[#E2DDD3] p-6 sm:p-7 shadow-xs space-y-3.5">
+                <div className="flex items-center justify-between pb-2 border-b border-[#E2DDD3]/70">
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs">
+                    <motion.div
+                      whileHover={{ rotate: [0, -12, 12, -6, 0], scale: 1.15 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-7 h-7 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-xs shadow-2xs cursor-default select-none"
+                    >
                       🏆
-                    </div>
+                    </motion.div>
                     <div>
-                      <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                      <h3 className="text-xs font-bold text-[#143D32] uppercase tracking-wide">
                         Department Carpool Leaderboard
                       </h3>
-                      <p className="text-[10px] text-slate-400">Weekly Top Green Commute Batches</p>
+                      <p className="text-[10px] text-[#5C716A]">Weekly Top Green Commute Batches</p>
                     </div>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full font-bold">
+                  <span className="text-[10px] font-mono px-2 py-0.5 bg-[#F8F6F1] border border-[#E2DDD3] text-[#5C716A] rounded-full font-bold whitespace-nowrap shrink-0">
                     This Week
                   </span>
                 </div>
@@ -832,21 +887,34 @@ export const DashboardPage: React.FC = () => {
                     { rank: '🥉', dept: 'Civil & Mechanical Engineering', rides: 112, percent: 56 },
                     { rank: '4', dept: 'Law College Dehradun (LCD)', rides: 88, percent: 44 },
                   ].map((entry, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <div className="flex items-center justify-between text-slate-800 font-semibold">
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.4, delay: 0.08 * idx, ease: [0.16, 1, 0.3, 1] }}
+                      whileHover={{ x: 3 }}
+                      className="space-y-1.5 p-1 rounded-xl transition-all"
+                    >
+                      <div className="flex items-center justify-between font-semibold">
                         <span className="flex items-center gap-1.5 truncate">
                           <span className="font-mono text-xs w-4 shrink-0">{entry.rank}</span>
-                          <span className="truncate">{entry.dept}</span>
+                          <span className="truncate text-[#143D32] font-bold">{entry.dept}</span>
                         </span>
-                        <span className="font-mono text-emerald-700 text-xs shrink-0">{entry.rides} rides</span>
+                        <span className="font-mono text-emerald-800 text-xs shrink-0 font-bold">
+                          <AnimatedCounter value={entry.rides} suffix=" rides" duration={1.1} />
+                        </span>
                       </div>
-                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full"
-                          style={{ width: `${entry.percent}%` }}
+                      <div className="w-full h-2 bg-[#EAE5DA]/70 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${entry.percent}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.12 + 0.08 * idx }}
+                          className="h-full bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-400 rounded-full"
                         />
                       </div>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </div>
@@ -864,7 +932,7 @@ export const DashboardPage: React.FC = () => {
                       <h2 className="text-base font-black text-slate-900 tracking-tight">
                         Campus Peer Reviews & Trust
                       </h2>
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold">
+                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[10px] font-bold whitespace-nowrap shrink-0">
                         Mutual Ratings
                       </span>
                     </div>
@@ -874,13 +942,13 @@ export const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="text-[11px] font-mono font-bold text-emerald-800 select-none hidden sm:block">
+                <div className="text-[11px] font-mono font-bold text-emerald-800 select-none hidden sm:block whitespace-nowrap">
                   Real Students • Real Reviews • True Safety ♡
                 </div>
               </div>
 
               {/* 3-Column Reviews Showcase Row */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-stretch">
                 
                 {/* Left: Big Rating Box (md:col-span-3) */}
                 <div className="md:col-span-3 p-4 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-1">
@@ -896,20 +964,20 @@ export const DashboardPage: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Center: Reviews Banner Illustration (md:col-span-5) */}
-                <div className="md:col-span-5 relative h-28 rounded-2xl overflow-hidden border border-emerald-100 shadow-xs">
+                {/* Center: Reviews Banner Real Photography */}
+                <div className="md:col-span-5 relative h-28 rounded-2xl overflow-hidden border border-[#E2DDD3] shadow-xs">
                   <img
-                    src={reviewsTrustImg}
-                    alt="University students reviewing commute on campus"
+                    src="/carpool-commute.jpg"
+                    alt="University students carpooling and commuting together on campus"
                     className="w-full h-full object-cover object-center"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/40 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
                   <div className="absolute bottom-2 left-3 text-white text-[11px] font-bold flex items-center gap-1">
                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                     <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                    <span className="ml-1 text-[10px] text-emerald-200 font-medium">Peer Endorsed</span>
+                    <span className="ml-1 text-[10px] text-emerald-200 font-medium">Peer Endorsed • Verified Commutes</span>
                   </div>
                 </div>
 
@@ -922,15 +990,15 @@ export const DashboardPage: React.FC = () => {
                     Badges appear automatically as drivers and passengers exchange compliments upon ride completion.
                   </p>
                   <div className="flex flex-wrap gap-1.5 pt-1">
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold whitespace-nowrap shrink-0">
                       <ShieldCheck className="w-3 h-3 text-emerald-600" />
                       Safe Driver
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-[10px] font-bold whitespace-nowrap shrink-0">
                       <Heart className="w-3 h-3 text-blue-600" />
                       Friendly
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold whitespace-nowrap shrink-0">
                       <Star className="w-3 h-3 fill-amber-400 text-amber-500" />
                       Top Rated
                     </span>
@@ -1216,22 +1284,22 @@ export const DashboardPage: React.FC = () => {
                       {user?.name}
                     </h1>
                     {user?.verificationStatus === 'verified' ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 whitespace-nowrap shrink-0">
                         <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                         Verified {isDriver ? 'Driver' : 'Passenger'}
                       </span>
                     ) : user?.verificationStatus === 'pending' ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 whitespace-nowrap shrink-0">
                         <Clock className="w-3 h-3 text-amber-600" />
                         Verification Pending
                       </span>
                     ) : user?.verificationStatus === 'rejected' ? (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-rose-800 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200 whitespace-nowrap shrink-0">
                         <AlertCircle className="w-3 h-3 text-rose-600" />
                         Verification Rejected
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200 whitespace-nowrap shrink-0">
                         <AlertCircle className="w-3 h-3 text-slate-500" />
                         Unverified Student
                       </span>
@@ -1241,9 +1309,9 @@ export const DashboardPage: React.FC = () => {
                     {user?.college || 'University'} • {user?.department || user?.course || 'Student'}
                   </p>
                   <div className="flex items-center gap-2 text-[11px] text-slate-400 mt-1">
-                    <span>Rating: <strong className="text-slate-800 font-bold">★ {user?.rating?.toFixed(1) || '5.0'}</strong></span>
+                    <span>Rating: <strong className="text-slate-800 font-bold">★ <AnimatedCounter value={user?.rating || 5.0} decimals={1} duration={1.0} /></strong></span>
                     <span>•</span>
-                    <span>Shared Commutes: <strong className="text-slate-800 font-bold">{myRequests.length}</strong></span>
+                    <span>Shared Commutes: <strong className="text-slate-800 font-bold"><AnimatedCounter value={myRequests.length} duration={1.1} /></strong></span>
                   </div>
                 </div>
               </div>
@@ -1281,12 +1349,12 @@ export const DashboardPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200">
                   <button
                     type="button"
                     onClick={() => setPassengerCommuteTab('upcoming')}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      passengerCommuteTab === 'upcoming' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600'
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      passengerCommuteTab === 'upcoming' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Upcoming ({upcomingRequests.length})
@@ -1294,8 +1362,8 @@ export const DashboardPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setPassengerCommuteTab('previous')}
-                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                      passengerCommuteTab === 'previous' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600'
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+                      passengerCommuteTab === 'previous' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     Previous ({previousRequests.length})
@@ -1424,14 +1492,16 @@ export const DashboardPage: React.FC = () => {
               {reviews.length === 0 ? (
                 <p className="text-xs text-slate-400">No reviews received yet. Reviews unlock after completed rides.</p>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
                   {reviews.map((r, i) => (
-                    <div key={i} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-1">
-                      <div className="flex justify-between font-bold">
-                        <span>{r.fromUserId?.name || 'Student Driver'}</span>
-                        <span className="text-amber-500">★ {r.rating}</span>
+                    <div key={i} className="h-full p-6 sm:p-7 rounded-2xl bg-[#F8F6F1] border border-[#E2DDD3] text-xs space-y-3.5 flex flex-col justify-between shadow-2xs">
+                      <div className="flex justify-between items-center font-bold">
+                        <span className="text-sm text-[#143D32]">{r.fromUserId?.name || 'Student Driver'}</span>
+                        <span className="text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200 font-mono text-xs whitespace-nowrap shrink-0">
+                          ★ {r.rating}
+                        </span>
                       </div>
-                      {r.comment && <p className="text-slate-600 italic">"{r.comment}"</p>}
+                      {r.comment && <p className="text-[#5C716A] italic leading-relaxed">"{r.comment}"</p>}
                     </div>
                   ))}
                 </div>
@@ -1557,28 +1627,24 @@ export const DashboardPage: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Year</label>
-                  <select
+                  <CustomSelect
                     value={editYear}
-                    onChange={(e) => setEditYear(Number(e.target.value))}
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white font-medium"
-                  >
-                    {[1, 2, 3, 4, 5].map((y) => (
-                      <option key={y} value={y}>Year {y}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setEditYear(Number(val))}
+                    options={[1, 2, 3, 4, 5].map((y) => ({ value: y, label: `Year ${y}` }))}
+                    placeholder="Select Year"
+                    ariaLabel="Academic Year"
+                  />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">Semester</label>
-                  <select
+                  <CustomSelect
                     value={editSemester}
-                    onChange={(e) => setEditSemester(Number(e.target.value))}
-                    className="w-full text-xs px-3 py-2 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white font-medium"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => (
-                      <option key={s} value={s}>Semester {s}</option>
-                    ))}
-                  </select>
+                    onChange={(val) => setEditSemester(Number(val))}
+                    options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => ({ value: s, label: `Semester ${s}` }))}
+                    placeholder="Select Semester"
+                    ariaLabel="Semester"
+                  />
                 </div>
               </div>
 
@@ -1735,17 +1801,19 @@ export const DashboardPage: React.FC = () => {
                     <label className="block text-xs font-bold text-slate-700 mb-1">
                       Relationship
                     </label>
-                    <select
+                    <CustomSelect
                       value={editEmergencyRelation}
-                      onChange={(e) => setEditEmergencyRelation(e.target.value)}
-                      className="w-full text-xs px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white font-medium text-slate-900"
-                    >
-                      <option value="Parent/Guardian">Parent / Guardian</option>
-                      <option value="Sibling">Brother / Sister</option>
-                      <option value="Campus Friend">Campus Friend / Roommate</option>
-                      <option value="Relative">Relative</option>
-                      <option value="Other">Other</option>
-                    </select>
+                      onChange={(val) => setEditEmergencyRelation(String(val))}
+                      options={[
+                        { value: 'Parent/Guardian', label: 'Parent / Guardian' },
+                        { value: 'Sibling', label: 'Brother / Sister' },
+                        { value: 'Campus Friend', label: 'Campus Friend / Roommate' },
+                        { value: 'Relative', label: 'Relative' },
+                        { value: 'Other', label: 'Other' },
+                      ]}
+                      placeholder="Select Relationship"
+                      ariaLabel="Emergency Contact Relationship"
+                    />
                   </div>
                 </div>
 

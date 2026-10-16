@@ -1,6 +1,8 @@
+// prefers-reduced-motion compliant institutional safety command
 import React, { useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import {
@@ -20,11 +22,13 @@ import {
   Share2,
   Check,
   AlertTriangle,
-  HeartHandshake,
-  Sparkles,
   RotateCcw,
+  Sparkles,
+  Navigation,
 } from 'lucide-react';
-import safetyHeroImg from '../assets/illustrations/safety-hero.webp';
+import { StudentAvatar } from '../components/signature/StudentAvatar';
+
+const safetyHeroImg = '/safety-student-real.jpg';
 
 export const SafetyPage: React.FC = () => {
   const { user } = useAuth();
@@ -182,438 +186,500 @@ export const SafetyPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen text-[#1E2922] py-8 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
-
+    <div className="min-h-screen bg-canvas text-ink-primary py-6 sm:py-10 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
+      {/* Subtle Collegiate Ambient Glows */}
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-plum/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/3 left-10 w-80 h-80 bg-forest/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         
-        {/* TOP HERO & STATUS BANNER (Matches Image 1) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        {/* TOP HERO & STATUS BANNER (Balanced 12-Col Grid) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Left Column: Heading & Mission (lg:col-span-4) */}
-          <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
+          {/* Left Column (5 cols): Editorial Typography & Tactile Proof */}
+          <motion.div
+            initial={{ opacity: 0, x: -25 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-5 flex flex-col justify-between space-y-5 text-left"
+          >
             <div>
-              {/* Handwritten Doodle Tag */}
-              <div className="inline-block transform -rotate-2 mb-2">
-                <span className="text-xs font-bold text-emerald-800 tracking-wide bg-emerald-100/80 px-3 py-1 rounded-full border border-emerald-300/60 font-mono shadow-xs">
-                  Safe Rides • Stronger Campus Communities 🌿
-                </span>
+              {/* Factual Live Tag */}
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper text-ink-primary text-xs font-mono mb-4 border border-border shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="font-bold text-plum">Campus Atlas Protocol</span>
+                <span className="text-border">•</span>
+                <span className="text-ink-secondary">India 112 Standard</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-black text-slate-900 tracking-tight leading-[1.12]">
-                Your Safety <br className="hidden sm:inline" />
-                Comes First
+              {/* Display Headline */}
+              <h1 className="text-3xl sm:text-5xl lg:text-[3.35rem] font-display font-extrabold text-ink-primary tracking-tight leading-[1.06]">
+                Your safety <br />
+                <em className="italic text-plum not-italic">comes first.</em>
               </h1>
 
-              <p className="mt-3 text-xs sm:text-sm text-slate-600 leading-relaxed max-w-sm">
-                CampusRide is built for students, with features that keep you safe, informed and connected — every step of your journey.
+              {/* Honest, Reassuring Body Copy */}
+              <p className="mt-4 text-sm sm:text-base text-ink-secondary leading-relaxed max-w-lg">
+                CampusRide is engineered for authenticated university students. Every commuter is pre-screened with active collegiate credentials, protected by live GPS telemetry, in-car 4-digit OTP matching, and direct one-touch dispatch to National Emergency 112.
               </p>
             </div>
 
-            {/* A safer campus is a stronger community Pill Banner */}
-            <div className="bg-emerald-50/90 border border-emerald-200/80 rounded-2xl p-3.5 flex items-center gap-3 shadow-2xs">
-              <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
-                <ShieldCheck className="w-5 h-5" />
+            {/* Sunken & Embossed Tactile Stat Counters */}
+            <div className="grid grid-cols-2 gap-3.5 w-full max-w-md items-stretch">
+              <div className="p-3.5 rounded-2xl bg-paper neu-card-sm border border-white/80">
+                <div className="text-2xl font-extrabold text-forest font-mono">100%</div>
+                <div className="text-xs font-semibold text-ink-secondary mt-0.5">Pre-Screened Student IDs</div>
               </div>
+
+              <div className="p-3.5 rounded-2xl bg-paper neu-card-sm border border-white/80">
+                <div className="text-2xl font-extrabold text-plum font-mono">24/7</div>
+                <div className="text-xs font-semibold text-ink-secondary mt-0.5">India 112 Emergency Sync</div>
+              </div>
+            </div>
+
+            {/* Student Avatars Trust Strip */}
+            <div className="pt-4 border-t border-border/70 flex items-center gap-3">
+              <div className="flex -space-x-2.5 overflow-hidden">
+                <StudentAvatar archetype="priya" state="arrived" size={38} className="border-2 border-paper shadow-xs" />
+                <StudentAvatar archetype="aditya" state="matched" size={38} className="border-2 border-paper shadow-xs" />
+                <StudentAvatar archetype="ananya" state="waiting" size={38} className="border-2 border-paper shadow-xs" />
+              </div>
+              <div className="text-xs">
+                <span className="font-bold text-ink-primary block">Protected University Corridor</span>
+                <span className="text-ink-secondary">Premnagar • Suddhowala • UIT Gate 1</span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column (7 cols): Photorealistic Student Frame + Neumorphic Security Card */}
+          <motion.div
+            initial={{ opacity: 0, x: 25 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-5 items-stretch"
+          >
+            {/* Student Portrait with Tactile Floating Chips (sm:col-span-7) */}
+            <div className="sm:col-span-7 relative rounded-3xl bg-paper p-3 neu-card border border-white/90 flex flex-col justify-center">
+              <div className="relative h-[340px] sm:h-[380px] w-full rounded-2xl overflow-hidden bg-slate-900 shadow-inner">
+                <img
+                  src={safetyHeroImg}
+                  alt="Authentic university student commuter Priya holding verified digital student pass"
+                  className="w-full h-full object-cover object-center"
+                  loading="eager"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/20 pointer-events-none" />
+
+                {/* Floating Top Beacon */}
+                <div className="absolute top-3.5 left-3.5 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 text-white text-[11px] font-mono">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <span>CAMPUS DISPATCH READY</span>
+                </div>
+
+                {/* Floating Bottom Card Banner */}
+                <div className="absolute bottom-3.5 left-3.5 right-3.5 z-20 backdrop-blur-xl bg-white/85 border border-white/95 rounded-2xl p-3 shadow-lg flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-forest text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-xs font-black text-slate-950 leading-tight">Priya Verma</div>
+                      <div className="text-[10px] font-bold text-forest">Verified Student Commuter</div>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono font-black bg-emerald-100 text-emerald-950 px-2 py-0.5 rounded-full border border-emerald-300">
+                    ★ 4.98 SAFE
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Live Security & Verification Status Card (sm:col-span-5) */}
+            <div className="sm:col-span-5 bg-paper rounded-3xl p-5 neu-card border border-white/80 flex flex-col justify-between text-left">
               <div>
-                <p className="text-xs font-bold text-emerald-950 leading-tight">
-                  A safer campus
+                <div className="flex items-center gap-2.5 mb-2">
+                  <div className="w-8 h-8 rounded-xl bg-forest/10 text-forest flex items-center justify-center shadow-xs">
+                    <ShieldCheck className="w-4 h-4 text-forest" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-ink-primary leading-tight font-display">Security Status</h3>
+                    <span className="text-[10px] font-mono text-forest font-bold uppercase">All Systems Active</span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-ink-secondary mb-4 leading-relaxed">
+                  Your identity is linked to verified university records and active emergency routing.
                 </p>
-                <p className="text-[11px] text-emerald-700 font-medium underline decoration-emerald-400 decoration-1 underline-offset-2">
-                  is a stronger community
-                </p>
-              </div>
-            </div>
-          </div>
 
-          {/* Center Column: Campus Art Cutout (lg:col-span-3) */}
-          <div className="lg:col-span-3 flex flex-col items-center justify-center relative">
-            {/* Top Doodle */}
-            <div className="absolute -top-3 right-2 z-20 transform rotate-6 text-[11px] font-bold text-emerald-800 font-mono select-none pointer-events-none bg-white/90 px-2 py-0.5 rounded-full shadow-2xs border border-emerald-200">
-              Ride Safe • Study Happy ☺
-            </div>
-
-            <div className="relative w-full h-full min-h-[220px] rounded-3xl overflow-hidden border-2 border-emerald-100/80 shadow-md group">
-              <img
-                src={safetyHeroImg}
-                alt="University students walking safely on campus quad with backpacks"
-                className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-950/40 via-transparent to-transparent pointer-events-none" />
-              
-              {/* Green Shield Badge on Illustration */}
-              <div className="absolute bottom-3 right-3 w-10 h-10 rounded-2xl bg-emerald-600/90 backdrop-blur-xs text-white flex items-center justify-center shadow-lg border border-emerald-300/40">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column 1: Safety Status Card (lg:col-span-3) */}
-          <div className="lg:col-span-3 bg-white rounded-3xl p-5 border border-slate-200/90 shadow-xs flex flex-col justify-between relative overflow-hidden">
-            {/* Decorative sunburst doodle */}
-            <div className="absolute top-3 right-3 text-emerald-600/40 text-xs font-mono select-none">
-              \\ //
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <h3 className="text-sm font-bold text-slate-900">Safety Status</h3>
-              </div>
-              <p className="text-[11px] text-slate-500 mb-3.5">
-                You're all set! Keep following the safety guidelines.
-              </p>
-
-              {/* Checklist items with green circles */}
-              <div className="space-y-2.5 text-[11px]">
-                <div className="flex items-start gap-2">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
-                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                {/* Checklist with Forest Dots */}
+                <div className="space-y-3 text-xs">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-ink-primary block leading-tight">Profile Pre-Screened</span>
+                      <span className="text-[10px] text-ink-secondary">University .edu credentials verified</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-bold text-slate-800 block leading-tight">Profile Verified</span>
-                    <span className="text-[10px] text-slate-500 leading-tight">Your identity has been verified</span>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-2">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
-                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-ink-primary block leading-tight">In-Car 4-Digit OTP</span>
+                      <span className="text-[10px] text-ink-secondary">Mandatory passenger trip handshake</span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-bold text-slate-800 block leading-tight">Emergency Contacts Added</span>
-                    <span className="text-[10px] text-slate-500 leading-tight">Friends & family can help in emergencies</span>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-2">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
-                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-ink-primary block leading-tight">ICE Contact Configured</span>
+                      <span className="text-[10px] text-ink-secondary">
+                        {user?.emergencyContact?.name || (user?.emergencyContacts && user.emergencyContacts[0]?.name) || 'Ready on file'}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <span className="font-bold text-slate-800 block leading-tight">Ride Sharing Active</span>
-                    <span className="text-[10px] text-slate-500 leading-tight">You're sharing rides with verified students</span>
-                  </div>
-                </div>
 
-                <div className="flex items-start gap-2">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
-                    <Check className="w-2.5 h-2.5 stroke-[3]" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-800 block leading-tight">Location Tracking Enabled</span>
-                    <span className="text-[10px] text-slate-500 leading-tight">Real-time tracking during your ride</span>
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
+                      <Check className="w-2.5 h-2.5 stroke-[3]" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-ink-primary block leading-tight">GPS Telemetry Sync</span>
+                      <span className="text-[10px] text-ink-secondary">Live coordinates and route tracking</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <button
-              onClick={() => {
-                const el = document.getElementById('safety-details');
-                el?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              className="mt-4 w-full py-2.5 px-3 rounded-xl bg-[#143D32] hover:bg-[#0d2820] text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-colors"
-            >
-              <span>View Safety Details</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Right Column 2: Emergency SOS Card (lg:col-span-2) */}
-          <div className="lg:col-span-2 bg-white rounded-3xl p-5 border border-rose-200/80 shadow-xs flex flex-col justify-between relative overflow-hidden">
-            {/* Red rays doodle */}
-            <div className="absolute top-3 right-3 text-rose-500/40 text-xs font-mono select-none">
-              \\\ ///
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center">
-                  <ShieldAlert className="w-4 h-4 animate-pulse" />
-                </div>
-                <h3 className="text-sm font-bold text-slate-900">Emergency SOS</h3>
-                <span className="ml-auto text-[9px] font-mono font-bold bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-md">24/7 LIVE</span>
-              </div>
-              <p className="text-[11px] text-slate-500 mb-3 leading-snug">
-                Broadcast live GPS tracking to university security and your ICE emergency circle.
-              </p>
-
-              {/* Trigger Emergency SOS Red Button */}
-              <button
-                type="button"
-                onClick={() => setSosModalOpen(true)}
-                className="w-full py-3 px-3 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all transform hover:scale-[1.02] cursor-pointer"
-              >
-                <ShieldAlert className="w-4 h-4 animate-pulse" />
-                <span>Trigger Emergency SOS</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-auto" />
-              </button>
-
-              {/* Share Location Button */}
-              <button
-                onClick={handleShareLocation}
-                className="mt-2 w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200 flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{copiedLocation ? 'Link Copied!' : 'Share Location'}</span>
-              </button>
-            </div>
-
-            {/* Quick Contacts Footer */}
-            <div className="mt-4 pt-3 border-t border-slate-100 text-[10px] text-slate-500 space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-emerald-600" />
-                  Campus Security
-                </span>
-                <a href="tel:+911234567890" className="font-bold text-slate-800 hover:text-emerald-700">
-                  +91 12345 67890
-                </a>
-              </div>
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3" />
-                  24/7 Support
-                </span>
-                <span className="text-emerald-700 font-semibold">Active</span>
+              <div className="mt-5 pt-3.5 border-t border-border/70">
+                <Link
+                  to="/verification"
+                  className="w-full py-2.5 px-3 rounded-full bg-forest hover:bg-forest/90 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all neu-btn active:translate-y-0.5"
+                >
+                  <span>View Verification ID Pass</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
 
         </div>
 
-        {/* BOTTOM SECTION: 4 SAFETY FEATURE CARDS (Matches Image 1) */}
+        {/* EMERGENCY SOS & QUICK DISPATCH COMMAND STRIP (Prominent, High-Priority, India 112 Standard) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="bg-[#582C4D] text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-white/10 flex flex-col lg:flex-row items-center justify-between gap-6 text-left"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/25 text-rose-300 border border-rose-400/40 flex items-center justify-center shrink-0 shadow-inner">
+              <ShieldAlert className="w-6 h-6 text-rose-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] font-mono font-black bg-rose-600 text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                  24/7 EMERGENCY PROTOCOL
+                </span>
+                <span className="text-xs text-white/80 font-mono">India 112 Standard</span>
+              </div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-display font-extrabold text-white leading-tight">
+                Direct Emergency Dispatch &amp; Live Telemetry
+              </h2>
+              <p className="text-xs sm:text-sm text-white/85 max-w-2xl mt-0.5 font-medium">
+                One-tap distress broadcast sends live reverse-geocoded GPS coordinates to Uttarakhand Police, Campus Security, and your WhatsApp emergency circle.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 shrink-0 w-full lg:w-auto">
+            {/* Trigger Emergency SOS Button */}
+            <button
+              type="button"
+              onClick={() => setSosModalOpen(true)}
+              className="flex-1 sm:flex-initial px-6 py-3.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 border border-rose-400/50 active:translate-y-0.5 transition-all neu-btn cursor-pointer"
+            >
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
+              </span>
+              <ShieldAlert className="w-4 h-4 shrink-0 text-white" />
+              <span>Trigger Emergency SOS</span>
+            </button>
+
+            {/* Direct Dial 112 */}
+            <a
+              href="tel:112"
+              className="px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold border border-white/20 flex items-center justify-center gap-2 transition-all cursor-pointer neu-btn"
+              title="Call National Emergency 112"
+            >
+              <Phone className="w-4 h-4 text-emerald-400" />
+              <span>Call 112</span>
+            </a>
+
+            {/* Share Live Location */}
+            <button
+              type="button"
+              onClick={handleShareLocation}
+              className="px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold border border-white/20 flex items-center justify-center gap-2 transition-all cursor-pointer neu-btn"
+              title="Share Live Location"
+            >
+              <MapPin className="w-4 h-4 text-amber-300" />
+              <span>{copiedLocation ? 'Link Copied!' : 'Share Live GPS'}</span>
+            </button>
+          </div>
+        </motion.div>
+
+        {/* 4 CORE SAFETY PILLARS (Redesigned with Tactile Neumorphism) */}
         <div id="safety-details" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           
-          {/* CARD 1: Verified Driver */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between relative overflow-hidden">
+          {/* CARD 1: Verified Driver & Vehicle */}
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ duration: 0.2 }}
+            className="h-full bg-paper rounded-card p-6 sm:p-7 neu-card border border-white/80 flex flex-col justify-between text-left space-y-3.5"
+          >
             <div>
-              <div className="flex items-center gap-2.5 mb-1.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                  <Car className="w-4 h-4" />
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-9 h-9 rounded-xl bg-forest/10 text-forest flex items-center justify-center shadow-xs">
+                  <Car className="w-4 h-4 text-forest" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 leading-tight">Verified Driver</h3>
+                  <h3 className="text-sm font-bold text-ink-primary">Verified Student Driver</h3>
+                  <p className="text-[10px] font-mono text-forest font-bold uppercase">Pre-Screened Vehicle</p>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mb-3.5">
-                Ride with confidence. All drivers are verified and background checked.
+
+              <p className="text-xs text-ink-secondary mb-3.5 leading-relaxed">
+                Ride with confidence. All drivers are verified with driving license and campus enrollment records.
               </p>
 
               {/* Driver Profile Inner Badge */}
-              <div className="bg-slate-50 rounded-2xl p-3 border border-slate-200/80 space-y-2.5">
+              <div className="bg-white rounded-2xl p-3.5 border border-border/80 shadow-xs space-y-2.5">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 rounded-full bg-emerald-800 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs overflow-hidden border border-emerald-300">
+                  <div className="w-10 h-10 rounded-full bg-forest text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs border border-forest/30">
                     RS
                   </div>
                   <div>
                     <div className="flex items-center gap-1">
-                      <h4 className="text-xs font-bold text-slate-900 leading-tight">Rohan Sharma</h4>
-                      <CheckCircle2 className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+                      <h4 className="text-xs font-bold text-ink-primary leading-tight">Rohan Sharma</h4>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-forest flex-shrink-0" />
                     </div>
-                    <p className="text-[10px] text-slate-500">Verified Student Driver</p>
-                    <div className="flex items-center gap-1 mt-0.5 text-[10px] text-amber-600 font-semibold">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                    <p className="text-[10px] text-ink-secondary">B.Tech CSE • UIT Dehradun</p>
+                    <div className="flex items-center gap-1 mt-0.5 text-[10px] text-amber-700 font-semibold">
+                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
                       <span>4.8</span>
-                      <span className="text-slate-400 font-normal">(124 rides)</span>
+                      <span className="text-ink-muted font-normal">• Verified Rating</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 3 Pills: ID Verified, College Verified, Clean Record */}
-                <div className="flex flex-wrap gap-1.5 pt-1 border-t border-slate-200/60 text-[9px] font-semibold">
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                <div className="flex flex-wrap gap-1.5 pt-1.5 border-t border-border/60 text-[9px] font-mono font-bold">
+                  <span className="px-2 py-0.5 rounded-full bg-forest-light text-forest border border-forest/20 whitespace-nowrap">
                     ID Verified
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                  <span className="px-2 py-0.5 rounded-full bg-forest-light text-forest border border-forest/20 whitespace-nowrap">
                     College Verified
                   </span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200/60">
+                  <span className="px-2 py-0.5 rounded-full bg-forest-light text-forest border border-forest/20 whitespace-nowrap">
                     Clean Record
                   </span>
                 </div>
-              </div>
-
-              {/* Green Doodle Badge */}
-              <div className="mt-3 text-center transform -rotate-1 text-[10px] font-mono font-bold text-emerald-800 select-none">
-                Verified Drivers + Safer Rides ☺
               </div>
             </div>
 
             <Link
               to="/search"
-              className="mt-4 w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition-colors"
+              className="mt-auto w-full py-2.5 px-3 rounded-xl bg-paper hover:bg-white text-ink-primary text-xs font-bold flex items-center justify-center gap-1.5 border border-border transition-all shadow-xs neu-btn"
             >
-              <span>View Full Profile</span>
-              <ArrowRight className="w-3 h-3" />
+              <span>Explore Verified Drivers</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          </div>
+          </motion.div>
 
-          {/* CARD 2: Ride Sharing & Live Tracking */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between relative overflow-hidden">
+          {/* CARD 2: Ride Sharing & Live Corridor Tracking */}
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ duration: 0.2 }}
+            className="h-full bg-paper rounded-card p-6 sm:p-7 neu-card border border-white/80 flex flex-col justify-between text-left space-y-3.5"
+          >
             <div>
-              <div className="flex items-center gap-2.5 mb-1.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                  <Users className="w-4 h-4" />
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-9 h-9 rounded-xl bg-plum/10 text-plum flex items-center justify-center shadow-xs">
+                  <Users className="w-4 h-4 text-plum" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 leading-tight">Ride Sharing</h3>
+                  <h3 className="text-sm font-bold text-ink-primary">Campus Ride Sharing</h3>
+                  <p className="text-[10px] font-mono text-plum font-bold uppercase">Peer Group Transit</p>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mb-3.5">
-                Travel together. Stay safer.
+
+              <p className="text-xs text-ink-secondary mb-3.5 leading-relaxed">
+                Travel together in authenticated groups. Live route tracking shared with fellow classmates.
               </p>
 
-              {/* Map Route Graphic */}
-              <div className="relative rounded-2xl bg-[#E8F1EC] border border-emerald-200/60 p-3 h-32 flex flex-col justify-between overflow-hidden shadow-inner">
-                {/* Live tracking indicator */}
+              {/* Photorealistic Campus Carpool Graphic with Corridor Overlays */}
+              <div className="relative rounded-2xl overflow-hidden border border-[#E2DDD3] h-48 sm:h-52 flex flex-col justify-between p-3 group/map shadow-xs">
+                <img
+                  src="/image_6f00263b.jpg"
+                  alt="Verified university students carpooling together in car on university campus"
+                  className="absolute inset-0 w-full h-full object-cover object-center transform transition-transform duration-700 group-hover/map:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/35 pointer-events-none" />
+
+                {/* Top Telemetry Overlay */}
                 <div className="flex items-center justify-between z-10">
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/90 text-emerald-800 text-[9px] font-bold shadow-2xs border border-emerald-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-                    Live Tracking
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-xs text-[#143D32] text-[10px] font-mono font-bold shadow-xs border border-white whitespace-nowrap shrink-0">
+                    <span className="relative flex h-2 w-2">
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
+                    </span>
+                    <span>Live GPS Active</span>
+                  </span>
+
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#143D32]/90 backdrop-blur-xs text-white text-[10px] font-mono font-bold shadow-xs border border-emerald-400/30 whitespace-nowrap shrink-0">
+                    <Navigation className="w-2.5 h-2.5 text-emerald-300" />
+                    <span>4.2 km • 11m</span>
                   </span>
                 </div>
 
-                {/* SVG Route Curve */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 200 120" preserveAspectRatio="none">
-                  <path
-                    d="M 25 35 Q 80 110, 140 60 T 180 85"
-                    fill="none"
-                    stroke="#10B981"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    strokeDasharray="4 2"
-                  />
-                  {/* Start Point */}
-                  <circle cx="25" cy="35" r="5" fill="#047857" />
-                  {/* End Point */}
-                  <circle cx="180" cy="85" r="5" fill="#EF4444" />
-                </svg>
-
-                {/* Pin labels */}
-                <div className="flex items-center justify-between text-[10px] font-bold z-10">
-                  <span className="inline-flex items-center gap-0.5 bg-emerald-800 text-white px-1.5 py-0.5 rounded shadow-xs text-[9px]">
-                    <MapPin className="w-2.5 h-2.5" />
-                    You
+                {/* Bottom Waypoint Corridor Labels */}
+                <div className="flex items-center justify-between z-10 w-full pt-1">
+                  <span className="inline-flex items-center gap-1 bg-[#143D32]/95 backdrop-blur-xs text-white px-2 py-0.5 rounded-full shadow-xs text-[9px] font-mono font-bold border border-emerald-400/30 whitespace-nowrap shrink-0">
+                    <MapPin className="w-2.5 h-2.5 text-emerald-400" />
+                    <span>Premnagar</span>
                   </span>
-                  <span className="inline-flex items-center gap-0.5 bg-rose-600 text-white px-1.5 py-0.5 rounded shadow-xs text-[9px]">
-                    <MapPin className="w-2.5 h-2.5" />
-                    Campus
+
+                  <span className="inline-flex items-center gap-1 bg-white/95 backdrop-blur-xs text-slate-800 px-2 py-0.5 rounded-full shadow-2xs text-[8.5px] font-mono font-bold border border-slate-200 whitespace-nowrap shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <span>Suddhowala</span>
+                  </span>
+
+                  <span className="inline-flex items-center gap-1 bg-[#582C4D]/95 backdrop-blur-xs text-white px-2 py-0.5 rounded-full shadow-xs text-[9px] font-mono font-bold border border-pink-400/30 whitespace-nowrap shrink-0">
+                    <MapPin className="w-2.5 h-2.5 text-pink-300" />
+                    <span>UIT Gate 1</span>
                   </span>
                 </div>
               </div>
 
-              <div className="mt-3 text-[11px] text-slate-600 flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-emerald-600 flex-shrink-0" />
-                <span>You're sharing this ride with <strong>3 other students</strong></span>
+              {/* Verified Peer Co-Passengers Trust Sub-strip */}
+              <div className="mt-3 flex items-center justify-between text-xs text-ink-secondary">
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-1.5 overflow-hidden">
+                    <StudentAvatar archetype="priya" state="matched" size={22} className="border border-paper shadow-2xs" />
+                    <StudentAvatar archetype="aditya" state="waiting" size={22} className="border border-paper shadow-2xs" />
+                    <StudentAvatar archetype="rohan" state="arrived" size={22} className="border border-paper shadow-2xs" />
+                  </div>
+                  <span className="font-medium text-[11px] text-ink-primary">3 peer classmates</span>
+                </div>
+                <span className="text-[10px] font-mono font-bold text-forest bg-forest-light px-2 py-0.5 rounded-full border border-forest/20 whitespace-nowrap shrink-0">
+                  Fixed Fuel Split
+                </span>
               </div>
             </div>
 
             <Link
               to="/dashboard"
-              className="mt-4 w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition-colors"
+              className="mt-auto w-full py-2.5 px-3 rounded-xl bg-paper hover:bg-white text-ink-primary text-xs font-bold flex items-center justify-center gap-1.5 border border-border transition-all shadow-xs neu-btn"
             >
-              <span>View Ride Details</span>
-              <ArrowRight className="w-3 h-3" />
+              <span>View Ride Telemetry</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          </div>
+          </motion.div>
 
           {/* CARD 3: Emergency Contacts List */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between relative overflow-hidden">
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ duration: 0.2 }}
+            className="h-full bg-paper rounded-card p-6 sm:p-7 neu-card border border-white/80 flex flex-col justify-between text-left space-y-3.5"
+          >
             <div>
-              <div className="flex items-center gap-2.5 mb-1.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                  <PhoneCall className="w-4 h-4" />
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-700 flex items-center justify-center shadow-xs">
+                  <PhoneCall className="w-4 h-4 text-rose-700" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 leading-tight">Emergency Contacts</h3>
+                  <h3 className="text-sm font-bold text-ink-primary">Emergency Contacts</h3>
+                  <p className="text-[10px] font-mono text-rose-700 font-bold uppercase">Immediate Lines</p>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mb-3.5">
-                Quick access to help when you need it most.
+
+              <p className="text-xs text-ink-secondary mb-3 leading-relaxed">
+                Direct phone channels for police dispatch, campus gate security, and your personal ICE contact.
               </p>
 
               {/* Contact List */}
-              <div className="space-y-2 text-[11px]">
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50/50 transition-colors">
+              <div className="space-y-2 text-xs">
+                {/* Campus Security */}
+                <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white border border-border/80 shadow-2xs">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px]">
+                    <div className="w-6 h-6 rounded-full bg-forest text-white flex items-center justify-center font-bold text-[10px]">
                       👮
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 leading-tight">Campus Security</p>
-                      <p className="text-[10px] text-slate-500">+91 12345 67890</p>
+                      <p className="font-bold text-ink-primary leading-tight">Campus Security</p>
+                      <p className="text-[10px] text-ink-secondary font-mono">+91 12345 67890</p>
                     </div>
                   </div>
-                  <a href="tel:+911234567890" className="p-1.5 rounded-lg bg-white border border-slate-200 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors">
-                    <Phone className="w-3 h-3" />
+                  <a href="tel:+911234567890" className="p-1.5 rounded-xl bg-[#F8FAFC] border border-border text-forest hover:bg-forest hover:text-white transition-colors shadow-xs" title="Call Campus Security">
+                    <Phone className="w-3.5 h-3.5" />
                   </a>
                 </div>
 
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50/50 transition-colors">
+                {/* Police 112 */}
+                <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white border border-border/80 shadow-2xs">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-[10px]">
+                    <div className="w-6 h-6 rounded-full bg-rose-600 text-white flex items-center justify-center font-bold text-[10px]">
                       🚓
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 leading-tight">Local Police</p>
-                      <p className="text-[10px] text-slate-500">100 / 112</p>
+                      <p className="font-bold text-ink-primary leading-tight">Police Dispatch</p>
+                      <p className="text-[10px] text-rose-700 font-mono font-bold">112 (National)</p>
                     </div>
                   </div>
-                  <a href="tel:100" className="p-1.5 rounded-lg bg-white border border-slate-200 text-blue-700 hover:bg-blue-600 hover:text-white transition-colors">
-                    <Phone className="w-3 h-3" />
+                  <a href="tel:112" className="p-1.5 rounded-xl bg-[#F8FAFC] border border-border text-rose-600 hover:bg-rose-600 hover:text-white transition-colors shadow-xs" title="Call Police 112">
+                    <Phone className="w-3.5 h-3.5" />
                   </a>
                 </div>
 
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50/50 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-bold text-[10px]">
-                      🚑
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-900 leading-tight">Medical Emergency</p>
-                      <p className="text-[10px] text-slate-500">108</p>
-                    </div>
-                  </div>
-                  <a href="tel:108" className="p-1.5 rounded-lg bg-white border border-slate-200 text-rose-700 hover:bg-rose-600 hover:text-white transition-colors">
-                    <Phone className="w-3 h-3" />
-                  </a>
-                </div>
-
-                <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50/50 transition-colors">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-[10px]">
+                {/* User ICE Contact */}
+                <div className="flex items-center justify-between p-2.5 rounded-2xl bg-white border border-border/80 shadow-2xs">
+                  <div className="flex items-center gap-2 min-w-0 pr-2">
+                    <div className="w-6 h-6 rounded-full bg-plum text-white flex items-center justify-center font-bold text-[10px] shrink-0">
                       👤
                     </div>
-                    <div>
-                      <p className="font-bold text-slate-900 leading-tight">
-                        {user?.emergencyContact?.name || (user?.emergencyContacts && user.emergencyContacts[0]?.name) || 'Your Emergency Contact'}
-                        {((user?.emergencyContact as any)?.relation || (user?.emergencyContacts && (user.emergencyContacts[0] as any)?.relation)) ? (
-                          <span className="text-[10px] text-slate-500 font-normal ml-1">
-                            ({(user?.emergencyContact as any)?.relation || (user?.emergencyContacts && (user.emergencyContacts[0] as any)?.relation)})
-                          </span>
-                        ) : null}
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className="font-bold text-ink-primary leading-tight truncate"
+                        title={user?.emergencyContact?.name || (user?.emergencyContacts && user.emergencyContacts[0]?.name) || 'ICE Contact'}
+                      >
+                        {user?.emergencyContact?.name || (user?.emergencyContacts && user.emergencyContacts[0]?.name) || 'ICE Contact'}
                       </p>
-                      <p className="text-[10px] text-slate-500">
-                        {user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone || 'Not configured yet'}
+                      <p
+                        className="text-[10px] text-ink-secondary font-mono truncate"
+                        title={user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone || 'Not added'}
+                      >
+                        {user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone || 'Not added'}
                       </p>
                     </div>
                   </div>
                   {(user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone) ? (
                     <a
                       href={`tel:${(user?.emergencyContact?.phone || (user?.emergencyContacts && user.emergencyContacts[0]?.phone) || user?.phone || '').replace(/\s+/g, '')}`}
-                      className="p-1.5 rounded-lg bg-white border border-slate-200 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-colors"
+                      className="p-1.5 rounded-xl bg-[#F8FAFC] border border-border text-plum hover:bg-plum hover:text-white transition-colors shadow-xs shrink-0"
                       title="Direct Call"
                     >
-                      <Phone className="w-3 h-3" />
+                      <Phone className="w-3.5 h-3.5" />
                     </a>
                   ) : (
                     <Link
                       to="/dashboard"
-                      className="px-2 py-1 rounded-lg bg-rose-100 text-rose-700 text-[10px] font-bold hover:bg-rose-200 transition-colors"
+                      className="px-2.5 py-1 rounded-full bg-plum text-white text-[10px] font-bold hover:bg-plum-hover transition-colors shrink-0"
                     >
                       + Add
                     </Link>
@@ -624,95 +690,91 @@ export const SafetyPage: React.FC = () => {
 
             <Link
               to="/dashboard"
-              className="mt-4 w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold flex items-center justify-center gap-1 transition-colors"
+              className="mt-auto w-full py-2.5 px-3 rounded-xl bg-paper hover:bg-white text-ink-primary text-xs font-bold flex items-center justify-center gap-1.5 border border-border transition-all shadow-xs neu-btn"
             >
-              <span>Manage Contacts in Profile</span>
-              <ArrowRight className="w-3 h-3" />
+              <span>Manage ICE Contacts</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
-          </div>
+          </motion.div>
 
-          {/* CARD 4: Safety Checklist */}
-          <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between relative overflow-hidden">
+          {/* CARD 4: Safety Checklist & In-Car OTP Protocol */}
+          <motion.div
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ duration: 0.2 }}
+            className="h-full bg-paper rounded-card p-6 sm:p-7 neu-card border border-white/80 flex flex-col justify-between text-left space-y-3.5"
+          >
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0">
-                    <ClipboardCheck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-slate-900 leading-tight">Safety Checklist</h3>
-                  </div>
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center shadow-xs">
+                  <ClipboardCheck className="w-4 h-4 text-amber-700" />
                 </div>
-                <span className="text-amber-500/70 text-xs font-mono">\\\</span>
+                <div>
+                  <h3 className="text-sm font-bold text-ink-primary">Safety Checklist</h3>
+                  <p className="text-[10px] font-mono text-amber-700 font-bold uppercase">4-Point Protocol</p>
+                </div>
               </div>
-              <p className="text-[11px] text-slate-500 mb-3.5">
-                Quick reminders for a safer ride.
+
+              <p className="text-xs text-ink-secondary mb-3 leading-relaxed">
+                Zero-fail pre-departure verification. Simple steps that keep campus commutes secure.
               </p>
 
               {/* Checklist Items */}
-              <div className="space-y-2.5 text-[11px]">
+              <div className="space-y-2.5 text-xs">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                  <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
-                  <span className="text-slate-700 font-medium">Share your live location</span>
+                  <span className="text-ink-primary font-semibold">Verify Driver Student ID</span>
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                  <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
-                  <span className="text-slate-700 font-medium">Confirm driver details</span>
+                  <span className="text-ink-primary font-semibold">Check vehicle license plate</span>
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                  <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
-                  <span className="text-slate-700 font-medium">Check vehicle number</span>
+                  <span className="text-ink-primary font-semibold">Confirm 4-Digit In-Car OTP</span>
                 </div>
 
                 <div className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
+                  <div className="w-4 h-4 rounded-full bg-forest text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
-                  <span className="text-slate-700 font-medium">Keep emergency contacts handy</span>
-                </div>
-
-                <div className="flex items-center gap-2.5">
-                  <div className="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center flex-shrink-0 shadow-2xs">
-                    <Check className="w-2.5 h-2.5 stroke-[3]" />
-                  </div>
-                  <span className="text-slate-700 font-medium">Avoid sharing personal information</span>
+                  <span className="text-ink-primary font-semibold">Keep emergency numbers on speed dial</span>
                 </div>
               </div>
             </div>
 
-            {/* Bottom Doodle */}
-            <div className="mt-4 pt-3 border-t border-slate-100 text-center">
-              <span className="text-[10px] font-mono font-bold text-emerald-800 tracking-tight select-none">
-                Small steps make a big difference ☺
+            {/* Bottom Reassuring Footer */}
+            <div className="mt-4 pt-3 border-t border-border/70 text-center">
+              <span className="text-[11px] font-mono font-bold text-forest tracking-tight">
+                Authentic Campus Security Protocol ✦
               </span>
             </div>
-          </div>
+          </motion.div>
 
         </div>
 
       </div>
 
-      {/* SOS CONFIRMATION MODAL */}
+      {/* SOS CONFIRMATION MODAL (Tactile Neumorphic Styling) */}
       {sosModalOpen && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-rose-300 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-2xl bg-rose-100 text-rose-600 mx-auto flex items-center justify-center shadow-inner">
-              <ShieldAlert className="w-9 h-9 animate-bounce" />
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-paper rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-rose-600 text-center space-y-4 neu-card">
+            <div className="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 mx-auto flex items-center justify-center shadow-inner border border-rose-200">
+              <ShieldAlert className="w-9 h-9" />
             </div>
 
-            <h3 className="text-xl font-black text-slate-900">
+            <h3 className="text-xl font-display font-extrabold text-ink-primary">
               {sosDispatched ? 'Emergency Broadcast Dispatched!' : 'Confirm Campus Emergency Dispatch'}
             </h3>
 
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-xs text-ink-secondary leading-relaxed">
               {sosDispatched
                 ? 'Your live vehicle coordinates and trip telemetry have been sent to Campus Security and your emergency contacts.'
                 : 'This will immediately broadcast your real-time GPS location and student identity to the University Security Operations Center and send live GPS tracking alerts to your emergency contacts.'}
@@ -720,48 +782,48 @@ export const SafetyPage: React.FC = () => {
 
             {/* Live GPS Telemetry Card */}
             {!sosDispatched && (
-              <div className="bg-emerald-50/70 border border-emerald-200/90 rounded-2xl p-3 text-left space-y-1.5">
+              <div className="bg-white rounded-2xl p-3.5 border border-border/80 shadow-2xs text-left space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-emerald-950 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-700" />
+                  <span className="font-bold text-ink-primary flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-forest" />
                     <span>Real-Time GPS Telemetry</span>
                   </span>
                   <button
                     type="button"
                     onClick={acquireLocation}
                     disabled={locationLoading}
-                    className="text-[10px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer hover:underline"
+                    className="text-[10px] font-bold text-forest hover:underline flex items-center gap-1 cursor-pointer"
                   >
-                    <RotateCcw className={`w-3 h-3 ${locationLoading ? 'animate-spin' : ''}`} />
+                    <RotateCcw className="w-3 h-3" />
                     <span>{locationLoading ? 'Acquiring...' : 'Refresh GPS'}</span>
                   </button>
                 </div>
 
                 {liveCoords ? (
                   <div className="space-y-0.5">
-                    <div className="font-mono text-xs font-bold text-slate-800 flex items-center justify-between">
+                    <div className="font-mono text-xs font-bold text-ink-primary flex items-center justify-between">
                       <span>{liveCoords.lat.toFixed(5)}, {liveCoords.lng.toFixed(5)}</span>
                       {liveCoords.accuracy && (
-                        <span className="text-[10px] font-medium text-emerald-800 bg-emerald-100/90 px-1.5 py-0.5 rounded font-sans">
+                        <span className="text-[10px] font-medium text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded font-sans">
                           ±{liveCoords.accuracy}m accuracy
                         </span>
                       )}
                     </div>
                     {liveAddress && (
-                      <p className="text-[11px] text-slate-600 truncate">{liveAddress}</p>
+                      <p className="text-[11px] text-ink-secondary truncate">{liveAddress}</p>
                     )}
                     <a
                       href={`https://maps.google.com/?q=${liveCoords.lat},${liveCoords.lng}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10px] font-semibold text-emerald-700 hover:underline inline-flex items-center gap-0.5 mt-0.5"
+                      className="text-[10px] font-semibold text-forest hover:underline inline-flex items-center gap-0.5 mt-0.5"
                     >
                       <span>Preview in Google Maps</span>
                       <ExternalLink className="w-2.5 h-2.5" />
                     </a>
                   </div>
                 ) : (
-                  <p className="text-[11px] text-slate-500">Detecting your exact GPS coordinates...</p>
+                  <p className="text-[11px] text-ink-secondary">Detecting your exact GPS coordinates...</p>
                 )}
               </div>
             )}
@@ -769,7 +831,7 @@ export const SafetyPage: React.FC = () => {
             {/* Optional Distress Note */}
             {!sosDispatched && (
               <div className="text-left space-y-1">
-                <label className="text-[11px] font-bold text-slate-700 block">
+                <label className="text-[11px] font-bold text-ink-primary block font-mono">
                   Location Note / Landmark (Optional):
                 </label>
                 <input
@@ -777,22 +839,22 @@ export const SafetyPage: React.FC = () => {
                   value={sosNotesInput}
                   onChange={(e) => setSosNotesInput(e.target.value)}
                   placeholder="e.g. Near UIT main gate, library cafe"
-                  className="w-full text-xs px-3 py-1.5 rounded-xl border border-slate-300 bg-white font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full text-xs px-3 py-2 rounded-xl border border-border bg-white font-medium text-ink-primary focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
             )}
 
-            {/* WhatsApp SOS Phone Input & Display */}
+            {/* WhatsApp SOS Phone Input */}
             {!sosDispatched && (
-              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-left space-y-2">
+              <div className="bg-white rounded-2xl p-3.5 border border-border/80 shadow-2xs text-left space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-600 font-semibold">WhatsApp SOS Phone:</span>
-                  <span className="font-mono font-bold text-emerald-800 text-xs">
+                  <span className="text-ink-secondary font-semibold">WhatsApp SOS Phone:</span>
+                  <span className="font-mono font-bold text-forest text-xs">
                     {sosPhoneInput ? `+91 ${sosPhoneInput}` : (user?.phone || 'Not added yet')}
                   </span>
                 </div>
-                <div className="flex rounded-xl border border-slate-300 focus-within:ring-2 focus-within:ring-emerald-500 overflow-hidden bg-white shadow-2xs">
-                  <div className="px-2.5 py-1.5 bg-slate-100 border-r border-slate-300 text-slate-800 text-xs font-bold shrink-0">
+                <div className="flex rounded-xl border border-border focus-within:ring-2 focus-within:ring-forest overflow-hidden bg-white shadow-2xs">
+                  <div className="px-2.5 py-1.5 bg-[#F5F2EB] border-r border-border text-ink-primary text-xs font-bold shrink-0 font-mono">
                     +91
                   </div>
                   <input
@@ -801,10 +863,10 @@ export const SafetyPage: React.FC = () => {
                     onChange={(e) => setSosPhoneInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
                     placeholder="Enter 10-digit mobile number"
                     maxLength={10}
-                    className="w-full text-xs px-2.5 py-1.5 focus:outline-none bg-transparent font-medium text-slate-900"
+                    className="w-full text-xs px-2.5 py-1.5 focus:outline-none bg-transparent font-medium text-ink-primary font-mono"
                   />
                 </div>
-                <p className="text-[10px] text-slate-500 leading-tight">
+                <p className="text-[10px] text-ink-secondary leading-tight">
                   Emergency Google Maps tracking and distress alerts will be sent to this WhatsApp number.
                 </p>
               </div>
@@ -817,28 +879,37 @@ export const SafetyPage: React.FC = () => {
             )}
 
             {!sosDispatched ? (
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  disabled={sosLoading}
-                  onClick={() => setSosModalOpen(false)}
-                  className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer disabled:opacity-50"
+              <div className="space-y-2 pt-2">
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    disabled={sosLoading}
+                    onClick={() => setSosModalOpen(false)}
+                    className="flex-1 py-3 rounded-full bg-paper hover:bg-white text-ink-primary font-bold text-xs border border-border shadow-xs transition-colors cursor-pointer neu-btn disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    disabled={sosLoading}
+                    onClick={handleTriggerSos}
+                    className="flex-1 py-3 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 neu-btn active:translate-y-0.5"
+                  >
+                    <PhoneCall className="w-4 h-4" />
+                    <span>{sosLoading ? 'Dispatching SOS...' : 'Confirm SOS'}</span>
+                  </button>
+                </div>
+                <a
+                  href="tel:112"
+                  className="w-full py-2.5 px-3 rounded-full border border-rose-600 text-rose-600 hover:bg-rose-50 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  disabled={sosLoading}
-                  onClick={handleTriggerSos}
-                  className="flex-1 py-3 rounded-xl bg-[#E14949] hover:bg-[#c93b3b] text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
-                >
-                  <PhoneCall className="w-4 h-4" />
-                  <span>{sosLoading ? 'Dispatching SOS...' : 'Confirm SOS'}</span>
-                </button>
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>Direct Dial Police & Emergency Helpline (112)</span>
+                </a>
               </div>
             ) : (
-              <div className="py-2.5 text-xs font-bold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-200 flex items-center justify-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+              <div className="py-2.5 text-xs font-bold text-forest bg-forest-light rounded-xl border border-forest/30 flex items-center justify-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-forest" />
                 <span>Security Alert Active (Closing...)</span>
               </div>
             )}

@@ -7,8 +7,8 @@ export const ProblemSection: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
         {/* Left: Giant Typography Editorial Statement */}
         <div className="lg:col-span-7">
-          <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-4">
-            01 — THE DAILY COMMUTE
+          <span className="text-xs font-mono text-[#143D32] font-semibold block mb-4">
+            01 — The Daily Commute
           </span>
           <h2 className="text-heading-clamp font-black text-[#111111] uppercase tracking-tight">
             Getting To Campus<br />

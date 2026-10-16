@@ -99,7 +99,7 @@ export const RouteStory: React.FC = () => {
         {/* Left: Text */}
         <div className="max-w-2xl lg:flex-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-mono font-semibold border border-blue-200/60 mb-3">
-            <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-blue-600" />
             <span>SECTION 01 / THE JOURNEY SEQUENCE</span>
           </div>
           <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-[#101828] uppercase leading-[0.95]">
@@ -116,8 +116,8 @@ export const RouteStory: React.FC = () => {
           <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-xs">
             <img src={routeStoryImg} alt="Aerial view of a winding campus road showing the CampusRide journey" className="w-full h-64 sm:h-72 md:h-80 object-cover" loading="lazy" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent" />
-            <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32]/85 backdrop-blur border border-emerald-400/30 text-emerald-50 text-xs font-mono tracking-wide">
-              THE JOURNEY SEQUENCE
+            <span className="absolute bottom-4 left-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#143D32] border border-emerald-400/40 text-emerald-50 text-xs font-mono font-medium">
+              The Journey Sequence
             </span>
           </div>
         </div>
@@ -176,10 +176,9 @@ export const RouteStory: React.FC = () => {
                       {/* Outer pulse for current active node */}
                       {isCurrent && (
                         <circle
-                          r="15"
+                          r="14"
                           fill="#175CD3"
                           opacity="0.18"
-                          className="animate-ping"
                         />
                       )}
                       {/* Node circle */}

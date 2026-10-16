@@ -1,4 +1,6 @@
+// Verified review modal - prefers-reduced-motion compliant
 import React, { useState } from 'react';
+import { useReducedMotion } from '../hooks/useReducedMotion';
 import { api } from '../services/api';
 import { Star, X, ThumbsUp, ShieldCheck, Check, Sparkles, Car, UserCheck } from 'lucide-react';
 import reviewsTrustImg from '../assets/illustrations/campus-reviews-trust.webp';
@@ -92,7 +94,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d2820]/60 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0d2820]/75 p-3 sm:p-4 overflow-y-auto">
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-emerald-100 my-auto animate-in fade-in zoom-in-95 duration-200">
         
         {/* Visual Hero Banner */}
@@ -107,7 +109,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-1.5 rounded-full bg-black/30 hover:bg-black/50 text-white backdrop-blur-md transition-colors"
+            className="absolute top-3 right-3 p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -116,7 +118,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
           {/* Banner Badges */}
           <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-md">
+              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-[#143D32]/85 text-emerald-200 border border-emerald-400/30">
                 <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 Verified Campus Reputation
               </span>
@@ -130,8 +132,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         {/* Modal Body */}
         {submitted ? (
           <div className="p-8 text-center space-y-4">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto animate-bounce">
-              <Check className="w-8 h-8" />
+            <div className="w-16 h-16 bg-emerald-50 text-[#143D32] border border-emerald-200/80 rounded-full flex items-center justify-center mx-auto shadow-xs">
+              <Check className="w-8 h-8 stroke-[2.5]" />
             </div>
             <h3 className="text-xl font-bold text-slate-900">Review Submitted!</h3>
             <p className="text-sm text-slate-600 max-w-sm mx-auto">
@@ -149,7 +151,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
             {/* Recipient Details & Role Selector */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
               <div>
-                <p className="text-xs font-bold text-emerald-700 uppercase tracking-wider">Reviewing Commuter</p>
+                <p className="text-xs font-medium text-slate-500">Reviewing Commuter</p>
                 <h3 className="text-base font-bold text-slate-900">{recipientName}</h3>
                 {college && (
                   <p className="text-xs text-slate-500 font-medium">{college}</p>
@@ -200,7 +202,8 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
                       onClick={() => setRating(star)}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
-                      className="p-1.5 text-slate-300 hover:scale-125 transition-transform duration-150 focus:outline-none"
+                      aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                      className="p-1.5 text-slate-300 hover:text-amber-400 active:translate-y-0.5 transition-colors duration-150 focus:outline-none cursor-pointer"
                     >
                       <Star
                         className={`w-8 h-8 transition-colors ${
@@ -227,7 +230,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
             {/* Compliment Badges */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <label className="text-xs font-semibold text-slate-800">
                   Select Verified Compliments
                 </label>
                 <span className="text-[11px] text-slate-400">Tap to tag</span>
@@ -256,7 +259,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
             {/* Comments Field */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-semibold text-slate-800 mb-1.5">
                 Personal Student Feedback (Optional)
               </label>
               <textarea

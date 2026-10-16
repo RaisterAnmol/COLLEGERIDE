@@ -1,4 +1,6 @@
+// prefers-reduced-motion compliant verification status page
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
@@ -31,7 +33,9 @@ import {
   UserCheck,
 } from "lucide-react";
 import { DailyDriverIdCheckModal } from "../components/verification/DailyDriverIdCheckModal";
-import verificationHeroImg from "../assets/illustrations/verification-hero.webp";
+const verificationHeroImg = "/verification-student-real.jpg";
+import { DestinationStamp } from "../components/signature/DestinationStamp";
+import { VerificationJourneyTrack } from "../components/verification/VerificationJourneyTrack";
 
 export const VerificationStatusPage: React.FC = () => {
   const { user, refreshUser } = useAuth();
@@ -53,10 +57,10 @@ export const VerificationStatusPage: React.FC = () => {
   const enrolledIdCardUrl =
     user?.enrolledIdCardUrl ||
     (user as any)?.facePhoto ||
-    user?.avatarURL ||
+    (user?.avatarURL && !user.avatarURL.includes('nanami') && !user.avatarURL.includes('ichigo') && !user.avatarURL.includes('zoro') && !user.avatarURL.includes('makima') && !user.avatarURL.includes('mitsuha') ? user.avatarURL : null) ||
     localStorage.getItem('campusride_driver_id_card_' + (user?.email || '')) ||
     localStorage.getItem('campusride_user_selfie') ||
-    '/test_uploads/profile_photo.jpg';
+    '/hero-aditya-driver.jpg';
 
   const handleDailyVerified = () => {
     setDailyCheckDate(todayStr);
@@ -197,43 +201,43 @@ export const VerificationStatusPage: React.FC = () => {
     <div className="min-h-screen text-[#1E2922] py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
 
-        {/* TOP HERO BANNER (Matches Image 3) */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xs overflow-hidden p-6 sm:p-8 relative">
+        {/* TOP HERO BANNER */}
+        <div className="bg-paper rounded-3xl border border-white/80 neu-card overflow-hidden p-6 sm:p-8 relative text-left">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-4">
-              <span className="inline-block text-[11px] font-mono uppercase tracking-widest font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                VERIFICATION
+              <span className="inline-block text-xs font-mono font-bold text-plum bg-plum-light px-3.5 py-1 rounded-full border border-plum-border uppercase tracking-wider">
+                CAMPUS VERIFICATION
               </span>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-black text-slate-900 tracking-tight leading-none">
+              <h1 className="text-3xl sm:text-5xl font-display font-extrabold text-ink-primary tracking-tight leading-[1.08]">
                 Your Identity. <br />
-                Your Safe Rides.
+                <span className="text-plum">Your Safe Rides.</span>
               </h1>
 
-              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-lg">
+              <p className="text-xs sm:text-sm text-ink-secondary leading-relaxed max-w-lg">
                 CampusRide keeps your rides trusted and secure with verified student and driver credentials.
               </p>
 
               {/* 3 Verification Badges Row */}
               <div className="flex flex-wrap items-center gap-2 pt-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-canvas border border-line-base text-ink-primary text-xs font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-route" />
                   <span>University Verified</span>
-                  <span className="text-[10px] text-slate-400 font-normal ml-0.5">• Only campus members</span>
+                  <span className="text-[10px] text-ink-muted font-normal ml-0.5">• Only campus members</span>
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold">
-                  <UserCheck className="w-3.5 h-3.5 text-emerald-700" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-canvas border border-line-base text-ink-primary text-xs font-semibold">
+                  <UserCheck className="w-3.5 h-3.5 text-route" />
                   <span>Driver Verification</span>
-                  <span className="text-[10px] text-slate-400 font-normal ml-0.5">• ID + Daily Check-in</span>
+                  <span className="text-[10px] text-ink-muted font-normal ml-0.5">• ID + Daily Check-in</span>
                 </div>
 
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-slate-800 text-xs font-semibold">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-control bg-canvas border border-line-base text-ink-primary text-xs font-semibold">
+                  <Sparkles className="w-3.5 h-3.5 text-route" />
                   <span>Safe Community</span>
-                  <span className="text-[10px] text-slate-400 font-normal ml-0.5">• Trusted by students</span>
+                  <span className="text-[10px] text-ink-muted font-normal ml-0.5">• Trusted by students</span>
                 </div>
               </div>
             </div>
@@ -241,7 +245,7 @@ export const VerificationStatusPage: React.FC = () => {
             {/* Right Artwork with Doodle Cutout */}
             <div className="lg:col-span-5 relative flex justify-center">
               {/* Doodle script */}
-              <div className="absolute top-2 right-4 z-20 transform rotate-3 text-[11px] font-mono font-bold text-emerald-900 bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-full border border-emerald-200/80 shadow-2xs select-none">
+              <div className="absolute top-2 right-4 z-20 transform rotate-3 text-[11px] font-mono font-semibold text-route bg-surface px-2.5 py-1 rounded-control border border-line-base shadow-subtle select-none">
                 Same Campus • Same Journey • Better Together ♡
               </div>
 
@@ -258,6 +262,12 @@ export const VerificationStatusPage: React.FC = () => {
           </div>
         </div>
 
+        {/* ANIMATED VERIFICATION JOURNEY TRACK */}
+        <VerificationJourneyTrack
+          currentStep={user.verificationStatus === 'verified' ? 4 : user.verificationStatus === 'pending' ? 3 : 2}
+          isApproved={user.verificationStatus === 'verified'}
+        />
+
         {/* MEMBER PROFILE SUMMARY STRIP (Matches Image 3) */}
         <div className="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -269,31 +279,15 @@ export const VerificationStatusPage: React.FC = () => {
               )}
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
                   {user.name || "Student"}
                 </h2>
-                {user.verificationStatus === 'verified' ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                    Verified {isDriver ? 'Driver' : 'Student'}
-                  </span>
-                ) : user.verificationStatus === 'pending' ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                    <Clock className="w-3 h-3 text-amber-600" />
-                    ID Verification Pending
-                  </span>
-                ) : user.verificationStatus === 'rejected' ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-800 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                    <AlertCircle className="w-3 h-3 text-rose-600" />
-                    Verification Rejected
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">
-                    <AlertCircle className="w-3 h-3 text-slate-500" />
-                    Verification Required
-                  </span>
-                )}
+                <DestinationStamp
+                  status={user.verificationStatus === 'verified' ? 'verified' : user.verificationStatus === 'pending' ? 'pending' : (user.verificationStatus as any) || 'pending'}
+                  label={user.verificationStatus === 'verified' ? (isDriver ? 'VERIFIED DRIVER' : 'VERIFIED STUDENT') : user.verificationStatus === 'pending' ? 'ID VERIFICATION PENDING' : 'VERIFICATION REQUIRED'}
+                  date={user.verificationStatus === 'verified' ? (user as any).updatedAt || new Date().toISOString() : undefined}
+                />
               </div>
               <p className="text-xs text-slate-600 mt-0.5">
                 {user.college || "University"} • {user.department || user.course || "General Studies"}
@@ -337,100 +331,145 @@ export const VerificationStatusPage: React.FC = () => {
                   <GraduationCap className="w-4 h-4 text-emerald-700" />
                   <span>Your University ID</span>
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-semibold">
+                <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-semibold whitespace-nowrap shrink-0">
                   Reference ID
                 </span>
               </div>
 
-              {/* Realistic Collegiate ID Card Graphic */}
-              <div className="rounded-2xl border-2 border-emerald-900/30 overflow-hidden shadow-md bg-white max-w-sm mx-auto relative">
-                {/* University Header */}
-                <div className="bg-[#143D32] text-white px-4 py-2 flex items-center gap-2.5 border-b-2 border-emerald-500">
-                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center font-bold text-[9px] border border-white/20">
-                    🏛️
+              {/* Realistic Collegiate ID Card Graphic with 3D Hover Tilt */}
+              <motion.div
+                whileHover={{ scale: 1.025, rotateY: 2, rotateX: -2 }}
+                transition={{ duration: 0.3 }}
+                className="rounded-3xl border-2 border-slate-300 overflow-hidden shadow-[0_20px_45px_rgba(0,0,0,0.14),0_4px_12px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.9)] bg-gradient-to-b from-[#FFFFFF] to-[#F8F6F2] max-w-sm mx-auto relative group"
+              >
+                {/* University Header with Gold Accent */}
+                <div className="bg-gradient-to-r from-[#0A231C] via-[#143D32] to-[#1F5444] text-white px-5 py-3 flex items-center justify-between border-b-2 border-amber-400">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center font-bold text-sm border border-amber-400/50 shadow-inner">
+                      🏛️
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-black text-white leading-tight tracking-wide uppercase">
+                        {user.college || "UTTARANCHAL UNIVERSITY"}
+                      </h3>
+                      <p className="text-[9px] text-amber-300 font-mono tracking-wider uppercase font-semibold">
+                        STUDENT IDENTITY & TRANSIT SMARTPASS
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xs font-black uppercase tracking-wider text-white leading-tight">
-                      {user.college || "DIT UNIVERSITY"}
-                    </h3>
-                    <p className="text-[8px] text-emerald-200 font-mono tracking-tight uppercase">
-                      IMAGINE • ASPIRE • ACHIEVE
-                    </p>
-                  </div>
+                  <span className="text-[10px] font-mono font-bold bg-white/10 px-2 py-0.5 rounded text-amber-200 border border-white/20">
+                    2024–26
+                  </span>
                 </div>
 
                 {/* ID Card Body */}
-                <div className="p-4 bg-gradient-to-br from-slate-50 to-emerald-50/20 relative">
-                  {/* Subtle campus building watermark */}
-                  <div className="absolute right-2 bottom-12 opacity-15 pointer-events-none select-none text-emerald-900 text-4xl">
-                    🏛️
+                <div className="p-5 relative bg-white/80">
+                  {/* DestinationStamp overlay */}
+                  <div className="absolute top-3 right-3 z-10 pointer-events-none">
+                    <DestinationStamp
+                      status={user.verificationStatus === 'verified' ? 'verified' : 'pending'}
+                      label={user.verificationStatus === 'verified' ? 'CAMPUS VERIFIED' : 'PENDING'}
+                    />
                   </div>
 
-                  <div className="flex gap-3.5">
-                    {/* Student Photo */}
-                    <div className="w-20 h-24 rounded-lg border border-slate-300 overflow-hidden bg-slate-200 flex-shrink-0 shadow-xs">
+                  {/* Smart Card Metallic IC Chip */}
+                  <div className="mb-3.5 flex items-center justify-between">
+                    <div className="w-11 h-8 rounded-md bg-gradient-to-br from-amber-200 via-amber-300 to-yellow-500 border border-amber-600/40 shadow-xs flex items-center justify-center p-1 relative overflow-hidden">
+                      <div className="w-full h-full border border-amber-700/30 rounded-xs grid grid-cols-2 gap-0.5 opacity-80">
+                        <div className="border-r border-b border-amber-700/30" />
+                        <div className="border-b border-amber-700/30" />
+                        <div className="border-r border-amber-700/30" />
+                        <div />
+                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-tr from-white/30 via-transparent to-transparent pointer-events-none" />
+                    </div>
+                    <span className="text-[9px] font-mono text-slate-400 font-semibold tracking-widest uppercase">
+                      RFID / NFC ENABLED
+                    </span>
+                  </div>
+
+                  <div className="flex gap-4">
+                    {/* Student Real Photograph */}
+                    <div className="w-24 h-30 rounded-xl border-2 border-slate-300 overflow-hidden bg-slate-100 flex-shrink-0 shadow-md relative group/photo">
                       <img
-                        src={enrolledIdCardUrl}
-                        alt="Student ID card reference photo"
-                        className="w-full h-full object-cover"
+                        src={enrolledIdCardUrl || '/hero-aditya-driver.jpg'}
+                        alt="Authenticated student portrait photograph"
+                        className="w-full h-full object-cover object-top"
                       />
+                      {/* Security Hologram Watermark */}
+                      <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent py-1 px-1 text-center">
+                        <span className="text-[7.5px] font-mono text-emerald-300 font-bold uppercase tracking-tight block">
+                          GENUINE ID
+                        </span>
+                      </div>
                     </div>
 
                     {/* Student Details */}
-                    <div className="min-w-0 flex-1 space-y-1 text-xs">
+                    <div className="min-w-0 flex-1 space-y-1.5 text-xs">
                       <div>
-                        <span className="font-extrabold text-slate-900 text-sm block leading-tight">
-                          {user.name || "MITSUHA MIYAMIZU"}
+                        <span className="font-extrabold text-slate-900 text-base block leading-tight">
+                          {user.name || "Aarav Joshi"}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full inline-block mt-0.5 border border-emerald-300 whitespace-nowrap shrink-0">
+                          {isDriver ? "Verified Campus Driver" : "Verified Student Commuter"}
                         </span>
                       </div>
 
-                      <div className="space-y-0.5 text-[11px] text-slate-700">
-                        <p>
-                          <span className="text-slate-400 text-[10px]">Roll No: </span>
-                          <strong className="font-mono text-slate-900">{user.studentId || "UU-2024-DRV-842"}</strong>
+                      <div className="space-y-1 text-[11px] text-slate-700 pt-1">
+                        <p className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                          <span className="text-slate-500 font-medium">Roll No:</span>
+                          <strong className="font-mono text-slate-900 font-black">{user.studentId || "UU-2024-DRV-842"}</strong>
                         </p>
-                        <p>
-                          <span className="text-slate-400 text-[10px]">Program: </span>
-                          <span className="font-semibold text-slate-800">{user.course || user.department || "BCA"}</span>
+                        <p className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                          <span className="text-slate-500 font-medium">Course:</span>
+                          <span
+                            className="font-semibold text-slate-800 truncate max-w-[180px] text-right"
+                            title={user.course || user.department || "B.Tech CSE"}
+                          >
+                            {user.course || user.department || "B.Tech CSE"}
+                          </span>
                         </p>
-                        <p>
-                          <span className="text-slate-400 text-[10px]">Blood Group: </span>
-                          <strong className="text-rose-700">O+</strong>
+                        <p className="flex items-center justify-between border-b border-slate-100 pb-0.5">
+                          <span className="text-slate-500 font-medium">Blood Group:</span>
+                          <strong className="text-rose-700 font-black bg-rose-50 px-1.5 rounded">O+ (Rh Pos)</strong>
                         </p>
                       </div>
 
-                      <p className="text-[9px] text-slate-400 uppercase tracking-wider pt-1 font-semibold">
-                        {user.college || "DIT UNIVERSITY"}
+                      <p className="text-[10px] text-slate-500 pt-0.5 font-bold truncate">
+                        {user.college || "Uttaranchal Institute of Tech (UIT)"}
                       </p>
                     </div>
                   </div>
 
                   {/* Barcode & Student Signature */}
-                  <div className="mt-3 pt-2 border-t border-slate-200 flex items-center justify-between">
+                  <div className="mt-4 pt-3 border-t-2 border-dashed border-slate-200 flex items-center justify-between">
                     <div>
                       {/* Realistic barcode SVG */}
-                      <div className="font-mono tracking-widest text-slate-800 text-[9px] select-none leading-none">
-                        ||| | |||| | ||| || |||| | ||||
+                      <div className="font-mono tracking-widest text-slate-900 text-[10px] select-none leading-none font-bold">
+                        ||| | |||| | ||| || |||| | |||| |||
                       </div>
-                      <span className="text-[8px] font-mono text-slate-400 block mt-0.5">
+                      <span className="text-[8px] font-mono text-slate-500 block mt-1 font-bold">
                         *{user.studentId || "UU2024DRV842"}*
                       </span>
                     </div>
 
                     <div className="text-right">
-                      <span className="font-serif italic text-xs text-indigo-950 font-bold block">
-                        Student Signature
+                      <span className="font-serif italic text-xs text-indigo-950 font-black block border-b border-indigo-200 pb-0.5">
+                        {user.name ? user.name.split(' ')[0] : 'Aditya'}
+                      </span>
+                      <span className="text-[8px] font-mono text-slate-400 block mt-0.5">
+                        Cardholder Signature
                       </span>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* AI OCR Pre-Screening Banner */}
             {ocrProcessing && (
               <div className="mt-3 p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 flex items-center gap-2">
-                <RefreshCw className="w-4 h-4 text-blue-600 animate-spin" />
+                <RefreshCw className="w-4 h-4 text-route" />
                 <span>Running client-side AI OCR pre-screening on student credentials...</span>
               </div>
             )}
@@ -509,7 +548,7 @@ export const VerificationStatusPage: React.FC = () => {
                     <Camera className="w-4 h-4 text-emerald-700" />
                     <span>Daily Driver Check-in</span>
                   </div>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 ${
                     isDailyVerified
                       ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                       : 'bg-amber-100 text-amber-800 border border-amber-200'
@@ -611,7 +650,7 @@ export const VerificationStatusPage: React.FC = () => {
                     <ShieldCheck className="w-4 h-4 text-emerald-700" />
                     <span>Student Passenger Verification</span>
                   </div>
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold whitespace-nowrap shrink-0 ${
                     user.verificationStatus === 'verified'
                       ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                       : 'bg-amber-100 text-amber-800 border border-amber-200'
@@ -681,6 +720,17 @@ export const VerificationStatusPage: React.FC = () => {
                   </button>
                 ) : (
                   <div className="space-y-3">
+                    <div className="flex flex-col sm:flex-row items-center gap-3.5 p-4 rounded-2xl bg-amber-50/80 border border-amber-200 shadow-2xs">
+                      <div className="w-12 h-12 rounded-xl bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0 text-amber-800 shadow-xs">
+                        <Clock className="w-6 h-6" />
+                      </div>
+                      <div className="text-xs text-amber-950 space-y-0.5 text-center sm:text-left">
+                        <span className="font-bold block text-sm text-amber-900">Review in Progress</span>
+                        <p className="text-[11px] text-amber-800 leading-snug">
+                          Your university credentials are queued with the Campus Safety Office. Verification unlocks booking.
+                        </p>
+                      </div>
+                    </div>
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                       <span className="text-amber-800 text-[11px] font-medium flex items-center gap-1.5">
                         <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
@@ -754,9 +804,9 @@ export const VerificationStatusPage: React.FC = () => {
             </div>
 
             {/* Right 3 Trust Pillars */}
-            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
               
-              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50/80 border border-slate-200/70">
+              <div className="h-full flex items-start gap-2.5 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
                 <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 shadow-2xs">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
@@ -768,7 +818,7 @@ export const VerificationStatusPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50/80 border border-slate-200/70">
+              <div className="h-full flex items-start gap-2.5 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
                 <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 shadow-2xs">
                   <UserCheck className="w-4 h-4" />
                 </div>
@@ -784,7 +834,7 @@ export const VerificationStatusPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-slate-50/80 border border-slate-200/70">
+              <div className="h-full flex items-start gap-2.5 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
                 <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 shadow-2xs">
                   <Lock className="w-4 h-4" />
                 </div>

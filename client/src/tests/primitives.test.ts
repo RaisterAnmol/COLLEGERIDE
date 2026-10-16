@@ -30,9 +30,23 @@ test('Design Tokens Integrity', async (t) => {
     assert.ok(shadow.lg.length > 0);
   });
 
+  await t.test('Campus Atlas palette tokens are authentic', () => {
+    assert.equal(color.canvas.DEFAULT, '#F7F5F0');
+    assert.equal(color.surface.DEFAULT, '#FFFDFC');
+    assert.equal(color.route.DEFAULT, '#143D32');
+    assert.equal(color.signal.amber, '#D97706');
+    assert.equal(color.signal.crimson, '#DC2626');
+  });
+
   await t.test('Motion tokens specify both cubic-bezier ease and duration', () => {
     assert.equal(motion.duration.fast, 0.15);
     assert.equal(motion.duration.base, 0.25);
     assert.deepEqual(motion.ease.out, [0.16, 1, 0.3, 1]);
+  });
+
+  await t.test('Typography tokens include Plus Jakarta Sans, Inter, JetBrains Mono', () => {
+    assert.ok(type.fontFamily.display.includes('Plus Jakarta Sans'));
+    assert.ok(type.fontFamily.sans.includes('Inter'));
+    assert.ok(type.fontFamily.mono.includes('JetBrains Mono'));
   });
 });

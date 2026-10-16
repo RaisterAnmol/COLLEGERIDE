@@ -28,8 +28,8 @@ export const RouteBuilder: React.FC = () => {
     <section className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#DDE1DE]">
       {/* Editorial Header */}
       <div className="max-w-4xl">
-        <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-3">
-          03 — INTERACTIVE CORRIDOR BUILDER
+        <span className="text-xs font-mono text-[#143D32] font-semibold block mb-3">
+          03 — Interactive Corridor Builder
         </span>
         <h2 className="text-heading-clamp font-black text-[#111111] uppercase tracking-tight">
           Plot Your Commute.
@@ -168,7 +168,7 @@ export const RouteBuilder: React.FC = () => {
               TRANSIT SCHEMATIC: {activeCorridor.name}
             </div>
             <div className="bg-[#FFFFFF] px-3 py-1.5 rounded-lg border border-[#DDE1DE] text-xs font-mono text-[#18A66A] font-semibold flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#18A66A] animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#18A66A]" />
               <span>{activeCorridor.activeCarsCount} CARPOOLS ACTIVE</span>
             </div>
           </div>

@@ -1,8 +1,9 @@
 /* ============================================================
-   CampusBackground — Animated Campus Route-Map Background
+   CampusBackground — Authentic Campus Atlas Static Canvas
    ============================================================
-   GPU-accelerated: only transform, opacity, offset-distance used.
-   Respects prefers-reduced-motion automatically.
+   Quiet, human-crafted background canvas with static SVG route
+   lines, authentic Dehradun campus geography, and zero infinite
+   decorative animations (Rule R4 / Anti-slop baseline).
    ============================================================ */
 
 /* Container Setup */
@@ -11,11 +12,21 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(165deg, #F7FAF8 0%, #EFF8F3 35%, #E8F5EE 65%, #F2F9F5 100%);
+  background-color: var(--canvas, #F7F5F0);
   overflow: hidden;
   contain: strict;
-  transform: translateZ(0);
-  transition: opacity 0.8s ease-in-out;
+}
+
+/* Base Backdrop Illustration */
+.campus-bg-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.08;
 }
 
 .campus-layer {
@@ -23,21 +34,29 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  transform: translateZ(0);
+}
+
+/* Dot grid mesh */
+.dot-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--line-strong, #B5B0A4) 0.75px, transparent 0.75px);
+  background-size: 32px 32px;
+  opacity: 0.12;
 }
 
 /* ── Layer 1: Abstract Architectural Shapes ─────────────── */
 .abstract-building {
-  fill: #E2F0E8;
-  opacity: 0.55;
+  fill: var(--route-pale, #EDF5F2);
+  opacity: 0.6;
 }
 
 .abstract-building-accent {
-  fill: #D5EBE0;
-  opacity: 0.35;
+  fill: var(--line-subtle, #EAE7DF);
+  opacity: 0.5;
 }
 
-/* ── Layer 2: Route Network ─────────────────────────────── */
+/* ── Layer 2: Quiet Static Route Network ────────────────── */
 .route-network {
   transform: translateZ(0);
 }
@@ -49,322 +68,40 @@
 }
 
 .main-route {
-  stroke: #1A5C4A;
-  stroke-width: 5;
-  stroke-dasharray: 3000;
-  stroke-dashoffset: 3000;
-  animation: drawRoute 28s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
-  opacity: 0.18;
-}
-
-.secondary-route {
-  stroke: #079B7F;
-  stroke-width: 3;
-  stroke-dasharray: 2500;
-  stroke-dashoffset: 2500;
-  animation: drawRoute 38s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate-reverse;
+  stroke: var(--route, #143D32);
+  stroke-width: 3.5;
   opacity: 0.14;
 }
 
+.secondary-route {
+  stroke: var(--route-light, #2D6A4F);
+  stroke-width: 2.5;
+  opacity: 0.12;
+}
+
 .branch-route {
-  stroke: #079B7F;
+  stroke: var(--route-light, #2D6A4F);
   stroke-width: 2;
-  stroke-dasharray: 12 18;
-  opacity: 0.1;
+  stroke-dasharray: 6 8;
+  opacity: 0.10;
 }
 
 .tertiary-route {
-  stroke: #2D8B70;
+  stroke: var(--line-strong, #B5B0A4);
   stroke-width: 1.5;
-  stroke-dasharray: 2000;
-  stroke-dashoffset: 2000;
-  animation: drawRoute 45s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  stroke-dasharray: 4 6;
   opacity: 0.08;
 }
 
-/* ── Layer 2: Location Nodes ────────────────────────────── */
+/* ── Layer 2: Static Location Nodes ─────────────────────── */
 .node-core {
-  transition: transform 0.3s ease;
-}
-
-.node-ripple {
-  fill: none;
-  stroke-width: 1.5;
-  animation: rippleNode 4s ease-out infinite;
-}
-
-.node-ripple.delay-1 {
-  animation-delay: 1.5s;
-}
-
-.node-ripple.delay-2 {
-  animation-delay: 3s;
-}
-
-/* ── Layer 2: Vehicles ──────────────────────────────────── */
-.vehicle-group {
-  opacity: 0;
-}
-
-.vehicle-main {
-  animation: driveVehicle 20s linear infinite;
-}
-
-.vehicle-secondary {
-  animation: driveVehicle 28s linear infinite;
-  animation-delay: 6s;
-}
-
-/* ── Layer 3: Ambient Floating Leaves ───────────────────── */
-.ambient-leaf {
-  position: absolute;
-  opacity: 0;
-}
-
-.leaf-1 {
-  top: 15%;
-  left: -3%;
-  animation: driftLeafRight 22s linear infinite;
-  animation-delay: 0s;
-}
-
-.leaf-2 {
-  top: 65%;
-  right: -3%;
-  animation: driftLeafLeft 28s linear infinite;
-  animation-delay: 4s;
-}
-
-.leaf-3 {
-  top: 40%;
-  left: -3%;
-  animation: driftLeafRight 32s linear infinite;
-  animation-delay: 10s;
-}
-
-/* ── Layer 4: Decorative Botanical Corner Clusters ──────── */
-.leaf-cluster-bl {
-  position: absolute;
-  bottom: -10px;
-  left: -10px;
-  width: 280px;
-  height: 280px;
-  opacity: 0.25;
-  pointer-events: none;
-}
-
-.leaf-cluster-tr {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 220px;
-  height: 220px;
-  opacity: 0.18;
-  pointer-events: none;
-  transform: rotate(180deg);
-}
-
-.leaf-cluster-br {
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 240px;
-  height: 240px;
+  fill: var(--route, #143D32);
   opacity: 0.22;
-  pointer-events: none;
-  transform: scaleX(-1);
 }
 
-/* ── Dot Grid Pattern ──────────────────────────────────── */
-.dot-grid {
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(circle, #B8D8C7 0.7px, transparent 0.7px);
-  background-size: 40px 40px;
-  opacity: 0.18;
-}
-
-/* ── Ambient Gradient Orbs ─────────────────────────────── */
-.ambient-orb {
-  position: absolute;
-  border-radius: 50%;
+.node-static-ring {
+  fill: none;
+  stroke: var(--route, #143D32);
+  stroke-width: 1;
   opacity: 0.15;
-  transform: translateZ(0);
-}
-
-.orb-1 {
-  width: 400px;
-  height: 400px;
-  top: -5%;
-  right: -5%;
-  background: radial-gradient(circle, #A8E6CF 0%, transparent 70%);
-}
-
-.orb-2 {
-  width: 350px;
-  height: 350px;
-  bottom: 5%;
-  left: -3%;
-  background: radial-gradient(circle, #B5EAD7 0%, transparent 70%);
-  animation-delay: 6s;
-}
-
-.orb-3 {
-  width: 250px;
-  height: 250px;
-  top: 45%;
-  right: 15%;
-  background: radial-gradient(circle, #C1EFD9 0%, transparent 70%);
-  animation-delay: 3s;
-  opacity: 0.1;
-}
-
-/* ============================================================
-   KEYFRAMES
-   ============================================================ */
-@keyframes drawRoute {
-  0% { stroke-dashoffset: 3000; }
-  100% { stroke-dashoffset: 0; }
-}
-
-@keyframes rippleNode {
-  0% {
-    r: 5;
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 0.15;
-  }
-  100% {
-    r: 35;
-    opacity: 0;
-  }
-}
-
-@keyframes driveVehicle {
-  0% { opacity: 0; }
-  5% { opacity: 0.7; }
-  92% { opacity: 0.7; }
-  100% { opacity: 0; }
-}
-
-@keyframes driftLeafRight {
-  0% {
-    transform: translate(0, 0) rotate(0deg) scale(0.8);
-    opacity: 0;
-  }
-  8% { opacity: 0.5; }
-  85% { opacity: 0.5; }
-  100% {
-    transform: translate(105vw, 15vh) rotate(340deg) scale(1.1);
-    opacity: 0;
-  }
-}
-
-@keyframes driftLeafLeft {
-  0% {
-    transform: translate(0, 0) rotate(0deg) scale(0.9);
-    opacity: 0;
-  }
-  8% { opacity: 0.45; }
-  85% { opacity: 0.45; }
-  100% {
-    transform: translate(-105vw, -10vh) rotate(-300deg) scale(1);
-    opacity: 0;
-  }
-}
-
-@keyframes pulseOrb {
-  0% { transform: scale(1); opacity: 0.12; }
-  50% { transform: scale(1.15); opacity: 0.2; }
-  100% { transform: scale(1); opacity: 0.12; }
-}
-
-/* ============================================================
-   REDUCED MOTION
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
-  .main-route,
-  .secondary-route,
-  .tertiary-route {
-    stroke-dashoffset: 0;
-    animation: none;
-  }
-
-  .node-ripple {
-    animation: none;
-    opacity: 0.08;
-    r: 18;
-  }
-
-  .vehicle-group {
-    display: none;
-  }
-
-  .ambient-leaf {
-    display: none;
-  }
-
-  .ambient-orb {
-    animation: none;
-  }
-}
-
-/* ── Base Layer: Illustrated Campus Map Backdrop ────────── */
-.campus-bg-backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  opacity: 0.85;
-  transition: opacity 0.5s ease-in-out;
-  pointer-events: none;
-  transform: translateZ(0);
-}
-
-.campus-bg-animated {
-  transform: translateZ(0);
-}
-
-/* ============================================================
-   VARIANT ADJUSTMENTS (applied via classes on container)
-   ============================================================ */
-.campus-bg-home { opacity: 1; }
-.campus-bg-home .campus-bg-backdrop { opacity: 0.92; }
-
-.campus-bg-auth { opacity: 0.95; }
-.campus-bg-auth .campus-bg-backdrop { opacity: 0.55; }
-
-.campus-bg-dashboard { opacity: 0.98; }
-.campus-bg-dashboard .campus-bg-backdrop { opacity: 0.70; }
-
-.campus-bg-search { opacity: 0.98; }
-.campus-bg-search .campus-bg-backdrop { opacity: 0.72; }
-
-.campus-bg-post { opacity: 0.98; }
-.campus-bg-post .campus-bg-backdrop { opacity: 0.70; }
-
-.campus-bg-rideDetail { opacity: 0.98; }
-.campus-bg-rideDetail .campus-bg-backdrop { opacity: 0.72; }
-
-.campus-bg-verification { opacity: 0.98; }
-.campus-bg-verification .campus-bg-backdrop { opacity: 0.78; }
-
-.campus-bg-admin { opacity: 0.98; }
-.campus-bg-admin .campus-bg-backdrop { opacity: 0.75; }
-
-.campus-bg-safety { opacity: 0.98; }
-.campus-bg-safety .campus-bg-backdrop { opacity: 0.75; }
-
-.campus-bg-colleges { opacity: 1; }
-.campus-bg-colleges .campus-bg-backdrop { opacity: 0.85; }
-
-@media (prefers-reduced-motion: reduce) {
-  .campus-bg-animated {
-    animation: none !important;
-    transform: none !important;
-  }
 }

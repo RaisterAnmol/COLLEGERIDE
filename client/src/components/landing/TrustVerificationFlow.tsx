@@ -10,8 +10,8 @@ export const TrustVerificationFlow: React.FC = () => {
     <section id="safety" className="py-24 md:py-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#DDE1DE]">
       {/* Editorial Header */}
       <div className="max-w-4xl">
-        <span className="text-xs font-mono uppercase tracking-widest text-[#1769FF] font-semibold block mb-3">
-          08 — VERIFIED IDENTITY & SAFETY PROTOCOL
+        <span className="text-xs font-mono text-[#143D32] font-semibold block mb-3">
+          08 — Verified Identity & Safety Protocol
         </span>
         <h2 className="text-heading-clamp font-black text-[#111111] uppercase tracking-tight">
           Know Who<br />
@@ -23,45 +23,53 @@ export const TrustVerificationFlow: React.FC = () => {
       </div>
 
       {/* 4 Trust Pillars */}
-      <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-[#FFFFFF] p-6 rounded-2xl border border-[#DDE1DE] shadow-xs">
-          <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] text-[#1769FF] flex items-center justify-center mb-4">
-            <CheckCircle2 className="w-5 h-5" />
+      <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <div className="bg-[#FFFFFF] p-6 sm:p-7 rounded-card border border-[#DDE1DE] shadow-xs h-full flex flex-col justify-between space-y-3.5">
+          <div>
+            <div className="w-10 h-10 rounded-xl bg-[#EFF6FF] text-[#1769FF] flex items-center justify-center mb-4">
+              <CheckCircle2 className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-[#111111]">College Verified</h3>
+            <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
+              Institutional authentication through official university email domains (.edu/.ac.in) and physical student IDs.
+            </p>
           </div>
-          <h3 className="text-base font-bold text-[#111111]">College Verified</h3>
-          <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
-            Institutional authentication through official university email domains (.edu/.ac.in) and physical student IDs.
-          </p>
         </div>
 
-        <div className="bg-[#FFFFFF] p-6 rounded-2xl border border-[#DDE1DE] shadow-xs">
-          <div className="w-10 h-10 rounded-xl bg-[#ECFDF5] text-[#18A66A] flex items-center justify-center mb-4">
-            <Key className="w-5 h-5" />
+        <div className="bg-[#FFFFFF] p-6 sm:p-7 rounded-card border border-[#DDE1DE] shadow-xs h-full flex flex-col justify-between space-y-3.5">
+          <div>
+            <div className="w-10 h-10 rounded-xl bg-[#ECFDF5] text-[#18A66A] flex items-center justify-center mb-4">
+              <Key className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-[#111111]">Phone & OTP Verified</h3>
+            <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
+              Dynamic 4-digit code revealed on departure. Both parties confirm before wheels turn.
+            </p>
           </div>
-          <h3 className="text-base font-bold text-[#111111]">Phone & OTP Verified</h3>
-          <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
-            Dynamic 4-digit code revealed on departure. Both parties confirm before wheels turn.
-          </p>
         </div>
 
-        <div className="bg-[#FFFFFF] p-6 rounded-2xl border border-[#DDE1DE] shadow-xs">
-          <div className="w-10 h-10 rounded-xl bg-[#F5F6F3] text-[#111111] flex items-center justify-center mb-4 border border-[#DDE1DE]">
-            <Lock className="w-5 h-5" />
+        <div className="bg-[#FFFFFF] p-6 sm:p-7 rounded-card border border-[#DDE1DE] shadow-xs h-full flex flex-col justify-between space-y-3.5">
+          <div>
+            <div className="w-10 h-10 rounded-xl bg-[#F5F6F3] text-[#111111] flex items-center justify-center mb-4 border border-[#DDE1DE]">
+              <Lock className="w-5 h-5" />
+            </div>
+            <h3 className="text-base font-bold text-[#111111]">Vehicle Verified</h3>
+            <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
+              Official vehicle registration, driver license authentication, and college parking permit checks.
+            </p>
           </div>
-          <h3 className="text-base font-bold text-[#111111]">Vehicle Verified</h3>
-          <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
-            Official vehicle registration, driver license authentication, and college parking permit checks.
-          </p>
         </div>
 
-        <div className="bg-[#FFFFFF] p-6 rounded-2xl border border-[#DDE1DE] shadow-xs">
-          <div className="w-10 h-10 rounded-xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center mb-4">
-            <Star className="w-5 h-5 fill-[#F79009] text-[#F79009]" />
+        <div className="bg-[#FFFFFF] p-6 sm:p-7 rounded-card border border-[#DDE1DE] shadow-xs h-full flex flex-col justify-between space-y-3.5">
+          <div>
+            <div className="w-10 h-10 rounded-xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center mb-4">
+              <Star className="w-5 h-5 fill-[#F79009] text-[#F79009]" />
+            </div>
+            <h3 className="text-base font-bold text-[#111111]">Community Rated</h3>
+            <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
+              Mutual post-ride reviews maintain high accountability, courtesy standards, and safety records.
+            </p>
           </div>
-          <h3 className="text-base font-bold text-[#111111]">Community Rated</h3>
-          <p className="mt-2 text-xs text-[#646A67] leading-relaxed">
-            Mutual post-ride reviews maintain high accountability, courtesy standards, and safety records.
-          </p>
         </div>
       </div>
 
@@ -158,16 +166,16 @@ export const TrustVerificationFlow: React.FC = () => {
               </p>
 
               {/* Code Display Box */}
-              <div className="mt-6 p-6 bg-gradient-to-br from-emerald-50/90 via-teal-50/50 to-white text-slate-800 rounded-2xl text-center font-mono border-2 border-emerald-200/80 shadow-md shadow-emerald-500/10 relative overflow-hidden">
+              <div className="mt-6 p-6 bg-gradient-to-br from-emerald-50/90 via-teal-50/50 to-white text-slate-800 rounded-2xl text-center font-mono border-2 border-emerald-200/80 shadow-sm relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-400/15 rounded-full blur-xl pointer-events-none" />
-                <span className="text-[11px] text-emerald-800 uppercase tracking-widest block mb-2 font-bold">
-                  SECURE TRIP TOKEN
+                <span className="text-[11px] text-emerald-800 font-mono block mb-2 font-bold">
+                  Secure Trip Token
                 </span>
                 <div className="text-3xl sm:text-4xl font-black tracking-[0.35em] text-[#143D32] drop-shadow-xs py-1">
                   {otpSimulated ? '4 8 2 1' : '• • • •'}
                 </div>
                 <div className="text-xs text-emerald-700 mt-2 font-semibold flex items-center justify-center gap-1.5 bg-white/90 py-1.5 px-3 rounded-xl border border-emerald-200 max-w-fit mx-auto shadow-2xs">
-                  <span className={`w-2 h-2 rounded-full ${otpSimulated ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`} />
+                  <span className={`w-2 h-2 rounded-full ${otpSimulated ? 'bg-emerald-500' : 'bg-amber-400'}`} />
                   <span>{otpSimulated ? '✓ Handshake Authenticated & Active' : 'Press button below to simulate departure token'}</span>
                 </div>
               </div>

@@ -1,10 +1,12 @@
+// prefers-reduced-motion compliant colleges directory
 import React, { useState, useMemo } from 'react';
 import { Building2, BarChart3, ShieldCheck, Leaf, ArrowRight, CheckCircle2, Search, Download, MapPin, School, Calendar, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
 import { useAuth } from '../context/AuthContext';
-import { PageHeroBanner } from '../components/common/PageHeroBanner';
-import campusesHeroImg from '../assets/illustrations/campuses-hero.webp';
+import { CustomSelect } from '../components/common/CustomSelect';
+// Photorealistic Campus Photography
+const campusesHeroImg = '/campus-students.jpg';
 
 export const CollegesPage: React.FC = () => {
   const { activePersona } = useAuth();
@@ -37,51 +39,51 @@ export const CollegesPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen text-[#111111] py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-12">
+    <div className="min-h-screen text-ink-primary py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10 text-left">
       {/* Editorial Header + Illustrated Hero Card Side-by-Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 sm:p-10 rounded-3xl border border-[#DDE1DE] shadow-xs">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-10 rounded-3xl border border-white/80 neu-card">
         <div className="lg:col-span-7 space-y-4">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-[#143D32] font-semibold bg-emerald-100 px-3 py-1 rounded-full border border-emerald-300">
+            <span className="text-xs font-mono font-bold text-plum bg-plum-light px-3.5 py-1 rounded-full border border-plum-border uppercase tracking-wider">
               CSV DATASET POWERED
             </span>
-            <span className="text-xs font-mono text-slate-500">
+            <span className="text-xs font-mono text-ink-muted">
               uttarakhand_universities.csv ({UTTARAKHAND_UNIVERSITIES.length} institutions)
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#111111] tracking-tight leading-[1.1]">
+          <h1 className="text-3xl sm:text-5xl font-display font-extrabold text-ink-primary tracking-tight leading-[1.08]">
             Uttarakhand Higher Education<br />
-            <span className="text-[#143D32]">Carpool Network.</span>
+            <span className="text-plum">Carpool Network.</span>
           </h1>
-          <p className="text-base text-[#646A67] leading-relaxed">
+          <p className="text-base text-ink-secondary leading-relaxed">
             Connecting students and faculty across all 48 accredited universities in Uttarakhand, from Uttaranchal University and Graphic Era in Dehradun to Roorkee, Pantnagar, and Srinagar campuses.
           </p>
           <div className="pt-2">
             <button
               onClick={handleDownloadCSV}
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-white text-sm font-semibold transition-all shadow-md hover:shadow-lg cursor-pointer"
+              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl bg-plum hover:bg-plum-hover text-white text-sm font-bold transition-all shadow-md neu-btn cursor-pointer"
               title="Download the source CSV file"
             >
-              <Download className="w-4 h-4 text-emerald-300" />
+              <Download className="w-4 h-4 text-plum-light" />
               <span>Download Universities CSV</span>
             </button>
           </div>
         </div>
 
         <div className="lg:col-span-5 w-full">
-          <div className="relative rounded-2xl overflow-hidden border border-[#DDE1DE] shadow-md group">
+          <div className="relative rounded-3xl overflow-hidden border border-border neu-card-sm group">
             <img
               src={campusesHeroImg}
               alt="Aerial view of an Indian university campus with CampusRide car on ring road"
-              className="w-full h-56 sm:h-64 object-cover object-center transform transition-transform duration-700 group-hover:scale-105"
+              className="w-full h-56 sm:h-64 object-cover object-center select-none"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#143D32]/70 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
             <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-mono">
-              <span className="px-3 py-1 rounded-full bg-[#143D32]/85 backdrop-blur-sm border border-emerald-400/30 text-emerald-50">
+              <span className="px-3 py-1 rounded-full bg-plum/90 border border-plum-light/30 text-white font-bold">
                 48 CAMPUSES
               </span>
-              <span className="px-3 py-1 rounded-full bg-emerald-700 text-white font-semibold">
+              <span className="px-3 py-1 rounded-full bg-forest text-white font-bold">
                 ACTIVE CORRIDORS
               </span>
             </div>
@@ -148,26 +150,27 @@ export const CollegesPage: React.FC = () => {
               />
             </div>
 
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="py-2 px-3 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none text-slate-700 font-medium"
-            >
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city === 'ALL' ? 'All Locations' : city}
-                </option>
-              ))}
-            </select>
+            <div className="w-44 sm:w-48">
+              <CustomSelect
+                value={selectedCity}
+                onChange={(val) => setSelectedCity(String(val))}
+                options={cities.map((city) => ({
+                  value: city,
+                  label: city === 'ALL' ? 'All Locations' : city,
+                }))}
+                placeholder="Filter by Location"
+                ariaLabel="Location Filter"
+              />
+            </div>
           </div>
         </div>
 
         {/* University Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredUniversities.map((uni, idx) => (
             <div
               key={idx}
-              className="p-5 rounded-2xl bg-[#F8FAFC] border border-[#E2E8F0] hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between group shadow-xs"
+              className="h-full p-6 sm:p-7 rounded-card bg-[#F8FAFC] border border-[#E2E8F0] hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between group shadow-xs space-y-3.5"
             >
               <div>
                 <div className="flex items-center justify-between gap-2">

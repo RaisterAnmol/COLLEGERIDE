@@ -28,7 +28,7 @@ const WEEK_DAYS: DaySchedule[] = [
     day: 'MON',
     fullDay: 'Monday',
     time: '08:15 AM',
-    driver: 'Ichigo Kurosaki',
+    driver: 'Aditya Sharma',
     roleTag: 'Verified Driver',
     college: 'Uttaranchal University (UIT)',
     vehicle: 'Honda City (UK 07 AK 4821)',
@@ -37,7 +37,7 @@ const WEEK_DAYS: DaySchedule[] = [
     dropPoint: 'UIT Engineering Block Porch',
     status: 'Confirmed Weekly Seat',
     fare: '₹20',
-    avatar: '/test_uploads/driver_male_ichigo.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     co2Saved: '1.4 kg CO₂',
     distanceKm: '3.8 km Transit',
     pickupWindow: 'Precise 3-min buffer',
@@ -47,7 +47,7 @@ const WEEK_DAYS: DaySchedule[] = [
     day: 'TUE',
     fullDay: 'Tuesday',
     time: '08:30 AM',
-    driver: 'Makima San',
+    driver: 'Priya Nautiyal',
     roleTag: 'Women-Only Commute Anchor',
     college: 'UPES University (Bidholi)',
     vehicle: 'Honda City i-VTEC (UK 07 UP 9901)',
@@ -56,7 +56,7 @@ const WEEK_DAYS: DaySchedule[] = [
     dropPoint: 'UPES Gate 1 Main Roundabout',
     status: 'Women-Only Corridor Active',
     fare: '₹25',
-    avatar: '/test_uploads/driver_female_makima.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     co2Saved: '1.8 kg CO₂',
     distanceKm: '8.4 km Transit',
     pickupWindow: 'Precise 2-min buffer',
@@ -66,7 +66,7 @@ const WEEK_DAYS: DaySchedule[] = [
     day: 'WED',
     fullDay: 'Wednesday',
     time: '08:15 AM',
-    driver: 'Roronoa Zoro',
+    driver: 'Rohan Negi',
     roleTag: 'Verified Peer Driver',
     college: 'Graphic Era University',
     vehicle: 'Royal Enfield Classic (UK 07 RZ 3321)',
@@ -75,7 +75,7 @@ const WEEK_DAYS: DaySchedule[] = [
     dropPoint: 'Graphic Era Faculty Quad',
     status: 'Confirmed Weekly Seat',
     fare: '₹15',
-    avatar: '/test_uploads/driver_male_zoro.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     co2Saved: '1.1 kg CO₂',
     distanceKm: '6.2 km Transit',
     pickupWindow: 'Precise 3-min buffer',
@@ -85,7 +85,7 @@ const WEEK_DAYS: DaySchedule[] = [
     day: 'THU',
     fullDay: 'Thursday',
     time: '08:30 AM',
-    driver: 'Mitsuha Miyamizu',
+    driver: 'Kavita Rawat',
     roleTag: 'Verified Driver',
     college: 'DIT University',
     vehicle: 'Maruti Suzuki Swift (UK 07 MM 5512)',
@@ -94,7 +94,7 @@ const WEEK_DAYS: DaySchedule[] = [
     dropPoint: 'DIT Central Library Drop Bay',
     status: 'Confirmed Weekly Seat',
     fare: '₹20',
-    avatar: '/test_uploads/driver_female_mitsuha.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     co2Saved: '1.5 kg CO₂',
     distanceKm: '5.1 km Transit',
     pickupWindow: 'Precise 2-min buffer',
@@ -104,7 +104,7 @@ const WEEK_DAYS: DaySchedule[] = [
     day: 'FRI',
     fullDay: 'Friday',
     time: '08:20 AM',
-    driver: 'Ichigo Kurosaki',
+    driver: 'Aditya Sharma',
     roleTag: 'Verified Driver',
     college: 'Uttaranchal University (USCS)',
     vehicle: 'Honda City (UK 07 AK 4821)',
@@ -113,7 +113,7 @@ const WEEK_DAYS: DaySchedule[] = [
     dropPoint: 'UU Campus Gate 1 Academic Bay',
     status: 'Confirmed Weekly Seat',
     fare: '₹25',
-    avatar: '/test_uploads/driver_male_ichigo.jpg',
+    avatar: '/test_uploads/profile_photo.jpg',
     co2Saved: '1.9 kg CO₂',
     distanceKm: '7.8 km Transit',
     pickupWindow: 'Precise 3-min buffer',
@@ -228,7 +228,7 @@ export const CommuteTimeline: React.FC = () => {
 
               <div className="text-right font-mono shrink-0 pl-2">
                 <span className="text-xl font-black text-[#143D32]">{active.fare}</span>
-                <span className="text-[10px] text-slate-500 block uppercase font-bold tracking-wider">fuel split</span>
+                <span className="text-[11px] text-slate-500 block font-medium">fuel split</span>
               </div>
             </div>
           </div>
@@ -236,13 +236,13 @@ export const CommuteTimeline: React.FC = () => {
           {/* Right: SVG Route Preview & Sustainability Telemetry */}
           <div className="lg:col-span-6 bg-gradient-to-br from-emerald-50/90 via-teal-50/40 to-white p-6 rounded-2xl border border-emerald-200/80 shadow-sm flex flex-col justify-between space-y-4 text-slate-800">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-500 font-bold uppercase tracking-wider">Weekly Scheduled Metrics</span>
+              <span className="text-slate-500 font-semibold">Weekly Scheduled Metrics</span>
               <span className="text-emerald-800 bg-emerald-100/90 border border-emerald-300 font-bold px-2.5 py-1 rounded-full text-xs shadow-2xs">
                 Saving ~₹840 / Week
               </span>
             </div>
 
-            {/* Dynamic Animated Route Path */}
+            {/* Dynamic Route Path */}
             <div className="py-2">
               <div className="flex items-center justify-between text-xs font-mono mb-2 font-semibold">
                 <span className="text-slate-900">{active.time} Pickup</span>
@@ -252,7 +252,7 @@ export const CommuteTimeline: React.FC = () => {
                 <span className="text-slate-900">08:45 AM Arrival</span>
               </div>
               <div className="relative h-2.5 bg-slate-200/90 rounded-full overflow-hidden p-0.5">
-                <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 rounded-full w-full animate-pulse shadow-sm shadow-emerald-500/20" />
+                <div className="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-400 rounded-full w-full" />
               </div>
             </div>
 
@@ -262,7 +262,7 @@ export const CommuteTimeline: React.FC = () => {
                   <Leaf className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Carbon Offset</span>
+                  <span className="text-slate-500 block text-[11px] font-medium">Carbon Offset</span>
                   <span className="font-mono font-bold text-slate-900 text-xs">{active.co2Saved} saved</span>
                 </div>
               </div>
@@ -272,7 +272,7 @@ export const CommuteTimeline: React.FC = () => {
                   <Clock className="w-4 h-4" />
                 </div>
                 <div>
-                  <span className="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Pickup Window</span>
+                  <span className="text-slate-500 block text-[11px] font-medium">Pickup Window</span>
                   <span className="font-mono font-bold text-teal-800 text-xs">{active.pickupWindow}</span>
                 </div>
               </div>

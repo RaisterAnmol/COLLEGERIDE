@@ -1,3 +1,4 @@
+// prefers-reduced-motion compliant face verification
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -506,7 +507,7 @@ export const FaceVerifyPage: React.FC = () => {
               </div>
               {cameraOn && (
                 <span className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
                   Live
                 </span>
               )}
@@ -540,7 +541,7 @@ export const FaceVerifyPage: React.FC = () => {
 
                 {/* Pulse ring when GOOD */}
                 {faceStatus === "GOOD" && (
-                  <div className="absolute inset-0 rounded-full border-4 border-emerald-400/40 animate-ping pointer-events-none" />
+                  <div className="absolute inset-0 rounded-full border-4 border-emerald-400/40 pointer-events-none" />
                 )}
               </div>
 
@@ -549,7 +550,7 @@ export const FaceVerifyPage: React.FC = () => {
                 {faceStatus === "GOOD" && <UserCheck className="w-3.5 h-3.5 text-emerald-600" />}
                 {(faceStatus === "NO_FACE" || faceStatus === "IDLE") && <Camera className="w-3.5 h-3.5" />}
                 {(faceStatus === "TOO_FAR" || faceStatus === "MULTIPLE") && <AlertCircle className="w-3.5 h-3.5" />}
-                {faceStatus === "PROCESSING" && <RefreshCw className="w-3.5 h-3.5 animate-spin" />}
+                {faceStatus === "PROCESSING" && <RefreshCw className="w-3.5 h-3.5" />}
                 {statusCfg.label}
               </div>
 
@@ -565,7 +566,7 @@ export const FaceVerifyPage: React.FC = () => {
                     >
                       {modelLoading ? (
                         <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <RefreshCw className="w-4 h-4" />
                           Loading model…
                         </>
                       ) : (
@@ -596,7 +597,7 @@ export const FaceVerifyPage: React.FC = () => {
                     >
                       {verifying ? (
                         <>
-                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          <RefreshCw className="w-4 h-4" />
                           Verifying…
                         </>
                       ) : (

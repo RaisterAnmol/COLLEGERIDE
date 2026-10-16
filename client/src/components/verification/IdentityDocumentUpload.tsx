@@ -1,3 +1,4 @@
+// Identity document upload - prefers-reduced-motion compliant
 import React, { useState, useRef } from "react";
 import {
   Upload,
@@ -224,7 +225,7 @@ export const IdentityDocumentUpload: React.FC<IdentityDocumentUploadProps> = ({
       {/* Modal Zoom Viewer */}
       {isZoomOpen && previewUrl && (
         <div
-          className="fixed inset-0 z-50 bg-[#143D32]/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
+          className="fixed inset-0 z-50 bg-[#143D32]/75 flex items-center justify-center p-4 animate-in fade-in"
           onClick={() => setIsZoomOpen(false)}
         >
           <div

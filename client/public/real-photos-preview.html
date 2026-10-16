@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusRide — Real Photography, Hero & Stop Trigger Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #E8EBE6;
+      --paper: #F6F8F5;
+      --card-white: #FFFFFF;
+      --plum: #743A59;
+      --plum-hover: #5C2B45;
+      --plum-light: #F4EBF0;
+      --plum-border: #D9B8C9;
+      --green: #1B5E43;
+      --green-light: #E8F3EE;
+      --ink: #1F2622;
+      --ink-muted: #5C6761;
+      --border: #D7DCD5;
+      --border-light: #E5E9E3;
+      --shadow-sm: 0 1px 3px rgba(31, 38, 34, 0.05);
+      --shadow-card: 0 4px 16px rgba(31, 38, 34, 0.06);
+      --shadow-lg: 0 12px 32px rgba(31, 38, 34, 0.08);
+      --shadow-xl: 0 20px 48px -8px rgba(31, 38, 34, 0.14);
+      --shadow-sunken: inset 2px 2px 5px rgba(31, 38, 34, 0.08), inset -2px -2px 5px rgba(255, 255, 255, 0.9);
+      --shadow-emboss: -4px -4px 10px rgba(255, 255, 255, 0.9), 4px 4px 12px rgba(31, 38, 34, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 0;
+      margin: 0;
+    }
+
+    /* Top Sticky Quick Switcher / Section Jump */
+    .top-quickbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(31, 38, 34, 0.96);
+      backdrop-filter: blur(12px);
+      padding: 0.6rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .quickbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .quickbar-brand span.dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #34D399;
+      box-shadow: 0 0 8px #34D399;
+    }
+    .quickbar-nav {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .quickbar-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #E5E7EB;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quickbar-btn:hover {
+      background: var(--plum);
+      color: #fff;
+    }
+
+    /* App Header */
+    .app-header {
+      max-width: 1260px;
+      margin: 1.25rem auto 0;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      font-family: 'Fraunces', serif;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .logo span.dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--plum);
+    }
+    .nav-items {
+      display: flex;
+      align-items: center;
+      gap: 1.75rem;
+    }
+    .nav-item {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .nav-item:hover {
+      color: var(--plum);
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+    .btn-log {
+      background: none;
+      border: none;
+      color: var(--ink);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.5rem 0.75rem;
+      text-decoration: none;
+    }
+    .btn-reg {
+      background: var(--plum);
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.65rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(116, 58, 89, 0.25);
+    }
+    .btn-reg:hover {
+      background: var(--plum-hover);
+      transform: translateY(-1px);
+    }
+
+    .main-wrap {
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    /* ========================================================= */
+    /* 1. HERO SECTION WITH REAL ADITYA DRIVER PHOTO             */
+    /* ========================================================= */
+    .hero-container {
+      padding: 2.5rem 0 3.5rem;
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 3.5rem;
+      align-items: center;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.25rem;
+    }
+    .badge-pill .pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+    }
+    .badge-pill .tag {
+      background: var(--plum-light);
+      color: var(--plum);
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      font-weight: 800;
+    }
+
+    .hero-h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 3.85rem;
+      line-height: 1.08;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .hero-h1 em {
+      font-style: italic;
+      color: var(--plum);
+      font-weight: 700;
+    }
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--ink-muted);
+      line-height: 1.6;
+      max-width: 580px;
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .btn-plum-lg {
+      background: var(--plum);
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.85rem 1.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px rgba(116, 58, 89, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-plum-lg:hover {
+      background: var(--plum-hover);
+      transform: translateY(-1px);
+    }
+    .btn-soft-lg {
+      background: var(--paper);
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.85rem 1.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+    .btn-soft-lg:hover {
+      background: #fff;
+    }
+
+    .btn-plum {
+      background: var(--plum);
+      color: #fff;
+      border: none;
+      border-radius: 9999px;
+      padding: 0.75rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(116, 58, 89, 0.25);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-plum:hover {
+      background: var(--plum-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(116, 58, 89, 0.35);
+    }
+    .btn-plum:active {
+      transform: translateY(0);
+    }
+    .btn-soft {
+      background: var(--paper);
+      color: var(--ink);
+      border: 1.5px solid var(--border);
+      border-radius: 9999px;
+      padding: 0.75rem 1.4rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-soft:hover {
+      background: #fff;
+      border-color: var(--plum-border);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-card);
+    }
+    .btn-soft:active {
+      transform: translateY(0);
+    }
+
+    /* Sunken & Embossed Stat Counters */
+    .counters-row {
+      display: flex;
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .stat-tile {
+      background: var(--paper);
+      border-radius: 1.25rem;
+      padding: 1rem 1.6rem;
+      box-shadow: var(--shadow-emboss);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+    }
+    .stat-tile.sunken {
+      box-shadow: var(--shadow-sunken);
+      background: #E2E6E0;
+    }
+    .stat-number {
+      font-family: 'Fraunces', serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--plum);
+    }
+    .stat-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin-top: 0.35rem;
+    }
+
+    /* Search Widget */
+    .search-strip {
+      background: var(--card-white);
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-card);
+    }
+    .search-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .input-cell {
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.85rem;
+      background: var(--paper);
+    }
+    .input-cell-lbl {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-muted);
+      margin-bottom: 0.2rem;
+    }
+    .input-cell-val {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-search-now {
+      padding: 0.85rem 1.6rem;
+      background: var(--plum);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 12px rgba(116, 58, 89, 0.25);
+      transition: background 0.15s;
+    }
+    .btn-search-now:hover {
+      background: var(--plum-hover);
+    }
+
+    /* Enhanced Neumorphic Hero Photo Carousel */
+    .photo-hero-wrapper {
+      position: relative;
+    }
+    .photo-hero-card {
+      position: relative;
+      background: #FFFFFF;
+      border: 3px solid rgba(255, 255, 255, 0.95);
+      border-radius: 2.25rem;
+      padding: 0;
+      box-shadow: 
+        10px 16px 36px rgba(31, 38, 34, 0.12),
+        -8px -8px 24px rgba(255, 255, 255, 0.95),
+        inset 0 0 0 1px rgba(215, 220, 213, 0.4);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 520px;
+    }
+    .carousel-slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transform: scale(1.03);
+      transition: opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1), transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    .carousel-slide.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+    .photo-hero-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      display: block;
+    }
+
+    /* Carousel Progress Dots */
+    .carousel-indicators {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 20;
+      background: rgba(31, 38, 34, 0.6);
+      backdrop-filter: blur(10px);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.5);
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .carousel-dot.active {
+      background: #FFFFFF;
+      width: 22px;
+      box-shadow: 0 0 8px #FFFFFF;
+    }
+
+    /* Neumorphic Floating Telemetry Chips */
+    .tele-chip {
+      position: absolute;
+      background: rgba(255, 253, 252, 0.96);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 1.15rem;
+      padding: 0.85rem 1.15rem;
+      box-shadow: 
+        6px 8px 24px rgba(31, 38, 34, 0.12),
+        -4px -4px 14px rgba(255, 255, 255, 0.9);
+      z-index: 10;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .tele-chip:hover {
+      transform: translateY(-3px);
+      box-shadow: 
+        8px 12px 28px rgba(31, 38, 34, 0.16),
+        -6px -6px 18px rgba(255, 255, 255, 0.95);
+    }
+    .tele-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--plum);
+      margin-bottom: 0.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .tele-title {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .tele-sub {
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      margin-top: 0.15rem;
+    }
+    .chip-pos-topright {
+      top: -14px;
+      right: -14px;
+    }
+    .chip-pos-bottomleft {
+      bottom: 24px;
+      left: -20px;
+    }
+    .chip-pos-bottomright {
+      bottom: 24px;
+      right: -16px;
+    }
+
+    /* Scroll-Driven Entrance Animation Classes */
+    .reveal-on-scroll {
+      opacity: 0;
+      transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-from-left {
+      transform: translateX(-40px);
+    }
+    .reveal-from-right {
+      transform: translateX(40px);
+    }
+    .reveal-from-bottom {
+      transform: translateY(35px);
+    }
+    .reveal-active {
+      opacity: 1 !important;
+      transform: translate(0, 0) !important;
+    }
+
+
+    /* Plum Banner & Enlarged Marquee (Image 2) */
+    .plum-callout {
+      background: var(--plum);
+      color: #fff;
+      border-radius: 1.5rem;
+      padding: 1.5rem 2.25rem;
+      margin: 2.5rem 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      box-shadow: 0 8px 24px rgba(116, 58, 89, 0.25);
+    }
+    .callout-badge {
+      font-family: 'Fraunces', serif;
+      font-size: 2.75rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .callout-text {
+      font-size: 1.2rem;
+      font-weight: 500;
+    }
+
+    /* Enlarged High-Impact Campus Corridor Ticker */
+    .corridor-marquee {
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 1.25rem 0;
+      background: #FDFBF7;
+      border-top: 2px solid var(--border);
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 3.5rem;
+      box-shadow: inset 0 2px 5px rgba(31, 38, 34, 0.03);
+    }
+    .marquee-rail {
+      display: inline-flex;
+      align-items: center;
+      animation: railMarquee 30s linear infinite;
+      font-size: 1.18rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+    }
+    .marquee-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      margin: 0 1.25rem;
+    }
+    .marquee-dot {
+      color: var(--plum);
+      font-size: 1.1rem;
+    }
+    .marquee-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--plum);
+      background: var(--plum-light);
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      letter-spacing: 0.04em;
+    }
+    @keyframes railMarquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ========================================================= */
+    /* 3. TICKET MICRO-PASSES WITH CUTOUT NOTCHES (Image 1)      */
+    /* ========================================================= */
+    .section-title-wrap {
+      text-align: center;
+      margin: 3.5rem 0 2rem;
+    }
+    .section-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--plum);
+      margin-bottom: 0.4rem;
+    }
+    .section-headline {
+      font-family: 'Fraunces', serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .tickets-deck {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 4rem;
+    }
+    .pass-ticket {
+      background: #FFFFFF;
+      border-radius: 1.25rem;
+      box-shadow: 0 4px 20px rgba(31, 38, 34, 0.06);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border-light);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .pass-ticket:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(31, 38, 34, 0.12);
+    }
+
+    /* Cutout notches on borders */
+    .pass-ticket::before, .pass-ticket::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: var(--bg);
+      border-radius: 50%;
+      top: 48%;
+      z-index: 2;
+      border: 1px solid var(--border);
+    }
+    .pass-ticket::before {
+      left: -10px;
+    }
+    .pass-ticket::after {
+      right: -10px;
+    }
+
+    .ticket-head {
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 1px dashed var(--border);
+    }
+    .ticket-meta-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .ticket-time-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .ticket-fare {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .ticket-fare span {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--ink-muted);
+    }
+
+    .badge-stamp-card {
+      background: #EFE9E0;
+      border-radius: 0.9rem;
+      padding: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+    .archetype-pic {
+      width: 44px;
+      height: 44px;
+      border-radius: 0.75rem;
+      object-fit: cover;
+      border: 2px dashed #1B5E43;
+      background: #E8F5E9;
+    }
+    .archetype-details {
+      flex: 1;
+    }
+    .archetype-name-h {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .archetype-univ-lbl {
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+      font-weight: 600;
+    }
+    .archetype-role-pill {
+      background: #FFFFFF;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.1rem 0.4rem;
+      border-radius: 0.35rem;
+      display: inline-block;
+      margin-top: 0.2rem;
+      color: var(--ink);
+    }
+
+    .ticket-body {
+      padding: 1rem 1.25rem;
+      flex: 1;
+    }
+    .ticket-corridor-name {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+    .ticket-bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: var(--border-light);
+      border-radius: 2px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+    .ticket-bar-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 2px;
+    }
+    .ticket-quote-text {
+      font-size: 0.75rem;
+      font-style: italic;
+      color: var(--ink-muted);
+      line-height: 1.4;
+    }
+
+    .ticket-foot {
+      padding: 0.85rem 1.25rem;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FAFCF9;
+      border-bottom-left-radius: 1.25rem;
+      border-bottom-right-radius: 1.25rem;
+    }
+    .ticket-stars {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .ticket-stars span.s {
+      color: #F59E0B;
+    }
+    .ticket-action-link {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    /* ========================================================= */
+    /* 4. FIND A RIDE HORIZONTAL TICKET CARDS (Image 3)          */
+    /* ========================================================= */
+    .find-ride-box {
+      margin: 4rem 0 3rem;
+    }
+    .find-top-card {
+      background: #FFFFFF;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .corridor-filter-pills {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .corr-pill {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+    .corr-pill.active {
+      background: var(--plum);
+      color: #fff;
+      border-color: var(--plum);
+    }
+
+    .horiz-pass-card {
+      background: #FFFFFF;
+      border-radius: 1.25rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+    .horiz-pass-card:hover {
+      box-shadow: var(--shadow-card);
+      border-color: var(--plum-border);
+    }
+
+    /* Horizontal Punch Notches */
+    .horiz-pass-card::before, .horiz-pass-card::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: var(--bg);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      border: 1px solid var(--border);
+    }
+    .horiz-pass-card::before {
+      left: -11px;
+    }
+    .horiz-pass-card::after {
+      right: -11px;
+    }
+
+    .horiz-pass-head {
+      padding: 1.25rem 2rem 1rem;
+      border-bottom: 1px dashed var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .time-badge-box {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      background: var(--paper);
+      padding: 0.35rem 0.75rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+    }
+    .stops-tree {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .stop-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+    }
+    .dot-green {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #10B981;
+    }
+    .dot-orange {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #F59E0B;
+    }
+    .stop-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+    }
+    .stop-location {
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .horiz-fare-block {
+      text-align: right;
+    }
+    .horiz-fare-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .horiz-fare-lbl {
+      font-size: 0.72rem;
+      color: var(--ink-muted);
+    }
+
+    .horiz-pass-footer {
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FCFDFC;
+    }
+    .driver-inline {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .driver-avatar-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--plum-border);
+    }
+    .driver-title-line {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .driver-sub-text {
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+    .horiz-cta-group {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .seats-count {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--ink-muted);
+      margin-right: 0.5rem;
+    }
+    .btn-outline-sm {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--ink);
+      transition: all 0.15s;
+    }
+    .btn-outline-sm:hover {
+      background: var(--paper);
+    }
+    .btn-request-orange {
+      background: #FFF7ED;
+      border: 1px solid #FDBA74;
+      color: #C2410C;
+      padding: 0.5rem 1.1rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-request-orange:hover {
+      background: #F97316;
+      color: #fff;
+    }
+    .vehicle-drawer-strip {
+      padding: 0.5rem 2rem;
+      background: var(--paper);
+      font-size: 0.75rem;
+      color: var(--ink-muted);
+      border-top: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ========================================================= */
+    /* 5. AUTHENTICATOR & REAL-TIME OTP PROTECTION (Image 4)     */
+    /* ========================================================= */
+    .auth-section {
+      margin: 4rem 0 3rem;
+    }
+    .auth-top-bar {
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .persona-selector {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .persona-tab {
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+    .persona-tab.active {
+      background: var(--plum);
+      color: #fff;
+      border-color: var(--plum);
+    }
+
+    .auth-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2rem;
+    }
+    .cred-board {
+      background: #FFFFFF;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .stamp-rotated {
+      border: 2px dashed #1B5E43;
+      padding: 0.5rem 0.85rem;
+      border-radius: 0.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #1B5E43;
+      text-transform: uppercase;
+      transform: rotate(-3deg);
+      background: #E8F5EE;
+    }
+    .cred-meta-cols {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 1.25rem 0;
+      border-top: 1px solid var(--border-light);
+      border-bottom: 1px solid var(--border-light);
+      margin: 1.5rem 0;
+    }
+    .vehicle-status-pill {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 0.85rem;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .trust-badges-flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    .t-badge {
+      background: #E8F5EE;
+      color: #1B5E43;
+      border: 1px solid #C7E6D7;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* OTP Handshake Terminal */
+    .otp-vault {
+      background: #FFFFFF;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      padding: 2rem;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .otp-display-terminal {
+      background: #EDFDF5;
+      border: 1px solid #A7F3D0;
+      border-radius: 1.25rem;
+      padding: 1.75rem 1.25rem;
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+    .otp-pin-dots {
+      display: flex;
+      justify-content: center;
+      gap: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .pin-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #065F46;
+      transition: all 0.3s;
+    }
+    .otp-revealed-digits {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.3em;
+      color: #065F46;
+      display: none;
+    }
+    .btn-otp-action {
+      background: var(--plum);
+      color: #fff;
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s;
+    }
+    .btn-otp-action:hover {
+      background: var(--plum-hover);
+    }
+
+    /* ========================================================= */
+    /* 6. DRIVER DASHBOARD (Image 5 Command Center)              */
+    /* ========================================================= */
+    .driver-dash-container {
+      margin: 4rem 0 3rem;
+    }
+    .dash-banner {
+      background: #FFFFFF;
+      border-radius: 1.5rem;
+      padding: 1.75rem 2rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .driver-main-profile {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+    }
+    .driver-photo-lg {
+      width: 68px;
+      height: 68px;
+      border-radius: 1.25rem;
+      object-fit: cover;
+      border: 3px solid var(--plum-border);
+    }
+    .driver-name-lg {
+      font-family: 'Fraunces', serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+    .liveness-badge-pill {
+      background: #DCFCE7;
+      color: #166534;
+      border: 1px solid #86EFAC;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .kpi-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 1.25rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .kpi-val-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--plum);
+    }
+    .kpi-lbl-text {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .dash-two-cols {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 2rem;
+    }
+    .dash-panel {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+    }
+    .dash-panel-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .rider-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .rider-row:last-child {
+      border-bottom: none;
+    }
+    .rider-details {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .rider-pic {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    .otp-status-tag {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      padding: 0.35rem 0.65rem;
+      border-radius: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    /* Modern Multi-Column CampusRide Footer */
+    .app-footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border);
+      padding: 4.5rem 1.5rem 2.5rem;
+      margin-top: 5rem;
+    }
+    .footer-grid {
+      max-width: 1260px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1.1fr 1fr;
+      gap: 3rem;
+      padding-bottom: 3.5rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .footer-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .footer-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Fraunces', serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--ink);
+      text-decoration: none;
+      margin-bottom: 1rem;
+    }
+    .footer-logo .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--plum);
+    }
+    .footer-tagline {
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+      line-height: 1.65;
+      margin-bottom: 1.5rem;
+      max-width: 320px;
+    }
+    .footer-pill-trust {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      background: #DCFCE7;
+      border: 1px solid #86EFAC;
+      color: #166534;
+      padding: 0.45rem 0.95rem;
+      border-radius: 9999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.02em;
+      width: fit-content;
+    }
+    .footer-pill-trust .green-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 6px #10B981;
+    }
+    .footer-col-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+      letter-spacing: -0.01em;
+    }
+    .footer-link-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .footer-link-list li a, .footer-link-list li span {
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.15s, transform 0.15s;
+      display: inline-block;
+    }
+    .footer-link-list li a:hover {
+      color: var(--plum);
+      transform: translateX(3px);
+      font-weight: 600;
+    }
+    .footer-bottom-bar {
+      max-width: 1260px;
+      margin: 2rem auto 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.82rem;
+      color: var(--ink-muted);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-bottom-links {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .footer-bottom-links a {
+      color: var(--ink-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .footer-bottom-links a:hover {
+      color: var(--plum);
+    }
+    @media (max-width: 960px) {
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+      }
+    }
+    @media (max-width: 600px) {
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+      .footer-bottom-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .hero-container, .auth-grid, .dash-two-cols {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+      .tickets-deck, .kpi-row {
+        grid-template-columns: 1fr 1fr;
+      }
+      .search-inputs {
+        grid-template-columns: 1fr;
+      }
+      .chip-pos-bottomleft, .chip-pos-bottomright {
+        position: static;
+        margin-top: 0.75rem;
+      }
+      .chip-pos-topright {
+        position: static;
+        margin-bottom: 0.75rem;
+      }
+    }
+    @media (max-width: 640px) {
+      .tickets-deck, .kpi-row {
+        grid-template-columns: 1fr;
+      }
+      .hero-h1 {
+        font-size: 2.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation & Quick Jump -->
+  <div class="top-quickbar">
+    <div class="quickbar-brand">
+      <span class="dot"></span>
+      <span>CampusRide Master Preview (Plum & Sage · Real Hero Photo)</span>
+    </div>
+
+    <div class="quickbar-nav">
+      <a href="#hero-section" class="quickbar-btn">1. Hero & Real Photo</a>
+      <a href="#ticket-passes" class="quickbar-btn">2. Ticket Passes</a>
+      <a href="#find-a-ride" class="quickbar-btn">3. Find a Ride</a>
+      <a href="#authenticator" class="quickbar-btn">4. Authenticator & OTP</a>
+      <a href="#driver-dashboard" class="quickbar-btn">5. Driver Dashboard</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <a href="#hero-section" class="logo">
+      <span class="dot"></span>
+      <span>CampusRide</span>
+    </a>
+
+    <nav class="nav-items">
+      <a href="#hero-section" class="nav-item">Home</a>
+      <a href="#ticket-passes" class="nav-item">Passes</a>
+      <a href="#find-a-ride" class="nav-item">Find a Ride</a>
+      <a href="#authenticator" class="nav-item">Safety & OTP</a>
+      <a href="#driver-dashboard" class="nav-item">Driver Dashboard</a>
+    </nav>
+
+    <div class="header-actions">
+      <a href="#authenticator" class="btn-log">Log In</a>
+      <a href="#find-a-ride" class="btn-reg">Register</a>
+    </div>
+  </header>
+
+  <main class="main-wrap">
+
+    <!-- ========================================================================= -->
+    <!-- 1. HERO SECTION (WITH REAL ADITYA DRIVER PHOTO & FLOATING CHIPS)          -->
+    <!-- ========================================================================= -->
+    <section id="hero-section" class="hero-container">
+      <!-- Left: Copy, Buttons, Counters, Search -->
+      <div class="reveal-on-scroll reveal-from-left">
+        <div class="badge-pill">
+          <span class="pulse"></span>
+          <span>CampusRide · University Transit</span>
+          <span class="tag">100% Verified Peers</span>
+        </div>
+
+        <h1 class="hero-h1">
+          Ride with people <em>from</em> your campus.
+        </h1>
+
+        <p class="hero-desc">
+          Direct carpools with university peers heading your direction. Verified college IDs, zero commercial surge, and scheduled morning rides along Dehradun campus corridors.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="hero-cta-row">
+          <a href="#find-a-ride" class="btn-plum-lg">Find a ride</a>
+          <a href="#driver-dashboard" class="btn-soft-lg">Offer a ride</a>
+        </div>
+
+        <!-- Sunken & Embossed Counters (Image 2) -->
+        <div class="counters-row">
+          <div class="stat-tile sunken">
+            <div class="stat-number">100%</div>
+            <div class="stat-text">ID-Checked</div>
+          </div>
+          <div class="stat-tile">
+            <div class="stat-number">24</div>
+            <div class="stat-text">Rides Today</div>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-strip">
+          <div class="search-inputs">
+            <div class="input-cell">
+              <div class="input-cell-lbl">From Pickup Hub</div>
+              <div class="input-cell-val">Premnagar Chowk</div>
+            </div>
+            <div class="input-cell">
+              <div class="input-cell-lbl">To Campus Gate</div>
+              <div class="input-cell-val">UIT & USCS Gate 1</div>
+            </div>
+            <div class="input-cell">
+              <div class="input-cell-lbl">Departure Date</div>
+              <div class="input-cell-val">Today, 8:15 AM</div>
+            </div>
+            <button class="btn-search-now" onclick="document.getElementById('find-a-ride').scrollIntoView({behavior: 'smooth'})">
+              <span>Search</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Real Student Commuter & Driver Photo Carousel + Synchronized Telemetry Chips -->
+      <div class="photo-hero-wrapper reveal-on-scroll reveal-from-right">
+        <!-- Floating Chip Top-Right -->
+        <div class="tele-chip chip-pos-topright" id="hero-chip-top">
+          <div class="tele-eyebrow">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="hero-badge-role">Verified Driver</span>
+          </div>
+          <div class="tele-title" id="hero-badge-title">Aditya K. · B.Tech 3rd Yr</div>
+          <div class="tele-sub" id="hero-badge-sub">Premnagar → UIT Gate 1 · 4.9 ★ (34 rides)</div>
+        </div>
+
+        <!-- Main Real Photo Showcase Card with Cross-Fade Carousel -->
+        <div class="photo-hero-card" id="hero-photo-carousel">
+          <!-- Slide 1: Aditya -->
+          <div class="carousel-slide active" data-slide="0">
+            <img 
+              src="/hero-aditya-driver.jpg" 
+              alt="Aditya, verified university student driver with his carpool vehicle on campus" 
+              class="photo-hero-img"
+            />
+          </div>
+
+          <!-- Slide 2: Priya -->
+          <div class="carousel-slide" data-slide="1">
+            <img 
+              src="/student_commuter_female.jpg" 
+              alt="Priya, verified university peer commuter on campus" 
+              class="photo-hero-img"
+            />
+          </div>
+
+          <!-- Slide 3: Rahul -->
+          <div class="carousel-slide" data-slide="2">
+            <img 
+              src="/candidate2.jpg" 
+              alt="Rahul, verified campus driver ready for morning carpool" 
+              class="photo-hero-img"
+            />
+          </div>
+
+          <!-- Carousel Progress Dots -->
+          <div class="carousel-indicators">
+            <button class="carousel-dot active" onclick="setHeroSlide(0)" aria-label="Slide 1"></button>
+            <button class="carousel-dot" onclick="setHeroSlide(1)" aria-label="Slide 2"></button>
+            <button class="carousel-dot" onclick="setHeroSlide(2)" aria-label="Slide 3"></button>
+          </div>
+        </div>
+
+        <!-- Floating Chip Bottom-Left -->
+        <div class="tele-chip chip-pos-bottomleft" id="hero-chip-left">
+          <div class="tele-eyebrow">
+            <span>● Live Commute Telemetry</span>
+          </div>
+          <div class="tele-title" id="hero-chip-fare">₹25 Fuel Share</div>
+          <div class="tele-sub" id="hero-chip-surge">Zero surge · Direct peer split</div>
+        </div>
+
+        <!-- Floating Chip Bottom-Right -->
+        <div class="tele-chip chip-pos-bottomright" id="hero-chip-right">
+          <div class="tele-eyebrow">
+            <span>🔒 Security Check</span>
+          </div>
+          <div class="tele-title" id="hero-chip-security">Daily Driver Face Match</div>
+          <div class="tele-sub" id="hero-chip-verified">Admin verified college ID</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plum Callout Banner (Image 2) -->
+    <div class="plum-callout reveal-on-scroll reveal-from-bottom">
+      <div class="callout-badge">₹0</div>
+      <div class="callout-text">platform markup. Fuel is split directly between verified university students.</div>
+    </div>
+
+    <!-- Enlarged Campus Corridor Marquee Ticker (Image 2) -->
+    <div class="corridor-marquee reveal-on-scroll reveal-from-bottom" aria-label="Active campus corridors ticker">
+      <div class="marquee-rail">
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Premnagar Chowk Market <span class="marquee-badge">Hub 01</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Selaqui Industrial Area <span class="marquee-badge">Via Stop</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Suddhowala Student Quad <span class="marquee-badge">Pickup</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Nanda Ki Chowki <span class="marquee-badge">Junction</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> UIT Gate 1 Academic Campus <span class="marquee-badge">Terminal</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Rajpur Road Academic Line <span class="marquee-badge">Hub 02</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> DIT University Main Gate <span class="marquee-badge">Terminal</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Clement Town Suburbs <span class="marquee-badge">Hub 03</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Graphic Era University Quad <span class="marquee-badge">Terminal</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Ballupur Chowk <span class="marquee-badge">Express</span></span>
+        <!-- Duplicate for continuous infinite scroll loop -->
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Premnagar Chowk Market <span class="marquee-badge">Hub 01</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Selaqui Industrial Area <span class="marquee-badge">Via Stop</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Suddhowala Student Quad <span class="marquee-badge">Pickup</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Nanda Ki Chowki <span class="marquee-badge">Junction</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> UIT Gate 1 Academic Campus <span class="marquee-badge">Terminal</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Rajpur Road Academic Line <span class="marquee-badge">Hub 02</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> DIT University Main Gate <span class="marquee-badge">Terminal</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Clement Town Suburbs <span class="marquee-badge">Hub 03</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Graphic Era University Quad <span class="marquee-badge">Terminal</span></span>
+        <span class="marquee-item"><span class="marquee-dot">✦</span> Ballupur Chowk <span class="marquee-badge">Express</span></span>
+      </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 3. TICKET MICRO-PASSES WITH CUTOUT NOTCHES (IMAGE 1)      -->
+    <!-- ========================================================= -->
+    <section id="ticket-passes" class="reveal-on-scroll reveal-from-bottom">
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Engineered Ride Passes</div>
+        <h2 class="section-headline">Physical Ticket-Style Micro-Passes</h2>
+      </div>
+
+      <div class="tickets-deck">
+        <!-- Ticket 1: Aditya Kumar -->
+        <article class="pass-ticket">
+          <div class="ticket-head">
+            <div class="ticket-meta-line">
+              <div class="ticket-time-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:15 AM</span>
+              </div>
+              <div class="ticket-fare">₹25 <span>split</span></div>
+            </div>
+
+            <div class="badge-stamp-card">
+              <img src="/hero-aditya-driver.jpg" alt="Aditya Kumar" class="archetype-pic">
+              <div class="archetype-details">
+                <div class="archetype-name-h">
+                  <span>Aditya Kumar</span>
+                  <span style="color:#10B981;">✓</span>
+                </div>
+                <div class="archetype-univ-lbl">UU</div>
+                <span class="archetype-role-pill">DRIVER</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-corridor-name">
+              <span>Premnagar Chowk Market</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-bar-wrap">
+              <div class="ticket-bar-fill" style="width: 85%;"></div>
+            </div>
+            <p class="ticket-quote-text">
+              "Mechanical senior commuting daily. Courteous driving, always play lo-fi on the route."
+            </p>
+          </div>
+
+          <div class="ticket-foot">
+            <div class="ticket-stars">
+              <span class="s">★</span>
+              <span>4.8 · 98% on-time</span>
+            </div>
+            <a href="#find-a-ride" class="ticket-action-link">Ride →</a>
+          </div>
+        </article>
+
+        <!-- Ticket 2: Ananya Verma -->
+        <article class="pass-ticket">
+          <div class="ticket-head">
+            <div class="ticket-meta-line">
+              <div class="ticket-time-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:30 AM</span>
+              </div>
+              <div class="ticket-fare">₹35 <span>split</span></div>
+            </div>
+
+            <div class="badge-stamp-card">
+              <img src="/student_backpack.jpg" alt="Ananya Verma" class="archetype-pic">
+              <div class="archetype-details">
+                <div class="archetype-name-h">
+                  <span>Ananya Verma</span>
+                  <span style="color:#10B981;">✓</span>
+                </div>
+                <div class="archetype-univ-lbl">GEU</div>
+                <span class="archetype-role-pill">ANCHOR</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-corridor-name">
+              <span>Selaqui Industrial Hub</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-bar-wrap">
+              <div class="ticket-bar-fill" style="width: 60%;"></div>
+            </div>
+            <p class="ticket-quote-text">
+              "Campus ride anchor. Verified female-only carpools on Tuesdays & Thursdays."
+            </p>
+          </div>
+
+          <div class="ticket-foot">
+            <div class="ticket-stars">
+              <span class="s">★</span>
+              <span>4.9 · 100% on-time</span>
+            </div>
+            <a href="#find-a-ride" class="ticket-action-link">Ride →</a>
+          </div>
+        </article>
+
+        <!-- Ticket 3: Rahul Sharma -->
+        <article class="pass-ticket">
+          <div class="ticket-head">
+            <div class="ticket-meta-line">
+              <div class="ticket-time-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:20 AM</span>
+              </div>
+              <div class="ticket-fare">₹25 <span>split</span></div>
+            </div>
+
+            <div class="badge-stamp-card">
+              <img src="/candidate2.jpg" alt="Rahul Sharma" class="archetype-pic">
+              <div class="archetype-details">
+                <div class="archetype-name-h">
+                  <span>Rahul Sharma</span>
+                  <span style="color:#10B981;">✓</span>
+                </div>
+                <div class="archetype-univ-lbl">UU</div>
+                <span class="archetype-role-pill">PASSENGER</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-corridor-name">
+              <span>Suddhowala Chowk</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-bar-wrap">
+              <div class="ticket-bar-fill" style="width: 45%;"></div>
+            </div>
+            <p class="ticket-quote-text">
+              "IT sophomore. Punctual, respectful, splits fuel instantly via UPI before gate."
+            </p>
+          </div>
+
+          <div class="ticket-foot">
+            <div class="ticket-stars">
+              <span class="s">★</span>
+              <span>4.9 · 99% on-time</span>
+            </div>
+            <a href="#find-a-ride" class="ticket-action-link">Ride →</a>
+          </div>
+        </article>
+
+        <!-- Ticket 4: Priya Singh -->
+        <article class="pass-ticket">
+          <div class="ticket-head">
+            <div class="ticket-meta-line">
+              <div class="ticket-time-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>08:40 AM</span>
+              </div>
+              <div class="ticket-fare">₹30 <span>split</span></div>
+            </div>
+
+            <div class="badge-stamp-card">
+              <img src="/student_commuter_female.jpg" alt="Priya Singh" class="archetype-pic">
+              <div class="archetype-details">
+                <div class="archetype-name-h">
+                  <span>Priya Singh</span>
+                  <span style="color:#10B981;">✓</span>
+                </div>
+                <div class="archetype-univ-lbl">GEHU</div>
+                <span class="archetype-role-pill">PASSENGER</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ticket-body">
+            <div class="ticket-corridor-name">
+              <span>Ballupur Chowk</span>
+              <span>→ Campus</span>
+            </div>
+            <div class="ticket-bar-wrap">
+              <div class="ticket-bar-fill" style="width: 70%;"></div>
+            </div>
+            <p class="ticket-quote-text">
+              "Physics researcher. Rides exclusively with verified university students."
+            </p>
+          </div>
+
+          <div class="ticket-foot">
+            <div class="ticket-stars">
+              <span class="s">★</span>
+              <span>5.0 · 100% on-time</span>
+            </div>
+            <a href="#find-a-ride" class="ticket-action-link">Ride →</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 4. FIND A RIDE HORIZONTAL TICKET CARDS (IMAGE 3)          -->
+    <!-- ========================================================= -->
+    <section id="find-a-ride" class="find-ride-box reveal-on-scroll reveal-from-bottom">
+      <div class="find-top-card">
+        <div>
+          <h2 style="font-family: 'Fraunces', serif; font-size: 1.85rem; font-weight: 800; color: var(--ink);">Find a Campus Ride</h2>
+          <p style="font-size: 0.88rem; color: var(--ink-muted); margin-top: 0.25rem;">
+            Verified peer carpools scheduled today for UIT, UPES & Graphic Era corridors.
+          </p>
+        </div>
+
+        <div class="corridor-filter-pills">
+          <button class="corr-pill active">All Corridors (4)</button>
+          <button class="corr-pill">Premnagar Hub</button>
+          <button class="corr-pill">Suddhowala</button>
+          <button class="corr-pill">Women-Only</button>
+        </div>
+      </div>
+
+      <!-- Horizontal Ride 1 (Aditya Kumar) -->
+      <div class="horiz-pass-card">
+        <div class="horiz-pass-head">
+          <div>
+            <div class="time-badge-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>03:35 PM</span>
+            </div>
+
+            <div class="stops-tree">
+              <div class="stop-item">
+                <span class="dot-green"></span>
+                <span class="stop-type">PICKUP STOP</span>
+                <span class="stop-location">UIT Building (Uttaranchal Institute of Technology)</span>
+              </div>
+              <div class="stop-item">
+                <span class="dot-orange"></span>
+                <span class="stop-type">DROP-OFF POINT</span>
+                <span class="stop-location">Premnagar Chowk Market</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="horiz-fare-block">
+            <div class="horiz-fare-amount">₹20</div>
+            <div class="horiz-fare-lbl">fuel share</div>
+          </div>
+        </div>
+
+        <div class="horiz-pass-footer">
+          <div class="driver-inline">
+            <img src="/hero-aditya-driver.jpg" alt="Aditya Kumar" class="driver-avatar-img">
+            <div>
+              <div class="driver-title-line">
+                <span>Aditya Kumar</span>
+                <span style="color:#10B981;">✓</span>
+              </div>
+              <div class="driver-sub-text">Uttaranchal University • CSE</div>
+            </div>
+          </div>
+
+          <div class="horiz-cta-group">
+            <span class="seats-count">👥 3 seats open</span>
+            <button class="btn-outline-sm">Map</button>
+            <button class="btn-outline-sm">View Details</button>
+            <button class="btn-request-orange">Verify ID to Request</button>
+          </div>
+        </div>
+
+        <div class="vehicle-drawer-strip">
+          <span>Vehicle & Corridor Notes ▾</span>
+          <span>🚗 Honda City i-VTEC (Silver)</span>
+        </div>
+      </div>
+
+      <!-- Horizontal Ride 2 (Ananya Verma) -->
+      <div class="horiz-pass-card">
+        <div class="horiz-pass-head">
+          <div>
+            <div class="time-badge-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>03:47 PM</span>
+            </div>
+
+            <div class="stops-tree">
+              <div class="stop-item">
+                <span class="dot-green"></span>
+                <span class="stop-type">PICKUP STOP</span>
+                <span class="stop-location">UIT Building (Uttaranchal Institute of Technology)</span>
+              </div>
+              <div class="stop-item">
+                <span class="dot-orange"></span>
+                <span class="stop-type">DROP-OFF POINT</span>
+                <span class="stop-location">Premnagar Chowk Market</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="horiz-fare-block">
+            <div class="horiz-fare-amount">₹20</div>
+            <div class="horiz-fare-lbl">fuel share</div>
+          </div>
+        </div>
+
+        <div class="horiz-pass-footer">
+          <div class="driver-inline">
+            <img src="/student_backpack.jpg" alt="Ananya Verma" class="driver-avatar-img">
+            <div>
+              <div class="driver-title-line">
+                <span>Ananya Verma</span>
+                <span style="color:#10B981;">✓</span>
+              </div>
+              <div class="driver-sub-text">Uttaranchal University • Management</div>
+            </div>
+          </div>
+
+          <div class="horiz-cta-group">
+            <span class="seats-count">👥 3 seats open</span>
+            <button class="btn-outline-sm">Map</button>
+            <button class="btn-outline-sm">View Details</button>
+            <button class="btn-request-orange">Verify ID to Request</button>
+          </div>
+        </div>
+
+        <div class="vehicle-drawer-strip">
+          <span>Vehicle & Corridor Notes ▾</span>
+          <span>🚗 Hyundai i20 Sportz (Polar White)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 5. AUTHENTICATOR & OTP ENGINE (IMAGE 4)                   -->
+    <!-- ========================================================= -->
+    <section id="authenticator" class="auth-section reveal-on-scroll reveal-from-bottom">
+      <div class="auth-top-bar">
+        <div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:0.75rem; font-weight:700; color:var(--ink-muted); text-transform:uppercase;">
+            INTERACTIVE PROFILE AUTHENTICATOR
+          </div>
+          <div style="font-size:1.15rem; font-weight:700; color:var(--ink); margin-top:0.25rem;">
+            Select a verified student profile to inspect credential layers:
+          </div>
+        </div>
+
+        <div class="persona-selector">
+          <button class="persona-tab active" id="btn-p-aditya" onclick="chooseProfile('aditya')">Aditya (Driver)</button>
+          <button class="persona-tab" id="btn-p-priya" onclick="chooseProfile('priya')">Priya (Driver)</button>
+          <button class="persona-tab" id="btn-p-rohan" onclick="chooseProfile('rohan')">Rohan (Driver)</button>
+        </div>
+      </div>
+
+      <div class="auth-grid">
+        <!-- Left: Student Credential Layers -->
+        <div class="cred-board">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:1.25rem;">
+              <div class="badge-stamp-card" style="padding:0.6rem 0.9rem;">
+                <img id="cred-pic" src="/hero-aditya-driver.jpg" alt="Profile" class="archetype-pic">
+                <div>
+                  <div class="archetype-name-h" id="cred-badge-name">Aditya Sharma</div>
+                  <div class="archetype-univ-lbl" id="cred-badge-univ">UIT</div>
+                  <span class="archetype-role-pill">DRIVER</span>
+                </div>
+              </div>
+
+              <div>
+                <h3 id="cred-name-main" style="font-family:'Fraunces',serif; font-size:1.5rem; font-weight:800;">Aditya Sharma</h3>
+                <div style="font-size:0.82rem; color:#10B981; font-weight:700;">Verified Driver ✓</div>
+                <div id="cred-univ-main" style="font-size:0.78rem; color:var(--ink-muted);">Uttaranchal University (UIT)</div>
+              </div>
+            </div>
+
+            <div class="stamp-rotated">
+              STUDENT ID VERIFIED<br>ACADEMIC YR 2026
+            </div>
+          </div>
+
+          <div class="cred-meta-cols">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:700; color:var(--ink-muted);">DEPARTMENT</div>
+              <div id="cred-dept" style="font-size:0.88rem; font-weight:700; color:var(--ink); margin-top:0.25rem;">B.Tech Computer Science & Engineering</div>
+            </div>
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:700; color:var(--ink-muted);">BATCH</div>
+              <div id="cred-batch" style="font-size:0.88rem; font-weight:700; color:var(--ink); margin-top:0.25rem;">Class of 2025</div>
+            </div>
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:0.68rem; font-weight:700; color:var(--ink-muted);">TRIPS COMPLETED</div>
+              <div id="cred-trips" style="font-size:0.88rem; font-weight:700; color:#10B981; margin-top:0.25rem;">24 verified</div>
+            </div>
+          </div>
+
+          <div class="vehicle-status-pill">
+            <span>🚗</span>
+            <span>Vehicle: <strong id="cred-vehicle">Honda City (UK 07 AK 4821)</strong> • Insured & Inspected</span>
+          </div>
+
+          <div class="trust-badges-flow">
+            <span class="t-badge">✓ UIT .edu Verified</span>
+            <span class="t-badge">✓ Driving License Authenticated</span>
+            <span class="t-badge">✓ Zero Detour Violations</span>
+          </div>
+        </div>
+
+        <!-- Right: Real-Time OTP Handshake -->
+        <div class="otp-vault">
+          <div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:700; color:var(--plum); text-transform:uppercase; margin-bottom:0.4rem;">
+              PICKUP VERIFICATION HANDSHAKE
+            </div>
+            <h3 style="font-family:'Fraunces',serif; font-size:1.6rem; font-weight:800; color:var(--ink); margin-bottom:0.6rem;">Real-Time OTP Protection</h3>
+            <p style="font-size:0.85rem; color:var(--ink-muted); line-height:1.5;">
+              Before passenger enters the car, driver shows this code. This prevents mistaken pickups, ensures GPS tracking starts, and notifies emergency contacts.
+            </p>
+
+            <div class="otp-display-terminal">
+              <div style="font-family:'JetBrains Mono',monospace; font-size:0.72rem; font-weight:700; text-transform:uppercase; color:#065F46; margin-bottom:1.25rem;">
+                Secure Trip Token
+              </div>
+              
+              <div id="pin-dots-row" class="otp-pin-dots">
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+                <div class="pin-dot"></div>
+              </div>
+
+              <div id="revealed-code-row" class="otp-revealed-digits">
+                4 8 2 1
+              </div>
+
+              <div id="otp-message-line" style="font-size:0.78rem; font-weight:600; color:#047857; display:flex; align-items:center; justify-content:center; gap:0.4rem;">
+                <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span>
+                <span>Waiting for driver arrival simulation...</span>
+              </div>
+            </div>
+          </div>
+
+          <button id="trigger-otp-btn" class="btn-otp-action" onclick="toggleOtpReveal()">
+            <span>Simulate Driver OTP Reveal →</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- 6. DRIVER DASHBOARD COMMAND CENTER (IMAGE 5)              -->
+    <!-- ========================================================= -->
+    <section id="driver-dashboard" class="driver-dash-container reveal-on-scroll reveal-from-bottom">
+      <div class="dash-banner">
+        <div class="driver-main-profile">
+          <img src="/hero-aditya-driver.jpg" alt="Aditya" class="driver-photo-lg">
+          <div>
+            <h2 class="driver-name-lg">Aditya Kumar</h2>
+            <div style="font-size:0.85rem; color:var(--ink-muted); font-weight:600;">Verified Campus Driver · Honda City (UK 07 AK 4821)</div>
+          </div>
+        </div>
+
+        <div class="liveness-badge-pill">
+          <span>🛡️</span>
+          <span>Morning Face Liveness: Verified for Today</span>
+        </div>
+      </div>
+
+      <!-- 4 KPI Blocks -->
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-lbl-text">Today's Seats</div>
+          <div class="kpi-val-text">3 / 4</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-lbl-text">Fuel Split Earned</div>
+          <div class="kpi-val-text">₹180</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-lbl-text">Punctuality Score</div>
+          <div class="kpi-val-text">98.5%</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-lbl-text">Rating</div>
+          <div class="kpi-val-text">4.9 ★</div>
+        </div>
+      </div>
+
+      <div class="dash-two-cols">
+        <!-- Left: Today's Booked Classmates -->
+        <div class="dash-panel">
+          <div class="dash-panel-title">
+            <span>Today's Morning Commute Passengers</span>
+            <span style="font-size:0.8rem; font-family:'JetBrains Mono',monospace; color:var(--green);">Departure: 08:15 AM</span>
+          </div>
+
+          <div class="rider-row">
+            <div class="rider-details">
+              <img src="/candidate2.jpg" alt="Rahul" class="rider-pic">
+              <div>
+                <div style="font-weight:700; font-size:0.9rem; color:var(--ink);">Rahul Sharma (UU - CSE)</div>
+                <div style="font-size:0.75rem; color:var(--ink-muted);">Pickup: Suddhowala Chowk (08:00 AM)</div>
+              </div>
+            </div>
+            <div class="otp-status-tag">OTP Verified ✓</div>
+          </div>
+
+          <div class="rider-row">
+            <div class="rider-details">
+              <img src="/student_backpack.jpg" alt="Ananya" class="rider-pic">
+              <div>
+                <div style="font-weight:700; font-size:0.9rem; color:var(--ink);">Ananya Verma (UU - MBA)</div>
+                <div style="font-size:0.75rem; color:var(--ink-muted);">Pickup: Premnagar Market (07:45 AM)</div>
+              </div>
+            </div>
+            <div class="otp-status-tag">OTP Verified ✓</div>
+          </div>
+
+          <div class="rider-row">
+            <div class="rider-details">
+              <img src="/student_commuter_female.jpg" alt="Priya" class="rider-pic">
+              <div>
+                <div style="font-weight:700; font-size:0.9rem; color:var(--ink);">Priya Singh (GEHU - MSc)</div>
+                <div style="font-size:0.75rem; color:var(--ink-muted);">Pickup: Nanda Ki Chowki (08:05 AM)</div>
+              </div>
+            </div>
+            <div class="otp-status-tag" style="color:#F59E0B; border-color:#FDE68A;">Awaiting OTP</div>
+          </div>
+        </div>
+
+        <!-- Right: Corridor Actions & GPS Telemetry -->
+        <div class="dash-panel">
+          <div class="dash-panel-title">
+            <span>Active Corridor Telemetry</span>
+          </div>
+
+          <div style="background:var(--paper); border:1px solid var(--border); border-radius:1rem; padding:1.25rem; margin-bottom:1.25rem;">
+            <div style="font-size:0.82rem; font-weight:700; color:var(--ink-muted); text-transform:uppercase; font-family:'JetBrains Mono',monospace; margin-bottom:0.4rem;">
+              Corridor 01: Premnagar → UIT Gate 1
+            </div>
+            <div style="font-size:1.1rem; font-weight:800; color:var(--ink);">
+              Status: Live Corridor Scheduled
+            </div>
+            <div style="font-size:0.85rem; color:var(--ink-muted); margin-top:0.35rem;">
+              GPS tracking begins automatically when driver inputs 1st passenger OTP code.
+            </div>
+          </div>
+
+          <div style="display:flex; gap:0.85rem; align-items:center;">
+            <button class="btn-plum" style="flex:1.2; justify-content:center;" onclick="alert('Trip start simulated! Live GPS corridor beacon activated.')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+              <span>Start Trip Navigation</span>
+            </button>
+            <button class="btn-soft" style="flex:0.8; justify-content:center;" onclick="document.getElementById('authenticator').scrollIntoView({behavior:'smooth'})">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>Verify OTP</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Enhanced Modern CampusRide Footer (Image 5 Improvement) -->
+  <footer class="app-footer">
+    <div class="footer-grid">
+      <!-- Col 1: Brand & Verified Mission -->
+      <div class="footer-col">
+        <a href="#hero-section" class="footer-logo">
+          <span class="dot"></span>
+          <span>CampusRide</span>
+        </a>
+        <p class="footer-tagline">
+          The peer-to-peer carpooling network exclusively for Dehradun university students. Direct rides, split fuel, and zero commercial surge.
+        </p>
+        <div class="footer-pill-trust">
+          <span class="green-dot"></span>
+          <span>100% ID-Verified Campus Network</span>
+        </div>
+      </div>
+
+      <!-- Col 2: Active Corridors -->
+      <div class="footer-col">
+        <div class="footer-col-title">Active Corridors</div>
+        <ul class="footer-link-list">
+          <li><a href="#find-a-ride">Premnagar Chowk ↔ UIT Gate 1</a></li>
+          <li><a href="#find-a-ride">Suddhowala Hub ↔ UPES Bidholi</a></li>
+          <li><a href="#find-a-ride">Rajpur Road ↔ DIT University</a></li>
+          <li><a href="#find-a-ride">Clement Town ↔ Graphic Era</a></li>
+          <li><a href="#find-a-ride">Ballupur Chowk ↔ Nanda Ki Chowki</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Student Safety -->
+      <div class="footer-col">
+        <div class="footer-col-title">Safety & Security</div>
+        <ul class="footer-link-list">
+          <li><a href="#authenticator">Daily Driver Face Verification</a></li>
+          <li><a href="#authenticator">Real-Time OTP Handshake</a></li>
+          <li><a href="#authenticator">Parent Trip Share Link</a></li>
+          <li><a href="#authenticator">Emergency Police Response (112)</a></li>
+          <li><a href="#authenticator">Zero Detour Code of Conduct</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: University Hubs -->
+      <div class="footer-col">
+        <div class="footer-col-title">Campus Hubs</div>
+        <ul class="footer-link-list">
+          <li><span>Uttaranchal University (UIT)</span></li>
+          <li><span>UPES Dehradun</span></li>
+          <li><span>Graphic Era University (GEU/GEHU)</span></li>
+          <li><span>DIT University</span></li>
+          <li><span>IMS Unison University</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom-bar">
+      <div class="footer-bottom-copy">
+        © 2026 CampusRide Network · Built for student transit in Dehradun, Uttarakhand · ₹0 platform fee.
+      </div>
+      <div class="footer-bottom-links">
+        <a href="#hero-section">Privacy Policy</a>
+        <span>•</span>
+        <a href="#hero-section">Terms of Ride Share</a>
+        <span>•</span>
+        <a href="#driver-dashboard">Driver Guidelines</a>
+        <span>•</span>
+        <a href="#authenticator">Campus Security</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // -------------------------------------------------------------
+    // Hero Photo Cross-Fade Carousel & Telemetry Sync
+    // -------------------------------------------------------------
+    const heroSlidesData = [
+      {
+        role: "Verified Driver",
+        title: "Aditya K. · B.Tech 3rd Yr",
+        sub: "Premnagar → UIT Gate 1 · 4.9 ★ (34 rides)",
+        fare: "₹25 Fuel Share",
+        surge: "Zero surge · Direct peer split",
+        secTitle: "Daily Driver Face Match",
+        secSub: "Admin verified college ID"
+      },
+      {
+        role: "Regular Commuter",
+        title: "Priya S. · M.Sc Physics",
+        sub: "Nanda Ki Chowki → GEHU · 5.0 ★ (18 rides)",
+        fare: "₹20 Fuel Share",
+        surge: "Exact cost · Transparent split",
+        secTitle: "Verified Student Lanyard",
+        secSub: "Matched with verified classmates"
+      },
+      {
+        role: "Verified Driver",
+        title: "Rahul M. · B.Tech CSE",
+        sub: "Suddhowala → UIT Gate 1 · 4.8 ★ (29 rides)",
+        fare: "₹25 Fuel Share",
+        surge: "Scheduled morning route",
+        secTitle: "Trip GPS Telemetry",
+        secSub: "Automated route geofencing"
+      }
+    ];
+
+    let currentHeroSlide = 0;
+    let heroTimer = null;
+
+    function setHeroSlide(index) {
+      currentHeroSlide = index;
+      const slides = document.querySelectorAll('.carousel-slide');
+      const dots = document.querySelectorAll('.carousel-dot');
+      
+      slides.forEach((s, idx) => {
+        s.classList.toggle('active', idx === index);
+      });
+      dots.forEach((d, idx) => {
+        d.classList.toggle('active', idx === index);
+      });
+
+      const data = heroSlidesData[index];
+      if (data) {
+        const roleEl = document.getElementById('hero-badge-role');
+        const titleEl = document.getElementById('hero-badge-title');
+        const subEl = document.getElementById('hero-badge-sub');
+        const fareEl = document.getElementById('hero-chip-fare');
+        const surgeEl = document.getElementById('hero-chip-surge');
+        const secTitleEl = document.getElementById('hero-chip-security');
+        const secSubEl = document.getElementById('hero-chip-verified');
+
+        if (roleEl) roleEl.textContent = data.role;
+        if (titleEl) titleEl.textContent = data.title;
+        if (subEl) subEl.textContent = data.sub;
+        if (fareEl) fareEl.textContent = data.fare;
+        if (surgeEl) surgeEl.textContent = data.surge;
+        if (secTitleEl) secTitleEl.textContent = data.secTitle;
+        if (secSubEl) secSubEl.textContent = data.secSub;
+      }
+    }
+
+    function startHeroCarousel() {
+      if (heroTimer) clearInterval(heroTimer);
+      heroTimer = setInterval(() => {
+        currentHeroSlide = (currentHeroSlide + 1) % heroSlidesData.length;
+        setHeroSlide(currentHeroSlide);
+      }, 4000);
+    }
+    startHeroCarousel();
+
+    // -------------------------------------------------------------
+    // Scroll-Driven Entrance Animations
+    // -------------------------------------------------------------
+    function initScrollAnimations() {
+      const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('reveal-active');
+          }
+        });
+      }, {
+        threshold: 0.08,
+        rootMargin: "0px 0px -30px 0px"
+      });
+
+      document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+        scrollObserver.observe(el);
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initScrollAnimations);
+    } else {
+      initScrollAnimations();
+    }
+
+    // Authenticator Profile Switcher
+    const profilesDB = {
+      aditya: {
+        name: "Aditya Sharma",
+        univ: "UIT",
+        college: "Uttaranchal University (UIT)",
+        dept: "B.Tech Computer Science & Engineering",
+        batch: "Class of 2025",
+        trips: "24 verified",
+        car: "Honda City (UK 07 AK 4821)",
+        avatar: "/hero-aditya-driver.jpg",
+        code: "4 8 2 1"
+      },
+      priya: {
+        name: "Priya Singh",
+        univ: "GEHU",
+        college: "Graphic Era Hill University (GEHU)",
+        dept: "M.Sc Physics & Research",
+        batch: "Class of 2026",
+        trips: "18 verified",
+        car: "Hyundai i20 (UK 07 BP 1994)",
+        avatar: "/student_commuter_female.jpg",
+        code: "7 1 9 4"
+      },
+      rohan: {
+        name: "Rohan Verma",
+        univ: "UPES",
+        college: "University of Petroleum & Energy Studies",
+        dept: "B.Des Digital Product Design",
+        batch: "Class of 2025",
+        trips: "31 verified",
+        car: "Maruti Swift (UK 07 TC 3320)",
+        avatar: "/candidate2.jpg",
+        code: "9 3 0 2"
+      }
+    };
+
+    function chooseProfile(key) {
+      const p = profilesDB[key];
+      if (!p) return;
+
+      document.querySelectorAll('.persona-tab').forEach(t => t.classList.remove('active'));
+      const activeBtn = document.getElementById('btn-p-' + key);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      document.getElementById('cred-pic').src = p.avatar;
+      document.getElementById('cred-badge-name').textContent = p.name;
+      document.getElementById('cred-badge-univ').textContent = p.univ;
+      document.getElementById('cred-name-main').textContent = p.name;
+      document.getElementById('cred-univ-main').textContent = p.college;
+      document.getElementById('cred-dept').textContent = p.dept;
+      document.getElementById('cred-batch').textContent = p.batch;
+      document.getElementById('cred-trips').textContent = p.trips;
+      document.getElementById('cred-vehicle').textContent = p.car;
+
+      // Reset OTP
+      const dots = document.getElementById('pin-dots-row');
+      const text = document.getElementById('revealed-code-row');
+      const msg = document.getElementById('otp-message-line');
+      const btn = document.getElementById('trigger-otp-btn');
+
+      dots.style.display = 'flex';
+      text.style.display = 'none';
+      text.textContent = p.code;
+      msg.innerHTML = '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span> <span>Waiting for driver arrival simulation...</span>';
+      btn.innerHTML = '<span>Simulate Driver OTP Reveal →</span>';
+      btn.style.background = 'var(--plum)';
+    }
+
+    // OTP Handshake Toggle
+    function toggleOtpReveal() {
+      const dots = document.getElementById('pin-dots-row');
+      const text = document.getElementById('revealed-code-row');
+      const msg = document.getElementById('otp-message-line');
+      const btn = document.getElementById('trigger-otp-btn');
+
+      if (dots.style.display !== 'none') {
+        dots.style.display = 'none';
+        text.style.display = 'block';
+        msg.innerHTML = '<span style="color:#065F46; font-weight:800;">✓ OTP Handshake Verified — GPS Live Tracking Initialized!</span>';
+        btn.innerHTML = '<span>✓ Code Matched & Authenticated</span>';
+        btn.style.background = '#10B981';
+      } else {
+        dots.style.display = 'flex';
+        text.style.display = 'none';
+        msg.innerHTML = '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10B981;"></span> <span>Waiting for driver arrival simulation...</span>';
+        btn.innerHTML = '<span>Simulate Driver OTP Reveal →</span>';
+        btn.style.background = 'var(--plum)';
+      }
+    }
+  </script>
+</body>
+</html>

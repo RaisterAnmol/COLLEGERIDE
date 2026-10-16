@@ -1,140 +1,136 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Users, Navigation, Car, TrendingUp, Sparkles, ShieldCheck } from 'lucide-react';
+import React from 'react';
+import { ShieldCheck, MapPin, CheckCircle2, Lock, Key, Users } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+
+const ACTIVE_CORRIDORS = [
+  {
+    name: 'Premnagar ↔ UIT Gate 1',
+    route: 'Premnagar Market → Suddhowala PG → Law Block → UIT Quad',
+    pickupPoints: 'Premnagar Chowk, Nanda Ki Chowki, Gate 1',
+    typicalFare: '₹20 fuel split',
+  },
+  {
+    name: 'Suddhowala ↔ UPES Bidholi',
+    route: 'Suddhowala Junction → Bidholi Forest Rd → UPES Gate',
+    pickupPoints: 'Suddhowala Chowk, PG Corridor, Bidholi Gate',
+    typicalFare: '₹25 fuel split',
+  },
+  {
+    name: 'Ballupur ↔ Graphic Era Quad',
+    route: 'Ballupur Flyover → Clement Town → GEU Gate',
+    pickupPoints: 'Ballupur Chowk, Subhash Nagar, Campus Gate',
+    typicalFare: '₹15 fuel split',
+  },
+  {
+    name: 'ISBT ↔ Selaqui Institutional Belt',
+    route: 'ISBT Dehradun → Shimla Bypass → Selaqui Pharma Hub',
+    pickupPoints: 'ISBT Terminal, Herbertpur Road, Selaqui Chowk',
+    typicalFare: '₹30 fuel split',
+  },
+];
 
 export const StatusBanner: React.FC = () => {
-  const [inView, setInView] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Animated numbers
-  const [students, setStudents] = useState(0);
-  const [routes, setRoutes] = useState(0);
-  const [activeRides, setActiveRides] = useState(0);
-  const [savings, setSavings] = useState(0);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
-  // Number animation ticker when inView
-  useEffect(() => {
-    if (!inView) return;
-
-    const duration = 1600; // ms
-    const startTime = performance.now();
-
-    const frame = (now: number) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
-      const ease = 1 - Math.pow(1 - progress, 3);
-
-      setStudents(Math.floor(ease * 3842));
-      setRoutes(Math.floor(ease * 126));
-      setActiveRides(Math.floor(ease * 248));
-      setSavings(Math.floor(ease * 184));
-
-      if (progress < 1) {
-        requestAnimationFrame(frame);
-      }
-    };
-
-    requestAnimationFrame(frame);
-  }, [inView]);
-
   return (
-    <section id="network" ref={containerRef} className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#EAECF0]">
-      {/* Section Eyebrow */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border">
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 25 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-40px' }}
+        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col md:flex-row md:items-end justify-between gap-4"
+      >
         <div>
-          <p className="text-xs font-mono uppercase tracking-widest text-[#175CD3] font-semibold">
-            Section 05 / Real-Time Telemetry
-          </p>
-          <h2 className="mt-2 text-3xl sm:text-5xl font-black text-[#101828] uppercase tracking-tight">
-            CampusRide Network.
+          <span className="text-xs font-mono text-plum font-bold bg-plum-light px-3 py-1 rounded-full uppercase tracking-wider inline-block">
+            CAMPUS TRANSIT DIRECTORY
+          </span>
+          <h2 className="mt-2 text-2xl sm:text-4xl font-display font-extrabold text-ink-primary tracking-tight">
+            Active Dehradun Commute Corridors
           </h2>
-          <p className="mt-2 text-base text-[#667085]">
-            Verified university transit activity across Dehradun, Premnagar & Selaqui campuses.
+          <p className="mt-1 text-sm text-ink-secondary max-w-xl">
+            Key daily travel routes shared by enrolled students across colleges. Every ride is peer-coordinated and non-commercial.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-mono text-[#027A48] bg-[#ECFDF3] border border-[#D1FADF] px-3.5 py-1.5 rounded-full self-start md:self-auto">
-          <span className="w-2 h-2 rounded-full bg-[#12B76A] animate-ping" />
-          <span>SOCKET.IO CLUSTER CONNECTED</span>
-        </div>
+        <Link
+          to="/colleges"
+          className="text-xs font-mono font-bold text-plum hover:underline flex items-center gap-1 self-start md:self-auto"
+        >
+          <span>View all campus stops →</span>
+        </Link>
+      </motion.div>
+
+      {/* Corridor Cards Grid (Real Data Only) */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        {ACTIVE_CORRIDORS.map((corridor, idx) => (
+          <div
+            key={idx}
+            className="bg-surface p-6 sm:p-7 rounded-card border border-line-base shadow-subtle flex flex-col justify-between space-y-3.5 h-full"
+          >
+            <div>
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-route shrink-0" />
+                <h3 className="font-display font-bold text-sm text-ink-primary">
+                  {corridor.name}
+                </h3>
+              </div>
+              <p className="mt-2 text-xs text-ink-secondary leading-relaxed">
+                {corridor.route}
+              </p>
+            </div>
+
+            <div className="pt-3 border-t border-line-subtle flex items-center justify-between text-xs font-mono mt-auto">
+              <span className="text-ink-muted text-[11px] whitespace-nowrap shrink-0">
+                {corridor.typicalFare}
+              </span>
+              <span className="text-route font-medium text-[11px] whitespace-nowrap shrink-0">
+                Daily Peak
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* 4 Animated Metric Blocks */}
-      <div className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-[#FFFFFF] p-6 sm:p-8 rounded-2xl border border-[#EAECF0] shadow-sm">
-          <span className="text-xs font-mono uppercase text-[#667085] block">Verified Students</span>
-          <div className="mt-2 text-4xl sm:text-5xl font-black font-mono text-[#101828] tracking-tight">
-            {students.toLocaleString()}
+      {/* Truthful Verification Safeguards (Rule R6/R7: Plain, calm, factual) */}
+      <div className="mt-8 p-6 sm:p-7 bg-surface rounded-card border border-line-base shadow-subtle">
+        <h3 className="text-sm font-display font-bold text-ink-primary mb-3">
+          Institutional Safety &amp; Verification Protocol
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-ink-secondary items-stretch">
+          <div className="flex items-start gap-2.5">
+            <span className="w-6 h-6 rounded-control bg-route-pale text-route flex items-center justify-center shrink-0 font-mono font-bold">
+              1
+            </span>
+            <div>
+              <strong className="text-ink-primary block font-semibold">Institutional College ID</strong>
+              <span>Verified college roll number and student ID prior to publishing or booking.</span>
+            </div>
           </div>
-          <span className="mt-2 text-[11px] text-[#12B76A] font-mono flex items-center gap-1 font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5" /> 100% .edu verified
-          </span>
-        </div>
 
-        <div className="bg-[#FFFFFF] p-6 sm:p-8 rounded-2xl border border-[#EAECF0] shadow-sm">
-          <span className="text-xs font-mono uppercase text-[#667085] block">Active Routes</span>
-          <div className="mt-2 text-4xl sm:text-5xl font-black font-mono text-[#175CD3] tracking-tight">
-            {routes.toLocaleString()}
+          <div className="flex items-start gap-2.5">
+            <span className="w-6 h-6 rounded-control bg-route-pale text-route flex items-center justify-center shrink-0 font-mono font-bold">
+              2
+            </span>
+            <div>
+              <strong className="text-ink-primary block font-semibold">Driver Morning Check</strong>
+              <span>Biometric facial liveness check confirms authorized vehicle driver before departure.</span>
+            </div>
           </div>
-          <span className="mt-2 text-[11px] text-[#667085] font-mono block">
-            Across 14 campus hubs
-          </span>
-        </div>
 
-        <div className="bg-[#FFFFFF] p-6 sm:p-8 rounded-2xl border border-[#EAECF0] shadow-sm">
-          <span className="text-xs font-mono uppercase text-[#667085] block">Weekly Active Rides</span>
-          <div className="mt-2 text-4xl sm:text-5xl font-black font-mono text-[#101828] tracking-tight">
-            {activeRides.toLocaleString()}
+          <div className="flex items-start gap-2.5">
+            <span className="w-6 h-6 rounded-control bg-route-pale text-route flex items-center justify-center shrink-0 font-mono font-bold">
+              3
+            </span>
+            <div>
+              <strong className="text-ink-primary block font-semibold">4-Digit In-Car OTP</strong>
+              <span>Passenger gives 4-digit code to driver to confirm vehicle match before wheels roll.</span>
+            </div>
           </div>
-          <span className="mt-2 text-[11px] text-[#027A48] font-mono block font-semibold">
-            +32% recurring rate
-          </span>
         </div>
-
-        <div className="bg-[#FFFFFF] p-6 sm:p-8 rounded-2xl border border-[#EAECF0] shadow-sm">
-          <span className="text-xs font-mono uppercase text-[#667085] block">Student Fuel Saved</span>
-          <div className="mt-2 text-4xl sm:text-5xl font-black font-mono text-[#101828] tracking-tight">
-            ₹{(savings / 10).toFixed(1)}L+
-          </div>
-          <span className="mt-2 text-[11px] text-[#667085] font-mono block">
-            Zero platform commission
-          </span>
-        </div>
-      </div>
-
-      {/* Live Campus Network Activity Ticker */}
-      <div className="mt-8 p-4 bg-[#FFFFFF] rounded-xl border border-[#EAECF0] flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs font-mono">
-        <div className="flex items-center gap-2.5 text-[#101828]">
-          <span className="px-2 py-0.5 rounded bg-[#EFF8FF] text-[#175CD3] font-bold">LIVE FEED</span>
-          <span className="text-[#667085]">
-            Aditya K. posted ride: <span className="text-[#101828] font-semibold">Premnagar Chowk → Uttaranchal University Gate 1</span> (2 seats open)
-          </span>
-        </div>
-        <span className="text-[#98A2B3] text-[11px] shrink-0">Updated 42 seconds ago</span>
       </div>
     </section>
   );
 };
 
-
-
-// Backwards-compatible alias
 export const LiveTelemetryBanner = StatusBanner;
-

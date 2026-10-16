@@ -1,5 +1,6 @@
+// Google onboarding modal - prefers-reduced-motion compliant
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { motion, AnimatePresence, Variants, MotionConfig } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import {
@@ -23,6 +24,7 @@ import {
   Phone,
 } from 'lucide-react';
 import { SearchableInput } from '../common/SearchableInput';
+import { CustomSelect } from '../common/CustomSelect';
 import {
   POPULAR_COLLEGES,
   POPULAR_DEPARTMENTS,
@@ -142,7 +144,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
     reader.readAsDataURL(file);
   };
 
-  // Instant demo ID card for seamless testing
+  // Instant demo ID card for direct offline testing
   const handleDemoIdCard = (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
@@ -309,36 +311,32 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/65 backdrop-blur-sm p-4 sm:p-6 flex justify-center items-start pt-20 sm:pt-28 pb-16">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 35 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-            className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200/90 relative overflow-hidden"
-          >
-            {/* Top Botanical Ambient Glow */}
-            <div className="absolute -top-16 -right-16 w-44 h-44 bg-gradient-to-br from-emerald-200/50 to-teal-100/30 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-gradient-to-tr from-emerald-100/40 to-transparent rounded-full blur-2xl pointer-events-none" />
+    <MotionConfig reducedMotion="user">
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/75 p-4 sm:p-6 flex justify-center items-start pt-20 sm:pt-28 pb-16">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200/90 relative overflow-hidden"
+            >
+              {/* Top Botanical Ambient Glow */}
+              <div className="absolute -top-16 -right-16 w-44 h-44 bg-gradient-to-br from-emerald-200/50 to-teal-100/30 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-16 -left-16 w-44 h-44 bg-gradient-to-tr from-emerald-100/40 to-transparent rounded-full blur-2xl pointer-events-none" />
 
-            {/* Header with animated icon */}
-            <div className="text-center pb-3 border-b border-slate-100 relative z-10">
-              <motion.div
-                animate={{ y: [0, -5, 0] }}
-                transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
-                className="relative mx-auto mb-3 w-14 h-14"
-              >
-                <div className="absolute inset-0 rounded-2xl bg-emerald-400/20 blur-md animate-pulse" />
-                <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-50 to-teal-50 text-emerald-700 flex items-center justify-center border border-emerald-200/80 shadow-xs">
-                  <Sparkles className="w-7 h-7 text-emerald-600" />
+              {/* Header with settled icon */}
+              <div className="text-center pb-3 border-b border-slate-100 relative z-10">
+                <div className="relative mx-auto mb-3 w-14 h-14">
+                  <div className="relative w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center border border-emerald-200/80 shadow-xs">
+                    <Sparkles className="w-7 h-7 text-[#143D32]" />
+                  </div>
                 </div>
-              </motion.div>
 
-              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                Welcome to CampusRide!
-              </h2>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight font-display">
+                  Welcome to CampusRide!
+                </h2>
               <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
                 Set up your verified university identity with campus ID card and biometric trust badges.
               </p>
@@ -383,7 +381,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
             >
               {/* Role Selection */}
               <motion.div variants={itemVariants}>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                <label className="block text-xs font-semibold text-slate-800 mb-2">
                   How will you use CampusRide? *
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -481,16 +479,17 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
                   <label className="block text-xs font-bold text-slate-700 mb-1">
                     Academic Year
                   </label>
-                  <select
-                    value={year}
-                    onChange={(e) => setYear(Number(e.target.value))}
-                    className="w-full text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-[#143D32]/20 focus:border-[#143D32] transition-all outline-none cursor-pointer"
-                  >
-                    <option value={1}>1st Year (Fresher)</option>
-                    <option value={2}>2nd Year (Sophomore)</option>
-                    <option value={3}>3rd Year (Junior)</option>
-                    <option value={4}>4th Year (Senior)</option>
-                  </select>
+                  <CustomSelect
+                    value={String(year)}
+                    onChange={(val) => setYear(Number(val))}
+                    placeholder="Select Year"
+                    options={[
+                      { value: "1", label: "1st Year (Fresher)" },
+                      { value: "2", label: "2nd Year (Sophomore)" },
+                      { value: "3", label: "3rd Year (Junior)" },
+                      { value: "4", label: "4th Year (Senior)" },
+                    ]}
+                  />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -622,7 +621,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
                     🚨
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-rose-950 uppercase tracking-wide">
+                    <h4 className="text-xs font-semibold text-rose-950">
                       Emergency SOS Contact (Recommended)
                     </h4>
                     <p className="text-[10px] text-rose-800/80">
@@ -649,17 +648,18 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
                     <label className="block text-[11px] font-semibold text-slate-700 mb-1">
                       Relationship
                     </label>
-                    <select
+                    <CustomSelect
                       value={emergencyRelation}
-                      onChange={(e) => setEmergencyRelation(e.target.value)}
-                      className="w-full text-xs font-semibold px-3 py-2 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-rose-500 outline-none"
-                    >
-                      <option value="Parent/Guardian">Parent / Guardian</option>
-                      <option value="Sibling">Brother / Sister</option>
-                      <option value="Campus Friend">Campus Friend / Roommate</option>
-                      <option value="Relative">Relative</option>
-                      <option value="Other">Other</option>
-                    </select>
+                      onChange={(val) => setEmergencyRelation(val)}
+                      placeholder="Select relationship"
+                      options={[
+                        { value: "Parent/Guardian", label: "Parent / Guardian" },
+                        { value: "Sibling", label: "Brother / Sister" },
+                        { value: "Campus Friend", label: "Campus Friend / Roommate" },
+                        { value: "Relative", label: "Relative" },
+                        { value: "Other", label: "Other" },
+                      ]}
+                    />
                   </div>
                 </div>
 
@@ -689,7 +689,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
               {/* ID Card Verification Section (For BOTH Passenger & Driver) */}
               <motion.div variants={itemVariants} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <label className="text-xs font-semibold text-slate-800 flex items-center gap-1.5">
                     <CreditCard className="w-4 h-4 text-emerald-600" />
                     <span>Campus ID Card Verification *</span>
                   </label>
@@ -798,14 +798,15 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
                           <label className="block text-[11px] font-bold text-slate-700 mb-1">
                             Vehicle Type
                           </label>
-                          <select
+                          <CustomSelect
                             value={vehicleType}
-                            onChange={(e) => setVehicleType(e.target.value as 'car' | 'bike')}
-                            className="w-full text-xs font-semibold px-3 py-2 rounded-xl border border-slate-200 bg-white focus:ring-2 focus:ring-amber-500/20 outline-none cursor-pointer"
-                          >
-                            <option value="car">Car / Sedan / SUV</option>
-                            <option value="bike">Motorcycle / Scooter</option>
-                          </select>
+                            onChange={(val) => setVehicleType(val as 'car' | 'bike')}
+                            placeholder="Select Vehicle Type"
+                            options={[
+                              { value: "car", label: "Car / Sedan / SUV" },
+                              { value: "bike", label: "Motorcycle / Scooter" },
+                            ]}
+                          />
                         </div>
                         <div>
                           <label className="block text-[11px] font-bold text-slate-700 mb-1">
@@ -885,7 +886,7 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin text-emerald-300" />
+                      <Loader2 className="w-4 h-4 cr-spinner text-emerald-300" />
                       <span>Saving Profile & Activating...</span>
                     </span>
                   ) : (
@@ -901,5 +902,6 @@ export const GoogleOnboardingModal: React.FC<GoogleOnboardingModalProps> = ({
         </div>
       )}
     </AnimatePresence>
-  );
+  </MotionConfig>
+);
 };

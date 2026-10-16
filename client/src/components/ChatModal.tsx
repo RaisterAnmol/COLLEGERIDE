@@ -1,3 +1,4 @@
+// Ride coordination chat modal - prefers-reduced-motion compliant
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
@@ -132,7 +133,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
       role="dialog"
       aria-modal="true"
       aria-labelledby="chat-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/50 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/75 p-4"
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col h-[550px] overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
@@ -161,7 +162,7 @@ export const ChatModal: React.FC<ChatModalProps> = ({ rideId, onClose, title = '
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50">
           {loading ? (
             <div className="flex flex-col items-center justify-center h-full text-slate-400 text-xs">
-              <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2" />
+              <div className="w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full cr-spinner mb-2" />
               Loading ride conversation...
             </div>
           ) : messages.length === 0 ? (

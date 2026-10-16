@@ -1,3 +1,4 @@
+// QR Scanner Modal - prefers-reduced-motion compliant
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Camera, ScanLine, AlertCircle, CheckCircle2, Zap } from 'lucide-react';
 
@@ -151,7 +152,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/50 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#143D32]/75 p-4">
       <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between">
@@ -176,7 +177,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
         <div className="relative bg-[#0B1E19] aspect-square flex items-center justify-center overflow-hidden">
           {scannedSuccess ? (
             <div className="text-center text-white space-y-2 z-10">
-              <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto animate-bounce" />
+              <CheckCircle2 className="w-16 h-16 text-emerald-400 mx-auto" />
               <p className="text-sm font-semibold">QR Code Recognized!</p>
               <p className="text-xs text-slate-300">Verifying pickup OTP with server...</p>
             </div>
@@ -190,8 +191,8 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
                 muted
               />
               {/* Scan Overlay Rect */}
-              <div className="absolute inset-12 border-2 border-emerald-400 rounded-2xl pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] flex flex-col justify-between p-2">
-                <div className="w-full h-0.5 bg-emerald-400 animate-pulse shadow-md" />
+              <div className="absolute inset-12 border-2 border-emerald-400/80 rounded-2xl pointer-events-none shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] flex flex-col justify-between p-2">
+                <div className="w-full h-0.5 bg-emerald-400/90 shadow-xs" />
                 <div className="text-center text-[10px] text-emerald-300 font-mono">
                   Point camera at Driver's screen
                 </div>

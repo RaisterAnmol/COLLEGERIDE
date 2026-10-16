@@ -1,0 +1,434 @@
+[
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\admin\\RideAnalyticsDashboard.tsx",
+    "lineNum": 837,
+    "line": "<div className=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\admin\\RideAnalyticsDashboard.tsx",
+    "lineNum": 1160,
+    "line": "<div className=\"grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\admin\\RideAnalyticsDashboard.tsx",
+    "lineNum": 1199,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-2 gap-4 pt-2\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\admin\\RideAnalyticsDashboard.tsx",
+    "lineNum": 1493,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-3 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\dashboard\\DriverCockpitCard.tsx",
+    "lineNum": 95,
+    "line": "<div className=\"grid grid-cols-2 lg:grid-cols-4 gap-4\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\CommuteTimeline.tsx",
+    "lineNum": 185,
+    "line": "<div className=\"mt-4 pt-6 border-t border-slate-100 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\components\\landing\\CommuteTimeline.tsx",
+    "lineNum": 254,
+    "line": "<div className=\"relative h-2.5 bg-slate-200/90 rounded-full overflow-hidden p-0.5\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\Footer.tsx",
+    "lineNum": 141,
+    "line": "<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-12\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\components\\landing\\Hero.tsx",
+    "lineNum": 184,
+    "line": "<div className=\"p-3.5 rounded-2xl bg-[#E2E6E0] neu-sunken border border-border/40\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\components\\landing\\Hero.tsx",
+    "lineNum": 261,
+    "line": "<div className=\"absolute top-4 left-4 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-white text-[11px] font-mono\">"
+  },
+  {
+    "category": "Truncated Text with Narrow Max-Width",
+    "file": "client\\src\\components\\landing\\Hero.tsx",
+    "lineNum": 302,
+    "line": "<div className=\"text-sm font-black text-slate-950 max-w-[180px] sm:max-w-[210px] truncate leading-tight\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\components\\landing\\Hero.tsx",
+    "lineNum": 446,
+    "line": "<div className=\"flex-1 flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl border border-border bg-[#E2E6E0] neu-sunken focus-within:border-plum focus-within:ring-2 focus-within:ring-plum/20 transition-all\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\components\\landing\\Hero.tsx",
+    "lineNum": 473,
+    "line": "<div className=\"flex-1 flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl border border-border bg-[#E2E6E0] neu-sunken focus-within:border-plum focus-within:ring-2 focus-within:ring-plum/20 transition-all\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\components\\landing\\Hero.tsx",
+    "lineNum": 500,
+    "line": "<div className=\"w-full lg:w-48 px-3.5 py-2.5 rounded-2xl border border-border bg-[#E2E6E0] neu-sunken relative\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\LiveNetworkStats.tsx",
+    "lineNum": 77,
+    "line": "<div className=\"mt-14 grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\NetworkMap.tsx",
+    "lineNum": 856,
+    "line": "<div className=\"mt-6 bg-white rounded-2xl md:rounded-3xl border border-slate-200/90 shadow-sm p-4 sm:p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5 divide-y md:divide-y-0 md:divide-x divide-slate-100\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\NetworkSection.tsx",
+    "lineNum": 112,
+    "line": "<div className=\"mt-6 pt-6 border-t border-white/10 grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\ProductPreview.tsx",
+    "lineNum": 76,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-12 gap-6 bg-[#FFFFFF] p-6 rounded-2xl border border-slate-200\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\RideCards.tsx",
+    "lineNum": 72,
+    "line": "<div className=\"mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\RideCards.tsx",
+    "lineNum": 83,
+    "line": "className=\"mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\""
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\StatusBanner.tsx",
+    "lineNum": 65,
+    "line": "<div className=\"mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\StatusBanner.tsx",
+    "lineNum": 100,
+    "line": "<div className=\"grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-ink-secondary\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\TrustVerificationFlow.tsx",
+    "lineNum": 26,
+    "line": "<div className=\"mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\TrustVerificationFlow.tsx",
+    "lineNum": 99,
+    "line": "<div className=\"mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\TrustVerificationSection.tsx",
+    "lineNum": 151,
+    "line": "<div className=\"mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\landing\\TrustVerificationSection.tsx",
+    "lineNum": 244,
+    "line": "<div className=\"mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\components\\signature\\LivingFooter.tsx",
+    "lineNum": 124,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-emerald-900/60\">"
+  },
+  {
+    "category": "Truncated Text with Narrow Max-Width",
+    "file": "client\\src\\components\\signature\\TactileStudentBadge.tsx",
+    "lineNum": 112,
+    "line": "<span className=\"font-display font-black text-ink-primary text-sm sm:text-base tracking-tight truncate max-w-[130px]\">"
+  },
+  {
+    "category": "Truncated Text with Narrow Max-Width",
+    "file": "client\\src\\components\\verification\\VerificationReviewModal.tsx",
+    "lineNum": 252,
+    "line": "<span className=\"font-bold text-[#143D32] truncate max-w-[170px]\">"
+  },
+  {
+    "category": "Truncated Text with Narrow Max-Width",
+    "file": "client\\src\\components\\verification\\VerificationReviewModal.tsx",
+    "lineNum": 270,
+    "line": "<span className=\"font-semibold text-[#143D32] truncate max-w-[170px]\">{user.department}</span>"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\AdminDashboardPage.tsx",
+    "lineNum": 809,
+    "line": "<div className=\"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\AdminDashboardPage.tsx",
+    "lineNum": 867,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-12 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\AdminDashboardPage.tsx",
+    "lineNum": 1055,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-12 gap-6\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\AuthPage.tsx",
+    "lineNum": 621,
+    "line": "<div className=\"p-3.5 rounded-control bg-surface border border-line-base space-y-2\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\AuthPage.tsx",
+    "lineNum": 863,
+    "line": "<div className=\"p-3.5 rounded-control bg-canvas border border-line-base space-y-2\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\AuthPage.tsx",
+    "lineNum": 978,
+    "line": "<div className=\"p-4 rounded-control bg-canvas border border-line-base space-y-3\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\AuthPage.tsx",
+    "lineNum": 1045,
+    "line": "<div className=\"p-4 rounded-control bg-canvas border border-line-base space-y-2.5\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\AuthPage.tsx",
+    "lineNum": 1095,
+    "line": "<div className=\"p-4 rounded-control bg-canvas border border-line-base\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\AuthPage.tsx",
+    "lineNum": 1201,
+    "line": "<div className=\"p-4 rounded-control bg-amber-50/60 border border-amber-200/90 space-y-3\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\AuthPage.tsx",
+    "lineNum": 1270,
+    "line": "<div className=\"p-4 rounded-control bg-purple-50/70 border border-purple-200 space-y-2\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\CollegesPage.tsx",
+    "lineNum": 43,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-10 rounded-3xl border border-white/80 neu-card\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\CollegesPage.tsx",
+    "lineNum": 94,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-3 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\CollegesPage.tsx",
+    "lineNum": 167,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\DashboardPage.tsx",
+    "lineNum": 822,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-12 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\DashboardPage.tsx",
+    "lineNum": 950,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-12 gap-5 items-center\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\DashboardPage.tsx",
+    "lineNum": 1494,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 208,
+    "line": "<div className=\"bg-canvas/60 rounded-control p-4 sm:p-6 border border-line-subtle\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 307,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 347,
+    "line": "<div className=\"grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 394,
+    "line": "<div className=\"p-4 rounded-control bg-canvas/60 border border-line-subtle flex flex-col sm:flex-row items-center justify-between gap-4\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 417,
+    "line": "<div className=\"grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 418,
+    "line": "<div className=\"p-4 rounded-control bg-canvas border border-line-base space-y-2 text-center\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 430,
+    "line": "<div className=\"p-4 rounded-control bg-canvas border border-line-base space-y-2 text-center\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 442,
+    "line": "<div className=\"p-4 rounded-control bg-canvas border border-line-base space-y-2 text-center\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 657,
+    "line": "<div className=\"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 pt-2\">"
+  },
+  {
+    "category": "Large Pill Radius on Container",
+    "file": "client\\src\\pages\\DesignPlaygroundPage.tsx",
+    "lineNum": 668,
+    "line": "<div key={arch.id} className=\"text-center p-3 rounded-control bg-canvas border border-line-base space-y-2\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\PostRidePage.tsx",
+    "lineNum": 282,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10 bg-paper p-6 sm:p-8 rounded-3xl border border-white/80 neu-card\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\RideDetailPage.tsx",
+    "lineNum": 427,
+    "line": "<div className=\"grid grid-cols-1 sm:grid-cols-3 gap-4\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\RideDetailPage.tsx",
+    "lineNum": 608,
+    "line": "<div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 234,
+    "line": "<div className=\"p-3.5 rounded-2xl bg-[#E2E6E0] neu-sunken border border-border/40\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 463,
+    "line": "<div className=\"bg-[#E2E6E0] neu-sunken rounded-2xl p-3 border border-border/40 space-y-2.5\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 619,
+    "line": "<div className=\"flex items-center justify-between p-2 rounded-2xl bg-[#E2E6E0] neu-sunken border border-border/40\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 635,
+    "line": "<div className=\"flex items-center justify-between p-2 rounded-2xl bg-[#E2E6E0] neu-sunken border border-border/40\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 651,
+    "line": "<div className=\"flex items-center justify-between p-2 rounded-2xl bg-[#E2E6E0] neu-sunken border border-border/40\">"
+  },
+  {
+    "category": "Truncated Text with Narrow Max-Width",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 657,
+    "line": "<p className=\"font-bold text-ink-primary leading-tight truncate max-w-[120px]\">"
+  },
+  {
+    "category": "Truncated Text with Narrow Max-Width",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 660,
+    "line": "<p className=\"text-[10px] text-ink-secondary font-mono truncate max-w-[120px]\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 779,
+    "line": "<div className=\"bg-[#E2E6E0] neu-sunken border border-border/40 rounded-2xl p-3 text-left space-y-1.5\">"
+  },
+  {
+    "category": "Muddy / Inconsistent Inner Panel",
+    "file": "client\\src\\pages\\SafetyPage.tsx",
+    "lineNum": 843,
+    "line": "<div className=\"bg-[#E2E6E0] neu-sunken border border-border/40 rounded-2xl p-3 text-left space-y-2\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\SearchRidesPage.tsx",
+    "lineNum": 653,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-8 rounded-3xl border border-white/80 neu-card mb-8\">"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\VerificationStatusPage.tsx",
+    "lineNum": 206,
+    "line": "<div className=\"grid grid-cols-1 lg:grid-cols-12 gap-6 items-center\">"
+  },
+  {
+    "category": "Truncated Text with Narrow Max-Width",
+    "file": "client\\src\\pages\\VerificationStatusPage.tsx",
+    "lineNum": 425,
+    "line": "<span className=\"font-semibold text-slate-800 truncate max-w-[120px]\">{user.course || user.department || \"B.Tech CSE\"}</span>"
+  },
+  {
+    "category": "Grid Missing items-stretch",
+    "file": "client\\src\\pages\\VerificationStatusPage.tsx",
+    "lineNum": 802,
+    "line": "<div className=\"lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4\">"
+  }
+]
