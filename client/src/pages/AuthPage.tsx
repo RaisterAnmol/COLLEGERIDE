@@ -1,8 +1,51 @@
-// prefers-reduced-motion compliant authentication & campus onboarding view
 import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
+
+const stepVariants: Variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 28 : -28,
+    opacity: 0,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 26,
+    },
+  },
+  exit: (direction: number) => ({
+    x: direction < 0 ? 28 : -28,
+    opacity: 0,
+    transition: {
+      duration: 0.16,
+    },
+  }),
+};
+
+const tabVariants: Variants = {
+  initial: { opacity: 0, scale: 0.98, y: 10 },
+  animate: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 320,
+      damping: 26,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.98,
+    y: -10,
+    transition: { duration: 0.14 },
+  },
+};
 import { SelfieCapture, SelfieCaptureResult } from "../components/verification/SelfieCapture";
 import { StudentAvatar, StudentArchetype } from "../components/signature/StudentAvatar";
 import { TactileButton } from "../components/signature/TactileButton";
@@ -68,6 +111,12 @@ export const AuthPage: React.FC = () => {
 
   const [isRegister, setIsRegister] = useState(isRegisterRoute);
   const [regStep, setRegStep] = useState<1 | 2 | 3>(1);
+  const [stepDirection, setStepDirection] = useState<number>(1);
+
+  const goToStep = (target: 1 | 2 | 3) => {
+    setStepDirection(target > regStep ? 1 : -1);
+    setRegStep(target);
+  };
 
   useEffect(() => {
     if (
@@ -331,8 +380,10 @@ export const AuthPage: React.FC = () => {
         setError("Please enter a valid 10-digit mobile number.");
         return;
       }
+      setStepDirection(1);
       setRegStep(2);
     } else if (regStep === 2) {
+      setStepDirection(1);
       setRegStep(3);
     }
   };
@@ -515,7 +566,7 @@ export const AuthPage: React.FC = () => {
             <div className="flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => setRegStep(1)}
+                onClick={() => goToStep(1)}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-control border transition-all cursor-pointer ${
                   regStep === 1
                     ? "bg-route text-surface border-route font-semibold shadow-2xs"
@@ -529,7 +580,7 @@ export const AuthPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  if (name && college && phone) setRegStep(2);
+                  if (name && college && phone) goToStep(2);
                 }}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-control border transition-all cursor-pointer ${
                   regStep === 2
@@ -544,7 +595,7 @@ export const AuthPage: React.FC = () => {
               <button
                 type="button"
                 onClick={() => {
-                  if (name && college && phone) setRegStep(3);
+                  if (name && college && phone) goToStep(3);
                 }}
                 className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-control border transition-all cursor-pointer ${
                   regStep === 3
@@ -736,17 +787,33 @@ export const AuthPage: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Registration Form Steps */}
-              {isRegister ? (
-                <>
-                  {/* Step 1: Academic & Personal Identity */}
-                  {regStep === 1 && (
-                    <div className="space-y-4 animate-in fade-in duration-200">
-                      <div>
-                        <label className="block text-xs font-semibold text-ink-primary mb-1">
-                          Full Legal Name *
-                        </label>
-                        <div className="relative">
-                          <User className="w-4 h-4 text-ink-muted absolute left-3 top-3.5" />
+              <AnimatePresence mode="wait">
+                {isRegister ? (
+                  <motion.div
+                    key="register-wrapper"
+                    variants={tabVariants}
+                    initial="initial"
+                    animate="animate"
+                    exit="exit"
+                  >
+                    <AnimatePresence mode="wait" custom={stepDirection}>
+                      {/* Step 1: Academic & Personal Identity */}
+                      {regStep === 1 && (
+                        <motion.div
+                          key="step1"
+                          custom={stepDirection}
+                          variants={stepVariants}
+                          initial="enter"
+                          animate="center"
+                          exit="exit"
+                          className="space-y-4"
+                        >
+                          <div>
+                            <label className="block text-xs font-semibold text-ink-primary mb-1">
+                              Full Legal Name *
+                            </label>
+                            <div className="relative">
+                              <User className="w-4 h-4 text-ink-muted absolute left-3 top-3.5" />
                           <input
                             type="text"
                             required
@@ -979,12 +1046,20 @@ export const AuthPage: React.FC = () => {
                           <ArrowRight className="w-4 h-4" />
                         </TactileButton>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
                   {/* Step 2: Verification & Emergency SOS */}
                   {regStep === 2 && (
-                    <div className="space-y-4 animate-in fade-in duration-200">
+                    <motion.div
+                      key="step2"
+                      custom={stepDirection}
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      className="space-y-4"
+                    >
                       {/* Emergency Contact Block */}
                       <div className="p-4 rounded-control bg-canvas border border-line-base space-y-3">
                         <div className="flex items-center gap-2">
@@ -1118,7 +1193,10 @@ export const AuthPage: React.FC = () => {
                       <div className="pt-2 flex items-center justify-between">
                         <button
                           type="button"
-                          onClick={() => setRegStep(1)}
+                          onClick={() => {
+                            setStepDirection(-1);
+                            setRegStep(1);
+                          }}
                           className="px-4 py-2 rounded-control border border-line-base bg-surface text-ink-secondary text-xs font-semibold hover:bg-canvas transition-colors flex items-center gap-1.5 min-h-[44px]"
                         >
                           <ArrowLeft className="w-4 h-4" />
@@ -1130,12 +1208,20 @@ export const AuthPage: React.FC = () => {
                           <ArrowRight className="w-4 h-4" />
                         </TactileButton>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
 
                   {/* Step 3: Commute Role & Student Archetype */}
                   {regStep === 3 && (
-                    <div className="space-y-4 animate-in fade-in duration-200">
+                    <motion.div
+                      key="step3"
+                      custom={stepDirection}
+                      variants={stepVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      className="space-y-4"
+                    >
                       {/* Role Selector */}
                       <div>
                         <label className="block text-xs font-semibold text-ink-primary mb-2">
@@ -1407,7 +1493,10 @@ export const AuthPage: React.FC = () => {
                       <div className="pt-2 flex items-center justify-between">
                         <button
                           type="button"
-                          onClick={() => setRegStep(2)}
+                          onClick={() => {
+                            setStepDirection(-1);
+                            setRegStep(2);
+                          }}
                           className="px-4 py-2 rounded-control border border-line-base bg-surface text-ink-secondary text-xs font-semibold hover:bg-canvas transition-colors flex items-center gap-1.5 min-h-[44px]"
                         >
                           <ArrowLeft className="w-4 h-4" />
@@ -1419,12 +1508,20 @@ export const AuthPage: React.FC = () => {
                           <ArrowRight className="w-4 h-4" />
                         </TactileButton>
                       </div>
-                    </div>
+                    </motion.div>
                   )}
-                </>
-              ) : (
-                /* Login Form */
-                <div className="space-y-4 animate-in fade-in duration-200">
+                </AnimatePresence>
+              </motion.div>
+            ) : (
+              /* Login Form */
+              <motion.div
+                key="login-wrapper"
+                variants={tabVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                className="space-y-4"
+              >
                   <div>
                     <label className="block text-xs font-semibold text-ink-primary mb-1">
                       Institutional / Student Email *
@@ -1521,8 +1618,9 @@ export const AuthPage: React.FC = () => {
                       />
                     )}
                   </div>
-                </div>
+                </motion.div>
               )}
+            </AnimatePresence>
             </form>
           </div>
         </div>

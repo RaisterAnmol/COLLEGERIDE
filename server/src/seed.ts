@@ -315,8 +315,8 @@ export async function seedDemoData() {
     passwordHash,
     role: "campus_admin",
     accountType: "ADMIN",
-    avatarURL: "/test_uploads/admin_nanami.jpg",
-    enrolledIdCardUrl: "/test_uploads/admin_nanami.jpg",
+    avatarURL: "/test_uploads/admin_sen.jpg",
+    enrolledIdCardUrl: "/test_uploads/admin_sen.jpg",
     college: "Uttaranchal University",
     year: 5,
     institutionId: uuInstitution._id,
@@ -336,8 +336,8 @@ export async function seedDemoData() {
     passwordHash,
     role: "moderator",
     accountType: "ADMIN",
-    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
+    avatarURL: "/test_uploads/driver_aditya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_aditya_id.jpg",
     college: "Graphic Era University",
     year: 4,
     institutionId: geuInstitution._id,
@@ -401,8 +401,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 11223",
-    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
+    avatarURL: "/test_uploads/driver_aditya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_aditya_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 9,
@@ -433,8 +433,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 3,
     phone: "+91 98765 99887",
-    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
+    avatarURL: "/test_uploads/driver_kavita.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_kavita_id.jpg",
     verificationStatus: "verified",
     rating: 5.0,
     totalRides: 5,
@@ -466,8 +466,8 @@ export async function seedDemoData() {
     year: 1,
     semester: 1,
     phone: "+91 98765 66778",
-    avatarURL: "/test_uploads/driver_female_makima.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
+    avatarURL: "/test_uploads/driver_priya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_priya_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 21,
@@ -499,8 +499,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 77889",
-    avatarURL: "/test_uploads/driver_male_zoro.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
+    avatarURL: "/test_uploads/driver_rohan.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_rohan_id.jpg",
     verificationStatus: "verified",
     rating: 4.7,
     totalRides: 14,
@@ -531,8 +531,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 3,
     phone: "+91 98765 22334",
-    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
+    avatarURL: "/test_uploads/driver_kavita.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_kavita_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 8,
@@ -564,8 +564,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 7,
     phone: "+91 98765 33445",
-    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
+    avatarURL: "/test_uploads/driver_aditya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_aditya_id.jpg",
     verificationStatus: "verified",
     rating: 4.6,
     totalRides: 11,
@@ -596,8 +596,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 88990",
-    avatarURL: "/test_uploads/driver_female_makima.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
+    avatarURL: "/test_uploads/driver_priya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_priya_id.jpg",
     verificationStatus: "verified",
     rating: 5.0,
     totalRides: 6,
@@ -624,8 +624,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 8,
     phone: "+91 98123 45678",
-    avatarURL: "/test_uploads/driver_male_zoro.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
+    avatarURL: "/test_uploads/driver_rohan.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_rohan_id.jpg",
     verificationStatus: "verified",
     rating: 4.95,
     totalRides: 28,
@@ -657,8 +657,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98234 56789",
-    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
+    avatarURL: "/test_uploads/driver_kavita.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_kavita_id.jpg",
     verificationStatus: "verified",
     rating: 4.88,
     totalRides: 15,
@@ -711,8 +711,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 4,
     phone: "+91 98456 78901",
-    avatarURL: "/test_uploads/driver_female_makima.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
+    avatarURL: "/test_uploads/driver_priya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_priya_id.jpg",
     verificationStatus: "rejected",
     rating: 4.95,
     totalRides: 10,
@@ -767,8 +767,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 6,
     phone: "+91 98765 11001",
-    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
+    avatarURL: "/test_uploads/driver_kavita.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_kavita_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 31,
@@ -795,8 +795,8 @@ export async function seedDemoData() {
     year: 1,
     semester: 2,
     phone: "+91 98765 11002",
-    avatarURL: "/test_uploads/driver_female_makima.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
+    avatarURL: "/test_uploads/driver_priya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_priya_id.jpg",
     verificationStatus: "verified",
     rating: 4.85,
     totalRides: 19,
@@ -823,8 +823,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 7,
     phone: "+91 98765 11003",
-    avatarURL: "/test_uploads/driver_female_makima.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
+    avatarURL: "/test_uploads/driver_priya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_priya_id.jpg",
     verificationStatus: "verified",
     rating: 4.95,
     totalRides: 27,
@@ -851,8 +851,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 4,
     phone: "+91 98765 11004",
-    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
+    avatarURL: "/test_uploads/driver_kavita.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_kavita_id.jpg",
     verificationStatus: "verified",
     rating: 4.8,
     totalRides: 16,
@@ -879,8 +879,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 7,
     phone: "+91 98765 11005",
-    avatarURL: "/test_uploads/driver_male_zoro.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
+    avatarURL: "/test_uploads/driver_rohan.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_rohan_id.jpg",
     verificationStatus: "verified",
     rating: 4.9,
     totalRides: 22,
@@ -895,13 +895,13 @@ export async function seedDemoData() {
 
 
   // ==========================================
-  // 1.1 CUSTOM BLEACH & DEMO DRIVERS & ADMINS
+  // 1.1 CORRIDOR CAMPUS VERIFIED DRIVERS & ADMINS
   // ==========================================
 
-  // Ichigo Kurosaki (Male Driver 1 - Uttaranchal University)
-  const ichigo = await User.create({
-    name: "Ichigo Kurosaki",
-    email: "ichigo.driver@uu.edu",
+  // Aditya Sharma (Male Driver 1 - Uttaranchal University)
+  const adityaDriver = await User.create({
+    name: "Aditya Sharma",
+    email: "aditya.driver@uu.edu",
     passwordHash,
     role: "driver",
     accountType: "DRIVER",
@@ -912,8 +912,8 @@ export async function seedDemoData() {
     year: 3,
     semester: 5,
     phone: "+91 98765 43211",
-    avatarURL: "/test_uploads/driver_male_ichigo.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_ichigo_id.jpg",
+    avatarURL: "/test_uploads/driver_aditya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_aditya_id.jpg",
     verificationStatus: "verified",
     isEmailVerified: true,
     isPhoneVerified: true,
@@ -927,16 +927,16 @@ export async function seedDemoData() {
       petsAllowed: false,
     },
     emergencyContact: {
-      name: "Isshin Kurosaki (Father)",
+      name: "Ramesh Sharma (Father)",
       phone: "+91 98111 99001",
       relation: "Father",
     },
   });
 
-  // Makima San (Female Driver 1 - UPES)
-  const makima = await User.create({
-    name: "Makima San",
-    email: "makima.driver@upes.edu",
+  // Priya Rawat (Female Driver 1 - UPES)
+  const priyaDriver = await User.create({
+    name: "Priya Rawat",
+    email: "priya.driver@upes.edu",
     passwordHash,
     role: "driver",
     accountType: "DRIVER",
@@ -947,8 +947,8 @@ export async function seedDemoData() {
     year: 4,
     semester: 7,
     phone: "+91 98765 43222",
-    avatarURL: "/test_uploads/driver_female_makima.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_makima_id.jpg",
+    avatarURL: "/test_uploads/driver_priya.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_priya_id.jpg",
     verificationStatus: "verified",
     isEmailVerified: true,
     isPhoneVerified: true,
@@ -962,16 +962,16 @@ export async function seedDemoData() {
       petsAllowed: false,
     },
     emergencyContact: {
-      name: "Public Safety Division HQ",
+      name: "Sunita Rawat (Mother)",
       phone: "+91 98111 99002",
       relation: "Guardian",
     },
   });
 
-  // Roronoa Zoro (Male Driver 2 - Graphic Era)
-  const zoro = await User.create({
-    name: "Roronoa Zoro",
-    email: "zoro.driver@geu.edu",
+  // Rohan Verma (Male Driver 2 - Graphic Era)
+  const rohanDriver = await User.create({
+    name: "Rohan Verma",
+    email: "rohan.driver@geu.edu",
     passwordHash,
     role: "driver",
     accountType: "DRIVER",
@@ -982,8 +982,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 3,
     phone: "+91 98765 43233",
-    avatarURL: "/test_uploads/driver_male_zoro.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_male_zoro_id.jpg",
+    avatarURL: "/test_uploads/driver_rohan.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_rohan_id.jpg",
     verificationStatus: "verified",
     isEmailVerified: true,
     isPhoneVerified: true,
@@ -997,16 +997,16 @@ export async function seedDemoData() {
       petsAllowed: true,
     },
     emergencyContact: {
-      name: "Koushirou Sensei (Teacher)",
+      name: "Vikram Verma (Father)",
       phone: "+91 98111 99003",
       relation: "Teacher",
     },
   });
 
-  // Mitsuha Miyamizu (Female Driver 2 - DIT University)
-  const mitsuha = await User.create({
-    name: "Mitsuha Miyamizu",
-    email: "mitsuha.driver@dit.edu",
+  // Kavita Joshi (Female Driver 2 - DIT University)
+  const kavitaDriver = await User.create({
+    name: "Kavita Joshi",
+    email: "kavita.driver@dit.edu",
     passwordHash,
     role: "driver",
     accountType: "DRIVER",
@@ -1017,8 +1017,8 @@ export async function seedDemoData() {
     year: 2,
     semester: 4,
     phone: "+91 98765 43244",
-    avatarURL: "/test_uploads/driver_female_mitsuha.jpg",
-    enrolledIdCardUrl: "/test_uploads/driver_female_mitsuha_id.jpg",
+    avatarURL: "/test_uploads/driver_kavita.jpg",
+    enrolledIdCardUrl: "/test_uploads/driver_kavita_id.jpg",
     verificationStatus: "verified",
     isEmailVerified: true,
     isPhoneVerified: true,
@@ -1032,16 +1032,16 @@ export async function seedDemoData() {
       petsAllowed: false,
     },
     emergencyContact: {
-      name: "Toshiki Miyamizu (Father)",
+      name: "Deepak Joshi (Father)",
       phone: "+91 98111 99004",
       relation: "Father",
     },
   });
 
-  // Dean Kento Nanami (Admin Profile)
-  const nanami = await User.create({
-    name: "Dean Kento Nanami",
-    email: "admin.nanami@uu.edu",
+  // Dean Rajeshwar Sen (Admin Profile)
+  const senAdmin = await User.create({
+    name: "Dean Rajeshwar Sen",
+    email: "admin.sen@uu.edu",
     passwordHash,
     role: "campus_admin",
     accountType: "ADMIN",
@@ -1049,8 +1049,8 @@ export async function seedDemoData() {
     department: "Campus Safety & Student Welfare Division",
     year: 5,
     phone: "+91 98765 43200",
-    avatarURL: "/test_uploads/admin_nanami.jpg",
-    enrolledIdCardUrl: "/test_uploads/admin_nanami.jpg",
+    avatarURL: "/test_uploads/admin_sen.jpg",
+    enrolledIdCardUrl: "/test_uploads/admin_sen.jpg",
     verificationStatus: "verified",
     isEmailVerified: true,
     isPhoneVerified: true,
@@ -1167,32 +1167,32 @@ export async function seedDemoData() {
   });
 
 
-  const ichigoVehicle = await Vehicle.create({
-    ownerUserId: ichigo._id,
+  const adityaDriverVehicle = await Vehicle.create({
+    ownerUserId: adityaDriver._id,
     type: "car",
     model: "Hyundai Creta SX (Petrol)",
     capacity: 4,
     plateLast4: "1524",
   });
 
-  const makimaVehicle = await Vehicle.create({
-    ownerUserId: makima._id,
+  const priyaDriverVehicle = await Vehicle.create({
+    ownerUserId: priyaDriver._id,
     type: "car",
     model: "Tata Nexon EV Max",
     capacity: 4,
     plateLast4: "9901",
   });
 
-  const zoroVehicle = await Vehicle.create({
-    ownerUserId: zoro._id,
+  const rohanDriverVehicle = await Vehicle.create({
+    ownerUserId: rohanDriver._id,
     type: "car",
     model: "Tata Harrier Dark Edition",
     capacity: 4,
     plateLast4: "3321",
   });
 
-  const mitsuhaVehicle = await Vehicle.create({
-    ownerUserId: mitsuha._id,
+  const kavitaDriverVehicle = await Vehicle.create({
+    ownerUserId: kavitaDriver._id,
     type: "car",
     model: "Maruti Suzuki Swift ZXi",
     capacity: 4,
@@ -1204,9 +1204,9 @@ export async function seedDemoData() {
   // ==========================================
   const now = new Date();
 
-  // Ichigo's UU Campus Express (Clock Tower -> UIT Building)
+  // Aditya's UU Campus Express (Clock Tower -> UIT Building)
   await Ride.create({
-    creator: ichigo._id,
+    creator: adityaDriver._id,
     origin: {
       text: "Clock Tower, Dehradun",
       lat: 30.3256,
@@ -1219,14 +1219,14 @@ export async function seedDemoData() {
     },
     departureTime: new Date(now.getTime() + 1.5 * 60 * 60 * 1000),
     availableSeats: 3,
-    vehicleId: ichigoVehicle._id,
+    vehicleId: adityaDriverVehicle._id,
     status: "active",
     costShare: 45,
   });
 
-  // Ichigo's Campus Route (UIT Building -> Premnagar Chowk Market)
+  // Aditya's Campus Route (UIT Building -> Premnagar Chowk Market)
   await Ride.create({
-    creator: ichigo._id,
+    creator: adityaDriver._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
       lat: 30.3400,
@@ -1239,14 +1239,14 @@ export async function seedDemoData() {
     },
     departureTime: new Date(now.getTime() + 5.5 * 60 * 60 * 1000),
     availableSeats: 3,
-    vehicleId: ichigoVehicle._id,
+    vehicleId: adityaDriverVehicle._id,
     status: "active",
     costShare: 30,
   });
 
-  // Makima's UPES Express (ISBT Dehradun -> UPES Bidholi) - Women-Friendly
+  // Priya's UPES Express (ISBT Dehradun -> UPES Bidholi) - Women-Friendly
   await Ride.create({
-    creator: makima._id,
+    creator: priyaDriver._id,
     origin: {
       text: "ISBT Dehradun, Haridwar Bypass",
       lat: 30.2882,
@@ -1259,14 +1259,14 @@ export async function seedDemoData() {
     },
     departureTime: new Date(now.getTime() + 2 * 60 * 60 * 1000),
     availableSeats: 3,
-    vehicleId: makimaVehicle._id,
+    vehicleId: priyaDriverVehicle._id,
     status: "active",
     costShare: 95,
   });
 
-  // Makima's Campus Route (UIT Building -> Premnagar Chowk Market) - Women-Friendly
+  // Priya's Campus Route (UIT Building -> Premnagar Chowk Market) - Women-Friendly
   await Ride.create({
-    creator: makima._id,
+    creator: priyaDriver._id,
     origin: {
       text: "UIT Building (Uttaranchal Institute of Technology)",
       lat: 30.3400,
@@ -1279,14 +1279,14 @@ export async function seedDemoData() {
     },
     departureTime: new Date(now.getTime() + 6.2 * 60 * 60 * 1000),
     availableSeats: 3,
-    vehicleId: makimaVehicle._id,
+    vehicleId: priyaDriverVehicle._id,
     status: "active",
     costShare: 30,
   });
 
-  // Zoro's GEU Route (Rispana Bridge -> Graphic Era Clement Town)
+  // Rohan's GEU Route (Rispana Bridge -> Graphic Era Clement Town)
   await Ride.create({
-    creator: zoro._id,
+    creator: rohanDriver._id,
     origin: {
       text: "Rispana Bridge, Haridwar Road",
       lat: 30.3015,
@@ -1299,14 +1299,14 @@ export async function seedDemoData() {
     },
     departureTime: new Date(now.getTime() + 2.5 * 60 * 60 * 1000),
     availableSeats: 3,
-    vehicleId: zoroVehicle._id,
+    vehicleId: rohanDriverVehicle._id,
     status: "active",
     costShare: 35,
   });
 
-  // Mitsuha's DIT Route (Rajpur Road Jakhan -> DIT University) - Women-Friendly
+  // Kavita's DIT Route (Rajpur Road Jakhan -> DIT University) - Women-Friendly
   await Ride.create({
-    creator: mitsuha._id,
+    creator: kavitaDriver._id,
     origin: {
       text: "Rajpur Road, Jakhan",
       lat: 30.3642,
@@ -1319,7 +1319,7 @@ export async function seedDemoData() {
     },
     departureTime: new Date(now.getTime() + 3 * 60 * 60 * 1000),
     availableSeats: 3,
-    vehicleId: mitsuhaVehicle._id,
+    vehicleId: kavitaDriverVehicle._id,
     status: "active",
     costShare: 30,
   });

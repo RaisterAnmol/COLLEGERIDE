@@ -1,5 +1,5 @@
-// prefers-reduced-motion compliant ride detail pass
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../services/api";
@@ -34,6 +34,29 @@ import RideRequestSuccessModal from "../components/RideRequestSuccessModal";
 import { JourneyTicket } from "../components/signature/JourneyTicket";
 import { TactileButton } from "../components/signature/TactileButton";
 import { HoldToConfirmWithFallback } from "../components/signature/HoldToConfirm";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.07,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 280,
+      damping: 25,
+    },
+  },
+};
 
 export const RideDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -327,23 +350,36 @@ export const RideDetailPage: React.FC = () => {
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6"
+    >
       {/* Alert Banners */}
       {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-2xl flex items-center gap-3 text-sm font-medium">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-2xl flex items-center gap-3 text-sm font-medium"
+        >
           <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
           <span>{successMsg}</span>
-        </div>
+        </motion.div>
       )}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-300 text-red-900 rounded-2xl flex items-center gap-3 text-sm font-medium">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-red-50 border border-red-300 text-red-900 rounded-2xl flex items-center gap-3 text-sm font-medium"
+        >
           <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
           <span>{error}</span>
-        </div>
+        </motion.div>
       )}
 
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-control bg-surface border border-line-base text-xs font-mono text-ink-primary mb-2">
             <span className="w-2 h-2 rounded-full bg-route" />
@@ -364,10 +400,11 @@ export const RideDetailPage: React.FC = () => {
           <MessageSquare className="w-4 h-4 text-route-pale" />
           <span>Ride Coordination Chat</span>
         </button>
-      </div>
+      </motion.div>
 
       {/* Main Interactive Journey Ticket Pass */}
-      <JourneyTicket
+      <motion.div variants={itemVariants}>
+        <JourneyTicket
         ride={{
           _id: ride._id,
           creator: ride.creator,
@@ -396,26 +433,35 @@ export const RideDetailPage: React.FC = () => {
         onCancelRequest={() => setCancelRequestModalOpen(true)}
         onVerifyPrompt={() => navigate('/verification')}
       />
+      </motion.div>
 
       {/* Walking Guide & Campus Pickup Bay Navigation Map */}
-      {showWalkingGuide && (
-        <div className="bg-surface rounded-surface border border-line-base p-5 sm:p-6 shadow-subtle space-y-3">
-          <div className="flex items-center justify-between pb-3 border-b border-line-subtle">
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="w-2 h-2 rounded-full bg-route" />
-              <strong className="text-ink-primary">Designated Campus Pickup Bay &amp; Walking Guide</strong>
+      <AnimatePresence>
+        {showWalkingGuide && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.25 }}
+            className="bg-surface rounded-surface border border-line-base p-5 sm:p-6 shadow-subtle space-y-3 overflow-hidden"
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-line-subtle">
+              <div className="flex items-center gap-2 text-xs font-mono">
+                <span className="w-2 h-2 rounded-full bg-route" />
+                <strong className="text-ink-primary">Designated Campus Pickup Bay &amp; Walking Guide</strong>
+              </div>
+              <span className="text-[11px] font-mono text-ink-muted">High-Accuracy GPS Corridor</span>
             </div>
-            <span className="text-[11px] font-mono text-ink-muted">High-Accuracy GPS Corridor</span>
-          </div>
-          <PickupAndRouteNavigationMap
-            originText={sanitizeLocationText(ride.origin.text)}
-            destinationText={sanitizeLocationText(ride.destination.text)}
-          />
-        </div>
-      )}
+            <PickupAndRouteNavigationMap
+              originText={sanitizeLocationText(ride.origin.text)}
+              destinationText={sanitizeLocationText(ride.destination.text)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Corridor Route Waypoints Breakdown */}
-      <div className="bg-paper rounded-3xl border border-[#E2DDD3] p-5 sm:p-6 shadow-sm space-y-4">
+      <motion.div variants={itemVariants} className="bg-paper rounded-3xl border border-[#E2DDD3] p-5 sm:p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-border/60">
           <div className="flex items-center gap-2 text-xs font-mono">
             <span className="w-2.5 h-2.5 rounded-full bg-forest animate-pulse" />
@@ -470,10 +516,10 @@ export const RideDetailPage: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Driver Controls & Passenger Actions Bar */}
-      <div className="bg-surface rounded-surface border border-line-base p-5 shadow-subtle flex flex-wrap items-center justify-between gap-4">
+      <motion.div variants={itemVariants} className="bg-surface rounded-surface border border-line-base p-5 shadow-subtle flex flex-wrap items-center justify-between gap-4">
         <div className="text-xs text-ink-secondary">
           {isDriver ? (
             <span>You are offering this carpool. Confirm student requests below and start the trip at departure time.</span>
@@ -553,10 +599,10 @@ export const RideDetailPage: React.FC = () => {
             </>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Verified Driver Reputation & Reviews Card */}
-      <div className="bg-surface rounded-surface border border-line-base p-6 sm:p-8 shadow-subtle space-y-5">
+      <motion.div variants={itemVariants} className="bg-surface rounded-surface border border-line-base p-6 sm:p-8 shadow-subtle space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-line-subtle">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-control bg-route-pale text-route border border-route-light/20 flex items-center justify-center font-bold">
@@ -673,11 +719,11 @@ export const RideDetailPage: React.FC = () => {
             })}
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Driver Incoming Requests Panel */}
       {isDriver && (
-        <div className="bg-surface rounded-surface border border-line-base p-6 sm:p-8 shadow-subtle space-y-4">
+        <motion.div variants={itemVariants} className="bg-surface rounded-surface border border-line-base p-6 sm:p-8 shadow-subtle space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-display font-bold text-ink-primary">
@@ -814,7 +860,7 @@ export const RideDetailPage: React.FC = () => {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* Real-Time Coordination Chat Modal */}
@@ -898,6 +944,6 @@ export const RideDetailPage: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

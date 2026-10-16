@@ -1,10 +1,33 @@
-// prefers-reduced-motion compliant live trip telemetry
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import { ITrip } from '../types';
 import { getSocket, joinTripRoom } from '../services/socket';
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 280,
+      damping: 25,
+    },
+  },
+};
 import { ReviewModal } from '../components/ReviewModal';
 import { ChatModal } from '../components/ChatModal';
 import { QRCodeDisplay } from '../components/QRCodeDisplay';
@@ -348,10 +371,19 @@ export const TripTrackingPage: React.FC = () => {
   });
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="max-w-4xl mx-auto px-4 py-8 space-y-6"
+    >
       {/* Route Corridor Deviation Warning Banner (Guardrail #9) */}
       {corridorDeviation && (
-        <div className="p-4 bg-amber-500 text-white rounded-2xl flex items-center justify-between shadow-lg">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-amber-500 text-white rounded-2xl flex items-center justify-between shadow-lg"
+        >
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-6 h-6 shrink-0" />
             <div>
@@ -369,12 +401,16 @@ export const TripTrackingPage: React.FC = () => {
           >
             Acknowledge
           </button>
-        </div>
+        </motion.div>
       )}
 
       {/* Trip Cancelled Banner */}
       {trip.status === 'cancelled' && (
-        <div className="p-4 bg-rose-50 border border-rose-300 text-rose-900 rounded-2xl flex items-center justify-between shadow-xs">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-rose-50 border border-rose-300 text-rose-900 rounded-2xl flex items-center justify-between shadow-xs"
+        >
           <div className="flex items-center gap-3">
             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
             <div>
@@ -390,11 +426,11 @@ export const TripTrackingPage: React.FC = () => {
           >
             Dashboard →
           </button>
-        </div>
+        </motion.div>
       )}
 
       {/* Status HUD Header */}
-      <div className="bg-[#143D32] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
+      <motion.div variants={itemVariants} className="bg-[#143D32] text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -455,24 +491,32 @@ export const TripTrackingPage: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Notifications */}
       {successMsg && (
-        <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-2xl flex items-center gap-3 text-sm font-medium">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-2xl flex items-center gap-3 text-sm font-medium"
+        >
           <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
           <span>{successMsg}</span>
-        </div>
+        </motion.div>
       )}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-300 text-red-900 rounded-2xl flex items-center gap-3 text-sm font-medium">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="p-4 bg-red-50 border border-red-300 text-red-900 rounded-2xl flex items-center gap-3 text-sm font-medium"
+        >
           <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
           <span>{error}</span>
-        </div>
+        </motion.div>
       )}
 
       {/* Live Telemetry & Corridor Tracker Card */}
-      <div className="bg-white rounded-3xl border border-[#DDE1DE] p-6 shadow-xs space-y-4">
+      <motion.div variants={itemVariants} className="bg-white rounded-3xl border border-[#DDE1DE] p-6 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-[#18A66A]" />
@@ -540,10 +584,10 @@ export const TripTrackingPage: React.FC = () => {
             </button>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* QR & OTP Verification Hub */}
-      <div className="bg-white rounded-3xl border border-[#DDE1DE] p-6 sm:p-8 shadow-xs">
+      <motion.div variants={itemVariants} className="bg-white rounded-3xl border border-[#DDE1DE] p-6 sm:p-8 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#143D32]/10 text-[#143D32] flex items-center justify-center font-bold">
@@ -803,10 +847,10 @@ export const TripTrackingPage: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Safety & Real Emergency SOS Dispatch Card (Guardrail #11) */}
-      <div className="bg-white rounded-3xl border border-red-200 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <motion.div variants={itemVariants} className="bg-white rounded-3xl border border-red-200 p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-red-100 text-[#D9383A] flex items-center justify-center shrink-0">
             <ShieldAlert className="w-5 h-5" />
@@ -843,7 +887,7 @@ export const TripTrackingPage: React.FC = () => {
             <span>{sosTriggering ? 'DISPATCHING...' : 'TRIGGER SOS'}</span>
           </button>
         </div>
-      </div>
+      </motion.div>
 
       {/* SOS Active Incident Confirmation Dialog */}
       {sosActiveIncident && (
@@ -986,6 +1030,6 @@ export const TripTrackingPage: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };

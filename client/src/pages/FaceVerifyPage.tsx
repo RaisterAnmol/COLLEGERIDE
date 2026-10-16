@@ -1,5 +1,5 @@
-// prefers-reduced-motion compliant face verification
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
@@ -16,6 +16,29 @@ import {
   Sparkles,
 } from "lucide-react";
 import { api } from "../services/api";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 280,
+      damping: 25,
+    },
+  },
+};
 
 // ─── Cosine similarity helper (client-side matching) ─────────────────────────
 function cosineSimilarity(a: number[], b: number[]): number {
@@ -328,9 +351,14 @@ export const FaceVerifyPage: React.FC = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 sm:px-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className="max-w-2xl mx-auto px-4 py-8 sm:px-6"
+    >
       {/* Breadcrumb + Header */}
-      <div className="mb-6">
+      <motion.div variants={itemVariants} className="mb-6">
         <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
           <Link to="/" className="hover:text-slate-900 transition-colors">Home</Link>
           <ChevronRight className="w-3 h-3 text-slate-300" />
@@ -353,12 +381,12 @@ export const FaceVerifyPage: React.FC = () => {
             <span>Driver Verification</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="space-y-5">
         {/* Info card — how it works */}
         {!cameraOn && !result && !noEnrollment && (
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
+          <motion.div variants={itemVariants} className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
             <div className="flex items-center gap-2 text-slate-800 font-bold text-sm mb-3">
               <Info className="w-4 h-4 text-[#143D32]" />
               How face verification works
@@ -384,12 +412,16 @@ export const FaceVerifyPage: React.FC = () => {
                 <span>Face verification is required for driver accounts. Passengers do not need it.</span>
               </div>
             )}
-          </div>
+          </motion.div>
         )}
 
         {/* No enrollment banner */}
         {noEnrollment && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3">
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-amber-50 border border-amber-200 rounded-2xl p-5 space-y-3"
+          >
             <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
               <AlertCircle className="w-5 h-5 text-amber-600" />
               Face Profile Not Enrolled
@@ -415,32 +447,50 @@ export const FaceVerifyPage: React.FC = () => {
                 Try Again
               </button>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Camera error */}
         {cameraError && (
-          <div className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-center gap-3 text-xs text-rose-700">
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-rose-50 border border-rose-200 rounded-2xl p-4 flex items-center gap-3 text-xs text-rose-700"
+          >
             <AlertCircle className="w-4 h-4 text-rose-500 flex-shrink-0" />
             <span>{cameraError}</span>
-          </div>
+          </motion.div>
         )}
 
         {/* ── Result Card ── */}
         {result && (
-          <div className={`rounded-2xl p-6 border ${result.matched
-            ? "bg-emerald-50 border-emerald-200"
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className={`rounded-2xl p-6 border ${result.matched
+            ? "bg-emerald-50 border-emerald-200 shadow-sm"
             : "bg-rose-50 border-rose-200"
           }`}>
             <div className="flex flex-col items-center text-center gap-4">
               {result.matched ? (
-                <div className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-600" />
-                </div>
+                <motion.div
+                  initial={{ scale: 0, rotate: -25 }}
+                  animate={{ scale: [0, 1.25, 1], rotate: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                  className="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center relative shadow-sm"
+                >
+                  <div className="absolute inset-0 rounded-full bg-emerald-400/25 animate-ping" />
+                  <CheckCircle2 className="w-8 h-8 text-emerald-600 relative z-10" />
+                </motion.div>
               ) : (
-                <div className="w-16 h-16 rounded-full bg-rose-100 border-2 border-rose-300 flex items-center justify-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-16 h-16 rounded-full bg-rose-100 border-2 border-rose-300 flex items-center justify-center"
+                >
                   <XCircle className="w-8 h-8 text-rose-600" />
-                </div>
+                </motion.div>
               )}
 
               <div>
@@ -493,12 +543,12 @@ export const FaceVerifyPage: React.FC = () => {
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* ── Camera Box ── */}
         {(cameraOn || (!result && !noEnrollment)) && (
-          <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
+          <motion.div variants={itemVariants} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
             {/* Camera header */}
             <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
@@ -507,8 +557,8 @@ export const FaceVerifyPage: React.FC = () => {
               </div>
               {cameraOn && (
                 <span className="flex items-center gap-1.5 text-xs text-emerald-700 font-medium">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  Live
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  Live Radar Feed
                 </span>
               )}
             </div>
@@ -517,20 +567,28 @@ export const FaceVerifyPage: React.FC = () => {
               {/* Oval viewfinder */}
               <div className="relative">
                 <div
-                  className={`w-56 h-64 rounded-full overflow-hidden border-4 transition-all duration-300 bg-slate-100 flex items-center justify-center ${statusCfg.ring}`}
+                  className={`w-56 h-64 rounded-full overflow-hidden border-4 transition-all duration-300 bg-slate-100 flex items-center justify-center relative ${statusCfg.ring}`}
                 >
                   {cameraOn ? (
-                    <video
-                      ref={setVideoRef}
-                      autoPlay
-                      playsInline
-                      muted
-                      onLoadedMetadata={(e) => {
-                        const v = e.currentTarget;
-                        v.play().catch((err) => console.warn("[FaceVerify] onLoadedMetadata play:", err));
-                      }}
-                      className="w-full h-full object-cover transform -scale-x-100"
-                    />
+                    <>
+                      <video
+                        ref={setVideoRef}
+                        autoPlay
+                        playsInline
+                        muted
+                        onLoadedMetadata={(e) => {
+                          const v = e.currentTarget;
+                          v.play().catch((err) => console.warn("[FaceVerify] onLoadedMetadata play:", err));
+                        }}
+                        className="w-full h-full object-cover transform -scale-x-100"
+                      />
+                      {/* Radar Scanning Line */}
+                      <motion.div
+                        animate={{ y: [0, 240, 0] }}
+                        transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+                        className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_12px_rgba(52,211,153,0.9)] pointer-events-none z-20"
+                      />
+                    </>
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-slate-400">
                       <Camera className="w-10 h-10" />
@@ -623,7 +681,7 @@ export const FaceVerifyPage: React.FC = () => {
                 Ensure good lighting, look straight at the camera, and remove sunglasses.
               </p>
             </div>
-          </div>
+          </motion.div>
         )}
 
         {/* Hidden canvas for future snapshot use */}
@@ -639,7 +697,7 @@ export const FaceVerifyPage: React.FC = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

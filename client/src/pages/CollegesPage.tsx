@@ -1,5 +1,6 @@
 // prefers-reduced-motion compliant colleges directory
 import React, { useState, useMemo } from 'react';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import { Building2, BarChart3, ShieldCheck, Leaf, ArrowRight, CheckCircle2, Search, Download, MapPin, School, Calendar, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { UTTARAKHAND_UNIVERSITIES } from '../data/csvDataLoader';
@@ -7,6 +8,29 @@ import { useAuth } from '../context/AuthContext';
 import { CustomSelect } from '../components/common/CustomSelect';
 // Photorealistic Campus Photography
 const campusesHeroImg = '/campus-students.jpg';
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 22 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 280,
+      damping: 24,
+    },
+  },
+};
 
 export const CollegesPage: React.FC = () => {
   const { activePersona } = useAuth();
@@ -165,12 +189,20 @@ export const CollegesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* University Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* University Cards Grid with Staggered Motion */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-40px' }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
           {filteredUniversities.map((uni, idx) => (
-            <div
-              key={idx}
-              className="h-full p-6 sm:p-7 rounded-card bg-[#F8FAFC] border border-[#E2E8F0] hover:border-emerald-300 hover:bg-emerald-50/20 transition-all flex flex-col justify-between group shadow-xs space-y-3.5"
+            <motion.div
+              key={`${uni.name}-${idx}`}
+              variants={cardVariants}
+              whileHover={{ y: -5, transition: { type: 'spring', stiffness: 400, damping: 25 } }}
+              className="h-full p-6 sm:p-7 rounded-card bg-[#F8FAFC] border border-[#E2E8F0] hover:border-emerald-300 hover:bg-emerald-50/20 transition-colors flex flex-col justify-between group shadow-xs space-y-3.5 cursor-pointer"
             >
               <div>
                 <div className="flex items-center justify-between gap-2">
@@ -218,9 +250,9 @@ export const CollegesPage: React.FC = () => {
                   </Link>
                 )}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </div>
   );
