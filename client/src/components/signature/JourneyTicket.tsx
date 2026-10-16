@@ -69,6 +69,14 @@ export interface JourneyTicketProps {
 // Spring config for tilt reset
 const tiltSpringConfig = { stiffness: 250, damping: 25, mass: 0.5 };
 
+export const getCleanAvatarUrl = (url?: string | null): string | undefined => {
+  if (!url) return undefined;
+  if (url.startsWith('/test_uploads/')) {
+    return `${url}?v=real_20261016`;
+  }
+  return url;
+};
+
 export const JourneyTicket: React.FC<JourneyTicketProps> = ({
   ride,
   variant = 'detail',
@@ -289,7 +297,7 @@ export const JourneyTicket: React.FC<JourneyTicketProps> = ({
               <div className="flex items-center gap-2 min-w-0">
                 {ride.creator?.avatarURL ? (
                   <img
-                    src={ride.creator.avatarURL}
+                    src={getCleanAvatarUrl(ride.creator.avatarURL)}
                     alt={ride.creator.name || 'Driver'}
                     className="w-7 h-7 rounded-control object-cover border border-line-base shrink-0"
                     loading="lazy"
@@ -439,7 +447,7 @@ export const JourneyTicket: React.FC<JourneyTicketProps> = ({
             <div className="flex items-center gap-3">
               {ride.creator?.avatarURL ? (
                 <img
-                  src={ride.creator.avatarURL}
+                  src={getCleanAvatarUrl(ride.creator.avatarURL)}
                   alt={ride.creator.name || 'Driver profile'}
                   className="w-10 h-10 rounded-control object-cover border border-line-base"
                   loading="lazy"
