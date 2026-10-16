@@ -69,7 +69,30 @@ export interface JourneyTicketProps {
 // Spring config for tilt reset
 const tiltSpringConfig = { stiffness: 250, damping: 25, mass: 0.5 };
 
-export const getCleanAvatarUrl = (url?: string | null): string | undefined => {
+const FEMALE_NAMES = [
+  'priya', 'ananya', 'sneha', 'kavita', 'pooja', 'riya', 'megha', 'simran',
+  'anjali', 'neha', 'tanya', 'ayushi', 'meera', 'tanvi', 'zoya', 'kavya', 'isha'
+];
+
+export const getCleanAvatarUrl = (
+  url?: string | null,
+  creator?: { name?: string; gender?: string; preferences?: any } | null,
+  isWomenOnlyRide?: boolean
+): string | undefined => {
+  const name = creator?.name?.toLowerCase() || '';
+  const isFemale =
+    creator?.gender === 'female' ||
+    Boolean(creator?.preferences?.womenOnlyDriver) ||
+    Boolean(isWomenOnlyRide) ||
+    FEMALE_NAMES.some((fn) => name.includes(fn));
+
+  if (isFemale) {
+    if (!url || url.includes('profile_photo') || url.includes('driver_aditya') || url.includes('driver_rohan') || url.includes('ichigo') || url.includes('zoro')) {
+      const femalePic = (name.charCodeAt(0) || 0) % 2 === 0 ? '/test_uploads/driver_priya.jpg' : '/test_uploads/driver_kavita.jpg';
+      return `${femalePic}?v=real_20261016_f`;
+    }
+  }
+
   if (!url) return undefined;
   if (url.startsWith('/test_uploads/')) {
     return `${url}?v=real_20261016`;
@@ -297,7 +320,7 @@ export const JourneyTicket: React.FC<JourneyTicketProps> = ({
               <div className="flex items-center gap-2 min-w-0">
                 {ride.creator?.avatarURL ? (
                   <img
-                    src={getCleanAvatarUrl(ride.creator.avatarURL)}
+                    src={getCleanAvatarUrl(ride.creator.avatarURL, ride.creator, ride?.isWomenOnly)}
                     alt={ride.creator.name || 'Driver'}
                     className="w-7 h-7 rounded-control object-cover border border-line-base shrink-0"
                     loading="lazy"
@@ -447,7 +470,7 @@ export const JourneyTicket: React.FC<JourneyTicketProps> = ({
             <div className="flex items-center gap-3">
               {ride.creator?.avatarURL ? (
                 <img
-                  src={getCleanAvatarUrl(ride.creator.avatarURL)}
+                  src={getCleanAvatarUrl(ride.creator.avatarURL, ride.creator, ride?.isWomenOnly)}
                   alt={ride.creator.name || 'Driver profile'}
                   className="w-10 h-10 rounded-control object-cover border border-line-base"
                   loading="lazy"
