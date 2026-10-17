@@ -25,6 +25,7 @@ import { logAuditEvent } from "../services/auditService";
 import { NotificationService } from "../services/notificationService";
 import { sendEmail } from "../services/emailService";
 import { logger } from "../utils/logger";
+import { verifyTurnstileToken } from "../utils/turnstile";
 
 const router = Router();
 
@@ -91,11 +92,13 @@ const registerSchema = z.object({
       plateLast4: z.string().default(""),
     })
     .optional(),
+  turnstileToken: z.string().optional(),
 });
 
 const loginSchema = z.object({
   email: z.string().trim().toLowerCase().email("Invalid email address"),
   password: z.string().min(1, "Password is required"),
+  turnstileToken: z.string().optional(),
 });
 
 // Temporary in-memory store for guest registration OTPs
@@ -216,6 +219,16 @@ router.post("/register", async (req, res): Promise<void> => {
       res.status(400).json({
         code: "VALIDATION_ERROR",
         message: parseResult.error.issues.map((e: any) => e.message).join(", "),
+      });
+      return;
+    }
+
+    const turnstileToken = req.body.turnstileToken || req.body["cf-turnstile-response"];
+    const turnstileCheck = await verifyTurnstileToken(turnstileToken, req.ip);
+    if (!turnstileCheck.success) {
+      res.status(403).json({
+        code: "TURNSTILE_FAILED",
+        message: "Bot protection verification failed. Please refresh and try again.",
       });
       return;
     }
@@ -454,6 +467,16 @@ router.post("/login", async (req, res): Promise<void> => {
       res.status(400).json({
         code: "VALIDATION_ERROR",
         message: parseResult.error.issues.map((e: any) => e.message).join(", "),
+      });
+      return;
+    }
+
+    const turnstileToken = req.body.turnstileToken || req.body["cf-turnstile-response"];
+    const turnstileCheck = await verifyTurnstileToken(turnstileToken, req.ip);
+    if (!turnstileCheck.success) {
+      res.status(403).json({
+        code: "TURNSTILE_FAILED",
+        message: "Bot protection verification failed. Please refresh and try again.",
       });
       return;
     }
@@ -845,6 +868,16 @@ router.post("/forgot-password", async (req, res): Promise<void> => {
       return;
     }
 
+    const turnstileToken = req.body.turnstileToken || req.body["cf-turnstile-response"];
+    const turnstileCheck = await verifyTurnstileToken(turnstileToken, req.ip);
+    if (!turnstileCheck.success) {
+      res.status(403).json({
+        code: "TURNSTILE_FAILED",
+        message: "Bot protection verification failed. Please refresh and try again.",
+      });
+      return;
+    }
+
     const user = await User.findOne({ email: email.trim().toLowerCase() });
     if (!user) {
       // Return clear info in demo/development while maintaining safe UX
@@ -889,11 +922,8 @@ router.post("/forgot-password", async (req, res): Promise<void> => {
       `,
     });
 
-    const isMock = !emailResult?.success || emailResult?.id?.startsWith("mock_");
-    const isDev = process.env.NODE_ENV !== "production" || process.env.DEMO_MODE === "true" || isMock;
     res.status(200).json({
-      message: "Password reset instructions sent.",
-      ...(isDev ? { devResetOtp: resetOtp } : {}),
+      message: "Password reset instructions sent. Please check your inbox for your 6-digit verification code.",
     });
   } catch (err) {
     res.status(500).json({ code: "SERVER_ERROR", message: "Failed to process password reset" });

@@ -125,10 +125,10 @@ class ApiService {
   }
 
   // Auth
-  async login(email: string, password: string) {
+  async login(email: string, password: string, turnstileToken?: string) {
     return this.request<{ token: string; user: any }>("/api/auth/login", {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, turnstileToken }),
     });
   }
 
@@ -146,10 +146,10 @@ class ApiService {
     });
   }
 
-  async forgotPassword(email: string) {
-    return this.request<{ message: string }>("/api/auth/forgot-password", {
+  async forgotPassword(email: string, turnstileToken?: string) {
+    return this.request<{ message: string; emailNotRegistered?: boolean }>("/api/auth/forgot-password", {
       method: "POST",
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, turnstileToken }),
     });
   }
 

@@ -11,7 +11,7 @@ interface AuthContextType {
   loading: boolean;
   activePersona: PersonaRole;
   setActivePersona: (role: PersonaRole) => void;
-  login: (email: string, password?: string) => Promise<IUser>;
+  login: (email: string, password?: string, turnstileToken?: string) => Promise<IUser>;
   loginWithGoogle: (credential: string, accountType?: string) => Promise<IUser>;
   register: (userData: any) => Promise<void>;
   updateProfile: (data: any) => Promise<void>;
@@ -114,11 +114,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [token]);
 
-  const login = async (email: string, password = DEMO_PASSWORD): Promise<IUser> => {
+  const login = async (email: string, password = DEMO_PASSWORD, turnstileToken?: string): Promise<IUser> => {
     setLoading(true);
     let resolvedUser: any = null;
     try {
-      const res = await api.login(email, password);
+      const res = await api.login(email, password, turnstileToken);
       localStorage.setItem("campusride_auth_v2", "true");
       localStorage.setItem("campusride_token", res.token);
       localStorage.setItem("campusride_user", JSON.stringify(res.user));

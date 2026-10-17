@@ -21,7 +21,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<{ success: b
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "CampusRide <onboarding@resend.dev>",
+          from: process.env.EMAIL_FROM || "CampusRide <onboarding@resend.dev>",
           to: [to],
           subject,
           html,

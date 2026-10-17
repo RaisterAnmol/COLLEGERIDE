@@ -4,6 +4,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "../context/ToastContext";
 import { api } from "../services/api";
+import { TurnstileWidget } from "../components/common/TurnstileWidget";
 
 const stepVariants: Variants = {
   enter: (direction: number) => ({
@@ -119,6 +120,7 @@ export const AuthPage: React.FC = () => {
   const [isRegister, setIsRegister] = useState(isRegisterRoute);
   const [regStep, setRegStep] = useState<1 | 2 | 3>(1);
   const [stepDirection, setStepDirection] = useState<number>(1);
+  const [turnstileToken, setTurnstileToken] = useState<string>("");
 
   const goToStep = (target: 1 | 2 | 3) => {
     setStepDirection(target > regStep ? 1 : -1);
@@ -489,6 +491,10 @@ export const AuthPage: React.FC = () => {
           localStorage.setItem("campusride_avatar_archetype", selectedArchetype);
         } catch {}
 
+        if (turnstileToken) {
+          registrationPayload.turnstileToken = turnstileToken;
+        }
+
         await register(registrationPayload);
         navigate("/dashboard");
       } else {
@@ -502,7 +508,7 @@ export const AuthPage: React.FC = () => {
           setLoading(false);
           return;
         }
-        await login(email.trim(), password);
+        await login(email.trim(), password, turnstileToken);
         const redirect = searchParams.get("redirect") || (email.trim().startsWith("admin@") ? "/admin" : "/dashboard");
         navigate(redirect);
       }
@@ -524,15 +530,9 @@ export const AuthPage: React.FC = () => {
     setForgotLoading(true);
     setForgotMsg(null);
     try {
-      const res: any = await api.forgotPassword(forgotEmail.trim());
-      if (res.devResetOtp) {
-        setResetToken(res.devResetOtp);
-        setForgotMsg({
-          text: `Verification code generated: ${res.devResetOtp}`,
-          isError: false,
-        });
-        toast.info(`Recovery Code: ${res.devResetOtp}`, "Verification Code Ready", 10000);
-      } else if (res.emailNotRegistered) {
+      const res: any = await api.forgotPassword(forgotEmail.trim(), turnstileToken);
+      setResetToken(""); // Strictly empty so user must enter real OTP from email
+      if (res.emailNotRegistered) {
         setForgotMsg({
           text: "This email is not registered on CampusRide. Please check the spelling or create an account.",
           isError: true,
@@ -540,8 +540,11 @@ export const AuthPage: React.FC = () => {
         toast.warning("No registered account found with that email.", "Email Not Found");
         return;
       } else {
-        setForgotMsg({ text: res.message || "Reset instructions sent to your email.", isError: false });
-        toast.success("Instructions dispatched. Please check your inbox and spam folder.", "Code Sent");
+        setForgotMsg({ 
+          text: res.message || "A 6-digit verification code has been dispatched to your email.", 
+          isError: false 
+        });
+        toast.success("Verification code sent! Please check your email inbox.", "Email Dispatched");
       }
       setForgotStep("RESET");
     } catch (err: any) {
@@ -1589,6 +1592,12 @@ export const AuthPage: React.FC = () => {
                         </label>
                       </div>
 
+                      {/* Cloudflare Turnstile Bot Protection */}
+                      <TurnstileWidget
+                        onVerify={(t) => setTurnstileToken(t)}
+                        onExpire={() => setTurnstileToken("")}
+                      />
+
                       <div className="pt-2 flex items-center justify-between">
                         <button
                           type="button"
@@ -1706,6 +1715,12 @@ export const AuthPage: React.FC = () => {
                     </label>
                   </div>
 
+                  {/* Cloudflare Turnstile Bot Protection */}
+                  <TurnstileWidget
+                    onVerify={(t) => setTurnstileToken(t)}
+                    onExpire={() => setTurnstileToken("")}
+                  />
+
                   <TactileButton
                     type="submit"
                     isLoading={loading || googleLoading}
@@ -1813,6 +1828,12 @@ export const AuthPage: React.FC = () => {
                   />
                 </div>
 
+                {/* Cloudflare Turnstile Bot Protection */}
+                <TurnstileWidget
+                  onVerify={(t) => setTurnstileToken(t)}
+                  onExpire={() => setTurnstileToken("")}
+                />
+
                 <TactileButton
                   type="submit"
                   isLoading={forgotLoading}
@@ -1876,12 +1897,12 @@ export const AuthPage: React.FC = () => {
                   Save New Password
                 </TactileButton>
 
-                {/* Helpful instructions for students & test accounts */}
+                {/* Helpful instructions for students */}
                 <div className="p-3 rounded-xl bg-canvas border border-line-base text-[11px] text-ink-secondary space-y-1 mt-3 text-left">
-                  <p className="font-bold text-ink-primary">Didn't receive the email?</p>
-                  <p>• Make sure <span className="font-mono text-ink-primary">{forgotEmail}</span> was already registered.</p>
-                  <p>• Check your <strong>Spam</strong> or <strong>Junk</strong> folder.</p>
-                  <p>• Test accounts in demo mode receive the recovery code automatically in the alert banner and toast above.</p>
+                  <p className="font-bold text-ink-primary">Check your email inbox</p>
+                  <p>• A 6-digit verification code was dispatched to <span className="font-mono text-ink-primary">{forgotEmail}</span>.</p>
+                  <p>• If you don't see it within a minute, check your <strong>Spam</strong> or <strong>Junk</strong> folder.</p>
+                  <p>• Enter the exact 6-digit code above and choose your new password.</p>
                 </div>
               </form>
             )}
