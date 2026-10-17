@@ -584,20 +584,20 @@ export const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center bg-canvas text-left">
+    <div className="min-h-screen py-4 sm:py-8 px-3 sm:px-6 lg:px-8 flex flex-col items-center justify-center bg-canvas text-left">
       {/* Top Campus Brand Bar */}
-      <div className="w-full max-w-5xl flex items-center justify-between pb-4 mb-6 border-b border-border">
-        <div className="flex items-center gap-3">
+      <div className="w-full max-w-5xl flex items-center justify-between pb-3 sm:pb-4 mb-4 sm:mb-6 border-b border-border">
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             to="/"
-            className="flex items-center gap-2 group"
+            className="flex items-center gap-1.5 sm:gap-2 group shrink-0"
           >
-            <span className="w-2.5 h-2.5 rounded-full bg-forest ring-4 ring-forest/20" />
-            <span className="text-2xl font-display font-extrabold text-ink-primary tracking-tight">
+            <span className="w-2.5 h-2.5 rounded-full bg-forest ring-4 ring-forest/20 shrink-0" />
+            <span className="text-xl sm:text-2xl font-display font-extrabold text-ink-primary tracking-tight">
               CampusRide
             </span>
           </Link>
-          <div className="hidden sm:flex items-center gap-2 text-xs font-mono font-medium text-ink-secondary bg-paper px-3 py-1 rounded-full border border-border shadow-xs">
+          <div className="hidden md:flex items-center gap-2 text-xs font-mono font-medium text-ink-secondary bg-paper px-3 py-1 rounded-full border border-border shadow-xs">
             <span>Premnagar Chowk</span>
             <span className="text-plum font-bold">↔</span>
             <span>Suddhowala</span>
@@ -606,32 +606,33 @@ export const AuthPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs font-mono text-ink-secondary bg-paper px-3 py-1 rounded-full border border-border shadow-xs">
-          <Compass className="w-3.5 h-3.5 text-plum" />
-          <span>Verified Student Corridor</span>
+        <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-mono text-ink-secondary bg-paper px-2.5 sm:px-3 py-1 rounded-full border border-border shadow-xs shrink-0">
+          <Compass className="w-3.5 h-3.5 text-plum shrink-0" />
+          <span className="hidden sm:inline">Verified Student Corridor</span>
+          <span className="sm:hidden">Verified Corridor</span>
         </div>
       </div>
 
-      <div className="w-full max-w-5xl bg-paper rounded-3xl neu-card border border-white/80 overflow-hidden">
+      <div className="w-full max-w-5xl bg-paper rounded-2xl sm:rounded-3xl neu-card border border-white/80 overflow-hidden shadow-card">
         {/* Onboarding Stepper Header if Registering */}
         {isRegister && (
-          <div className="bg-paper border-b border-border px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="bg-paper border-b border-border px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-plum bg-plum-light px-3 py-1 rounded-full border border-plum-border uppercase tracking-wider">
+              <span className="text-[11px] sm:text-xs font-mono font-bold text-plum bg-plum-light px-2.5 sm:px-3 py-1 rounded-full border border-plum-border uppercase tracking-wider shrink-0">
                 STEP {regStep} OF 3
               </span>
-              <span className="text-xs font-bold text-ink-primary">
+              <span className="text-xs font-bold text-ink-primary truncate">
                 {regStep === 1 && "Academic & Personal Identity"}
                 {regStep === 2 && "Verification & Safety"}
                 {regStep === 3 && "Commute Role & Student Archetype"}
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none py-0.5">
               <button
                 type="button"
                 onClick={() => goToStep(1)}
-                className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-control border transition-all cursor-pointer ${
+                className={`flex items-center gap-1 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-control border transition-all cursor-pointer shrink-0 ${
                   regStep === 1
                     ? "bg-route text-surface border-route font-semibold shadow-2xs"
                     : "bg-surface text-ink-secondary border-line-base hover:bg-canvas"
@@ -646,7 +647,7 @@ export const AuthPage: React.FC = () => {
                 onClick={() => {
                   if (name && college && phone) goToStep(2);
                 }}
-                className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-control border transition-all cursor-pointer ${
+                className={`flex items-center gap-1 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-control border transition-all cursor-pointer shrink-0 ${
                   regStep === 2
                     ? "bg-route text-surface border-route font-semibold shadow-2xs"
                     : "bg-surface text-ink-secondary border-line-base hover:bg-canvas"
@@ -661,21 +662,21 @@ export const AuthPage: React.FC = () => {
                 onClick={() => {
                   if (name && college && phone) goToStep(3);
                 }}
-                className={`flex items-center gap-1.5 text-xs px-3 py-1 rounded-control border transition-all cursor-pointer ${
+                className={`flex items-center gap-1 text-[11px] sm:text-xs px-2.5 sm:px-3 py-1 rounded-control border transition-all cursor-pointer shrink-0 ${
                   regStep === 3
                     ? "bg-route text-surface border-route font-semibold shadow-2xs"
                     : "bg-surface text-ink-secondary border-line-base hover:bg-canvas"
                 }`}
               >
-                <span>3. Archetype & Pass</span>
+                <span>3. Pass</span>
               </button>
             </div>
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-12 items-stretch">
           {/* Left Side: Campus Atlas Plate Reassurance */}
-          <div className="lg:col-span-5 bg-canvas p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-line-base relative overflow-hidden">
+          <div className="order-2 md:order-1 md:col-span-5 bg-canvas p-4 sm:p-6 md:p-8 flex flex-col justify-between border-t md:border-t-0 md:border-r border-line-base relative overflow-hidden">
             {/* Top Contour Pattern / Watermark */}
             <div className="space-y-4 relative z-10">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-control bg-surface border border-line-base text-xs font-mono text-ink-secondary">
@@ -738,13 +739,13 @@ export const AuthPage: React.FC = () => {
                 <span className="text-[11px] font-mono text-ink-muted block uppercase">
                   Verified Campus Archetypes
                 </span>
-                <div className="flex items-center justify-between gap-1">
+                <div className="flex items-center justify-between gap-1 overflow-x-auto scrollbar-none py-1">
                   {ARCHETYPE_OPTIONS.map((arch) => (
                     <button
                       key={arch.id}
                       type="button"
                       onClick={() => handleArchetypeSelect(arch.id)}
-                      className={`p-1 rounded-control transition-all cursor-pointer ${
+                      className={`p-1 rounded-control transition-all cursor-pointer shrink-0 ${
                         selectedArchetype === arch.id
                           ? "bg-route-pale ring-2 ring-route shadow-2xs"
                           : "hover:bg-canvas opacity-80 hover:opacity-100"
@@ -759,7 +760,7 @@ export const AuthPage: React.FC = () => {
             </div>
 
             {/* Bottom Institutional Reassurance Footer */}
-            <div className="pt-6 border-t border-line-subtle text-xs text-ink-secondary space-y-2 relative z-10">
+            <div className="pt-4 sm:pt-6 border-t border-line-subtle text-xs text-ink-secondary space-y-2 relative z-10">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-route shrink-0" />
                 <span>Verified .edu student IDs only</span>
@@ -772,9 +773,9 @@ export const AuthPage: React.FC = () => {
           </div>
 
           {/* Right Side: Form Body */}
-          <div className="lg:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-start bg-surface">
+          <div className="order-1 md:order-2 md:col-span-7 p-4 sm:p-6 md:p-8 lg:p-10 flex flex-col justify-start bg-surface">
             {/* Top Switcher Tab */}
-            <div className="flex gap-2 mb-6 bg-canvas p-1 rounded-control border border-line-base">
+            <div className="flex gap-2 mb-4 sm:mb-6 bg-canvas p-1 rounded-control border border-line-base">
               <button
                 type="button"
                 onClick={() => {
@@ -807,43 +808,46 @@ export const AuthPage: React.FC = () => {
 
             {/* Role Quick Switcher Pills for Login */}
             {!isRegister && (
-              <div className="mb-6 space-y-2">
+              <div className="mb-4 sm:mb-6 space-y-2">
                 <label className="block text-xs font-mono text-ink-muted">
                   Quick Role Switcher
                 </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5">
                   <button
                     type="button"
                     onClick={() => handleAccountTypeChange("PASSENGER")}
-                    className={`py-2.5 px-3 text-center rounded-xl border text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs ${
+                    className={`py-2 sm:py-2.5 px-1.5 sm:px-3 text-center rounded-xl border text-[11px] sm:text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs ${
                       accountType === "PASSENGER"
                         ? "bg-route-pale text-route border-route font-bold ring-1 ring-route/30"
                         : "bg-surface text-ink-secondary border-line-base hover:bg-canvas hover:text-ink-primary"
                     }`}
                   >
-                    Student Commuter
+                    <span className="hidden sm:inline">Student Commuter</span>
+                    <span className="sm:hidden">Commuter</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleAccountTypeChange("DRIVER")}
-                    className={`py-2.5 px-3 text-center rounded-xl border text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs ${
+                    className={`py-2 sm:py-2.5 px-1.5 sm:px-3 text-center rounded-xl border text-[11px] sm:text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs ${
                       accountType === "DRIVER"
                         ? "bg-route-pale text-route border-route font-bold ring-1 ring-route/30"
                         : "bg-surface text-ink-secondary border-line-base hover:bg-canvas hover:text-ink-primary"
                     }`}
                   >
-                    Student Driver
+                    <span className="hidden sm:inline">Student Driver</span>
+                    <span className="sm:hidden">Driver</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleAccountTypeChange("ADMIN")}
-                    className={`py-2.5 px-3 text-center rounded-xl border text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs ${
+                    className={`py-2 sm:py-2.5 px-1.5 sm:px-3 text-center rounded-xl border text-[11px] sm:text-xs font-semibold transition-all cursor-pointer whitespace-nowrap shadow-2xs ${
                       accountType === "ADMIN"
                         ? "bg-route-pale text-route border-route font-bold ring-1 ring-route/30"
                         : "bg-surface text-ink-secondary border-line-base hover:bg-canvas hover:text-ink-primary"
                     }`}
                   >
-                    Campus Admin
+                    <span className="hidden sm:inline">Campus Admin</span>
+                    <span className="sm:hidden">Admin</span>
                   </button>
                 </div>
               </div>
@@ -1760,8 +1764,8 @@ export const AuthPage: React.FC = () => {
 
       {/* Forgot Password Modal */}
       {isForgotOpen && (
-        <div className="fixed inset-0 z-50 bg-ink-primary/60 flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="relative bg-surface rounded-card max-w-md w-full p-6 shadow-card border border-line-base">
+        <div className="fixed inset-0 z-50 bg-ink-primary/60 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+          <div className="relative bg-surface rounded-card max-w-md w-full p-5 sm:p-6 shadow-card border border-line-base max-h-[92vh] overflow-y-auto">
             <button
               onClick={() => setIsForgotOpen(false)}
               className="absolute top-4 right-4 p-1.5 text-ink-muted hover:text-ink-primary rounded-control cursor-pointer"
