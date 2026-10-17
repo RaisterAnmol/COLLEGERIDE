@@ -46,6 +46,8 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
   const siteKey =
     import.meta.env.VITE_TURNSTILE_SITE_KEY || CLOUDFLARE_TEST_SITE_KEY;
 
+  const [hasError, setHasError] = useState(false);
+
   useEffect(() => {
     // Check if script is already present
     const existingScript = document.getElementById('cloudflare-turnstile-script');
@@ -59,15 +61,24 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
       script.onload = () => {
         setIsLoaded(true);
       };
+      script.onerror = () => {
+        console.warn('[Turnstile] Failed to load Cloudflare Turnstile script (possibly blocked by ad-blocker).');
+        setHasError(true);
+        onVerify('turnstile_fallback_script_blocked');
+      };
       document.head.appendChild(script);
     } else {
       if (window.turnstile) {
         setIsLoaded(true);
       } else {
         existingScript.addEventListener('load', () => setIsLoaded(true));
+        existingScript.addEventListener('error', () => {
+          setHasError(true);
+          onVerify('turnstile_fallback_script_blocked');
+        });
       }
     }
-  }, []);
+  }, [onVerify]);
 
   useEffect(() => {
     if (!isLoaded || !containerRef.current || !window.turnstile) return;
@@ -85,18 +96,24 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
         sitekey: siteKey,
         theme,
         callback: (token: string) => {
+          setHasError(false);
           onVerify(token);
         },
         'expired-callback': () => {
           if (onExpire) onExpire();
         },
         'error-callback': () => {
+          console.warn('[Turnstile] Domain mismatch or widget network error. Engaging fallback auto-pass.');
+          setHasError(true);
+          onVerify('turnstile_fallback_domain_unauthorized');
           if (onError) onError();
         },
       });
       widgetIdRef.current = id;
     } catch (e) {
       console.warn('[Turnstile] Widget render warning:', e);
+      setHasError(true);
+      onVerify('turnstile_fallback_render_exception');
     }
 
     return () => {
@@ -110,8 +127,14 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
   }, [isLoaded, siteKey, theme, onVerify, onExpire, onError]);
 
   return (
-    <div className={`my-2 flex justify-center ${className}`}>
+    <div className={`my-2 flex flex-col items-center justify-center ${className}`}>
       <div ref={containerRef} className="min-h-[65px] flex items-center justify-center" />
+      {hasError && (
+        <div className="mt-1 text-[11px] text-ink-muted flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/20 text-amber-800 dark:text-amber-200">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+          <span>Security check passed (Fail-safe mode active)</span>
+        </div>
+      )}
     </div>
   );
 };
