@@ -420,10 +420,10 @@ export const VerificationStatusPage: React.FC = () => {
                           <span className="text-slate-500 font-medium">Roll No:</span>
                           <strong className="font-mono text-slate-900 font-black">{user.studentId || "UU-2024-DRV-842"}</strong>
                         </p>
-                        <p className="flex items-center justify-between border-b border-slate-100 pb-0.5">
-                          <span className="text-slate-500 font-medium">Course:</span>
+                        <p className="flex items-center justify-between gap-2 border-b border-slate-100 pb-0.5">
+                          <span className="text-slate-500 font-medium shrink-0">Course:</span>
                           <span
-                            className="font-semibold text-slate-800 truncate max-w-[180px] text-right"
+                            className="font-semibold text-slate-800 truncate max-w-[140px] sm:max-w-[180px] text-right"
                             title={user.course || user.department || "B.Tech CSE"}
                           >
                             {user.course || user.department || "B.Tech CSE"}

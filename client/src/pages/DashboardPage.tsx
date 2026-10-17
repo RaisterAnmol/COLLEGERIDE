@@ -821,7 +821,7 @@ export const DashboardPage: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
 
                 {/* Chalkboard Signpost Graphic Overlay */}
-                <div className="absolute bottom-4 right-4 z-20 max-w-[210px] bg-[#143D32]/95 backdrop-blur-xs border border-emerald-400/40 rounded-2xl p-3 text-white shadow-lg transform rotate-1 select-none">
+                <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 z-20 max-w-[min(210px,calc(100vw-3rem))] bg-[#143D32]/95 backdrop-blur-xs border border-emerald-400/40 rounded-2xl p-2.5 sm:p-3 text-white shadow-lg transform rotate-1 select-none">
                   <p className="text-[10px] font-mono tracking-wider uppercase text-emerald-200 font-bold mb-0.5">
                     COLLEGE TRANSIT
                   </p>
