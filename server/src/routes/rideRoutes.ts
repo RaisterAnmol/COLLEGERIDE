@@ -81,10 +81,10 @@ export function sanitizePublicUser(user: any) {
   };
 }
 
-// GET /api/rides?origin=&dest=&date= (§2.4 Authenticated & Sanitized)
+// GET /api/rides?origin=&dest=&date= (§2.4 Public/Optional Auth & Sanitized)
 router.get(
   "/",
-  requireAuth,
+  optionalAuth,
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const {
@@ -539,7 +539,7 @@ router.get("/:id", async (req, res): Promise<void> => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({ code: "BAD_REQUEST", message: "Invalid ride ID" });
+      res.status(404).json({ code: "NOT_FOUND", message: "Ride not found" });
       return;
     }
 

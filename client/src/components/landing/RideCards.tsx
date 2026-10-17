@@ -7,6 +7,7 @@ import { IRide } from '../../types';
 import { JourneyTicket } from '../signature/JourneyTicket';
 import { TactileButton } from '../signature/TactileButton';
 import { DEMO_FALLBACK_RIDES } from '../../services/demoFallback';
+import { RideTicketSkeleton } from '../common/Skeletons';
 
 export const RideCards: React.FC = () => {
   const [rides, setRides] = useState<IRide[]>([]);
@@ -69,10 +70,8 @@ export const RideCards: React.FC = () => {
 
       {/* Real Journey Tickets Display */}
       {loading ? (
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
-          <JourneyTicket isLoading={true} />
-          <JourneyTicket isLoading={true} />
-          <JourneyTicket isLoading={true} />
+        <div className="mt-8">
+          <RideTicketSkeleton count={3} />
         </div>
       ) : rides.length > 0 ? (
         <motion.div

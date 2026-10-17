@@ -43,6 +43,7 @@ import { CustomSelect } from '../components/common/CustomSelect';
 import { AnimatedCounter } from '../components/common/AnimatedCounter';
 import { RideTicketSkeleton } from '../components/common/Skeletons';
 import { EmptyState } from '../components/common/EmptyState';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 
 export interface PresetLocation {
   text: string;
@@ -186,6 +187,11 @@ const YEARS = ['Any', '1', '2', '3', '4'];
 const SEMESTERS = ['Any', '1', '2', '3', '4', '5', '6', '7', '8'];
 
 export const SearchRidesPage: React.FC = () => {
+  useSeoMeta({
+    title: "Find Campus Rides & Corridors",
+    description: "Search scheduled university carpools across Premnagar, Suddhowala, and UIT Gate 1 corridors. Connect with verified classmates and reserve seats.",
+  });
+
   const { user, activePersona } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();

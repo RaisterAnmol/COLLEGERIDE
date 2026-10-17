@@ -10,6 +10,7 @@ import { ProductPreview } from "../components/landing/ProductPreview";
 import { StatusBanner } from "../components/landing/StatusBanner";
 import { ExpandableFaq } from "../components/landing/ExpandableFaq";
 import { Footer } from "../components/landing/Footer";
+import { useSeoMeta } from "../hooks/useSeoMeta";
 
 const sectionRevealVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -24,6 +25,12 @@ const sectionRevealVariants: Variants = {
 };
 
 export const LandingPage: React.FC = () => {
+  useSeoMeta({
+    title: "CampusRide — Verified University Carpool & Commute Network",
+    description: "Share daily college commutes with verified .edu classmates, split fuel costs transparently, and ride safely across Dehradun and Uttarakhand campus corridors.",
+    canonical: "https://collegeride.vercel.app/",
+    ogImage: "/campus-hero-real.jpg",
+  });
   return (
     <div className="min-h-screen text-ink-primary bg-canvas flex flex-col antialiased selection:bg-route selection:text-white">
       {/* 1. Hero with RouteThread drawing across campus quad and StudentAvatar trust strip */}

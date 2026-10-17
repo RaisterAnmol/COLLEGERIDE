@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CheckCircle2, AlertTriangle, AlertCircle, Info, X } from 'lucide-react';
 
@@ -24,6 +24,24 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
+type ToastListener = (type: ToastType, message: string, title?: string, duration?: number) => void;
+const listeners = new Set<ToastListener>();
+
+export const notifyToast = {
+  success: (message: string, title?: string, duration?: number) => {
+    listeners.forEach((fn) => fn('success', message, title, duration));
+  },
+  error: (message: string, title?: string, duration?: number) => {
+    listeners.forEach((fn) => fn('error', message, title, duration));
+  },
+  warning: (message: string, title?: string, duration?: number) => {
+    listeners.forEach((fn) => fn('warning', message, title, duration));
+  },
+  info: (message: string, title?: string, duration?: number) => {
+    listeners.forEach((fn) => fn('info', message, title, duration));
+  },
+};
+
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -42,6 +60,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }, duration);
     }
   }, [removeToast]);
+
+  useEffect(() => {
+    const handler: ToastListener = (type, message, title, duration) => {
+      addToast(type, message, title, duration);
+    };
+    listeners.add(handler);
+    return () => {
+      listeners.delete(handler);
+    };
+  }, [addToast]);
 
   const toast = {
     success: (message: string, title?: string, duration?: number) => addToast('success', message, title, duration),

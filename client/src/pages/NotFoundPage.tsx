@@ -12,8 +12,14 @@ import {
   School,
   AlertTriangle
 } from 'lucide-react';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 
 export const NotFoundPage: React.FC = () => {
+  useSeoMeta({
+    title: "404 - Commute Stop Not Found",
+    description: "The requested campus carpool route or page could not be located.",
+  });
+
   const navigate = useNavigate();
 
   return (

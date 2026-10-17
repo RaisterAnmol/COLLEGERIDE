@@ -34,6 +34,8 @@ import RideRequestSuccessModal from "../components/RideRequestSuccessModal";
 import { JourneyTicket } from "../components/signature/JourneyTicket";
 import { TactileButton } from "../components/signature/TactileButton";
 import { HoldToConfirmWithFallback } from "../components/signature/HoldToConfirm";
+import { RideDetailSkeleton, ReviewCardSkeleton } from "../components/common/Skeletons";
+import { useSeoMeta } from "../hooks/useSeoMeta";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -64,6 +66,15 @@ export const RideDetailPage: React.FC = () => {
   const navigate = useNavigate();
 
   const [ride, setRide] = useState<IRide | null>(null);
+
+  useSeoMeta({
+    title: ride?.origin?.text && ride?.destination?.text
+      ? `${ride.origin.text} to ${ride.destination.text} Pass`
+      : "Campus Commute Pass",
+    description: ride?.origin?.text && ride?.destination?.text
+      ? `Verified student carpool pass from ${ride.origin.text} to ${ride.destination.text}. Offered by verified student peer ${ride.creator?.name || 'Classmate'}.`
+      : "Verified student carpool commute pass and route details.",
+  });
   const [requests, setRequests] = useState<IRideRequest[]>([]);
   const [activeTrip, setActiveTrip] = useState<ITrip | null>(null);
   const [showChat, setShowChat] = useState(false);
@@ -95,56 +106,69 @@ export const RideDetailPage: React.FC = () => {
     try {
       setLoading(true);
       let rideData = null;
-      try {
-        rideData = await api.getRideById(id);
-      } catch (err) {
-        console.warn("api.getRideById failed, searching fallback:", err);
-      }
-      if (!rideData) {
+
+      // If ID is a known demo slug or not a 24-hex MongoDB ObjectId, resolve directly from demo fallback
+      const isObjectId = /^[0-9a-fA-F]{24}$/.test(id);
+      if (!isObjectId || id.startsWith("ride_")) {
         rideData = DEMO_FALLBACK_RIDES.find((r) => r._id === id) || null;
+      } else {
+        try {
+          rideData = await api.getRideById(id);
+        } catch (err) {
+          console.info("[RideDetailPage] Live ride not found on server, checking fallback catalog:", id);
+          rideData = DEMO_FALLBACK_RIDES.find((r) => r._id === id) || null;
+        }
       }
+
       if (Array.isArray(rideData)) {
         rideData = rideData.length > 0 ? rideData[0] : null;
       }
       setRide(rideData);
 
-      // Fetch driver reviews
-      if (rideData?.creator?._id) {
+      // Fetch driver reviews only if creator has a valid database ObjectId
+      const creatorId = String(rideData?.creator?._id || '');
+      if (creatorId && /^[0-9a-fA-F]{24}$/.test(creatorId)) {
         try {
           setDriverReviewsLoading(true);
-          const revs = await api.getUserReviews(rideData.creator._id, 'driver');
+          const revs = await api.getUserReviews(creatorId, 'driver');
           setDriverReviews(Array.isArray(revs) ? revs : []);
         } catch {
-          // Silent fallback
+          setDriverReviews([]);
         } finally {
           setDriverReviewsLoading(false);
         }
+      } else {
+        setDriverReviews([]);
+        setDriverReviewsLoading(false);
       }
 
       joinRideRoom(id);
 
-      // Check for active trip
-      try {
-        const tripData = await api.getTrip(id);
-        if (tripData && tripData._id) {
-          setActiveTrip(tripData);
+      // Only fire private trip and request queries if the user is authenticated
+      if (user) {
+        // Check for active trip
+        try {
+          const tripData = await api.getTrip(id);
+          if (tripData && tripData._id) {
+            setActiveTrip(tripData);
+          }
+        } catch {
+          // No active trip yet
         }
-      } catch {
-        // No active trip yet
-      }
 
-      // If user is driver, fetch incoming requests
-      if (rideData?.creator?._id === user?._id) {
-        const reqs = await api.getRequests("driver", id);
-        const localReqs = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
-        const matchingLocal = localReqs.filter((r: any) => r.rideId === id);
-        setRequests([...(reqs || []), ...matchingLocal]);
-      } else {
-        // Passenger: check if already requested from server + localStorage
-        const reqs = await api.getRequests("passenger", id);
-        const localReqs = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
-        const matchingLocal = localReqs.filter((r: any) => r.rideId === id);
-        setRequests([...(reqs || []), ...matchingLocal]);
+        // If user is driver, fetch incoming requests
+        if (rideData?.creator?._id === user?._id) {
+          const reqs = await api.getRequests("driver", id);
+          const localReqs = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
+          const matchingLocal = localReqs.filter((r: any) => r.rideId === id);
+          setRequests([...(reqs || []), ...matchingLocal]);
+        } else {
+          // Passenger: check if already requested from server + localStorage
+          const reqs = await api.getRequests("passenger", id);
+          const localReqs = JSON.parse(localStorage.getItem("campusride_local_requests") || "[]");
+          const matchingLocal = localReqs.filter((r: any) => r.rideId === id);
+          setRequests([...(reqs || []), ...matchingLocal]);
+        }
       }
     } catch (err: any) {
       setError(err.message || "Failed to load ride");
@@ -321,7 +345,7 @@ export const RideDetailPage: React.FC = () => {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <JourneyTicket isLoading={true} />
+        <RideDetailSkeleton />
       </div>
     );
   }
@@ -375,6 +399,35 @@ export const RideDetailPage: React.FC = () => {
         >
           <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
           <span>{error}</span>
+        </motion.div>
+      )}
+
+      {/* Guest Prompt to Log In to Request This Ride */}
+      {!user && (
+        <motion.div
+          variants={itemVariants}
+          className="p-4 sm:p-5 bg-route-pale/40 border border-route-light/30 text-ink-primary rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-subtle"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-control bg-route-pale text-route flex items-center justify-center font-bold shrink-0">
+              <UserCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-ink-primary">
+                Log in to request this ride
+              </div>
+              <div className="text-xs text-ink-secondary">
+                Connect your institutional .edu credentials to split fuel and reserve verified campus seats.
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate(`/login?redirect=/rides/${id}`)}
+            className="px-4 py-2 rounded-control bg-route hover:bg-route-light text-surface text-xs font-semibold shrink-0 cursor-pointer shadow-subtle active:translate-y-[1.5px] transition-all"
+          >
+            Log in to Request →
+          </button>
         </motion.div>
       )}
 
@@ -631,15 +684,20 @@ export const RideDetailPage: React.FC = () => {
 
         {/* Driver Reviews List / Empty State */}
         {driverReviewsLoading ? (
-          <div className="py-6 text-center text-ink-muted text-xs">
-            Loading verified driver reviews...
-          </div>
+          <ReviewCardSkeleton count={2} />
         ) : driverReviews.length === 0 ? (
           <div className="flex flex-col sm:flex-row items-center gap-6 p-6 sm:p-7 rounded-2xl bg-canvas border border-line-base shadow-2xs">
             <img
               src="/carpool-commute.jpg"
               alt="Verified Student Commutes"
+              width={112}
+              height={80}
               className="w-28 h-20 rounded-xl object-cover border border-line-base shadow-subtle shrink-0"
+              loading="lazy"
+              decoding="async"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = '/campus-hero-real.jpg';
+              }}
             />
             <div className="space-y-1.5 text-left">
               <h4 className="text-xs font-bold text-ink-primary">
@@ -668,7 +726,14 @@ export const RideDetailPage: React.FC = () => {
                             <img
                               src={reviewer.avatarURL}
                               alt={reviewerName}
+                              width={40}
+                              height={40}
                               className="w-full h-full object-cover rounded-xl"
+                              loading="lazy"
+                              decoding="async"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).style.display = 'none';
+                              }}
                             />
                           ) : (
                             reviewerName.charAt(0)
@@ -757,8 +822,15 @@ export const RideDetailPage: React.FC = () => {
                         req.passengerId?.avatarURL ||
                         "/test_uploads/profile_photo.jpg"
                       }
-                      alt={req.passengerId?.name}
+                      alt={req.passengerId?.name || "Student Passenger"}
+                      width={40}
+                      height={40}
                       className="w-10 h-10 rounded-control object-cover border border-line-base shadow-subtle"
+                      loading="lazy"
+                      decoding="async"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/profile_photo.jpg';
+                      }}
                     />
                     <div>
                       <div className="flex items-center gap-2">

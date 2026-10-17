@@ -25,12 +25,19 @@ import {
   RotateCcw,
   Sparkles,
   Navigation,
+  AlertCircle,
 } from 'lucide-react';
 import { StudentAvatar } from '../components/signature/StudentAvatar';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 
 const safetyHeroImg = '/safety-student-real.jpg';
 
 export const SafetyPage: React.FC = () => {
+  useSeoMeta({
+    title: "Campus Commute Safety & Emergency 112 Standard",
+    description: "Explore the 4 pillars of CampusRide institutional safety: verified .edu credentials, GPS corridor telemetry, women-only commute options, and instant 112 dispatch.",
+  });
+
   const { user } = useAuth();
   const [copiedLocation, setCopiedLocation] = useState(false);
   const [sosModalOpen, setSosModalOpen] = useState(false);
@@ -45,6 +52,8 @@ export const SafetyPage: React.FC = () => {
   const [liveCoords, setLiveCoords] = useState<{ lat: number; lng: number; accuracy?: number } | null>(null);
   const [liveAddress, setLiveAddress] = useState<string>('');
   const [locationLoading, setLocationLoading] = useState(false);
+  const [locationStatusText, setLocationStatusText] = useState<string>('Finding your location...');
+  const [locationError, setLocationError] = useState<string | null>(null);
   const [sosNotesInput, setSosNotesInput] = useState<string>('');
 
   useEffect(() => {
@@ -77,7 +86,11 @@ export const SafetyPage: React.FC = () => {
 
   const acquireLocation = useCallback(() => {
     setLocationLoading(true);
+    setLocationError(null);
+    setLocationStatusText('Finding your location (acquiring GPS satellite fix)...');
+
     if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser.');
       fetchIpLocation();
       return;
     }
@@ -89,6 +102,7 @@ export const SafetyPage: React.FC = () => {
         const accuracy = Math.round(pos.coords.accuracy);
         setLiveCoords({ lat, lng, accuracy });
         setLocationLoading(false);
+        setLocationError(null);
 
         // Reverse geocode via OpenStreetMap Nominatim for accurate local street/campus landmark
         try {
@@ -104,6 +118,14 @@ export const SafetyPage: React.FC = () => {
         } catch (_) {}
       },
       (err) => {
+        if (err.code === 1) { // PERMISSION_DENIED
+          setLocationError('Location permission denied. Please allow location access in your browser settings to enable live GPS telemetry.');
+          setLocationLoading(false);
+          fetchIpLocation();
+          return;
+        }
+
+        setLocationStatusText('Refining with cellular & network triangulation...');
         console.warn('[SafetyPage] High accuracy GPS timed out, falling back to network triangulation:', err);
         navigator.geolocation.getCurrentPosition(
           (pos) => {
@@ -113,14 +135,20 @@ export const SafetyPage: React.FC = () => {
               accuracy: Math.round(pos.coords.accuracy),
             });
             setLocationLoading(false);
+            setLocationError(null);
           },
-          () => {
+          (networkErr) => {
+            if (networkErr.code === 1) {
+              setLocationError('Location permission denied. Please enable location permissions.');
+            } else {
+              setLocationError('Unable to acquire precise GPS signal. Switched to campus corridor default.');
+            }
             fetchIpLocation();
           },
-          { enableHighAccuracy: false, timeout: 8000, maximumAge: 60000 }
+          { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 }
         );
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
   }, [fetchIpLocation]);
 
@@ -264,8 +292,14 @@ export const SafetyPage: React.FC = () => {
                 <img
                   src={safetyHeroImg}
                   alt="Authentic university student commuter Priya holding verified digital student pass"
+                  width={480}
+                  height={380}
                   className="w-full h-full object-cover object-center"
                   loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/campus-hero-real.jpg';
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-transparent to-slate-950/20 pointer-events-none" />
 
@@ -433,6 +467,33 @@ export const SafetyPage: React.FC = () => {
               <span>{copiedLocation ? 'Link Copied!' : 'Share Live GPS'}</span>
             </button>
           </div>
+
+          {/* Real-time GPS Location Status in Hero */}
+          <div className="w-full flex items-center justify-center pt-1">
+            {locationLoading ? (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-xs text-emerald-300 text-xs font-mono font-medium border border-emerald-400/30 animate-pulse">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
+                <span>{locationStatusText}</span>
+              </div>
+            ) : locationError ? (
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-950/80 backdrop-blur-xs text-amber-200 text-xs font-medium border border-amber-500/40">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>{locationError}</span>
+                <button
+                  type="button"
+                  onClick={acquireLocation}
+                  className="underline font-bold text-amber-300 ml-1 cursor-pointer hover:text-white"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : liveCoords ? (
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs text-white/90 text-xs font-mono">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                <span>GPS: {liveCoords.lat.toFixed(4)}, {liveCoords.lng.toFixed(4)} ({liveAddress || 'Campus Perimeter'})</span>
+              </div>
+            ) : null}
+          </div>
         </motion.div>
 
         {/* 4 CORE SAFETY PILLARS (Redesigned with Tactile Neumorphism) */}
@@ -529,7 +590,14 @@ export const SafetyPage: React.FC = () => {
                 <img
                   src="/image_6f00263b.jpg"
                   alt="Verified university students carpooling together in car on university campus"
+                  width={500}
+                  height={208}
                   className="absolute inset-0 w-full h-full object-cover object-center transform transition-transform duration-700 group-hover/map:scale-105"
+                  loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/campus-hero-real.jpg';
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-black/35 pointer-events-none" />
 
@@ -798,6 +866,29 @@ export const SafetyPage: React.FC = () => {
                     <span>{locationLoading ? 'Acquiring...' : 'Refresh GPS'}</span>
                   </button>
                 </div>
+
+                {locationLoading && (
+                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-forest/5 border border-forest/20 text-forest text-xs font-medium animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-forest animate-ping shrink-0" />
+                    <span>{locationStatusText}</span>
+                  </div>
+                )}
+
+                {locationError && (
+                  <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div className="flex-1 text-[11px] leading-relaxed">
+                      <span>{locationError}</span>
+                      <button
+                        type="button"
+                        onClick={acquireLocation}
+                        className="block mt-1 font-bold text-amber-800 underline cursor-pointer"
+                      >
+                        Retry Location Access
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {liveCoords ? (
                   <div className="space-y-0.5">

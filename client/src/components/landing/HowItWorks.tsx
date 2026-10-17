@@ -175,8 +175,14 @@ export const HowItWorks: React.FC = () => {
                 <img
                   src={activeStep.image}
                   alt={activeStep.imageCaption}
+                  width={600}
+                  height={224}
                   className="w-full h-48 sm:h-56 object-cover transition-transform duration-500 hover:scale-[1.02]"
                   loading="lazy"
+                  decoding="async"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/campus-hero-real.jpg';
+                  }}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
                 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs font-mono drop-shadow-md">

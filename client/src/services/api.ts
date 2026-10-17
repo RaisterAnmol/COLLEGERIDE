@@ -1,3 +1,6 @@
+import { notifyToast } from "../context/ToastContext";
+import { DEMO_FALLBACK_RIDES } from "./demoFallback";
+
 const isLocal =
   typeof window !== "undefined" &&
   (window.location.hostname === "localhost" ||
@@ -14,6 +17,21 @@ const API_BASE =
     ? rawApiUrl
     : (isLocal ? `${window.location.protocol}//${window.location.hostname}:5000` : "");
 
+function sanitizeErrorMessage(rawMsg: string, status?: number): string {
+  if (!rawMsg) return "Something went wrong. Please try again.";
+  if (status && status >= 500) {
+    return "Our campus server encountered a momentary issue. Please try again in a few moments.";
+  }
+  // Sanitize internal database errors or unformatted technical errors
+  if (rawMsg.includes("Cast to ObjectId") || rawMsg.includes("Mongo") || rawMsg.includes("E11000")) {
+    return "The requested record could not be processed. Please check your details.";
+  }
+  if (rawMsg.includes("jwt") || rawMsg.includes("token")) {
+    return "Your campus session has expired. Please sign in again.";
+  }
+  return rawMsg;
+}
+
 class ApiService {
   private getToken(): string | null {
     return localStorage.getItem("campusride_token");
@@ -22,6 +40,7 @@ class ApiService {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
+    isRetry = false,
   ): Promise<T> {
     const token = this.getToken();
     const isFormData = typeof FormData !== "undefined" && options.body instanceof FormData;
@@ -34,8 +53,6 @@ class ApiService {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-
-
     try {
       const response = await fetch(`${API_BASE}${endpoint}`, {
         ...options,
@@ -43,28 +60,65 @@ class ApiService {
       });
 
       if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem("campusride_token");
-        }
-
         const errorData = await response.json().catch(() => ({}));
-        const errorMessage =
+        const rawMessage =
           errorData.message ||
           errorData.error ||
           (Array.isArray(errorData.issues)
             ? errorData.issues.map((i: any) => i.message).join(", ")
             : "") ||
           `Request failed with status ${response.status}`;
-        throw new Error(errorMessage);
+
+        const cleanMessage = sanitizeErrorMessage(rawMessage, response.status);
+
+        if (response.status === 401) {
+          localStorage.removeItem("campusride_token");
+          // If not currently on public auth page or landing, redirect to login preserving return URL
+          if (typeof window !== "undefined") {
+            const currentPath = window.location.pathname;
+            if (
+              currentPath !== "/login" &&
+              currentPath !== "/register" &&
+              currentPath !== "/signup" &&
+              currentPath !== "/"
+            ) {
+              const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
+              notifyToast.warning("Your session has expired. Please log in to continue.", "Session Expired");
+              setTimeout(() => {
+                window.location.href = `/login?redirect=${returnUrl}`;
+              }, 400);
+            }
+          }
+        } else if (response.status === 400) {
+          notifyToast.warning(cleanMessage, "Check Details");
+        } else if (response.status >= 500) {
+          notifyToast.error(cleanMessage, "Server Notice");
+        }
+
+        throw new Error(cleanMessage);
       }
 
       return response.json();
     } catch (err: any) {
-      // If this is a real error response thrown from above, never swallow it with fallback
-      if (err instanceof Error && err.message && !err.message.includes("Failed to fetch") && !err.message.includes("NetworkError")) {
-        throw err;
+      // Check for network errors / cold start timeouts (Render free tier)
+      const isNetworkError =
+        err instanceof TypeError ||
+        (err?.message && (
+          err.message.includes("Failed to fetch") ||
+          err.message.includes("NetworkError") ||
+          err.message.includes("Load failed")
+        ));
+
+      if (isNetworkError && !isRetry) {
+        notifyToast.info("Server is waking up from standby. Reconnecting in a moment...", "Waking Up", 6000);
+        // Wait 3.5s for Render container wake-up and retry once
+        await new Promise((res) => setTimeout(res, 3500));
+        return this.request<T>(endpoint, options, true);
       }
 
+      if (isNetworkError && isRetry) {
+        notifyToast.error("Unable to reach the campus server. Please check your internet connection.", "Offline Notice");
+      }
 
       throw err;
     }
@@ -285,6 +339,10 @@ class ApiService {
   }
 
   async getRideById(id: string) {
+    if (!/^[0-9a-fA-F]{24}$/.test(id)) {
+      const fallback = DEMO_FALLBACK_RIDES.find((r) => r._id === id);
+      if (fallback) return fallback;
+    }
     return this.request<any>(`/api/rides/${id}`);
   }
 
@@ -408,6 +466,9 @@ class ApiService {
   }
 
   async getUserReviews(userId: string, role?: "driver" | "passenger") {
+    if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+      return [];
+    }
     const qs = role ? `?role=${role}` : "";
     return this.request<any[]>(`/api/users/${userId}/reviews${qs}`);
   }

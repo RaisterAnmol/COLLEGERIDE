@@ -102,7 +102,7 @@ router.get("/users/:id/reviews", async (req, res): Promise<void> => {
     const { id } = req.params;
     const { role } = req.query;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({ code: "BAD_REQUEST", error: "Invalid user ID" });
+      res.status(200).json([]);
       return;
     }
 

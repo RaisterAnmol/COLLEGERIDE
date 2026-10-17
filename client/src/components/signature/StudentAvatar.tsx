@@ -198,8 +198,11 @@ export const StudentAvatar: React.FC<StudentAvatarProps> = ({
         <img
           src={assetSrc}
           alt={name || config.name}
+          width={size}
+          height={size}
           className="w-full h-full object-cover rounded-xl"
           loading="lazy"
+          decoding="async"
           onError={() => setImgError(true)}
         />
         {(state === 'arrived' || state === 'matched') && (

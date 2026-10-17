@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://campusride.edu/</loc>
-    <lastmod>2026-09-21</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://collegeride.vercel.app/</loc>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://campusride.edu/safety</loc>
-    <lastmod>2026-09-21</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://collegeride.vercel.app/search</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://collegeride.vercel.app/safety</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://campusride.edu/colleges</loc>
-    <lastmod>2026-09-21</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://collegeride.vercel.app/colleges</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://collegeride.vercel.app/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://collegeride.vercel.app/register</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

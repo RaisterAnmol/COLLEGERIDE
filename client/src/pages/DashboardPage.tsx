@@ -52,6 +52,12 @@ import {
 } from '../data/academicData';
 import { sanitizeLocationText } from '../utils/sanitizeLocation';
 import { GoogleOnboardingModal } from '../components/auth/GoogleOnboardingModal';
+import {
+  ProfileSkeleton,
+  ReviewCardSkeleton,
+  RideTicketSkeleton,
+  TableRowSkeleton,
+} from '../components/common/Skeletons';
 
 export const DashboardPage: React.FC = () => {
   const { user, updateProfile, refreshUser } = useAuth();
@@ -361,6 +367,16 @@ export const DashboardPage: React.FC = () => {
 
   // Next upcoming ride for driver
   const nextOfferedRide = myOfferedRides.length > 0 ? myOfferedRides[0] : null;
+
+  if (loading && !user) {
+    return (
+      <div className="min-h-screen text-[#1E2922] pb-16 relative font-sans">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
+          <ProfileSkeleton />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-[#1E2922] pb-16 relative font-sans">
@@ -1009,7 +1025,9 @@ export const DashboardPage: React.FC = () => {
 
               {/* Reviews List or Clean Empty State (Matches Image 2) */}
               <div className="pt-2">
-                {reviews.length === 0 ? (
+                {reviewsLoading ? (
+                  <ReviewCardSkeleton count={2} />
+                ) : reviews.length === 0 ? (
                   <div className="py-6 px-4 rounded-2xl bg-slate-50/80 border border-dashed border-slate-200 text-center space-y-1.5">
                     <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto text-sm">
                       👥
@@ -1067,7 +1085,7 @@ export const DashboardPage: React.FC = () => {
                   </div>
 
                   {loading ? (
-                    <div className="py-8 text-center text-slate-400 text-xs">Loading rides...</div>
+                    <RideTicketSkeleton count={2} />
                   ) : myOfferedRides.length === 0 ? (
                     <div className="py-8 text-center text-slate-400 space-y-2">
                       <Car className="w-8 h-8 mx-auto text-slate-300" />
@@ -1160,7 +1178,7 @@ export const DashboardPage: React.FC = () => {
                   </div>
 
                   {loading ? (
-                    <div className="py-8 text-center text-slate-400 text-xs">Loading requests...</div>
+                    <TableRowSkeleton rows={3} />
                   ) : myRequests.length === 0 ? (
                     <div className="py-10 text-center text-slate-400 space-y-2">
                       <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
@@ -1373,7 +1391,7 @@ export const DashboardPage: React.FC = () => {
 
               {/* Bookings List */}
               {loading ? (
-                <div className="py-12 text-center text-slate-400 text-xs">Loading your commutes...</div>
+                <RideTicketSkeleton count={2} />
               ) : !isUserVerified ? (
                 <div className="py-10 text-center border-2 border-dashed border-amber-200/80 rounded-2xl p-8 bg-amber-50/40 space-y-3">
                   <div className="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center mx-auto text-amber-600">
@@ -1489,7 +1507,9 @@ export const DashboardPage: React.FC = () => {
                 </div>
               </div>
 
-              {reviews.length === 0 ? (
+              {reviewsLoading ? (
+                <ReviewCardSkeleton count={2} />
+              ) : reviews.length === 0 ? (
                 <p className="text-xs text-slate-400">No reviews received yet. Reviews unlock after completed rides.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">

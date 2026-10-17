@@ -1,9 +1,12 @@
+# CampusRide - Verified University Commute Network
 User-agent: *
 Allow: /
+Allow: /search
 Allow: /safety
 Allow: /colleges
 Disallow: /admin
+Disallow: /verification
 Disallow: /trips/
-Disallow: /dashboard
+Disallow: /api/
 
-Sitemap: https://campusride.edu/sitemap.xml
+Sitemap: https://collegeride.vercel.app/sitemap.xml

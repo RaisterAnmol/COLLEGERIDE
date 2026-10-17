@@ -101,6 +101,10 @@ const ARCHETYPE_OPTIONS: {
   { id: "neha", name: "Neha", dept: "Transit Commuter", tag: "Suddhowala connection" },
 ];
 
+// Module-level GSI singleton state to prevent duplicate initialization
+let isGlobalGsiInitialized = false;
+let globalGsiCallback: ((response: any) => void) | null = null;
+
 export const AuthPage: React.FC = () => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -257,13 +261,16 @@ export const AuthPage: React.FC = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
+  // Anti-spam honeypot fields (hidden from genuine users, filled by bots)
+  const [honeypot, setHoneypot] = useState("");
+  const [forgotHoneypot, setForgotHoneypot] = useState("");
+
   const { login, loginWithGoogle, register } = useAuth();
   const navigate = useNavigate();
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const accountTypeRef = useRef<AccountTypeOption>(accountType);
   accountTypeRef.current = accountType;
-  const isGoogleInitializedRef = useRef<boolean>(false);
 
   useEffect(() => {
     const clientId =
@@ -290,19 +297,26 @@ export const AuthPage: React.FC = () => {
       }
     };
 
+    globalGsiCallback = handleGoogleCallback;
+
     const initGoogle = () => {
       if (!isSubscribed) return;
       const google = (window as any).google;
       if (google?.accounts?.id) {
         try {
-          if (!isGoogleInitializedRef.current) {
+          if (!isGlobalGsiInitialized) {
             google.accounts.id.initialize({
               client_id: clientId,
-              callback: handleGoogleCallback,
+              callback: (res: any) => {
+                if (globalGsiCallback) {
+                  globalGsiCallback(res);
+                }
+              },
               auto_select: false,
               cancel_on_tap_outside: true,
+              use_fedcm_for_prompt: true,
             });
-            isGoogleInitializedRef.current = true;
+            isGlobalGsiInitialized = true;
           }
 
           const btnContainer = document.getElementById("googleSignInBtnContainer");
@@ -319,9 +333,10 @@ export const AuthPage: React.FC = () => {
             });
           }
 
+          // FedCM One Tap prompt with graceful cooldown / dismissal handling
           google.accounts.id.prompt((notification: any) => {
-            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-              // Gracefully handle dismissed / skipped prompt
+            if (notification?.isDismissedMoment?.()) {
+              console.info("[GSI] One-tap prompt dismissed or in cooldown. Standard button remains active.");
             }
           });
         } catch (e) {
@@ -394,6 +409,17 @@ export const AuthPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Anti-spam protection: invisible honeypot trap
+    if (honeypot.trim()) {
+      console.warn("[AuthPage] Bot submission detected via honeypot trap. Silently rejected.");
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 600);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -799,6 +825,18 @@ export const AuthPage: React.FC = () => {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Spam protection: hidden honeypot field (off-screen, tabindex -1, autocomplete off) */}
+              <input
+                type="text"
+                name="user_campus_code_hp"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, overflow: 'hidden' }}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+
               {/* Registration Form Steps */}
               <AnimatePresence mode="wait">
                 {isRegister ? (
@@ -1724,6 +1762,17 @@ export const AuthPage: React.FC = () => {
 
             {forgotStep === "REQUEST" ? (
               <form onSubmit={handleSendResetLink} className="space-y-4">
+                {/* Spam protection: hidden honeypot field (off-screen, tabindex -1, autocomplete off) */}
+                <input
+                  type="text"
+                  name="user_campus_recovery_hp"
+                  value={forgotHoneypot}
+                  onChange={(e) => setForgotHoneypot(e.target.value)}
+                  style={{ position: 'absolute', left: '-9999px', opacity: 0, height: 0, width: 0, overflow: 'hidden' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                />
                 <div>
                   <label className="block text-xs font-semibold text-ink-primary mb-1">
                     Student Email

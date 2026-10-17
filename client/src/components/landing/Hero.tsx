@@ -232,8 +232,14 @@ export const Hero: React.FC = () => {
                   <img
                     src={slide.image}
                     alt={`${slide.name} - ${slide.role}`}
+                    width={640}
+                    height={480}
                     className="w-full h-full object-cover object-center"
-                    loading="eager"
+                    loading={idx === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/campus-hero-real.jpg';
+                    }}
                   />
                   {/* Subtle Gradient Overlays */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
