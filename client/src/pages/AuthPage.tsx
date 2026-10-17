@@ -1728,24 +1728,25 @@ export const AuthPage: React.FC = () => {
                   </TactileButton>
 
                   {/* Social Divider */}
-                  <div className="relative flex items-center justify-center pt-2 pb-1">
-                    <div className="border-t border-line-subtle w-full" />
-                    <span className="bg-surface px-3 text-xs text-ink-muted font-mono relative">
+                  <div className="relative flex items-center py-2.5">
+                    <div className="flex-grow border-t border-line-subtle" />
+                    <span className="shrink-0 px-3 text-xs text-ink-muted font-mono whitespace-nowrap select-none">
                       Or continue with
                     </span>
+                    <div className="flex-grow border-t border-line-subtle" />
                   </div>
 
                   {/* Google Sign-In Container */}
-                  <div className="w-full flex flex-col items-center">
+                  <div className="w-full flex flex-col items-center justify-center pt-1">
                     {googleLoading ? (
-                      <div className="flex items-center gap-2 text-xs text-ink-secondary py-2">
-                        <span className="w-4 h-4 border-2 border-route border-t-transparent rounded-full" />
+                      <div className="flex items-center justify-center gap-2 text-xs text-ink-secondary py-2.5">
+                        <span className="w-4 h-4 border-2 border-route border-t-transparent rounded-full animate-spin" />
                         <span>Authenticating with Google...</span>
                       </div>
                     ) : (
                       <div
                         id="googleSignInBtnContainer"
-                        className="w-full min-h-[44px] flex justify-center"
+                        className="w-full min-h-[44px] flex justify-center items-center"
                       />
                     )}
                   </div>
