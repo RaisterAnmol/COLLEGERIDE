@@ -684,8 +684,8 @@ export const SearchRidesPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 text-left">
       {/* Route Explorer Side-by-Side Header */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-8 rounded-3xl border border-white/80 neu-card mb-8">
-        <div className="lg:col-span-7 space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-8 rounded-3xl border border-white/80 neu-card mb-8">
+        <div className="md:col-span-7 space-y-3">
           <span className="text-xs font-mono text-plum font-bold bg-plum-light px-3 py-1 rounded-full border border-plum-border inline-block">
             CAMPUSRIDE ROUTE EXPLORER
           </span>
@@ -703,7 +703,7 @@ export const SearchRidesPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-5 w-full">
+        <div className="md:col-span-5 w-full">
           <div className="relative rounded-3xl overflow-hidden border border-border neu-card-sm">
             <img
               src={findRideImg}
@@ -815,7 +815,7 @@ export const SearchRidesPage: React.FC = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-stretch">
             <div>
               <div className="h-6 flex items-center mb-2">
                 <label className="text-xs font-semibold text-ink-primary flex items-center gap-1 font-mono">
@@ -1101,11 +1101,11 @@ export const SearchRidesPage: React.FC = () => {
               </span>
             </motion.label>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-2.5 rounded-xl bg-forest hover:bg-[#0f2e26] disabled:opacity-50 text-white font-semibold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer neu-btn"
+                className="w-full sm:w-auto justify-center px-6 py-2.5 rounded-xl bg-forest hover:bg-[#0f2e26] disabled:opacity-50 text-white font-semibold text-sm shadow-sm transition-all flex items-center gap-2 cursor-pointer neu-btn"
               >
                 <Search className="w-4 h-4" />
                 {loading ? 'Matching...' : 'Search Matching Rides'}
