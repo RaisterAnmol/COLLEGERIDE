@@ -803,9 +803,9 @@ export const SearchRidesPage: React.FC = () => {
                 }}
                 className={`text-xs px-2.5 py-1 rounded-control border transition-all cursor-pointer font-medium ${
                   originIndex === landmark.idx
-                    ? 'bg-route text-surface border-route shadow-2xs'
+                    ? 'bg-[#143D32] text-white border-[#143D32] shadow-2xs'
                     : destIndex === landmark.idx
-                    ? 'bg-ink-primary text-surface border-ink-primary shadow-2xs'
+                    ? 'bg-[#743A59] text-white border-[#5C2B45] ring-2 ring-[#743A59]/25 shadow-2xs'
                     : 'bg-surface text-ink-secondary border-line-base hover:border-route hover:bg-route-pale/40'
                 }`}
               >
