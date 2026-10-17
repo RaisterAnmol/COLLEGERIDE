@@ -78,8 +78,8 @@ export const CampusVehicleMascot: React.FC<CampusVehicleMascotProps> = ({
     >
       {/* Speech Balloon */}
       {showSpeech && (
-        <div className="absolute -top-10 left-1/2 -translate-x-1/2 pointer-events-none z-30">
-          <div className="relative px-3 py-1 rounded-full bg-paper border border-line-base shadow-subtle text-[11px] font-mono font-bold text-ink-primary whitespace-nowrap">
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 pointer-events-none z-30 max-w-[85vw]">
+          <div className="relative px-3 py-1 rounded-full bg-paper border border-line-base shadow-subtle text-[11px] font-mono font-bold text-ink-primary whitespace-nowrap truncate max-w-[260px] sm:max-w-none">
             {defaultSpeech}
             {/* Balloon triangle tail */}
             <div

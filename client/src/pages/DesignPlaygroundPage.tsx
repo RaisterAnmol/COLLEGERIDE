@@ -151,7 +151,7 @@ export const DesignPlaygroundPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-ink-primary py-10 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-12">
+    <div className="min-h-screen bg-canvas text-ink-primary py-10 px-4 sm:px-6 lg:px-8 w-full max-w-6xl mx-auto space-y-12 overflow-x-hidden">
       {/* Header */}
       <div className="border-b border-line-base pb-6">
         <div className="flex items-center gap-2 mb-1.5">

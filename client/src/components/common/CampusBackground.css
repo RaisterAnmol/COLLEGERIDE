@@ -10,6 +10,9 @@
 .campus-bg-container {
   position: fixed;
   inset: 0;
+  width: 100%;
+  max-width: 100vw;
+  height: 100%;
   z-index: 0;
   pointer-events: none;
   background-color: var(--canvas, #F7F5F0);
@@ -34,6 +37,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden;
 }
 
 /* Dot grid mesh */
@@ -59,6 +63,7 @@
 /* ── Layer 2: Quiet Static Route Network ────────────────── */
 .route-network {
   transform: translateZ(0);
+  overflow: hidden;
 }
 
 .route-line {
