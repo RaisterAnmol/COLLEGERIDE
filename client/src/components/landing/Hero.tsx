@@ -124,16 +124,16 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative pt-6 pb-12 md:pt-10 md:pb-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <section className="relative pt-6 pb-12 md:pt-10 md:pb-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden md:overflow-visible">
       {/* 2-Column Editorial Campus Atlas Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
         {/* Left Column (6 cols): Editorial Typography & Action */}
         <motion.div
           initial={{ opacity: 0, x: -35 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 flex flex-col items-start text-left"
+          className="md:col-span-6 flex flex-col items-start text-left"
         >
           {/* Factual Live Tag */}
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-paper text-ink-primary text-xs font-mono mb-4 border border-border shadow-xs">
@@ -217,7 +217,7 @@ export const Hero: React.FC = () => {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 w-full"
+          className="md:col-span-6 w-full"
         >
           <div className="relative rounded-3xl bg-paper p-3 neu-card border border-white/90">
             {/* Main Showcase Image Frame */}
@@ -275,20 +275,20 @@ export const Hero: React.FC = () => {
               animate={{ y: [0, -4, 0] }}
               transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
               whileHover={{ scale: 1.04, y: -7 }}
-              className="absolute -top-4 -right-2 sm:-right-4 z-30 backdrop-blur-xl bg-white/70 border border-white/90 shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-2xl px-4 py-3 flex items-center gap-3.5 ring-1 ring-slate-900/10 cursor-pointer transition-shadow"
+              className="absolute -top-3 -right-1 sm:-top-4 sm:-right-4 z-30 backdrop-blur-xl bg-white/70 border border-white/90 shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2.5 sm:gap-3.5 ring-1 ring-slate-900/10 cursor-pointer transition-shadow"
             >
-              <div className="w-10 h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center shadow-sm shrink-0">
-                <ShieldCheck className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center shadow-sm shrink-0">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               </div>
               <div className="text-left">
-                <div className="text-[11px] font-mono font-black uppercase text-purple-950 tracking-wider flex items-center gap-1.5">
+                <div className="text-[10px] sm:text-[11px] font-mono font-black uppercase text-purple-950 tracking-wider flex items-center gap-1.5">
                   <span>VERIFIED ID</span>
-                  <span className="bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded text-[10px] border border-amber-500 shadow-xs">
+                  <span className="bg-amber-400 text-slate-950 font-black px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] border border-amber-500 shadow-xs">
                     ★ {currentSlide.rating}
                   </span>
                 </div>
-                <div className="text-sm font-black text-slate-950 leading-tight">{currentSlide.name}</div>
-                <div className="text-[11px] font-bold text-slate-700">{currentSlide.college}</div>
+                <div className="text-xs sm:text-sm font-black text-slate-950 leading-tight">{currentSlide.name}</div>
+                <div className="text-[10px] sm:text-[11px] font-bold text-slate-700">{currentSlide.college}</div>
               </div>
             </motion.div>
 
@@ -297,9 +297,9 @@ export const Hero: React.FC = () => {
               animate={{ y: [0, -4, 0] }}
               transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 0.5 }}
               whileHover={{ scale: 1.04, y: -7 }}
-              className="absolute -bottom-6 -left-2 sm:-left-4 z-30 backdrop-blur-xl bg-white/70 border border-white/90 shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-2xl px-4 py-3 flex items-center gap-3.5 ring-1 ring-slate-900/10 cursor-pointer transition-shadow"
+              className="absolute -bottom-5 -left-1 sm:-bottom-6 sm:-left-4 z-30 backdrop-blur-xl bg-white/70 border border-white/90 shadow-[0_12px_32px_rgba(0,0,0,0.16),inset_0_1px_1px_rgba(255,255,255,0.9)] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2.5 sm:gap-3.5 ring-1 ring-slate-900/10 cursor-pointer transition-shadow"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#143D32] text-white flex items-center justify-center font-mono font-black text-base shadow-sm shrink-0">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-[#143D32] text-white flex items-center justify-center font-mono font-black text-sm sm:text-base shadow-sm shrink-0">
                 {currentSlide.fare}
               </div>
               <div className="text-left">
@@ -457,7 +457,7 @@ export const Hero: React.FC = () => {
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
                   placeholder="e.g. Premnagar Chowk"
-                  className="w-full bg-transparent text-sm font-bold text-ink-primary focus:outline-none truncate"
+                  className="w-full bg-transparent text-base sm:text-sm font-bold text-ink-primary focus:outline-none truncate"
                 />
               </div>
               {from && (
@@ -484,7 +484,7 @@ export const Hero: React.FC = () => {
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
                   placeholder="e.g. UIT Gate 1"
-                  className="w-full bg-transparent text-sm font-bold text-ink-primary focus:outline-none truncate"
+                  className="w-full bg-transparent text-base sm:text-sm font-bold text-ink-primary focus:outline-none truncate"
                 />
               </div>
               {to && (
