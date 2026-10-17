@@ -222,14 +222,14 @@ export const SafetyPage: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-8 relative z-10">
         
         {/* TOP HERO & STATUS BANNER (Balanced 12-Col Grid) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-stretch">
           
           {/* Left Column (5 cols): Editorial Typography & Tactile Proof */}
           <motion.div
             initial={{ opacity: 0, x: -25 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-5 flex flex-col justify-between space-y-5 text-left"
+            className="md:col-span-5 flex flex-col justify-between space-y-5 text-left"
           >
             <div>
               {/* Factual Live Tag */}
@@ -284,7 +284,7 @@ export const SafetyPage: React.FC = () => {
             initial={{ opacity: 0, x: 25 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-5 items-stretch"
+            className="md:col-span-7 grid grid-cols-1 sm:grid-cols-12 gap-5 items-stretch"
           >
             {/* Student Portrait with Tactile Floating Chips (sm:col-span-7) */}
             <div className="sm:col-span-7 relative rounded-3xl bg-paper p-3 neu-card border border-white/90 flex flex-col justify-center">
@@ -838,8 +838,8 @@ export const SafetyPage: React.FC = () => {
 
       {/* SOS CONFIRMATION MODAL (Tactile Neumorphic Styling) */}
       {sosModalOpen && typeof document !== 'undefined' && createPortal(
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-paper rounded-3xl max-w-md w-full p-6 shadow-2xl border-2 border-rose-600 text-center space-y-4 neu-card">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-4">
+          <div className="bg-paper rounded-3xl max-w-md w-full p-5 sm:p-6 shadow-2xl border-2 border-rose-600 text-center space-y-4 neu-card max-h-[92vh] overflow-y-auto">
             <div className="w-16 h-16 rounded-2xl bg-rose-500/10 text-rose-600 mx-auto flex items-center justify-center shadow-inner border border-rose-200">
               <ShieldAlert className="w-9 h-9" />
             </div>
@@ -936,7 +936,7 @@ export const SafetyPage: React.FC = () => {
                   value={sosNotesInput}
                   onChange={(e) => setSosNotesInput(e.target.value)}
                   placeholder="e.g. Near UIT main gate, library cafe"
-                  className="w-full text-xs px-3 py-2 rounded-xl border border-border bg-white font-medium text-ink-primary focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  className="w-full text-base sm:text-xs px-3 py-2 rounded-xl border border-border bg-white font-medium text-ink-primary focus:outline-none focus:ring-2 focus:ring-rose-500"
                 />
               </div>
             )}
@@ -960,7 +960,7 @@ export const SafetyPage: React.FC = () => {
                     onChange={(e) => setSosPhoneInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
                     placeholder="Enter 10-digit mobile number"
                     maxLength={10}
-                    className="w-full text-xs px-2.5 py-1.5 focus:outline-none bg-transparent font-medium text-ink-primary font-mono"
+                    className="w-full text-base sm:text-xs px-2.5 py-1.5 focus:outline-none bg-transparent font-medium text-ink-primary font-mono"
                   />
                 </div>
                 <p className="text-[10px] text-ink-secondary leading-tight">
