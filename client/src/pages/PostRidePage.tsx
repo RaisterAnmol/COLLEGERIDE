@@ -280,8 +280,8 @@ export const PostRidePage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-left">
       {/* Driver Hub Side-by-Side Header */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center mb-10 bg-paper p-6 sm:p-7 rounded-card border border-white/80 neu-card">
-        <div className="lg:col-span-7 space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center mb-10 bg-paper p-6 sm:p-7 rounded-card border border-white/80 neu-card">
+        <div className="md:col-span-7 space-y-3">
           <span className="text-xs font-mono font-bold text-plum bg-plum-light px-3.5 py-1 rounded-full border border-plum-border inline-block uppercase tracking-wider">
             CAMPUSRIDE DRIVER HUB
           </span>
@@ -299,7 +299,7 @@ export const PostRidePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-5 w-full">
+        <div className="md:col-span-5 w-full">
           <div className="relative rounded-3xl overflow-hidden border border-border neu-card-sm group">
             <img
               src={offerRideImg}
@@ -633,7 +633,7 @@ export const PostRidePage: React.FC = () => {
                   type="datetime-local"
                   value={departureDate}
                   onChange={(e) => setDepartureDate(e.target.value)}
-                  className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-sm font-mono text-ink-primary focus:outline-none focus:border-plum"
+                  className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-base sm:text-sm font-mono text-ink-primary focus:outline-none focus:border-plum"
                 />
               </div>
 
@@ -763,7 +763,7 @@ export const PostRidePage: React.FC = () => {
                     value={vehicleModel}
                     onChange={(e) => setVehicleModel(e.target.value)}
                     placeholder="e.g. Honda City / Activa 6G"
-                    className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-sm font-medium text-ink-primary focus:outline-none focus:border-plum"
+                    className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-base sm:text-sm font-medium text-ink-primary focus:outline-none focus:border-plum"
                   />
                 </div>
 
@@ -777,7 +777,7 @@ export const PostRidePage: React.FC = () => {
                     onChange={(e) => setPlateLast4(e.target.value)}
                     maxLength={4}
                     placeholder="4821"
-                    className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-sm font-mono uppercase text-ink-primary focus:outline-none focus:border-plum"
+                    className="w-full p-3.5 rounded-xl bg-canvas neu-sunken border border-border/80 text-base sm:text-sm font-mono uppercase text-ink-primary focus:outline-none focus:border-plum"
                   />
                 </div>
               </div>
@@ -834,7 +834,7 @@ export const PostRidePage: React.FC = () => {
                     min={10}
                     value={pricePerSeat}
                     onChange={(e) => setPricePerSeat(Math.max(10, Number(e.target.value)))}
-                    className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white border border-border text-sm font-bold text-ink-primary focus:outline-none focus:border-plum shadow-2xs"
+                    className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-white border border-border text-base sm:text-sm font-bold text-ink-primary focus:outline-none focus:border-plum shadow-2xs"
                     placeholder="20"
                   />
                 </div>
@@ -1036,7 +1036,7 @@ export const PostRidePage: React.FC = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 10 }}
               transition={{ type: "spring", stiffness: 350, damping: 25 }}
-              className="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-emerald-100 text-center relative overflow-hidden"
+              className="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-emerald-100 text-center relative overflow-hidden max-h-[92vh] overflow-y-auto"
             >
               {/* Decorative background glow */}
               <div className="absolute -top-24 -left-24 w-48 h-48 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none" />
