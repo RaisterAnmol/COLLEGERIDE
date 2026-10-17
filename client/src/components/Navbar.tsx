@@ -146,7 +146,7 @@ export const Navbar: React.FC = () => {
                 <img
                   src={
                     user.avatarURL ||
-                    '/avatars/aditya.jpg'
+                    '/test_uploads/profile_photo.jpg'
                   }
                   alt={user.name}
                   className="w-7 h-7 rounded-full object-cover border border-border"

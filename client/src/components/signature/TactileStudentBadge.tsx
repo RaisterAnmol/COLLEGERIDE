@@ -47,7 +47,7 @@ export const TactileStudentBadge: React.FC<TactileStudentBadgeProps> = ({
   return (
     <div
       onClick={onClick}
-      className={`relative inline-flex items-center gap-3.5 p-3 rounded-2xl select-none transition-all duration-150 ${
+      className={`relative inline-flex max-w-full items-center gap-3.5 p-3 rounded-2xl select-none transition-all duration-150 ${
         onClick ? 'cursor-pointer active:translate-y-[1px]' : ''
       } ${className}`}
       style={{
@@ -110,7 +110,7 @@ export const TactileStudentBadge: React.FC<TactileStudentBadgeProps> = ({
         {/* Name and Scalloped Stamp Seal */}
         <div className="flex items-center gap-1.5 leading-none">
           <span
-            className="font-display font-black text-ink-primary text-sm sm:text-base tracking-tight truncate max-w-[220px]"
+            className="font-display font-black text-ink-primary text-sm sm:text-base tracking-tight truncate max-w-[150px] sm:max-w-[220px]"
             title={name}
           >
             {name}
