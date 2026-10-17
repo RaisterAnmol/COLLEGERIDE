@@ -222,18 +222,18 @@ export const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile Action Cluster */}
-        <div className="flex md:hidden items-center gap-2">
+        <div className="flex md:hidden items-center gap-1.5 sm:gap-2">
           {!user ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <Link
                 to="/login"
-                className="px-3 py-1.5 text-xs font-bold text-ink-primary bg-paper border border-border rounded-control"
+                className="hidden min-[380px]:inline-block px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-bold text-ink-primary bg-paper border border-border rounded-control"
               >
                 Log In
               </Link>
               <Link
                 to="/register"
-                className="px-3 py-1.5 text-xs font-bold text-white bg-plum rounded-control shadow-xs"
+                className="px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs font-bold text-white bg-plum rounded-control shadow-xs"
               >
                 Register
               </Link>
