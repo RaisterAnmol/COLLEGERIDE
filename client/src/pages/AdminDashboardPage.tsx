@@ -24,6 +24,7 @@ import {
   Bell,
   Search,
   Filter,
+  Menu,
   RefreshCw,
   Sparkles,
   Leaf,
@@ -108,6 +109,7 @@ export const AdminDashboardPage: React.FC = () => {
   const [reviewModalRequest, setReviewModalRequest] = useState<any | null>(null);
   const [trackingRide, setTrackingRide] = useState<any | null>(null);
   const [selectedAnalyticsDate, setSelectedAnalyticsDate] = useState<string>('2026-10-16');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Authoritative Role Authorization
   useEffect(() => {
@@ -547,8 +549,163 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex bg-[#F7F5F0] font-sans text-[#143D32] antialiased selection:bg-[#582C4D] selection:text-white">
+      {/* ─── MOBILE DRAWER OVERLAY & NAVIGATION (Tier 1 Hamburger Drawer) ─── */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-2xs"
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-paper text-ink-primary z-50 md:hidden flex flex-col justify-between shadow-2xl border-r border-[#E2DDD3]"
+            >
+              {/* Top Branding & Close Button */}
+              <div className="flex flex-col flex-1 overflow-y-auto px-4 py-5">
+                <div className="flex items-center justify-between px-2 mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-[#582C4D] flex items-center justify-center text-white shadow-2xs">
+                      <Car className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="font-display font-extrabold text-base tracking-tight text-[#143D32] block">CampusRide</span>
+                      <span className="text-[10px] font-mono text-[#857F6B] block">ADMIN CONSOLE</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-1.5 rounded-lg text-[#5C716A] hover:text-[#143D32] hover:bg-[#F5F2EB]"
+                    aria-label="Close menu"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Operations Section */}
+                <div className="text-[11px] font-semibold text-[#857F6B] tracking-wider px-3 mb-2">
+                  Operations
+                </div>
+                <nav className="space-y-1">
+                  {[
+                    { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+                    { id: 'rides', label: 'Rides', icon: Car },
+                    { id: 'users', label: 'Users', icon: Users },
+                    { id: 'verifications', label: 'Verifications', icon: ShieldCheck, badge: dynamicPendingCount > 0 ? String(dynamicPendingCount) : undefined },
+                    { id: 'soc', label: 'Safety alerts', icon: AlertTriangle, badge: activeAlertsCount > 0 ? String(activeAlertsCount) : undefined },
+                  ].map(item => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setActiveTab(item.id as AdminTab);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                          isActive ? 'bg-[#F9EEF4] text-[#582C4D] font-bold' : 'text-[#5C716A] hover:text-[#143D32] hover:bg-[#F8F6F1]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className={`w-4 h-4 ${isActive ? 'text-[#582C4D]' : 'text-[#857F6B]'}`} />
+                          <span>{item.label}</span>
+                        </div>
+                        {item.badge && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#3D1A30] text-white shadow-2xs">
+                            {item.badge}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </nav>
+
+                {/* Manage Section */}
+                <div className="text-[11px] font-semibold text-[#857F6B] tracking-wider px-3 mb-2 mt-6">
+                  Manage
+                </div>
+                <nav className="space-y-1">
+                  {[
+                    { id: 'colleges', label: 'Campuses', icon: MapPin },
+                    { id: 'analytics', label: 'Ride Analytics', icon: BarChart3 },
+                    { id: 'settings', label: 'Settings', icon: Settings },
+                  ].map(item => {
+                    const Icon = item.icon;
+                    const isActive = activeTab === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        onClick={() => {
+                          setActiveTab(item.id as AdminTab);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+                          isActive ? 'bg-[#F9EEF4] text-[#582C4D] font-bold' : 'text-[#5C716A] hover:text-[#143D32] hover:bg-[#F8F6F1]'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Icon className={`w-4 h-4 ${isActive ? 'text-[#582C4D]' : 'text-[#857F6B]'}`} />
+                          <span>{item.label}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
+
+              {/* Bottom User Card & Exit */}
+              <div className="p-4 border-t border-[#E2DDD3] bg-paper">
+                <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-[#F8F6F1] border border-[#E2DDD3] mb-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-full bg-[#582C4D] flex items-center justify-center font-bold text-white text-xs shrink-0">
+                      DN
+                    </div>
+                    <div className="truncate">
+                      <div className="text-xs font-bold text-[#143D32] truncate">{user?.name || 'Dean Sharma'}</div>
+                      <div className="text-[10px] text-[#857F6B] truncate font-mono">admin@campusride.edu</div>
+                    </div>
+                  </div>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Online" />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate('/dashboard');
+                    }}
+                    className="flex-1 py-1.5 px-2 rounded-xl border border-[#E2DDD3] hover:bg-[#F5F2EB] text-[#143D32] text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Compass className="w-3.5 h-3.5 text-[#5C716A]" />
+                    <span>Student App</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      logout();
+                      navigate('/login');
+                    }}
+                    className="py-1.5 px-2 rounded-xl border border-red-200 hover:bg-red-50 text-red-700 text-xs font-semibold flex items-center justify-center transition-colors cursor-pointer"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* ─── SIDEBAR NAVIGATION (Warm Paper Aesthetic) ─── */}
-      <aside className="w-64 bg-paper text-ink-primary flex flex-col justify-between shrink-0 min-h-screen border-r border-[#E2DDD3] sticky top-0 h-screen z-30 shadow-2xs">
+      <aside className="hidden md:flex w-64 bg-paper text-ink-primary flex-col justify-between shrink-0 min-h-screen border-r border-[#E2DDD3] sticky top-0 h-screen z-30 shadow-2xs">
         {/* Top Branding */}
         <div className="flex flex-col flex-1 overflow-y-auto px-4 py-6">
           <div className="flex items-center gap-3 px-2 mb-6">
@@ -678,7 +835,19 @@ export const AdminDashboardPage: React.FC = () => {
       {/* ─── MAIN CONTENT AREA ─── */}
       <div className="flex-1 flex flex-col min-w-0 min-h-screen">
         {/* Top Header Bar */}
-        <header className="sticky top-0 z-20 bg-paper border-b border-[#E2DDD3] px-8 py-3.5 flex items-center justify-between gap-6 shadow-2xs">
+        <header className="sticky top-0 z-20 bg-paper border-b border-[#E2DDD3] px-3.5 sm:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-3 sm:gap-6 shadow-2xs">
+          {/* Mobile Menu Toggle & Brand Logo */}
+          <div className="flex items-center gap-2.5 md:hidden shrink-0">
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-1.5 rounded-xl border border-[#E2DDD3] text-[#143D32] hover:bg-[#F5F2EB] transition-colors cursor-pointer"
+              aria-label="Open Admin Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <span className="font-display font-black text-sm tracking-tight text-[#143D32]">Admin</span>
+          </div>
+
           {/* Search Bar */}
           <div className="relative flex-1 max-w-md">
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#857F6B]" />
@@ -749,7 +918,7 @@ export const AdminDashboardPage: React.FC = () => {
 
         {/* SOS Emergency Banner if active */}
         {notificationBanner && (
-          <div className="m-6 mb-0 p-4 bg-red-600 text-white rounded-2xl flex items-center justify-between shadow-lg">
+          <div className="m-3 sm:m-6 mb-0 p-3 sm:p-4 bg-red-600 text-white rounded-2xl flex items-center justify-between shadow-lg">
             <div className="flex items-center gap-3">
               <ShieldAlert className="w-6 h-6 shrink-0" />
               <span className="font-bold text-sm">{notificationBanner}</span>
@@ -772,7 +941,7 @@ export const AdminDashboardPage: React.FC = () => {
         )}
 
         {/* Tab Content Container with Smooth Animation */}
-        <main className="flex-1 p-6 sm:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-3.5 sm:p-6 md:p-8 space-y-5 sm:space-y-6 max-w-7xl mx-auto w-full">
           <AnimatePresence mode="wait">
             {activeTab === 'overview' && (
               <motion.div
