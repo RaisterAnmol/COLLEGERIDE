@@ -46,7 +46,15 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
   const siteKey =
     import.meta.env.VITE_TURNSTILE_SITE_KEY || CLOUDFLARE_TEST_SITE_KEY;
 
+  const onVerifyRef = useRef(onVerify);
+  onVerifyRef.current = onVerify;
+  const onExpireRef = useRef(onExpire);
+  onExpireRef.current = onExpire;
+  const onErrorRef = useRef(onError);
+  onErrorRef.current = onError;
+
   const [hasError, setHasError] = useState(false);
+  const hasRenderedRef = useRef(false);
 
   useEffect(() => {
     // Check if script is already present
@@ -62,9 +70,9 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
         setIsLoaded(true);
       };
       script.onerror = () => {
-        console.warn('[Turnstile] Failed to load Cloudflare Turnstile script (possibly blocked by ad-blocker).');
+        console.warn('[Turnstile] Failed to load Cloudflare Turnstile script.');
         setHasError(true);
-        onVerify('turnstile_fallback_script_blocked');
+        onVerifyRef.current('turnstile_fallback_script_blocked');
       };
       document.head.appendChild(script);
     } else {
@@ -74,46 +82,40 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
         existingScript.addEventListener('load', () => setIsLoaded(true));
         existingScript.addEventListener('error', () => {
           setHasError(true);
-          onVerify('turnstile_fallback_script_blocked');
+          onVerifyRef.current('turnstile_fallback_script_blocked');
         });
       }
     }
-  }, [onVerify]);
+  }, []);
 
   useEffect(() => {
     if (!isLoaded || !containerRef.current || !window.turnstile) return;
-
-    // Clean up previous widget instance if re-rendering
-    if (widgetIdRef.current) {
-      try {
-        window.turnstile.remove(widgetIdRef.current);
-      } catch (_) {}
-      widgetIdRef.current = null;
-    }
+    if (hasRenderedRef.current) return;
 
     try {
+      hasRenderedRef.current = true;
       const id = window.turnstile.render(containerRef.current, {
         sitekey: siteKey,
         theme,
         callback: (token: string) => {
           setHasError(false);
-          onVerify(token);
+          onVerifyRef.current(token);
         },
         'expired-callback': () => {
-          if (onExpire) onExpire();
+          if (onExpireRef.current) onExpireRef.current();
         },
         'error-callback': () => {
-          console.warn('[Turnstile] Domain mismatch or widget network error. Engaging fallback auto-pass.');
+          console.warn('[Turnstile] Domain or CSP connection error. Using resilient fallback.');
           setHasError(true);
-          onVerify('turnstile_fallback_domain_unauthorized');
-          if (onError) onError();
+          onVerifyRef.current('turnstile_fallback_domain_unauthorized');
+          if (onErrorRef.current) onErrorRef.current();
         },
       });
       widgetIdRef.current = id;
     } catch (e) {
       console.warn('[Turnstile] Widget render warning:', e);
       setHasError(true);
-      onVerify('turnstile_fallback_render_exception');
+      onVerifyRef.current('turnstile_fallback_render_exception');
     }
 
     return () => {
@@ -122,9 +124,10 @@ export const TurnstileWidget: React.FC<TurnstileWidgetProps> = ({
           window.turnstile.remove(widgetIdRef.current);
         } catch (_) {}
         widgetIdRef.current = null;
+        hasRenderedRef.current = false;
       }
     };
-  }, [isLoaded, siteKey, theme, onVerify, onExpire, onError]);
+  }, [isLoaded, siteKey, theme]);
 
   return (
     <div className={`my-2 flex flex-col items-center justify-center ${className}`}>
