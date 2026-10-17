@@ -410,90 +410,96 @@ export const SafetyPage: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="bg-[#582C4D] text-white rounded-3xl p-5 sm:p-7 shadow-xl border border-white/10 flex flex-col lg:flex-row items-center justify-between gap-6 text-left"
+          className="bg-[#582C4D] text-white rounded-3xl p-6 sm:p-7 shadow-xl border border-white/10 text-left space-y-5"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-rose-500/25 text-rose-300 border border-rose-400/40 flex items-center justify-center shrink-0 shadow-inner">
-              <ShieldAlert className="w-6 h-6 text-rose-300" />
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/25 text-rose-300 border border-rose-400/40 flex items-center justify-center shrink-0 shadow-inner">
+                <ShieldAlert className="w-6 h-6 text-rose-300" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[11px] font-mono font-black bg-rose-600 text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+                    24/7 EMERGENCY PROTOCOL
+                  </span>
+                  <span className="text-xs text-white/80 font-mono">India 112 Standard</span>
+                </div>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-display font-extrabold text-white leading-tight">
+                  Direct Emergency Dispatch &amp; Live Telemetry
+                </h2>
+                <p className="text-xs sm:text-sm text-white/85 max-w-2xl mt-0.5 font-medium">
+                  One-tap distress broadcast sends live reverse-geocoded GPS coordinates to Uttarakhand Police, Campus Security, and your WhatsApp emergency circle.
+                </p>
+              </div>
             </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-[11px] font-mono font-black bg-rose-600 text-white px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
-                  24/7 EMERGENCY PROTOCOL
+
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              {/* Trigger Emergency SOS Button */}
+              <button
+                type="button"
+                onClick={() => setSosModalOpen(true)}
+                className="px-6 py-3.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 border border-rose-400/50 active:translate-y-0.5 transition-all neu-btn cursor-pointer"
+              >
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
                 </span>
-                <span className="text-xs text-white/80 font-mono">India 112 Standard</span>
-              </div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-display font-extrabold text-white leading-tight">
-                Direct Emergency Dispatch &amp; Live Telemetry
-              </h2>
-              <p className="text-xs sm:text-sm text-white/85 max-w-2xl mt-0.5 font-medium">
-                One-tap distress broadcast sends live reverse-geocoded GPS coordinates to Uttarakhand Police, Campus Security, and your WhatsApp emergency circle.
-              </p>
+                <ShieldAlert className="w-4 h-4 shrink-0 text-white" />
+                <span>Trigger Emergency SOS</span>
+              </button>
+
+              {/* Direct Dial 112 */}
+              <a
+                href="tel:112"
+                className="px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold border border-white/20 flex items-center justify-center gap-2 transition-all cursor-pointer neu-btn"
+                title="Call National Emergency 112"
+              >
+                <Phone className="w-4 h-4 text-emerald-400" />
+                <span>Call 112</span>
+              </a>
+
+              {/* Share Live Location */}
+              <button
+                type="button"
+                onClick={handleShareLocation}
+                className="px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold border border-white/20 flex items-center justify-center gap-2 transition-all cursor-pointer neu-btn"
+                title="Share Live Location"
+              >
+                <MapPin className="w-4 h-4 text-amber-300" />
+                <span>{copiedLocation ? 'Link Copied!' : 'Share Live GPS'}</span>
+              </button>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 shrink-0 w-full lg:w-auto">
-            {/* Trigger Emergency SOS Button */}
-            <button
-              type="button"
-              onClick={() => setSosModalOpen(true)}
-              className="flex-1 sm:flex-initial px-6 py-3.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white font-mono font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 border border-rose-400/50 active:translate-y-0.5 transition-all neu-btn cursor-pointer"
-            >
-              <span className="relative flex h-2.5 w-2.5 shrink-0">
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
-              </span>
-              <ShieldAlert className="w-4 h-4 shrink-0 text-white" />
-              <span>Trigger Emergency SOS</span>
-            </button>
-
-            {/* Direct Dial 112 */}
-            <a
-              href="tel:112"
-              className="px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold border border-white/20 flex items-center justify-center gap-2 transition-all cursor-pointer neu-btn"
-              title="Call National Emergency 112"
-            >
-              <Phone className="w-4 h-4 text-emerald-400" />
-              <span>Call 112</span>
-            </a>
-
-            {/* Share Live Location */}
-            <button
-              type="button"
-              onClick={handleShareLocation}
-              className="px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-mono font-bold border border-white/20 flex items-center justify-center gap-2 transition-all cursor-pointer neu-btn"
-              title="Share Live Location"
-            >
-              <MapPin className="w-4 h-4 text-amber-300" />
-              <span>{copiedLocation ? 'Link Copied!' : 'Share Live GPS'}</span>
-            </button>
-          </div>
-
-          {/* Real-time GPS Location Status in Hero */}
-          <div className="w-full flex items-center justify-center pt-1">
-            {locationLoading ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-xs text-emerald-300 text-xs font-mono font-medium border border-emerald-400/30 animate-pulse">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
-                <span>{locationStatusText}</span>
-              </div>
-            ) : locationError ? (
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-950/80 backdrop-blur-xs text-amber-200 text-xs font-medium border border-amber-500/40">
-                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-                <span>{locationError}</span>
-                <button
-                  type="button"
-                  onClick={acquireLocation}
-                  className="underline font-bold text-amber-300 ml-1 cursor-pointer hover:text-white"
-                >
-                  Retry
-                </button>
-              </div>
-            ) : liveCoords ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-xs text-white/90 text-xs font-mono">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-                <span>GPS: {liveCoords.lat.toFixed(4)}, {liveCoords.lng.toFixed(4)} ({liveAddress || 'Campus Perimeter'})</span>
-              </div>
-            ) : null}
-          </div>
+          {/* Real-time GPS Location Status Row */}
+          {(locationLoading || locationError || liveCoords) && (
+            <div className="pt-3 border-t border-white/15 flex items-center justify-between flex-wrap gap-3">
+              {locationLoading ? (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-black/40 backdrop-blur-xs text-emerald-300 text-xs font-mono font-medium border border-emerald-400/30 animate-pulse">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping shrink-0" />
+                  <span>{locationStatusText}</span>
+                </div>
+              ) : locationError ? (
+                <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:px-4 sm:py-2.5 rounded-2xl bg-black/35 backdrop-blur-xs text-amber-200 text-xs border border-amber-500/30">
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                    <span className="leading-snug">{locationError}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={acquireLocation}
+                    className="self-start sm:self-center px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-400/30 font-bold cursor-pointer transition-colors text-xs shrink-0 whitespace-nowrap"
+                  >
+                    Retry GPS Access
+                  </button>
+                </div>
+              ) : liveCoords ? (
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-xs text-white/90 text-xs font-mono border border-white/15">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+                  <span>GPS Telemetry Active: {liveCoords.lat.toFixed(4)}, {liveCoords.lng.toFixed(4)} ({liveAddress || 'Campus Perimeter'})</span>
+                </div>
+              ) : null}
+            </div>
+          )}
         </motion.div>
 
         {/* 4 CORE SAFETY PILLARS (Redesigned with Tactile Neumorphism) */}
