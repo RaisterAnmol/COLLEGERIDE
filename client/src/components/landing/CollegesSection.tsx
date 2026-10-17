@@ -8,14 +8,14 @@ const campusesHeroImg = '/campus-students.jpg';
 export const CollegesSection: React.FC = () => {
   return (
     <section id="for-colleges" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-border">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
         {/* Left Side: Institutional Editorial Content */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 space-y-6 text-left"
+          className="md:col-span-6 space-y-6 text-left"
         >
           <span className="text-xs font-mono text-purple-900 font-black bg-purple-100 border border-purple-200 px-3.5 py-1.5 rounded-full uppercase tracking-wider inline-block">
             Campus Infrastructure & Data
@@ -61,7 +61,7 @@ export const CollegesSection: React.FC = () => {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '-40px' }}
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-          className="lg:col-span-6 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-[0_16px_40px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)]"
+          className="md:col-span-6 bg-white p-5 sm:p-8 rounded-3xl border border-slate-200 shadow-[0_16px_40px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,1)]"
         >
           {/* Photorealistic Campus Quad Photo Banner */}
           <div className="relative rounded-2xl overflow-hidden border border-slate-200 mb-6 shadow-sm group">

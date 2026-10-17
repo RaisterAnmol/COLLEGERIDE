@@ -22,26 +22,28 @@ export const ProductPreview: React.FC = () => {
         </p>
 
         {/* View Switcher Pills */}
-        <div className="mt-8 inline-flex items-center p-1 rounded-2xl bg-slate-100 border border-slate-200">
+        <div className="mt-8 inline-flex items-center p-1 rounded-2xl bg-slate-100 border border-slate-200 max-w-full overflow-x-auto">
           <button
             onClick={() => setActiveTab('driver')}
-            className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all shrink-0 ${
               activeTab === 'driver'
                 ? 'bg-[#582C4D] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Driver Active Commute Cockpit
+            <span className="hidden sm:inline">Driver Active Commute Cockpit</span>
+            <span className="sm:hidden">Driver Cockpit</span>
           </button>
           <button
             onClick={() => setActiveTab('passenger')}
-            className={`px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all ${
+            className={`px-3 sm:px-4 py-2 rounded-xl text-xs font-mono font-bold transition-all shrink-0 ${
               activeTab === 'passenger'
                 ? 'bg-[#582C4D] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Passenger Corridor Matching
+            <span className="hidden sm:inline">Passenger Corridor Matching</span>
+            <span className="sm:hidden">Passenger Matching</span>
           </button>
         </div>
       </div>
@@ -49,14 +51,14 @@ export const ProductPreview: React.FC = () => {
       {/* Large Browser-Frame Mockup */}
       <div className="mt-12 max-w-5xl mx-auto bg-[#FFFFFF] rounded-3xl border border-slate-200 shadow-xl overflow-hidden">
         {/* Browser Top Navigation Bar */}
-        <div className="bg-[#F8F9FA] px-4 py-3 border-b border-slate-200 flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
+        <div className="bg-[#F8F9FA] px-4 py-3 border-b border-slate-200 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
             <span className="w-3 h-3 rounded-full bg-[#EF4444]/60" />
             <span className="w-3 h-3 rounded-full bg-[#F59E0B]/60" />
             <span className="w-3 h-3 rounded-full bg-[#10B981]/60" />
           </div>
 
-          <div className="px-6 py-1 rounded-md bg-[#FFFFFF] border border-slate-200 text-[11px] font-mono text-slate-600">
+          <div className="px-3 sm:px-6 py-1 rounded-md bg-[#FFFFFF] border border-slate-200 text-[11px] font-mono text-slate-600 max-w-[200px] sm:max-w-none truncate">
             {activeTab === 'driver'
               ? 'https://campusride.edu/dashboard/driver-cockpit'
               : 'https://campusride.edu/search?corridor=premnagar-selaqui-uu'}

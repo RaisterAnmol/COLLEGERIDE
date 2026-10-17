@@ -131,10 +131,10 @@ export const HowItWorks: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-40px' }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="mt-8 bg-paper rounded-3xl border border-white/80 neu-card p-6 sm:p-10 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
+        className="mt-8 bg-paper rounded-3xl border border-white/80 neu-card p-6 sm:p-10 shadow-sm grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center"
       >
         {/* Left Side: Step Narrative */}
-        <div className="lg:col-span-6 space-y-6 text-left">
+        <div className="md:col-span-6 space-y-6 text-left">
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 rounded-full bg-plum-light text-plum font-mono text-xs font-bold border border-plum-border">
               PHASE {activeStep.step} / 03
@@ -161,7 +161,7 @@ export const HowItWorks: React.FC = () => {
         </div>
 
         {/* Right Side: Authentic UI Mockup & Step Illustration Container */}
-        <div className="lg:col-span-6 bg-canvas/70 p-5 sm:p-7 rounded-3xl border border-[#E2DDD3] neu-card-sm">
+        <div className="md:col-span-6 bg-canvas/70 p-4 sm:p-7 rounded-3xl border border-[#E2DDD3] neu-card-sm">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeStep.step}
