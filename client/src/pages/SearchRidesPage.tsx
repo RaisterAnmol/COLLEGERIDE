@@ -41,6 +41,8 @@ import { JourneyTicket } from '../components/signature/JourneyTicket';
 import { CampusDatePicker } from '../components/common/CampusDatePicker';
 import { CustomSelect } from '../components/common/CustomSelect';
 import { AnimatedCounter } from '../components/common/AnimatedCounter';
+import { RideTicketSkeleton } from '../components/common/Skeletons';
+import { EmptyState } from '../components/common/EmptyState';
 
 export interface PresetLocation {
   text: string;
@@ -1173,66 +1175,26 @@ export const SearchRidesPage: React.FC = () => {
 
       {/* Results List */}
       {loading ? (
-        <div className="py-8 space-y-4">
-          <JourneyTicket isLoading={true} />
-          <JourneyTicket isLoading={true} />
+        <div className="py-6">
+          <RideTicketSkeleton count={3} />
         </div>
       ) : rides.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 sm:p-12 text-center shadow-sm">
-          <div className="w-16 h-16 rounded-2xl bg-[#EBE7DF] border border-[#D8D2C4] flex items-center justify-center mx-auto mb-4 text-[#582C4D] shadow-2xs">
-            <Car className="w-8 h-8 opacity-80" />
-          </div>
-          <h3 className="text-base font-bold text-slate-800">No matching rides found</h3>
-          <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-6">
-            {womenOnlyDriver
+        <EmptyState
+          variant="no-rides"
+          description={
+            womenOnlyDriver
               ? 'Zero rides match the women-only driver filter for this route/time. Try unchecking the filter or browsing all available campus commutes!'
-              : 'No rides match the selected route and academic filters. Try resetting the academic filters to "Any" or browse all active university carpools.'}
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                const orig = PRESET_LOCATIONS[originIndex]?.text || '';
-                const dst = PRESET_LOCATIONS[destIndex]?.text || '';
-                navigate(`/post?from=${encodeURIComponent(orig)}&to=${encodeURIComponent(dst)}`);
-              }}
-              className="px-4 py-2 rounded-xl bg-[#143D32] hover:bg-[#0f2e26] text-xs font-bold text-white shadow-sm transition-all flex items-center gap-1.5"
-            >
-              <Car className="w-3.5 h-3.5" />
-              <span>Offer a Ride for This Route</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setRouteAlertSet(true);
-                setRequestSuccess('Corridor alert activated! You will receive an instant notification when a verified classmate posts a ride along this route.');
-              }}
-              disabled={routeAlertSet}
-              className={`px-4 py-2 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 ${
-                routeAlertSet
-                  ? 'border-emerald-400 bg-emerald-50 text-emerald-800'
-                  : 'border-slate-300 hover:bg-slate-50 text-slate-700'
-              }`}
-            >
-              <Bell className="w-3.5 h-3.5" />
-              <span>{routeAlertSet ? 'Route Alert Active' : 'Notify Me When a Ride Opens'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleShowAll}
-              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white shadow-sm transition-all"
-            >
-              Browse All Active Campus Rides
-            </button>
-            <button
-              type="button"
-              onClick={resetAcademicFilters}
-              className="px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition-colors"
-            >
-              Reset Academic Filters to "Any"
-            </button>
-          </div>
-        </div>
+              : 'No rides match the selected route and academic filters. Try resetting the academic filters or browse all active university carpools.'
+          }
+          actionText="Offer a Ride for This Route"
+          onAction={() => {
+            const orig = PRESET_LOCATIONS[originIndex]?.text || '';
+            const dst = PRESET_LOCATIONS[destIndex]?.text || '';
+            navigate(`/post?from=${encodeURIComponent(orig)}&to=${encodeURIComponent(dst)}`);
+          }}
+          secondaryActionText="Reset Filters to 'Any'"
+          onSecondaryAction={resetAcademicFilters}
+        />
       ) : (
         <motion.div
           initial="hidden"

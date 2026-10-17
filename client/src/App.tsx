@@ -7,6 +7,10 @@ import { CampusBackground } from './components/common/CampusBackground';
 import type { CampusBackgroundVariant } from './components/common/CampusBackground';
 import { LandingPage } from './pages/LandingPage';
 import { AuthPage } from './pages/AuthPage';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ToastProvider } from './context/ToastContext';
+import { CookieBanner } from './components/common/CookieBanner';
+import { TactileLoading } from './components/common/TactileLoading';
 
 // Code-split route-level pages for optimized initial landing bundle
 const DashboardPage = lazy(() => import('./pages/DashboardPage').then(m => ({ default: m.DashboardPage })));
@@ -26,7 +30,7 @@ const DesignPlaygroundPage = lazy(() => import('./pages/DesignPlaygroundPage').t
 function RouteFallback() {
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="w-8 h-8 rounded-full border-2 border-[#143D32] border-t-transparent cr-spinner" />
+      <TactileLoading size="md" message="Synchronizing campus corridor..." />
     </div>
   );
 }
@@ -138,6 +142,8 @@ function AppLayout() {
             </motion.div>
           </AnimatePresence>
         </main>
+        {/* Global Policy-Compliant Cookie Consent Banner */}
+        <CookieBanner />
       </div>
     </MotionConfig>
   );
@@ -145,10 +151,14 @@ function AppLayout() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppLayout />
-      </BrowserRouter>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <ToastProvider>
+          <BrowserRouter>
+            <AppLayout />
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }

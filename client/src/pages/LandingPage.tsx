@@ -8,6 +8,7 @@ import { RideCards } from "../components/landing/RideCards";
 import { CollegesSection } from "../components/landing/CollegesSection";
 import { ProductPreview } from "../components/landing/ProductPreview";
 import { StatusBanner } from "../components/landing/StatusBanner";
+import { ExpandableFaq } from "../components/landing/ExpandableFaq";
 import { Footer } from "../components/landing/Footer";
 
 const sectionRevealVariants: Variants = {
@@ -78,7 +79,17 @@ export const LandingPage: React.FC = () => {
         <StatusBanner />
       </motion.div>
 
-      {/* 7. Institutional Footer */}
+      {/* 7. Expandable Campus FAQ Section */}
+      <motion.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-60px" }}
+        variants={sectionRevealVariants}
+      >
+        <ExpandableFaq />
+      </motion.div>
+
+      {/* 8. Institutional Footer */}
       <Footer />
     </div>
   );

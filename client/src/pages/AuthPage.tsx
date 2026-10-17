@@ -49,6 +49,7 @@ const tabVariants: Variants = {
 import { SelfieCapture, SelfieCaptureResult } from "../components/verification/SelfieCapture";
 import { StudentAvatar, StudentArchetype } from "../components/signature/StudentAvatar";
 import { TactileButton } from "../components/signature/TactileButton";
+import { TermsModal } from "../components/common/TermsModal";
 import {
   ShieldCheck,
   Mail,
@@ -253,6 +254,8 @@ export const AuthPage: React.FC = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
 
   const { login, loginWithGoogle, register } = useAuth();
   const navigate = useNavigate();
@@ -395,6 +398,11 @@ export const AuthPage: React.FC = () => {
 
     try {
       if (isRegister) {
+        if (!termsAccepted) {
+          setError("Please agree to the CampusRide Terms of Transit & Community Guidelines to complete registration.");
+          setLoading(false);
+          return;
+        }
         if (password.length < 8) {
           setError("Password must be at least 8 characters long.");
           setLoading(false);
@@ -456,6 +464,11 @@ export const AuthPage: React.FC = () => {
         await register(registrationPayload);
         navigate("/dashboard");
       } else {
+        if (!termsAccepted) {
+          setError("Please agree to the CampusRide Terms of Transit & Community Guidelines to sign in.");
+          setLoading(false);
+          return;
+        }
         if (!email.trim() || !password.trim()) {
           setError("Please provide both email and password.");
           setLoading(false);
@@ -1490,6 +1503,28 @@ export const AuthPage: React.FC = () => {
                         </div>
                       )}
 
+                      {/* Terms & Conditions Agreement Checkbox */}
+                      <div className="p-3.5 rounded-2xl bg-canvas border border-line-subtle flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          id="reg-terms-checkbox"
+                          checked={termsAccepted}
+                          onChange={(e) => setTermsAccepted(e.target.checked)}
+                          className="mt-0.5 w-4 h-4 rounded border-line-base text-route focus:ring-route cursor-pointer accent-[#143D32]"
+                        />
+                        <label htmlFor="reg-terms-checkbox" className="text-xs text-ink-muted leading-relaxed select-none cursor-pointer">
+                          I certify that I am an enrolled student or faculty member and agree to the{' '}
+                          <button
+                            type="button"
+                            onClick={() => setIsTermsModalOpen(true)}
+                            className="text-route font-bold underline underline-offset-2 hover:text-route-light transition-colors cursor-pointer"
+                          >
+                            Terms of Transit &amp; Community Safety Guidelines
+                          </button>
+                          .
+                        </label>
+                      </div>
+
                       <div className="pt-2 flex items-center justify-between">
                         <button
                           type="button"
@@ -1585,6 +1620,27 @@ export const AuthPage: React.FC = () => {
                       <span>{error}</span>
                     </div>
                   )}
+
+                  {/* Terms & Conditions Agreement Checkbox */}
+                  <div className="flex items-start gap-2.5 text-xs text-ink-muted pt-1">
+                    <input
+                      type="checkbox"
+                      id="login-terms-checkbox"
+                      checked={termsAccepted}
+                      onChange={(e) => setTermsAccepted(e.target.checked)}
+                      className="mt-0.5 w-4 h-4 rounded border-line-base text-route focus:ring-route cursor-pointer accent-[#143D32]"
+                    />
+                    <label htmlFor="login-terms-checkbox" className="text-xs text-ink-muted leading-relaxed select-none cursor-pointer">
+                      I agree to the{' '}
+                      <button
+                        type="button"
+                        onClick={() => setIsTermsModalOpen(true)}
+                        className="text-route font-bold underline underline-offset-2 hover:text-route-light transition-colors cursor-pointer"
+                      >
+                        Terms of Transit &amp; Community Guidelines
+                      </button>
+                    </label>
+                  </div>
 
                   <TactileButton
                     type="submit"
@@ -1735,6 +1791,13 @@ export const AuthPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Institutional Terms & Conditions Modal */}
+      <TermsModal
+        isOpen={isTermsModalOpen}
+        onClose={() => setIsTermsModalOpen(false)}
+        onAccept={() => setTermsAccepted(true)}
+      />
     </div>
   );
 };
