@@ -65,8 +65,8 @@ export const CollegesPage: React.FC = () => {
   return (
     <div className="min-h-screen text-ink-primary py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-10 text-left">
       {/* Editorial Header + Illustrated Hero Card Side-by-Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-10 rounded-3xl border border-white/80 neu-card">
-        <div className="lg:col-span-7 space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center bg-paper p-6 sm:p-10 rounded-3xl border border-white/80 neu-card">
+        <div className="md:col-span-7 space-y-4">
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono font-bold text-plum bg-plum-light px-3.5 py-1 rounded-full border border-plum-border uppercase tracking-wider">
               CSV DATASET POWERED
@@ -94,7 +94,7 @@ export const CollegesPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-5 w-full">
+        <div className="md:col-span-5 w-full">
           <div className="relative rounded-3xl overflow-hidden border border-border neu-card-sm group">
             <img
               src={campusesHeroImg}
@@ -162,19 +162,19 @@ export const CollegesPage: React.FC = () => {
           </div>
 
           {/* Search & Location Filter */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+            <div className="relative w-full sm:w-64">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Search university or field..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#143D32]/20 w-48 sm:w-64"
+                className="w-full pl-9 pr-3 py-2 text-base sm:text-xs rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#143D32]/20"
               />
             </div>
 
-            <div className="w-44 sm:w-48">
+            <div className="w-full sm:w-48">
               <CustomSelect
                 value={selectedCity}
                 onChange={(val) => setSelectedCity(String(val))}
