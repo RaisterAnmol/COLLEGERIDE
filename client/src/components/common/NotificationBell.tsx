@@ -25,6 +25,8 @@ export const NotificationBell: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifications = async () => {
+    const token = localStorage.getItem("campusride_token");
+    if (!token) return;
     try {
       const res = await api.getNotifications();
       if (res && Array.isArray(res.notifications)) {
@@ -37,6 +39,9 @@ export const NotificationBell: React.FC = () => {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("campusride_token");
+    if (!token) return;
+
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 15000); // 15s poll fallback
 

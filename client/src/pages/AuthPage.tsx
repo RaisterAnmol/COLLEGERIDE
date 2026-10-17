@@ -337,12 +337,8 @@ export const AuthPage: React.FC = () => {
             });
           }
 
-          // FedCM One Tap prompt with graceful cooldown / dismissal handling
-          google.accounts.id.prompt((notification: any) => {
-            if (notification?.isDismissedMoment?.()) {
-              console.info("[GSI] One-tap prompt dismissed or in cooldown. Standard button remains active.");
-            }
-          });
+          // FedCM One Tap prompt
+          google.accounts.id.prompt();
         } catch (e) {
           console.warn("Failed to render Google button:", e);
         }
