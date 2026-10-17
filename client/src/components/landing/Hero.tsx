@@ -124,7 +124,7 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative pt-6 pb-12 md:pt-10 md:pb-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden md:overflow-visible">
+    <section className="relative pt-6 pb-12 md:pt-10 md:pb-14 px-4 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto overflow-hidden">
       {/* 2-Column Editorial Campus Atlas Layout */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 items-center">
         {/* Left Column (6 cols): Editorial Typography & Action */}
@@ -349,7 +349,7 @@ export const Hero: React.FC = () => {
       </div>
 
       {/* Corridor Stops Ribbon - Enlarged & Continuous Horizontal Marquee */}
-      <div className="mt-5 overflow-hidden whitespace-nowrap py-4 sm:py-4.5 bg-[#FAF8F5] border-y-2 border-[#E8E4DD] shadow-xs relative">
+      <div className="mt-5 w-full max-w-full min-w-0 overflow-hidden whitespace-nowrap py-4 sm:py-4.5 bg-[#FAF8F5] border-y-2 border-[#E8E4DD] shadow-xs relative">
         {/* Subtle Fade Edges for Professional Polish */}
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-[#FAF8F5] to-transparent z-10 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FAF8F5] to-transparent z-10 pointer-events-none" />
