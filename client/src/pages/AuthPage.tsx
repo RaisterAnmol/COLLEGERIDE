@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 import { api } from "../services/api";
 
 const stepVariants: Variants = {
@@ -106,6 +107,7 @@ let isGlobalGsiInitialized = false;
 let globalGsiCallback: ((response: any) => void) | null = null;
 
 export const AuthPage: React.FC = () => {
+  const toast = useToast();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const isRegisterRoute =
@@ -516,16 +518,35 @@ export const AuthPage: React.FC = () => {
     e.preventDefault();
     if (!forgotEmail.trim()) {
       setForgotMsg({ text: "Please provide your student email address.", isError: true });
+      toast.warning("Please provide your student email address.", "Email Required");
       return;
     }
     setForgotLoading(true);
     setForgotMsg(null);
     try {
-      const res = await api.forgotPassword(forgotEmail.trim());
-      setForgotMsg({ text: res.message || "Reset instructions sent to your email.", isError: false });
+      const res: any = await api.forgotPassword(forgotEmail.trim());
+      if (res.devResetOtp) {
+        setResetToken(res.devResetOtp);
+        setForgotMsg({
+          text: `Verification code generated: ${res.devResetOtp}`,
+          isError: false,
+        });
+        toast.info(`Recovery Code: ${res.devResetOtp}`, "Verification Code Ready", 10000);
+      } else if (res.emailNotRegistered) {
+        setForgotMsg({
+          text: "This email is not registered on CampusRide. Please check the spelling or create an account.",
+          isError: true,
+        });
+        toast.warning("No registered account found with that email.", "Email Not Found");
+        return;
+      } else {
+        setForgotMsg({ text: res.message || "Reset instructions sent to your email.", isError: false });
+        toast.success("Instructions dispatched. Please check your inbox and spam folder.", "Code Sent");
+      }
       setForgotStep("RESET");
     } catch (err: any) {
       setForgotMsg({ text: err.message || "Failed to process password reset.", isError: true });
+      toast.error(err.message || "Failed to process password reset.", "Reset Failed");
     } finally {
       setForgotLoading(false);
     }
@@ -535,10 +556,12 @@ export const AuthPage: React.FC = () => {
     e.preventDefault();
     if (!resetToken.trim() || !newPassword.trim()) {
       setForgotMsg({ text: "Please enter both reset token and new password.", isError: true });
+      toast.warning("Please enter both reset token and new password.", "Incomplete Fields");
       return;
     }
     if (newPassword.length < 8) {
       setForgotMsg({ text: "Password must be at least 8 characters long.", isError: true });
+      toast.warning("Password must be at least 8 characters long.", "Password Too Short");
       return;
     }
     setForgotLoading(true);
@@ -546,13 +569,16 @@ export const AuthPage: React.FC = () => {
     try {
       const res = await api.resetPassword(resetToken.trim(), newPassword);
       setForgotMsg({ text: res.message || "Password updated successfully. You can now sign in.", isError: false });
+      toast.success(res.message || "Password updated successfully! You can now sign in.", "Password Updated");
       setTimeout(() => {
         setIsForgotOpen(false);
         setForgotStep("REQUEST");
         setForgotMsg(null);
+        setPassword(newPassword);
       }, 2000);
     } catch (err: any) {
       setForgotMsg({ text: err.message || "Failed to reset password. Invalid or expired token.", isError: true });
+      toast.error(err.message || "Failed to reset password. Invalid or expired token.", "Reset Error");
     } finally {
       setForgotLoading(false);
     }
@@ -1798,6 +1824,20 @@ export const AuthPage: React.FC = () => {
               </form>
             ) : (
               <form onSubmit={handleCompleteReset} className="space-y-3">
+                <div className="flex items-center justify-between text-xs text-ink-secondary py-1.5 px-3 rounded-xl bg-canvas border border-line-base">
+                  <span className="truncate">Sent to: <strong className="text-ink-primary font-mono">{forgotEmail}</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setForgotStep("REQUEST");
+                      setForgotMsg(null);
+                    }}
+                    className="text-route hover:underline font-semibold cursor-pointer shrink-0 ml-2"
+                  >
+                    Change
+                  </button>
+                </div>
+
                 <div>
                   <label className="block text-xs font-semibold text-ink-primary mb-1">
                     Reset Token / Code
@@ -1835,6 +1875,14 @@ export const AuthPage: React.FC = () => {
                 >
                   Save New Password
                 </TactileButton>
+
+                {/* Helpful instructions for students & test accounts */}
+                <div className="p-3 rounded-xl bg-canvas border border-line-base text-[11px] text-ink-secondary space-y-1 mt-3 text-left">
+                  <p className="font-bold text-ink-primary">Didn't receive the email?</p>
+                  <p>• Make sure <span className="font-mono text-ink-primary">{forgotEmail}</span> was already registered.</p>
+                  <p>• Check your <strong>Spam</strong> or <strong>Junk</strong> folder.</p>
+                  <p>• Test accounts in demo mode receive the recovery code automatically in the alert banner and toast above.</p>
+                </div>
               </form>
             )}
           </div>

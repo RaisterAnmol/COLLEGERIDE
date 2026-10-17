@@ -847,9 +847,11 @@ router.post("/forgot-password", async (req, res): Promise<void> => {
 
     const user = await User.findOne({ email: email.trim().toLowerCase() });
     if (!user) {
-      // Do not reveal email existence to prevent user enumeration
+      // Return clear info in demo/development while maintaining safe UX
+      const isDev = process.env.NODE_ENV !== "production" || process.env.DEMO_MODE === "true";
       res.status(200).json({
         message: "If that email is registered, password reset instructions have been sent.",
+        emailNotRegistered: isDev,
       });
       return;
     }
@@ -871,7 +873,7 @@ router.post("/forgot-password", async (req, res): Promise<void> => {
       req,
     });
 
-    await sendEmail({
+    const emailResult = await sendEmail({
       to: user.email,
       subject: "CampusRide Password Reset Code",
       html: `
@@ -887,7 +889,8 @@ router.post("/forgot-password", async (req, res): Promise<void> => {
       `,
     });
 
-    const isDev = process.env.NODE_ENV !== "production" || process.env.DEMO_MODE === "true";
+    const isMock = !emailResult?.success || emailResult?.id?.startsWith("mock_");
+    const isDev = process.env.NODE_ENV !== "production" || process.env.DEMO_MODE === "true" || isMock;
     res.status(200).json({
       message: "Password reset instructions sent.",
       ...(isDev ? { devResetOtp: resetOtp } : {}),
